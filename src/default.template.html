@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${cursor.currentDocument.title}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <style>
+    :root {
+      --tl-purple: #5b4b8a;
+      --tl-red: #e74c3c;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .navbar {
+      background: linear-gradient(135deg, var(--tl-purple), #3d3d6b);
+    }
+    .navbar-item, .navbar-link {
+      color: white !important;
+    }
+    .navbar-item:hover {
+      background-color: rgba(255,255,255,0.1) !important;
+    }
+    .hero.is-primary {
+      background: linear-gradient(135deg, var(--tl-purple), var(--tl-red));
+    }
+    .content-wrapper {
+      flex: 1;
+    }
+    .footer {
+      background-color: #2d2d4a;
+      color: #ccc;
+      padding: 2rem 1.5rem;
+    }
+    .footer a {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+          <strong>Typelevel</strong>
+        </a>
+      </div>
+      <div class="navbar-menu">
+        <div class="navbar-start">
+          <a class="navbar-item" href="/">Home</a>
+          <a class="navbar-item" href="/blog/">Blog</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="content-wrapper">
+    <section class="section">
+      <div class="container">
+        <div class="content">
+          ${cursor.currentDocument.content}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <p>
+          <strong>Typelevel</strong> — Empowering the Scala ecosystem with pure, typeful, functional programming.
+        </p>
+        <p>
+          <a href="https://github.com/typelevel">GitHub</a> · 
+          <a href="https://discord.gg/XF3CXcMzqD">Discord</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
+
