@@ -1,0 +1,38 @@
+:root {
+  --tl-purple: #5b4b8a;
+  --tl-dark: #2d2d4a;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  background: linear-gradient(135deg, var(--tl-purple), #3d3d6b);
+}
+
+.navbar-item,
+.navbar-link {
+  color: white !important;
+}
+
+.navbar-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.content-wrapper {
+  flex: 1;
+}
+
+.footer {
+  background-color: var(--tl-dark);
+  color: #ccc;
+  padding: 2rem 1.5rem;
+}
+
+.footer a {
+  color: #fff;
+}
+

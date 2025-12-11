@@ -1,6 +1,6 @@
-//> using scala 3.3.6
+//> using scala 3.3.7
 //> using dep org.typelevel::laika-io:1.3.2
-//> using dep org.typelevel::cats-effect:3.5.7
+//> using dep org.typelevel::cats-effect:3.6.3
 
 import cats.effect.{IO, IOApp, ExitCode}
 import laika.api._
