@@ -1,20 +1,14 @@
 # Hello World
 
-*December 10, 2024*
+*December 10, 2025*
 
-Welcome to the new Typelevel website! This is our first blog post on the redesigned site, built with [Laika](https://typelevel.org/Laika/).
+Welcome to a prototype of the new Typelevel website!
+Now built with [Laika](https://typelevel.org/Laika/)!
 
 ## What's New
 
-We've rebuilt the Typelevel website from the ground up using:
+We've rebuilt the site using some familiar tools:
 
-- **Laika** — A powerful Scala-based site generator
-- **Bulma CSS** — A modern, responsive CSS framework
-- **Scala CLI** — For a simple, reproducible build
-
-## What's Next
-
-Stay tuned for more updates as we continue to improve the site and add new features.
-
-Happy coding! 🎉
-
+- **Laika** — For templating and generated html
+- **Scala CLI** — A minimal build script
+- **Bulma CSS** — Pretty simple CSS framework
