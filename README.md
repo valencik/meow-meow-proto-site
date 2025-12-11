@@ -14,16 +14,21 @@ scala-cli run build.scala
 
 This generates the site in `target/site/`.
 
-## Preview
+## Build & Serve
 
-After building, serve the site locally:
+To build and immediately serve the site locally with http4s:
 
 ```bash
-cd target/site
-python3 -m http.server 8080
+scala-cli run build.scala -- --serve
 ```
 
-Then open http://localhost:8080
+Then open http://localhost:8080. Press Ctrl+C to stop the server.
+
+To use a different port:
+
+```bash
+scala-cli run build.scala -- --serve --port 3000
+```
 
 ## Structure
 
