@@ -3,6 +3,10 @@
 //> using dep org.typelevel::cats-effect:3.6.3
 //> using dep org.http4s::http4s-ember-server:0.23.33
 //> using dep org.http4s::http4s-dsl:0.23.33
+//> using dep ch.qos.logback:logback-classic:1.5.21
+//> using resourceDir resources
+
+package tlsite
 
 import cats.effect.{IO, IOApp, ExitCode}
 import laika.api._
@@ -12,11 +16,17 @@ import laika.io.model.FilePath
 import laika.theme.Theme
 import org.http4s.ember.server.EmberServerBuilder
 import org.http4s.server.Router
+import org.http4s.server.middleware.Logger as RequestLogger
 import org.http4s.server.staticcontent._
+import org.typelevel.log4cats.LoggerFactory
+import org.typelevel.log4cats.slf4j.Slf4jFactory
 import com.comcast.ip4s._
 import fs2.io.file.Path
 
 object Build extends IOApp {
+
+  given LoggerFactory[IO] = Slf4jFactory.create[IO]
+  private val logger = LoggerFactory[IO].getLogger
 
   val siteDir = "target/site"
 
@@ -51,10 +61,11 @@ object Build extends IOApp {
   }
 
   def serve(port: Port): IO[Unit] = {
-    val app = Router("/" -> fileService[IO](FileService.Config(siteDir))).orNotFound
+    val routes = Router("/" -> fileService[IO](FileService.Config(siteDir))).orNotFound
+    val app = RequestLogger.httpApp(logHeaders = false, logBody = false)(routes)
 
-    IO.println(s"Serving site at http://localhost:$port") >>
-    IO.println("Press Ctrl+C to stop") >>
+    logger.info(s"Serving site at http://localhost:$port") >>
+    logger.info("Press Ctrl+C to stop") >>
     EmberServerBuilder.default[IO]
       .withHost(host"0.0.0.0")
       .withPort(port)
