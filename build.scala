@@ -2,7 +2,7 @@
 //> using dep org.typelevel::laika-io:1.3.2
 //> using dep org.typelevel::cats-effect:3.6.3
 //> using dep org.http4s::http4s-ember-server:0.23.33
-//> using dep ch.qos.logback:logback-classic:1.5.21
+//> using dep ch.qos.logback:logback-classic:1.5.22
 //> using resourceDir resources
 
 package tlsite
@@ -26,7 +26,7 @@ object Build {
       .withTheme(Theme.empty)
       .build
 
-    transformer.use_(_.fromDirectory("src").toDirectory(outputDir).transform)
+    transformer.use(t => t.fromDirectory("src").toDirectory(outputDir).transform).void
   }
 }
 
