@@ -26,7 +26,7 @@ object Build {
       .withTheme(Theme.empty)
       .build
 
-    transformer.use_(_.fromDirectory("src").toDirectory(outputDir).transform)
+    transformer.use(_.fromDirectory("src").toDirectory(outputDir).transform).void
   }
 }
 
