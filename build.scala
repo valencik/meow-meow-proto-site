@@ -44,19 +44,12 @@ object Server {
   import org.http4s.server.Router
   import org.http4s.server.middleware.Logger as RequestLogger
   import org.http4s.server.staticcontent._
-  import org.typelevel.log4cats.LoggerFactory
-  import org.typelevel.log4cats.slf4j.Slf4jFactory
   import com.comcast.ip4s._
-
-  given LoggerFactory[IO] = Slf4jFactory.create[IO]
-  private val logger = LoggerFactory[IO].getLogger
 
   def run(port: Port): IO[Unit] = {
     val routes = Router("/" -> fileService[IO](FileService.Config(Build.outputDir))).orNotFound
     val app = RequestLogger.httpApp(logHeaders = false, logBody = false)(routes)
 
-    logger.info(s"Serving site at http://localhost:$port") >>
-    logger.info("Press Ctrl+C to stop") >>
     EmberServerBuilder.default[IO]
       .withHost(host"0.0.0.0")
       .withPort(port)
@@ -69,10 +62,25 @@ object Server {
 object Main extends cats.effect.IOApp {
   import cats.effect.ExitCode
   import com.comcast.ip4s._
+  import org.typelevel.log4cats.LoggerFactory
+  import org.typelevel.log4cats.slf4j.Slf4jFactory
+
+  given LoggerFactory[IO] = Slf4jFactory.create[IO]
+  private val logger = LoggerFactory[IO].getLogger
 
   def run(args: List[String]): IO[ExitCode] = {
+    val build = Build.run.timed._1F.flatMap( time =>
+      logger.info(s"Build completed in ${time.toMillis}ms")
+    )
+
+    val port = parsePort(args)
     val shouldServe = args.contains("--serve") || args.contains("-s")
-    Build.run >> (if (shouldServe) Server.run(parsePort(args)) else IO.unit).as(ExitCode.Success)
+    val serverStartUp =
+      logger.info(s"Serving site at http://localhost:$port") >>
+      logger.info("Press Ctrl+C to stop") >>
+      Server.run(port)
+
+    build >> IO.whenA(shouldServe)(serverStartUp).as(ExitCode.Success)
   }
 
   private def parsePort(args: List[String]): Port = {
