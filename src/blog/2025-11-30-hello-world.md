@@ -1,6 +1,6 @@
 # Hello World
 
-*December 10, 2025*
+*November 30, 2025*
 
 Welcome to a prototype of the new Typelevel website!
 Now built with [Laika](https://typelevel.org/Laika/)!
