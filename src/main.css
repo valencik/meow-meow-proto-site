@@ -1,0 +1,76 @@
+:root {
+  --tl-purple: #5b4b8a;
+  --tl-purple-dark: #3d3d6b;
+  --tl-dark: #2d2d4a;
+  --tl-light: #7a6ba8;
+  --tl-accent: #ffe066;
+
+  /* Text colors */
+  --text-light: #fff;
+  --text-muted: #ccc;
+
+  /* White overlays */
+  --white-subtle: rgba(255, 255, 255, 0.15);
+  --white-medium: rgba(255, 255, 255, 0.3);
+
+  /* Protosearch theme */
+  --ps-bg: var(--tl-dark);
+  --ps-border: var(--tl-light);
+  --ps-text: var(--text-light);
+  --ps-accent: var(--tl-accent);
+  --ps-highlight: var(--tl-accent);
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  background: linear-gradient(135deg, var(--tl-purple), var(--tl-purple-dark));
+}
+
+.navbar-item,
+.navbar-link {
+  color: var(--text-light);
+}
+
+.navbar-item:hover {
+  background-color: var(--white-subtle);
+}
+
+.content-wrapper {
+  flex: 1;
+}
+
+.footer {
+  background-color: var(--tl-dark);
+  color: var(--text-muted);
+  padding: 2rem 1.5rem;
+}
+
+.footer a {
+  color: var(--text-light);
+}
+
+/* Search button */
+.search-button {
+  background-color: var(--white-subtle);
+  border: 1px solid var(--white-medium);
+  color: var(--text-light);
+  transition: all 0.2s ease;
+}
+
+.search-button:hover {
+  background-color: var(--white-medium);
+}
+
+.search-shortcut {
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.4rem;
+  background-color: var(--white-subtle);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-family: monospace;
+}

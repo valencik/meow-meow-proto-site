@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${cursor.currentDocument.title}</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/search/search.css">
+  <link rel="stylesheet" href="/main.css">
 </head>
 <body>
   @:include(templates/nav.template.html)
@@ -21,5 +22,18 @@
   </main>
 
   @:include(templates/footer.template.html)
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const burger = document.querySelector('.navbar-burger');
+      const menu = document.getElementById(burger.dataset.target);
+      burger.addEventListener('click', () => {
+        burger.classList.toggle('is-active');
+        menu.classList.toggle('is-active');
+      });
+    });
+  </script>
+  <script src="/search/protosearch.js"></script>
+  <script src="/search/searchBar.js"></script>
 </body>
 </html>
