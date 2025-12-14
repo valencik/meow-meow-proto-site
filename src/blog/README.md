@@ -4,5 +4,8 @@ The latest news and updates from the Typelevel community.
 
 ## Recent Posts
 
-- [Hello World - Our First Post](hello-world.md)
-
+@:navigationTree {
+  entries = [
+    { target = "/blog/", depth = 1, excludeRoot = true, excludeSelf = true }
+  ]
+}
