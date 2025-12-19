@@ -4,6 +4,10 @@ Prototype Typelevel website, built with [Laika](https://typelevel.org/Laika/) an
 
 ## Build & Serve
 
+Requirements:
+* A vaguely modern version of scala-cli (at least 1.0.0)
+* At least Java 11 (some dependencies won't run on Java 8)
+
 ```bash
 scala-cli run build.scala -- --serve
 ```
