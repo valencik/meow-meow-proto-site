@@ -1,0 +1,32 @@
+@import "https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/versions/bulma-no-dark-mode.min.css";
+
+.navbar {
+  --bulma-navbar-height: 5rem;
+  --bulma-navbar-item-img-max-height: 3rem;
+}
+
+a.anchor-link {
+  visibility: hidden;
+  position: absolute;
+  display: inline-block;
+  width: 1.4em;
+  margin-top: -3px;
+  text-align: right;
+  text-decoration: none;
+  margin-left: -1.4em;
+  padding-right: 0.5em;
+}
+
+h1:hover > a.anchor-link,
+h2:hover > a.anchor-link,
+h3:hover > a.anchor-link,
+h4:hover > a.anchor-link,
+h5:hover > a.anchor-link,
+h6:hover > a.anchor-link {
+  visibility: visible;
+  text-decoration: none;
+}
+
+.anchor-link .fa-link {
+  font-size: 0.75em;
+}
