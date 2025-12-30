@@ -1,6 +1,6 @@
-@import "https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/versions/bulma-no-dark-mode.min.css";
+@import "https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/versions/bulma-prefixed.min.css";
 
-.navbar {
+.bulma-navbar {
   --bulma-navbar-height: 5rem;
   --bulma-navbar-item-img-max-height: 3rem;
 }
@@ -13,7 +13,7 @@ a.anchor-link {
   margin-top: -3px;
   text-align: right;
   text-decoration: none;
-  margin-left: -1.4em;
+  margin-left: -1.2em;
   padding-right: 0.5em;
 }
 
@@ -28,5 +28,36 @@ h6:hover > a.anchor-link {
 }
 
 .anchor-link .fa-link {
-  font-size: 0.75em;
+  font-size: 0.6em;
+}
+
+img.sponsor {
+  max-height: 48px;
+}
+
+/* Hack to prevent double-rendering the title in blog posts */
+.blog-post .title {
+  display: none;
+}
+
+/* Hack to prevent double-rendering the title in blog posts */
+.blog-post .subtitle {
+  display: none;
+}
+
+/* Laika syntax highlighting */
+:root {
+  --code-font: "Fira Mono", monospace;
+  --code-font-size: var(--bulma-code-size);
+  --primary-color: var(--bulma-text);
+  --syntax-base1: #21303f; /* background */
+  --syntax-base2: #73ad9b; /* comments */
+  --syntax-base3: #b2adb4; /* punctuation */
+  --syntax-base4: #ffb4b5; /* identifier */
+  --syntax-base5: #e6e8ea; /* unclassified */
+  --syntax-wheel1: #8fa1c9; /* substitution, annotation */
+  --syntax-wheel2: #81e67b; /* keyword, escape-sequence */
+  --syntax-wheel3: #ffde6d; /* declaration name */
+  --syntax-wheel4: #86aac1; /* literals */
+  --syntax-wheel5: #f86971; /* type/class name */
 }

@@ -3,7 +3,9 @@
 //> using dep com.monovore::decline-effect::2.5.0
 //> using dep pink.cozydev::protosearch-laika:0.0-cc3acd4-SNAPSHOT
 //> using repository https://central.sonatype.com/repository/maven-snapshots
+//> using option -deprecation
 
+import cats.data.NonEmptyChain
 import cats.effect.*
 import cats.syntax.all.*
 import com.comcast.ip4s.*
@@ -13,29 +15,37 @@ import fs2.io.file.Files
 import fs2.io.file.Path
 import laika.api.MarkupParser
 import laika.api.Renderer
+import laika.api.bundle.DirectiveRegistry
+import laika.api.bundle.SpanDirectives
+import laika.api.bundle.SpanDirectives.dsl.*
+import laika.api.format.TagFormatter
+import laika.ast.Element
+import laika.ast.Header
+import laika.ast.Literal
+import laika.ast.Path.Root
+import laika.ast.RelativePath.CurrentDocument
+import laika.ast.SpanLink
+import laika.ast.Styles
+import laika.ast.Text
+import laika.config.SyntaxHighlighting
 import laika.format.HTML
 import laika.format.Markdown
 import laika.io.model.FilePath
 import laika.io.model.InputTree
 import laika.io.syntax.*
+import laika.parse.code.languages.ScalaSyntax
 import laika.preview.ServerBuilder
 import laika.preview.ServerConfig
+import laika.theme.Theme
+import laika.theme.ThemeBuilder
+import laika.theme.ThemeProvider
 import org.http4s.server.Server
 import pink.cozydev.protosearch.analysis.IndexFormat
 import pink.cozydev.protosearch.analysis.IndexRendererConfig
 import pink.cozydev.protosearch.ui.SearchUI
+
+import java.net.URI
 import java.net.URL
-import laika.ast.Path.Root
-import laika.api.format.TagFormatter
-import laika.ast.Element
-import laika.ast.Header
-import laika.ast.SpanLink
-import laika.ast.RelativePath.CurrentDocument
-import laika.ast.Styles
-import laika.theme.Theme
-import laika.theme.ThemeBuilder
-import laika.theme.ThemeProvider
-import laika.ast.Literal
 
 object Build extends CommandIOApp("build", "builds the site") {
 
@@ -82,9 +92,9 @@ object Build extends CommandIOApp("build", "builds the site") {
     IO.println(s"Serving site at ${server.baseUri}")
 
   def input = {
-    val securityPolicy = new URL(
+    val securityPolicy = new URI(
       "https://raw.githubusercontent.com/typelevel/.github/refs/heads/main/SECURITY.md"
-    )
+    ).toURL()
 
     InputTree[IO]
       .addDirectory("src")
@@ -92,11 +102,13 @@ object Build extends CommandIOApp("build", "builds the site") {
         IO.blocking(securityPolicy.openStream()),
         Root / "security.md"
       )
+      .addClassResource[this.type]("laika/helium/css/code.css", Root / "css" / "code.css")
   }
 
   def theme = {
     val provider = new ThemeProvider {
-      def build[F[_]: Async] = ThemeBuilder[F]("typelevel.org").addRenderOverrides(overrides).build
+      def build[F[_]: Async] =
+        ThemeBuilder[F]("typelevel.org").addRenderOverrides(overrides).build
     }
 
     provider.extendWith(SearchUI.standalone)
@@ -104,7 +116,10 @@ object Build extends CommandIOApp("build", "builds the site") {
 
   def parser = MarkupParser
     .of(Markdown)
-    .using(Markdown.GitHubFlavor)
+    .using(
+      Markdown.GitHubFlavor,
+      SyntaxHighlighting.withSyntaxBinding("scala", ScalaSyntax.Scala3)
+    )
     .parallel[IO]
     .withTheme(theme)
     .build
@@ -130,20 +145,28 @@ object Build extends CommandIOApp("build", "builds the site") {
     }
   }
 
-  def overrides = HTML.Overrides {
-    case (fmt, h: Header) =>
-      val link = h.options.id.map { id =>
-        SpanLink
-          .internal(CurrentDocument(id))(Literal("", Styles("fas", "fa-link", "fa-sm")))
-          .withOptions(
-            Styles("anchor-link")
-          )
-      }
-      val linkedContent = link.toList ++ h.content
-      fmt.newLine + fmt.element(
-        "h" + h.level.toString,
-        h.withContent(linkedContent)
-      )
+  def directives = new DirectiveRegistry {
+    val spanDirectives = Seq()
+    val blockDirectives = Seq()
+    val templateDirectives = Seq()
+    val linkDirectives = Seq()
+  }
+
+  def overrides = HTML.Overrides { case (fmt, h: Header) =>
+    val link = h.options.id.map { id =>
+      SpanLink
+        .internal(CurrentDocument(id))(
+          Literal("", Styles("fas", "fa-link", "fa-sm"))
+        )
+        .withOptions(
+          Styles("anchor-link")
+        )
+    }
+    val linkedContent = link.toList ++ h.content
+    fmt.newLine + fmt.element(
+      "h" + h.level.toString,
+      h.withContent(linkedContent)
+    )
   }
 
 }

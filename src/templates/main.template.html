@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-bulma-theme="light">
 
 <head>
   <meta charset="utf-8">
@@ -9,23 +9,24 @@
   <link rel="icon" href="@:target(/img/favicon.svg)" type="image/svg+xml">
   <link rel="apple-touch-icon" href="@:target(/img/apple-touch-icon.png)">
 
-
   <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
 
   <link rel="stylesheet" href="@:target(/main.css)">
+  <link rel="stylesheet" href="@:target(/css/code.css)">
   <script src="@:target(/main.js)"></script>
-
 
   <title>${cursor.currentDocument.title}</title>
 </head>
 
 <body>
-  @:include(templates/nav.template.html)
+  @:include(/templates/nav.template.html)
   <main>
     ${_.embeddedBody}
   </main>
-  @:include(templates/footer.template.html)
+  @:include(/templates/footer.template.html)
 </body>
 
 </html>
