@@ -40,8 +40,12 @@ img.sponsor {
   display: none;
 }
 
-/* Hack to prevent double-rendering the title in blog posts */
-.blog-post .subtitle {
+/* Hack to render multi-author bylines */
+.blog-post-byline span.delimiter:nth-last-child(-n+2 of .delimiter) {
+  display: none;
+}
+
+.blog-post-byline span.last-delimiter:not(:nth-last-child(2 of .last-delimiter)) {
   display: none;
 }
 

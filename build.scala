@@ -46,6 +46,11 @@ import pink.cozydev.protosearch.ui.SearchUI
 
 import java.net.URI
 import java.net.URL
+import laika.api.bundle.TemplateDirectives
+import java.time.OffsetDateTime
+import laika.api.config.ConfigValue
+import laika.ast.TemplateScope
+import laika.ast.TemplateSpanSequence
 
 object Build extends CommandIOApp("build", "builds the site") {
 
@@ -102,7 +107,10 @@ object Build extends CommandIOApp("build", "builds the site") {
         IO.blocking(securityPolicy.openStream()),
         Root / "security.md"
       )
-      .addClassResource[this.type]("laika/helium/css/code.css", Root / "css" / "code.css")
+      .addClassResource[this.type](
+        "laika/helium/css/code.css",
+        Root / "css" / "code.css"
+      )
   }
 
   def theme = {
@@ -118,7 +126,8 @@ object Build extends CommandIOApp("build", "builds the site") {
     .of(Markdown)
     .using(
       Markdown.GitHubFlavor,
-      SyntaxHighlighting.withSyntaxBinding("scala", ScalaSyntax.Scala3)
+      SyntaxHighlighting.withSyntaxBinding("scala", ScalaSyntax.Scala3),
+      Directives
     )
     .parallel[IO]
     .withTheme(theme)
@@ -145,10 +154,32 @@ object Build extends CommandIOApp("build", "builds the site") {
     }
   }
 
-  def directives = new DirectiveRegistry {
+  object Directives extends DirectiveRegistry {
     val spanDirectives = Seq()
     val blockDirectives = Seq()
-    val templateDirectives = Seq()
+    val templateDirectives = Seq(
+      TemplateDirectives.eval("forBlogPosts") {
+        import TemplateDirectives.dsl.*
+
+        (cursor, parsedBody, source).mapN { (c, b, s) =>
+          def contentScope(value: ConfigValue) =
+            TemplateScope(TemplateSpanSequence(b), value, s)
+
+          val posts = c.parent.allDocuments.flatMap { d =>
+            d.config.get[OffsetDateTime]("date").toList.tupleLeft(d)
+          }
+
+          posts
+            .sortBy(_._2)(using summon[Ordering[OffsetDateTime]].reverse)
+            .traverse { (d, _) =>
+              d.config.get[ConfigValue]("").map(contentScope(_))
+            }
+            .leftMap(_.message)
+            .map(TemplateSpanSequence(_))
+        }
+      }
+    )
+
     val linkDirectives = Seq()
   }
 

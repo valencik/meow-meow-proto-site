@@ -2,12 +2,12 @@
 <section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
     <p class="bulma-title">${cursor.currentDocument.title}</p>
-    <p class="bulma-subtitle">
+    <p class="blog-post-byline bulma-subtitle">
       by
       @:for(author)
-        ${_.name},
+        ${_.name}<span class="delimiter">,</span><span class="last-delimiter"> &</span>
       @:@
-      on @:date(date, "MMMM dd, yyyy")
+      on @:date(date, "MMMM d, yyyy")
     </p>
      @:for(tags)
       <span class="bulma-tag">${_}</span>
@@ -38,7 +38,7 @@
             </p>
           </div>
           <nav class="bulma-level">
-            <div class="bulma-level-left">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
               @:for(_.github)
               <a class="bulma-level-item" href="http://github.com/${_.github}">
                 <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>

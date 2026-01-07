@@ -1,7 +1,7 @@
 {%
-  laika.template: /default.template.html
+  laika.template: blog.template.html
 %}
 
 # Blog
 
-
+who

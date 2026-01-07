@@ -1,0 +1,27 @@
+@:embed(/templates/main.template.html)
+
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div>${cursor.currentDocument.content}</div>
+</div>
+
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  @:forBlogPosts
+  <a class="bulma-card">
+    <div class="bulma-card-content">
+      <p class="bulma-is-6 bulma-has-text-right bulma-has-text-grey">@:date(_.date, "MMMM d, yyyy")</p>
+      <h4 class="bulma-title bulma-is-5">${_.cursor.currentDocument.title}</h4>
+      <p class="blog-post-byline bulma-subtitle bulma-is-6 bulma-has-text-grey">
+        @:for(_.author)
+          ${_.name}<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+        @:@
+      </p>
+      @:for(_.tags)
+        <span class="bulma-tag">${_}</span>
+      @:@
+    </div>
+  </a>
+
+  @:@
+</div>
+
+@:@
