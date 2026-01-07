@@ -5,8 +5,9 @@
 </div>
 
 <div class="bulma-section bulma-container bulma-is-max-desktop">
+  <!-- custom Laika template directive for listing blog posts -->
   @:forBlogPosts
-  <a class="bulma-card">
+  <a class="bulma-card" href="${_.href}">
     <div class="bulma-card-content">
       <p class="bulma-is-6 bulma-has-text-right bulma-has-text-grey">@:date(_.date, "MMMM d, yyyy")</p>
       <h4 class="bulma-title bulma-is-5">${_.cursor.currentDocument.title}</h4>
