@@ -49,8 +49,13 @@ import java.net.URL
 import laika.api.bundle.TemplateDirectives
 import java.time.OffsetDateTime
 import laika.api.config.ConfigValue
+import laika.ast.DocumentCursor
+import laika.ast.RawLink
 import laika.ast.TemplateScope
 import laika.ast.TemplateSpanSequence
+import laika.api.config.ConfigValue.ASTValue
+import laika.api.config.ConfigValue.ObjectValue
+import laika.api.config.Field
 
 object Build extends CommandIOApp("build", "builds the site") {
 
@@ -158,12 +163,20 @@ object Build extends CommandIOApp("build", "builds the site") {
     val spanDirectives = Seq()
     val blockDirectives = Seq()
     val templateDirectives = Seq(
+      // custom Laika template directive for listing blog posts
       TemplateDirectives.eval("forBlogPosts") {
         import TemplateDirectives.dsl.*
 
         (cursor, parsedBody, source).mapN { (c, b, s) =>
-          def contentScope(value: ConfigValue) =
-            TemplateScope(TemplateSpanSequence(b), value, s)
+          // Create scope with config values and href field
+          def contentScope(doc: DocumentCursor, config: ConfigValue) = {
+            val hrefField = Field("href", ASTValue(RawLink.internal(doc.path)))
+            val contextWithHref = config match {
+              case obj: ObjectValue => ObjectValue(obj.values :+ hrefField)
+              case v                => v
+            }
+            TemplateScope(TemplateSpanSequence(b), contextWithHref, s)
+          }
 
           val posts = c.parent.allDocuments.flatMap { d =>
             d.config.get[OffsetDateTime]("date").toList.tupleLeft(d)
@@ -172,7 +185,7 @@ object Build extends CommandIOApp("build", "builds the site") {
           posts
             .sortBy(_._2)(using summon[Ordering[OffsetDateTime]].reverse)
             .traverse { (d, _) =>
-              d.config.get[ConfigValue]("").map(contentScope(_))
+              d.config.get[ConfigValue]("").map(contentScope(d, _))
             }
             .leftMap(_.message)
             .map(TemplateSpanSequence(_))
