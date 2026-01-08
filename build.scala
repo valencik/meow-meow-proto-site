@@ -10,7 +10,14 @@ import cats.syntax.all.*
 import com.monovore.decline.Opts
 import com.monovore.decline.effect.CommandIOApp
 
-object Build extends CommandIOApp("build", "builds the site") {
+// Welcome to the typelevel.org build script!
+// This script builds the site and can serve it locally for previewing.
+//
+// Main -- Entry point
+// LaikaBuild -- Laika build, markdown in html out
+// LaikaCustomizations -- Custom directives
+
+object Main extends CommandIOApp("build", "builds the site") {
   import com.comcast.ip4s.*
   import fs2.io.file.{Files, Path}
   import laika.io.model.FilePath
