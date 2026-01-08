@@ -34,3 +34,9 @@ This generates the site in `target/site/`.
 ```bash
 scala-cli run build.scala -- --help
 ```
+
+## Format
+
+```bash
+scala-cli fmt build.scala
+```
