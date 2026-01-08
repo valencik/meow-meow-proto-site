@@ -86,13 +86,13 @@ object Build extends CommandIOApp("build", "builds the site") {
 
     case Subcommand.Build(destination) =>
       Files[IO].deleteRecursively(destination).voidError *>
-        build(FilePath.fromFS2Path(destination)).as(ExitCode.Success)
+        LaikaBuild.build(FilePath.fromFS2Path(destination)).as(ExitCode.Success)
 
     case Subcommand.Serve(port) =>
       val serverConfig = ServerConfig.defaults
         .withPort(port)
         .withBinaryRenderers(List(IndexRendererConfig(true)))
-      val server = ServerBuilder[IO](parser, input)
+      val server = ServerBuilder[IO](LaikaBuild.parser, LaikaBuild.input)
         .withConfig(serverConfig)
         .build
       server.evalTap(logServer(_)).useForever
@@ -101,6 +101,9 @@ object Build extends CommandIOApp("build", "builds the site") {
   def logServer(server: Server) =
     IO.println(s"Serving site at ${server.baseUri}")
 
+}
+
+object LaikaBuild {
   def input = {
     val securityPolicy = new URI(
       "https://raw.githubusercontent.com/typelevel/.github/refs/heads/main/SECURITY.md"
@@ -121,7 +124,9 @@ object Build extends CommandIOApp("build", "builds the site") {
   def theme = {
     val provider = new ThemeProvider {
       def build[F[_]: Async] =
-        ThemeBuilder[F]("typelevel.org").addRenderOverrides(overrides).build
+        ThemeBuilder[F]("typelevel.org")
+          .addRenderOverrides(LaikaCustomizations.overrides)
+          .build
     }
 
     provider.extendWith(SearchUI.standalone)
@@ -132,7 +137,7 @@ object Build extends CommandIOApp("build", "builds the site") {
     .using(
       Markdown.GitHubFlavor,
       SyntaxHighlighting.withSyntaxBinding("scala", ScalaSyntax.Scala3),
-      Directives
+      LaikaCustomizations.Directives
     )
     .parallel[IO]
     .withTheme(theme)
@@ -158,10 +163,32 @@ object Build extends CommandIOApp("build", "builds the site") {
       }
     }
   }
+}
+
+object LaikaCustomizations {
+
+  def addAnchorLinks(fmt: TagFormatter, h: Header) = {
+    val link = h.options.id.map { id =>
+      SpanLink
+        .internal(CurrentDocument(id))(
+          Literal("", Styles("fas", "fa-link", "fa-sm"))
+        )
+        .withOptions(
+          Styles("anchor-link")
+        )
+    }
+    val linkedContent = link.toList ++ h.content
+    fmt.newLine + fmt.element(
+      "h" + h.level.toString,
+      h.withContent(linkedContent)
+    )
+  }
+
+  val overrides = HTML.Overrides { case (fmt, h: Header) =>
+    addAnchorLinks(fmt, h)
+  }
 
   object Directives extends DirectiveRegistry {
-    val spanDirectives = Seq()
-    val blockDirectives = Seq()
     val templateDirectives = Seq(
       // custom Laika template directive for listing blog posts
       TemplateDirectives.eval("forBlogPosts") {
@@ -193,24 +220,8 @@ object Build extends CommandIOApp("build", "builds the site") {
       }
     )
 
-    val linkDirectives = Seq()
+    val linkDirectives = Seq.empty
+    val spanDirectives = Seq.empty
+    val blockDirectives = Seq.empty
   }
-
-  def overrides = HTML.Overrides { case (fmt, h: Header) =>
-    val link = h.options.id.map { id =>
-      SpanLink
-        .internal(CurrentDocument(id))(
-          Literal("", Styles("fas", "fa-link", "fa-sm"))
-        )
-        .withOptions(
-          Styles("anchor-link")
-        )
-    }
-    val linkedContent = link.toList ++ h.content
-    fmt.newLine + fmt.element(
-      "h" + h.level.toString,
-      h.withContent(linkedContent)
-    )
-  }
-
 }
