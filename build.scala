@@ -29,26 +29,21 @@ object Main extends CommandIOApp("build", "builds the site") {
     case Build(output: Path)
   }
 
-  def opts = {
-    val portOpt = Opts
-      .option[Int]("port", "bind to this port")
-      .mapValidated(Port.fromInt(_).toValidNel("Invalid port"))
-      .withDefault(port"8000")
+  val portOpt = Opts
+    .option[Int]("port", "bind to this port")
+    .mapValidated(Port.fromInt(_).toValidNel("Invalid port"))
+    .withDefault(port"8000")
 
-    val destinationOpt = Opts
-      .option[String]("out", "site output directory")
-      .map(Path(_))
-      .withDefault(Path("target"))
+  val destinationOpt = Opts
+    .option[String]("out", "site output directory")
+    .map(Path(_))
+    .withDefault(Path("target"))
 
-    Opts
-      .subcommand("serve", "serve the site")(
-        portOpt.map(Subcommand.Serve(_))
-      )
-      .orElse(destinationOpt.map(Subcommand.Build(_)))
-  }
+  val opts = Opts
+    .subcommand("serve", "serve the site")(portOpt.map(Subcommand.Serve(_)))
+    .orElse(destinationOpt.map(Subcommand.Build(_)))
 
   def main = opts.map {
-
     case Subcommand.Build(destination) =>
       Files[IO].deleteRecursively(destination).voidError *>
         LaikaBuild.build(FilePath.fromFS2Path(destination)).as(ExitCode.Success)
@@ -65,7 +60,6 @@ object Main extends CommandIOApp("build", "builds the site") {
 
   def logServer(server: Server) =
     IO.println(s"Serving site at ${server.baseUri}")
-
 }
 
 object LaikaBuild {
