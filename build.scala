@@ -5,59 +5,17 @@
 //> using repository https://central.sonatype.com/repository/maven-snapshots
 //> using option -deprecation
 
-import cats.data.NonEmptyChain
 import cats.effect.*
 import cats.syntax.all.*
-import com.comcast.ip4s.*
-import com.monovore.decline.*
+import com.monovore.decline.Opts
 import com.monovore.decline.effect.CommandIOApp
-import fs2.io.file.Files
-import fs2.io.file.Path
-import laika.api.MarkupParser
-import laika.api.Renderer
-import laika.api.bundle.DirectiveRegistry
-import laika.api.bundle.SpanDirectives
-import laika.api.bundle.SpanDirectives.dsl.*
-import laika.api.format.TagFormatter
-import laika.ast.Element
-import laika.ast.Header
-import laika.ast.Literal
-import laika.ast.Path.Root
-import laika.ast.RelativePath.CurrentDocument
-import laika.ast.SpanLink
-import laika.ast.Styles
-import laika.ast.Text
-import laika.config.SyntaxHighlighting
-import laika.format.HTML
-import laika.format.Markdown
-import laika.io.model.FilePath
-import laika.io.model.InputTree
-import laika.io.syntax.*
-import laika.parse.code.languages.ScalaSyntax
-import laika.preview.ServerBuilder
-import laika.preview.ServerConfig
-import laika.theme.Theme
-import laika.theme.ThemeBuilder
-import laika.theme.ThemeProvider
-import org.http4s.server.Server
-import pink.cozydev.protosearch.analysis.IndexFormat
-import pink.cozydev.protosearch.analysis.IndexRendererConfig
-import pink.cozydev.protosearch.ui.SearchUI
-
-import java.net.URI
-import java.net.URL
-import laika.api.bundle.TemplateDirectives
-import java.time.OffsetDateTime
-import laika.api.config.ConfigValue
-import laika.ast.DocumentCursor
-import laika.ast.RawLink
-import laika.ast.TemplateScope
-import laika.ast.TemplateSpanSequence
-import laika.api.config.ConfigValue.ASTValue
-import laika.api.config.ConfigValue.ObjectValue
-import laika.api.config.Field
 
 object Build extends CommandIOApp("build", "builds the site") {
+  import com.comcast.ip4s.*
+  import fs2.io.file.{Files, Path}
+  import laika.io.model.FilePath
+  import laika.preview.{ServerBuilder, ServerConfig}
+  import org.http4s.server.Server
 
   enum Subcommand {
     case Serve(port: Port)
@@ -91,7 +49,7 @@ object Build extends CommandIOApp("build", "builds the site") {
     case Subcommand.Serve(port) =>
       val serverConfig = ServerConfig.defaults
         .withPort(port)
-        .withBinaryRenderers(List(IndexRendererConfig(true)))
+        .withBinaryRenderers(LaikaBuild.binaryRenderers)
       val server = ServerBuilder[IO](LaikaBuild.parser, LaikaBuild.input)
         .withConfig(serverConfig)
         .build
@@ -104,6 +62,20 @@ object Build extends CommandIOApp("build", "builds the site") {
 }
 
 object LaikaBuild {
+  import java.net.{URI, URL}
+  import laika.api.MarkupParser
+  import laika.api.Renderer
+  import laika.api.format.TagFormatter
+  import laika.ast.*
+  import laika.config.SyntaxHighlighting
+  import laika.format.{HTML, Markdown}
+  import laika.io.model.{FilePath, InputTree}
+  import laika.io.syntax.*
+  import laika.parse.code.languages.ScalaSyntax
+  import laika.theme.*
+  import pink.cozydev.protosearch.analysis.{IndexFormat, IndexRendererConfig}
+  import pink.cozydev.protosearch.ui.SearchUI
+
   def input = {
     val securityPolicy = new URI(
       "https://raw.githubusercontent.com/typelevel/.github/refs/heads/main/SECURITY.md"
@@ -113,11 +85,11 @@ object LaikaBuild {
       .addDirectory("src")
       .addInputStream(
         IO.blocking(securityPolicy.openStream()),
-        Root / "security.md"
+        Path.Root / "security.md"
       )
       .addClassResource[this.type](
         "laika/helium/css/code.css",
-        Root / "css" / "code.css"
+        Path.Root / "css" / "code.css"
       )
   }
 
@@ -143,6 +115,8 @@ object LaikaBuild {
     .withTheme(theme)
     .build
 
+  val binaryRenderers = List(IndexRendererConfig(true))
+
   def build(destination: FilePath) = parser.use { parser =>
     val html = Renderer
       .of(HTML)
@@ -166,11 +140,17 @@ object LaikaBuild {
 }
 
 object LaikaCustomizations {
+  import java.time.OffsetDateTime
+  import laika.api.bundle.{DirectiveRegistry, TemplateDirectives}
+  import laika.api.config.*
+  import laika.api.format.TagFormatter
+  import laika.ast.*
+  import laika.format.HTML
 
   def addAnchorLinks(fmt: TagFormatter, h: Header) = {
     val link = h.options.id.map { id =>
       SpanLink
-        .internal(CurrentDocument(id))(
+        .internal(RelativePath.CurrentDocument(id))(
           Literal("", Styles("fas", "fa-link", "fa-sm"))
         )
         .withOptions(
@@ -197,10 +177,12 @@ object LaikaCustomizations {
         (cursor, parsedBody, source).mapN { (c, b, s) =>
           // Create scope with config values and href field
           def contentScope(doc: DocumentCursor, config: ConfigValue) = {
-            val hrefField = Field("href", ASTValue(RawLink.internal(doc.path)))
+            val hrefField =
+              Field("href", ConfigValue.ASTValue(RawLink.internal(doc.path)))
             val contextWithHref = config match {
-              case obj: ObjectValue => ObjectValue(obj.values :+ hrefField)
-              case v                => v
+              case obj: ConfigValue.ObjectValue =>
+                ConfigValue.ObjectValue(obj.values :+ hrefField)
+              case v => v
             }
             TemplateScope(TemplateSpanSequence(b), contextWithHref, s)
           }
