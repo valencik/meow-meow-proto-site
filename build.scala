@@ -176,17 +176,8 @@ object LaikaCustomizations {
         import TemplateDirectives.dsl.*
 
         (cursor, parsedBody, source).mapN { (c, b, s) =>
-          // Create scope with config values and href field
-          def contentScope(doc: DocumentCursor, config: ConfigValue) = {
-            val hrefField =
-              Field("href", ConfigValue.ASTValue(RawLink.internal(doc.path)))
-            val contextWithHref = config match {
-              case obj: ConfigValue.ObjectValue =>
-                ConfigValue.ObjectValue(obj.values :+ hrefField)
-              case v => v
-            }
-            TemplateScope(TemplateSpanSequence(b), contextWithHref, s)
-          }
+          def contentScope(value: ConfigValue) =
+            TemplateScope(TemplateSpanSequence(b), value, s)
 
           val posts = c.parent.allDocuments.flatMap { d =>
             d.config.get[OffsetDateTime]("date").toList.tupleLeft(d)
@@ -195,7 +186,7 @@ object LaikaCustomizations {
           posts
             .sortBy(_._2)(using summon[Ordering[OffsetDateTime]].reverse)
             .traverse { (d, _) =>
-              d.config.get[ConfigValue]("").map(contentScope(d, _))
+              d.config.get[ConfigValue]("").map(contentScope(_))
             }
             .leftMap(_.message)
             .map(TemplateSpanSequence(_))
