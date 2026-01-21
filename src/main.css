@@ -64,4 +64,26 @@ img.sponsor {
   --syntax-wheel3: #ffde6d; /* declaration name */
   --syntax-wheel4: #86aac1; /* literals */
   --syntax-wheel5: #f86971; /* type/class name */
+
+  /* Protosearch theme integration */
+  --ps-bg: var(--bulma-scheme-main);
+  --ps-text-muted: var(--bulma-text-weak);
+  --ps-border: var(--bulma-border);
+  --ps-link: var(--bulma-link);
+  --ps-highlight: #ffde6d;
+}
+
+/* Search modal - fix display mode for Bulma */
+#search-modal[style*="display: block"] {
+  display: flex !important;
+}
+
+#search-modal .bulma-modal-card {
+  max-width: 800px;
+  width: 90%;
+}
+
+#search-modal .bulma-modal-card-head .bulma-field {
+  margin-bottom: 0;
+  flex: 1;
 }
