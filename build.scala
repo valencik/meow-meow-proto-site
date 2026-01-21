@@ -1,7 +1,7 @@
 //> using dep org.http4s::http4s-ember-server::0.23.33
 //> using dep org.typelevel::laika-preview::1.3.2
 //> using dep com.monovore::decline-effect::2.5.0
-//> using dep pink.cozydev::protosearch-laika:0.0-cc3acd4-SNAPSHOT
+//> using dep pink.cozydev::protosearch-laika:0.0-fdae301-SNAPSHOT
 //> using repository https://central.sonatype.com/repository/maven-snapshots
 //> using option -deprecation
 

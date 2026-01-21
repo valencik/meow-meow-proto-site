@@ -22,7 +22,7 @@
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="@:target(/blog/README.md)">Blog</a></div>
       <div class="bulma-navbar-item">
-        <a class="bulma-button bulma-is-white">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search">
           <span class="bulma-icon bulma-is-small">
             <i class="fas fa-magnifying-glass"></i>
           </span>
@@ -31,3 +31,31 @@
     </div>
   </div>
 </nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal">
+  <div class="bulma-modal-background"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <div class="bulma-field bulma-is-expanded">
+        <p class="bulma-control bulma-has-icons-left">
+          <input id="search-modal-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off">
+          <span class="bulma-icon bulma-is-left">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </p>
+      </div>
+      <button class="bulma-delete bulma-is-large search-close" aria-label="close"></button>
+    </header>
+    <section id="search-modal-content-body" class="bulma-modal-card-body">
+      <p class="bulma-has-text-grey bulma-has-text-centered">Type to search...</p>
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+      <a href="@:target(/search/search.html)" class="bulma-has-text-grey bulma-is-size-7">Advanced search</a>
+    </footer>
+  </div>
+</div>
