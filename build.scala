@@ -5,94 +5,54 @@
 //> using repository https://central.sonatype.com/repository/maven-snapshots
 //> using option -deprecation
 
-import cats.data.NonEmptyChain
 import cats.effect.*
 import cats.syntax.all.*
-import com.comcast.ip4s.*
-import com.monovore.decline.*
+import com.monovore.decline.Opts
 import com.monovore.decline.effect.CommandIOApp
-import fs2.io.file.Files
-import fs2.io.file.Path
-import laika.api.MarkupParser
-import laika.api.Renderer
-import laika.api.bundle.DirectiveRegistry
-import laika.api.bundle.SpanDirectives
-import laika.api.bundle.SpanDirectives.dsl.*
-import laika.api.format.TagFormatter
-import laika.ast.Element
-import laika.ast.Header
-import laika.ast.Literal
-import laika.ast.Path.Root
-import laika.ast.RelativePath.CurrentDocument
-import laika.ast.SpanLink
-import laika.ast.Styles
-import laika.ast.Text
-import laika.config.SyntaxHighlighting
-import laika.format.HTML
-import laika.format.Markdown
-import laika.io.model.FilePath
-import laika.io.model.InputTree
-import laika.io.syntax.*
-import laika.parse.code.languages.ScalaSyntax
-import laika.preview.ServerBuilder
-import laika.preview.ServerConfig
-import laika.theme.Theme
-import laika.theme.ThemeBuilder
-import laika.theme.ThemeProvider
-import org.http4s.server.Server
-import pink.cozydev.protosearch.analysis.IndexFormat
-import pink.cozydev.protosearch.analysis.IndexRendererConfig
-import pink.cozydev.protosearch.ui.SearchUI
 
-import java.net.URI
-import java.net.URL
-import laika.api.bundle.TemplateDirectives
-import java.time.OffsetDateTime
-import laika.api.config.ConfigValue
-import laika.ast.DocumentCursor
-import laika.ast.RawLink
-import laika.ast.TemplateScope
-import laika.ast.TemplateSpanSequence
-import laika.api.config.ConfigValue.ASTValue
-import laika.api.config.ConfigValue.ObjectValue
-import laika.api.config.Field
+// Welcome to the typelevel.org build script!
+// This script builds the site and can serve it locally for previewing.
+//
+// Main -- Entry point
+// LaikaBuild -- Laika build, markdown in html out
+// LaikaCustomizations -- Custom directives
 
-object Build extends CommandIOApp("build", "builds the site") {
+object Main extends CommandIOApp("build", "builds the site") {
+  import com.comcast.ip4s.*
+  import fs2.io.file.{Files, Path}
+  import laika.io.model.FilePath
+  import laika.preview.{ServerBuilder, ServerConfig}
+  import org.http4s.server.Server
 
   enum Subcommand {
     case Serve(port: Port)
     case Build(output: Path)
   }
 
-  def opts = {
-    val portOpt = Opts
-      .option[Int]("port", "bind to this port")
-      .mapValidated(Port.fromInt(_).toValidNel("Invalid port"))
-      .withDefault(port"8000")
+  val portOpt = Opts
+    .option[Int]("port", "bind to this port")
+    .mapValidated(Port.fromInt(_).toValidNel("Invalid port"))
+    .withDefault(port"8000")
 
-    val destinationOpt = Opts
-      .option[String]("out", "site output directory")
-      .map(Path(_))
-      .withDefault(Path("target"))
+  val destinationOpt = Opts
+    .option[String]("out", "site output directory")
+    .map(Path(_))
+    .withDefault(Path("target"))
 
-    Opts
-      .subcommand("serve", "serve the site")(
-        portOpt.map(Subcommand.Serve(_))
-      )
-      .orElse(destinationOpt.map(Subcommand.Build(_)))
-  }
+  val opts = Opts
+    .subcommand("serve", "serve the site")(portOpt.map(Subcommand.Serve(_)))
+    .orElse(destinationOpt.map(Subcommand.Build(_)))
 
   def main = opts.map {
-
     case Subcommand.Build(destination) =>
       Files[IO].deleteRecursively(destination).voidError *>
-        build(FilePath.fromFS2Path(destination)).as(ExitCode.Success)
+        LaikaBuild.build(FilePath.fromFS2Path(destination)).as(ExitCode.Success)
 
     case Subcommand.Serve(port) =>
       val serverConfig = ServerConfig.defaults
         .withPort(port)
-        .withBinaryRenderers(List(IndexRendererConfig(true)))
-      val server = ServerBuilder[IO](parser, input)
+        .withBinaryRenderers(LaikaBuild.binaryRenderers)
+      val server = ServerBuilder[IO](LaikaBuild.parser, LaikaBuild.input)
         .withConfig(serverConfig)
         .build
       server.evalTap(logServer(_)).useForever
@@ -100,6 +60,22 @@ object Build extends CommandIOApp("build", "builds the site") {
 
   def logServer(server: Server) =
     IO.println(s"Serving site at ${server.baseUri}")
+}
+
+object LaikaBuild {
+  import java.net.{URI, URL}
+  import laika.api.MarkupParser
+  import laika.api.Renderer
+  import laika.api.format.TagFormatter
+  import laika.ast.*
+  import laika.config.SyntaxHighlighting
+  import laika.format.{HTML, Markdown}
+  import laika.io.model.{FilePath, InputTree}
+  import laika.io.syntax.*
+  import laika.parse.code.languages.ScalaSyntax
+  import laika.theme.*
+  import pink.cozydev.protosearch.analysis.{IndexFormat, IndexRendererConfig}
+  import pink.cozydev.protosearch.ui.SearchUI
 
   def input = {
     val securityPolicy = new URI(
@@ -110,18 +86,20 @@ object Build extends CommandIOApp("build", "builds the site") {
       .addDirectory("src")
       .addInputStream(
         IO.blocking(securityPolicy.openStream()),
-        Root / "security.md"
+        Path.Root / "security.md"
       )
       .addClassResource[this.type](
         "laika/helium/css/code.css",
-        Root / "css" / "code.css"
+        Path.Root / "css" / "code.css"
       )
   }
 
   def theme = {
     val provider = new ThemeProvider {
       def build[F[_]: Async] =
-        ThemeBuilder[F]("typelevel.org").addRenderOverrides(overrides).build
+        ThemeBuilder[F]("typelevel.org")
+          .addRenderOverrides(LaikaCustomizations.overrides)
+          .build
     }
 
     provider.extendWith(SearchUI.standalone)
@@ -132,11 +110,13 @@ object Build extends CommandIOApp("build", "builds the site") {
     .using(
       Markdown.GitHubFlavor,
       SyntaxHighlighting.withSyntaxBinding("scala", ScalaSyntax.Scala3),
-      Directives
+      LaikaCustomizations.Directives
     )
     .parallel[IO]
     .withTheme(theme)
     .build
+
+  val binaryRenderers = List(IndexRendererConfig(true))
 
   def build(destination: FilePath) = parser.use { parser =>
     val html = Renderer
@@ -158,10 +138,38 @@ object Build extends CommandIOApp("build", "builds the site") {
       }
     }
   }
+}
+
+object LaikaCustomizations {
+  import java.time.OffsetDateTime
+  import laika.api.bundle.{DirectiveRegistry, TemplateDirectives}
+  import laika.api.config.*
+  import laika.api.format.TagFormatter
+  import laika.ast.*
+  import laika.format.HTML
+
+  def addAnchorLinks(fmt: TagFormatter, h: Header) = {
+    val link = h.options.id.map { id =>
+      SpanLink
+        .internal(RelativePath.CurrentDocument(id))(
+          Literal("", Styles("fas", "fa-link", "fa-sm"))
+        )
+        .withOptions(
+          Styles("anchor-link")
+        )
+    }
+    val linkedContent = link.toList ++ h.content
+    fmt.newLine + fmt.element(
+      "h" + h.level.toString,
+      h.withContent(linkedContent)
+    )
+  }
+
+  val overrides = HTML.Overrides { case (fmt, h: Header) =>
+    addAnchorLinks(fmt, h)
+  }
 
   object Directives extends DirectiveRegistry {
-    val spanDirectives = Seq()
-    val blockDirectives = Seq()
     val templateDirectives = Seq(
       // custom Laika template directive for listing blog posts
       TemplateDirectives.eval("forBlogPosts") {
@@ -170,10 +178,12 @@ object Build extends CommandIOApp("build", "builds the site") {
         (cursor, parsedBody, source).mapN { (c, b, s) =>
           // Create scope with config values and href field
           def contentScope(doc: DocumentCursor, config: ConfigValue) = {
-            val hrefField = Field("href", ASTValue(RawLink.internal(doc.path)))
+            val hrefField =
+              Field("href", ConfigValue.ASTValue(RawLink.internal(doc.path)))
             val contextWithHref = config match {
-              case obj: ObjectValue => ObjectValue(obj.values :+ hrefField)
-              case v                => v
+              case obj: ConfigValue.ObjectValue =>
+                ConfigValue.ObjectValue(obj.values :+ hrefField)
+              case v => v
             }
             TemplateScope(TemplateSpanSequence(b), contextWithHref, s)
           }
@@ -193,24 +203,8 @@ object Build extends CommandIOApp("build", "builds the site") {
       }
     )
 
-    val linkDirectives = Seq()
+    val linkDirectives = Seq.empty
+    val spanDirectives = Seq.empty
+    val blockDirectives = Seq.empty
   }
-
-  def overrides = HTML.Overrides { case (fmt, h: Header) =>
-    val link = h.options.id.map { id =>
-      SpanLink
-        .internal(CurrentDocument(id))(
-          Literal("", Styles("fas", "fa-link", "fa-sm"))
-        )
-        .withOptions(
-          Styles("anchor-link")
-        )
-    }
-    val linkedContent = link.toList ++ h.content
-    fmt.newLine + fmt.element(
-      "h" + h.level.toString,
-      h.withContent(linkedContent)
-    )
-  }
-
 }
