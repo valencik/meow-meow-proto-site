@@ -9,6 +9,7 @@ import cats.effect.*
 import cats.syntax.all.*
 import com.monovore.decline.Opts
 import com.monovore.decline.effect.CommandIOApp
+import laika.io.config.BinaryRendererConfig
 
 // Welcome to the typelevel.org build script!
 // This script builds the site and can serve it locally for previewing.
@@ -66,10 +67,11 @@ object LaikaBuild {
   import java.net.{URI, URL}
   import laika.api.MarkupParser
   import laika.api.Renderer
-  import laika.api.format.TagFormatter
+  import laika.api.format.*
   import laika.ast.*
   import laika.config.SyntaxHighlighting
   import laika.format.{HTML, Markdown}
+  import laika.io.config.*
   import laika.io.model.{FilePath, InputTree}
   import laika.io.syntax.*
   import laika.parse.code.languages.ScalaSyntax
@@ -116,7 +118,19 @@ object LaikaBuild {
     .withTheme(theme)
     .build
 
-  val binaryRenderers = List(IndexRendererConfig(true))
+  val binaryRenderers = List(
+    IndexRendererConfig(true),
+    BinaryRendererConfig(
+      "rss",
+      LaikaCustomizations.Rss,
+      artifact = Artifact(
+        basePath = Path.Root / "blog" / "feed",
+        suffix = "rss"
+      ),
+      false,
+      false
+    )
+  )
 
   def build(destination: FilePath) = parser.use { parser =>
     val html = Renderer
@@ -124,6 +138,11 @@ object LaikaBuild {
       .withConfig(parser.config)
       .parallel[IO]
       .withTheme(theme)
+      .build
+    val rss = Renderer
+      .of(LaikaCustomizations.Rss)
+      .withConfig(parser.config)
+      .parallel[IO]
       .build
     val index =
       Renderer.of(IndexFormat).withConfig(parser.config).parallel[IO].build
@@ -142,11 +161,13 @@ object LaikaBuild {
 
 object LaikaCustomizations {
   import java.time.OffsetDateTime
+  import java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME
   import laika.api.bundle.{DirectiveRegistry, TemplateDirectives}
   import laika.api.config.*
-  import laika.api.format.TagFormatter
+  import laika.api.format.*
   import laika.ast.*
-  import laika.format.HTML
+  import laika.format.*
+  import laika.theme.*
 
   def addAnchorLinks(fmt: TagFormatter, h: Header) = {
     val link = h.options.id.map { id =>
@@ -197,5 +218,68 @@ object LaikaCustomizations {
     val linkDirectives = Seq.empty
     val spanDirectives = Seq.empty
     val blockDirectives = Seq.empty
+  }
+
+  object Rss
+      extends TwoPhaseRenderFormat[TagFormatter, BinaryPostProcessor.Builder] {
+
+    def interimFormat = HTML
+
+    def prepareTree(
+        tree: DocumentTreeRoot
+    ) =
+      Right(tree.modifyDocumentsRecursively { d =>
+        if (d.config.hasKey("date")) // it's a blog post, use the RSS template
+          d.modifyConfig(_.withValue("laika.template", "rss.template.html"))
+        else d
+      })
+
+    def postProcessor: BinaryPostProcessor.Builder = new {
+      def build[F[_]: Async](config: Config, theme: Theme[F]) =
+        Resource.pure { (result, output, config) =>
+          val posts = result.allDocuments
+            .flatMap { d =>
+              d.config.get[OffsetDateTime]("date").toList.tupleLeft(d)
+            }
+            .sortBy(_._2)(using summon[Ordering[OffsetDateTime]].reverse)
+
+          output.resource.use { os =>
+            Async[F].blocking {
+              val pw = new java.io.PrintWriter(os)
+              pw.print(
+                """<?xml version="1.0" encoding="UTF-8" ?>
+                    |<rss version="2.0">
+                    |<channel>
+                    |<title>Typelevel Blog</title>
+                    |<link>https://typelevel.org/blog/</link>
+                    |<description>The Typelevel Blog RSS Feed</description>
+                    |""".stripMargin +
+                  posts
+                    .take(20)
+                    .map { (doc, date) =>
+                      val link = s"https://typelevel.org${doc.path}"
+                      val title = doc.name
+                      val unescapedDescription = doc.content
+                      val pubDate = date.format(RFC_1123_DATE_TIME)
+
+                      s"""
+                          |<item>
+                          |  <title>$title</title>
+                          |  <link>$link</link>
+                          |  <description><![CDATA[$unescapedDescription]]></description>
+                          |  <pubDate>$pubDate</pubDate>
+                          |</item>
+                          |""".stripMargin
+                    }
+                    .mkString +
+                  """</channel>
+                      |</rss>
+                      |""".stripMargin
+              )
+              pw.flush()
+            }
+          }
+        }
+    }
   }
 }
