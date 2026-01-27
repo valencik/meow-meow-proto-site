@@ -9,7 +9,6 @@ import cats.effect.*
 import cats.syntax.all.*
 import com.monovore.decline.Opts
 import com.monovore.decline.effect.CommandIOApp
-import laika.io.config.BinaryRendererConfig
 
 // Welcome to the typelevel.org build script!
 // This script builds the site and can serve it locally for previewing.
@@ -65,14 +64,13 @@ object Main extends CommandIOApp("build", "builds the site") {
 
 object LaikaBuild {
   import java.net.{URI, URL}
-  import laika.api.MarkupParser
-  import laika.api.Renderer
+  import laika.api.*
   import laika.api.format.*
   import laika.ast.*
-  import laika.config.SyntaxHighlighting
-  import laika.format.{HTML, Markdown}
+  import laika.config.*
+  import laika.format.*
   import laika.io.config.*
-  import laika.io.model.{FilePath, InputTree}
+  import laika.io.model.*
   import laika.io.syntax.*
   import laika.parse.code.languages.ScalaSyntax
   import laika.theme.*
@@ -112,8 +110,10 @@ object LaikaBuild {
     .using(
       Markdown.GitHubFlavor,
       SyntaxHighlighting.withSyntaxBinding("scala", ScalaSyntax.Scala3),
-      LaikaCustomizations.Directives
+      LaikaCustomizations.Directives,
+      LaikaCustomizations.RssExtensions
     )
+    .withConfigValue(LaikaKeys.siteBaseURL, "https://typelevel.org/")
     .parallel[IO]
     .withTheme(theme)
     .build
@@ -162,7 +162,8 @@ object LaikaBuild {
 object LaikaCustomizations {
   import java.time.OffsetDateTime
   import java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME
-  import laika.api.bundle.{DirectiveRegistry, TemplateDirectives}
+  import laika.config.*
+  import laika.api.bundle.*
   import laika.api.config.*
   import laika.api.format.*
   import laika.ast.*
@@ -188,6 +189,34 @@ object LaikaCustomizations {
 
   val overrides = HTML.Overrides { case (fmt, h: Header) =>
     addAnchorLinks(fmt, h)
+  }
+
+  object RssExtensions extends ExtensionBundle {
+    def description = "RSS-specific extensions"
+
+    override def extendPathTranslator =
+      ctx => ExtendedTranslator(ctx.baseTranslator)
+
+    private final class ExtendedTranslator(delegate: PathTranslator)
+        extends PathTranslator {
+      export delegate.{translate, getAttributes}
+
+      def forReferencePath(path: Path) =
+        ExtendedTranslator(delegate.forReferencePath(path))
+
+      override def translate(target: Target) = target match {
+        case InternalTarget.Resolved(absolutePath, relativePath, formats) =>
+          delegate.translate(
+            InternalTarget.Resolved(
+              absolutePath,
+              relativePath,
+              TargetFormats.Selected("html") // force HTML links in RSS feed
+            )
+          )
+        case target =>
+          delegate.translate(target)
+      }
+    }
   }
 
   object Directives extends DirectiveRegistry {
@@ -223,16 +252,19 @@ object LaikaCustomizations {
   object Rss
       extends TwoPhaseRenderFormat[TagFormatter, BinaryPostProcessor.Builder] {
 
-    def interimFormat = HTML
+    def interimFormat = new {
+      def fileSuffix = "rss"
 
-    def prepareTree(
-        tree: DocumentTreeRoot
-    ) =
-      Right(tree.modifyDocumentsRecursively { d =>
-        if (d.config.hasKey("date")) // it's a blog post, use the RSS template
-          d.modifyConfig(_.withValue("laika.template", "rss.template.html"))
-        else d
-      })
+      val defaultRenderer = {
+        case (fmt, Title(_, _)) =>
+          "" // don't render title b/c it is in the RSS metadata
+        case (fmt, elem) => HTML.defaultRenderer(fmt, elem)
+      }
+
+      export HTML.formatterFactory
+    }
+
+    def prepareTree(tree: DocumentTreeRoot) = Right(tree)
 
     def postProcessor: BinaryPostProcessor.Builder = new {
       def build[F[_]: Async](config: Config, theme: Theme[F]) =
@@ -246,36 +278,23 @@ object LaikaCustomizations {
           output.resource.use { os =>
             Async[F].blocking {
               val pw = new java.io.PrintWriter(os)
-              pw.print(
-                """<?xml version="1.0" encoding="UTF-8" ?>
-                    |<rss version="2.0">
-                    |<channel>
-                    |<title>Typelevel Blog</title>
-                    |<link>https://typelevel.org/blog/</link>
-                    |<description>The Typelevel Blog RSS Feed</description>
-                    |""".stripMargin +
-                  posts
-                    .take(20)
-                    .map { (doc, date) =>
-                      val link = s"https://typelevel.org${doc.path}"
-                      val title = doc.name
-                      val unescapedDescription = doc.content
-                      val pubDate = date.format(RFC_1123_DATE_TIME)
+              pw.print("""|<?xml version="1.0" encoding="UTF-8" ?>
+                          |<rss version="2.0">
+                          |<channel>
+                          |<title>Typelevel Blog</title>
+                          |<link>https://typelevel.org/blog/</link>
+                          |<description>The Typelevel Blog RSS Feed</description>
+                          |""".stripMargin)
 
-                      s"""
-                          |<item>
-                          |  <title>$title</title>
-                          |  <link>$link</link>
-                          |  <description><![CDATA[$unescapedDescription]]></description>
-                          |  <pubDate>$pubDate</pubDate>
-                          |</item>
-                          |""".stripMargin
-                    }
-                    .mkString +
-                  """</channel>
-                      |</rss>
-                      |""".stripMargin
-              )
+              posts
+                .takeWhile(_._2.isAfter(OffsetDateTime.now().minusYears(1)))
+                .foreach { (doc, _) =>
+                  pw.print(doc.content)
+                }
+
+              pw.print("""|</channel>
+                          |</rss>
+                          |""".stripMargin)
               pw.flush()
             }
           }
