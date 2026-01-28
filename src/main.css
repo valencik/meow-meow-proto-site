@@ -87,3 +87,8 @@ img.sponsor {
   margin-bottom: 0;
   flex: 1;
 }
+
+/* Equal height cards in grid */
+.bulma-cell > .bulma-card {
+  height: 100%;
+}
