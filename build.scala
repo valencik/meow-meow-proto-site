@@ -2,7 +2,6 @@
 //> using dep org.typelevel::laika-preview::1.3.2
 //> using dep com.monovore::decline-effect::2.5.0
 //> using dep pink.cozydev::protosearch-laika:0.0-fdae301-SNAPSHOT
-//> using dep org.virtuslab::scala-yaml::0.3.1
 //> using repository https://central.sonatype.com/repository/maven-snapshots
 //> using option -deprecation
 
@@ -17,7 +16,6 @@ import com.monovore.decline.effect.CommandIOApp
 // Main -- Entry point
 // LaikaBuild -- Laika build, markdown in html out
 // LaikaCustomizations -- Custom directives
-// Projects -- Project data loading and encoding
 
 object Main extends CommandIOApp("build", "builds the site") {
   import com.comcast.ip4s.*
@@ -107,19 +105,16 @@ object LaikaBuild {
     provider.extendWith(SearchUI.standalone)
   }
 
-  def parser = Projects.loadProjects.flatMap { projects =>
-    MarkupParser
-      .of(Markdown)
-      .using(
-        Markdown.GitHubFlavor,
-        SyntaxHighlighting.withSyntaxBinding("scala", ScalaSyntax.Scala3),
-        LaikaCustomizations.Directives
-      )
-      .withConfigValue("projects", projects)
-      .parallel[IO]
-      .withTheme(theme)
-      .build
-  }
+  def parser = MarkupParser
+    .of(Markdown)
+    .using(
+      Markdown.GitHubFlavor,
+      SyntaxHighlighting.withSyntaxBinding("scala", ScalaSyntax.Scala3),
+      LaikaCustomizations.Directives
+    )
+    .parallel[IO]
+    .withTheme(theme)
+    .build
 
   val binaryRenderers = List(IndexRendererConfig(true))
 
@@ -196,20 +191,6 @@ object LaikaCustomizations {
             .leftMap(_.message)
             .map(TemplateSpanSequence(_))
         }
-      },
-      // custom Laika template directive for listing projects
-      TemplateDirectives.eval("forProjects") {
-        (cursor, parsedBody, source).mapN { (c, b, s) =>
-          def contentScope(value: ConfigValue) =
-            TemplateScope(TemplateSpanSequence(b), value, s)
-
-          c.root.config
-            .get[Seq[ConfigValue]]("projects")
-            .map { projects =>
-              TemplateSpanSequence(projects.map(contentScope))
-            }
-            .leftMap(_.message)
-        }
       }
     )
 
@@ -217,40 +198,4 @@ object LaikaCustomizations {
     val spanDirectives = Seq.empty
     val blockDirectives = Seq.empty
   }
-}
-
-object Projects {
-  import fs2.io.file.{Files, Path}
-  import org.virtuslab.yaml.*
-  import laika.api.config.ConfigEncoder
-
-  case class Project(
-      title: String,
-      description: String,
-      github: String,
-      affiliate: Option[Boolean],
-      platforms: List[String],
-      permalink: Option[String]
-  ) derives YamlCodec
-
-  given ConfigEncoder[Project] = ConfigEncoder[Project] { project =>
-    ConfigEncoder.ObjectBuilder.empty
-      .withValue("title", project.title)
-      .withValue("description", project.description)
-      .withValue("github", project.github)
-      .withValue("affiliate", project.affiliate)
-      .withValue("platforms", project.platforms)
-      .withValue("permalink", project.permalink)
-      .build
-  }
-
-  def loadProjects: Resource[IO, List[Project]] =
-    Files[IO]
-      .readAll(Path("src/projects.yml"))
-      .through(fs2.text.utf8.decode)
-      .compile
-      .resource
-      .string
-      .map(_.as[List[Project]])
-      .rethrow
 }

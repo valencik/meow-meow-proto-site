@@ -87,9 +87,3 @@ img.sponsor {
   margin-bottom: 0;
   flex: 1;
 }
-
-/* Project listing styles */
-.project-meta {
-  display: flex;
-  gap: 0.5rem;
-}
