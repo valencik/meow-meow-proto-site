@@ -170,11 +170,11 @@ object LaikaCustomizations {
   }
 
   object Directives extends DirectiveRegistry {
+    import TemplateDirectives.dsl.*
+
     val templateDirectives = Seq(
       // custom Laika template directive for listing blog posts
       TemplateDirectives.eval("forBlogPosts") {
-        import TemplateDirectives.dsl.*
-
         (cursor, parsedBody, source).mapN { (c, b, s) =>
           def contentScope(value: ConfigValue) =
             TemplateScope(TemplateSpanSequence(b), value, s)
