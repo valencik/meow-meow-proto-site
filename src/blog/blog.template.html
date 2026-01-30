@@ -1,10 +1,8 @@
 @:embed(/templates/main.template.html)
 
 <div class="bulma-section bulma-container bulma-is-max-desktop">
-  <div>${cursor.currentDocument.content}</div>
-</div>
+  <h1 class="bulma-title bulma-is-1 bulma-has-text-centered bulma-mb-5">Blog</h1>
 
-<div class="bulma-section bulma-container bulma-is-max-desktop">
   <!-- custom Laika template directive for listing blog posts -->
   @:forBlogPosts
   <a class="bulma-card" href="@:target(_.cursor.currentDocument.sourcePath)">

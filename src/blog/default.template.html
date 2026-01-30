@@ -26,7 +26,7 @@
       <article class="bulma-media">
         <figure class="bulma-media-left">
           <p class="bulma-image bulma-is-64x64">
-            <img class="bulma-is-rounded" src="${_.avatar}" />
+            <img class="bulma-is-rounded" @:attribute(src, _.avatar) />
           </p>
         </figure>
         <div class="bulma-media-content">
@@ -34,7 +34,9 @@
             <p>
               <strong>${_.name}</strong>
               <br />
+              @:for(_.bio)
               ${_.bio}
+              @:@
             </p>
           </div>
           <nav class="bulma-level">
