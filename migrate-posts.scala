@@ -32,10 +32,13 @@ case class Post(conf: Conf, content: String) {
 }
 
 object PostParser {
-  def parse(content: String): Either[Throwable, Post] = {
-    val parts = content.split("---\n", 3)
+  def parse(path: Path, content: String): Either[Throwable, Post] = {
+    // Normalize Windows line endings to Unix
+    val normalized = content.replace("\r\n", "\n")
+    val parts = normalized.split("---\n", 3)
     if (parts.length < 3) {
-      Left(new Exception("Invalid post format: no YAML front matter found"))
+      val fn = path.fileName
+      Left(new Exception(s"Invalid post '$fn': no YAML front matter found"))
     } else {
       val yamlContent = parts(1)
       val markdownContent = parts(2).trim
@@ -74,7 +77,7 @@ object MigratePosts extends IOApp.Simple {
   def migratePost(sourcePath: Path): IO[String] = for {
     (date, newFilename) <- IO.fromEither(getDateAndName(sourcePath))
     content <- readPost(sourcePath)
-    post <- IO.fromEither(PostParser.parse(content))
+    post <- IO.fromEither(PostParser.parse(sourcePath, content))
     laikaContent = post.toLaika(date)
     destPath = newBlogDir / newFilename
     _ <- writePost(destPath, laikaContent)
@@ -82,7 +85,7 @@ object MigratePosts extends IOApp.Simple {
 
   def migrateAllPosts: IO[Long] = Files[IO]
     .list(oldPostsDir)
-    .filter(_.fileName.toString.endsWith(".md"))
+    .filter(_.fileName.toString.matches("""^\d{4}-\d{2}-\d{2}-.+\.md$"""))
     .evalMap(path => migratePost(path))
     .evalMap(newFilename => IO.println(s"Migrated: $newFilename"))
     .compile
