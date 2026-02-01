@@ -73,21 +73,6 @@ img.sponsor {
   --ps-highlight: #ffde6d;
 }
 
-/* Search modal - fix display mode for Bulma */
-#search-modal[style*="display: block"] {
-  display: flex !important;
-}
-
-#search-modal .bulma-modal-card {
-  max-width: 800px;
-  width: 90%;
-}
-
-#search-modal .bulma-modal-card-head .bulma-field {
-  margin-bottom: 0;
-  flex: 1;
-}
-
 /* Equal height cards in grid */
 .bulma-cell > .bulma-card {
   height: 100%;
