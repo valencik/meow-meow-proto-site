@@ -120,11 +120,11 @@ Some committee members may have a conflict of interest and may be excluded from 
 
 ## Administrators/moderators Communication
 
-Once the committee has approved the proposed behavioral adjustment and consequences, they will communicate the recommended response to the Typelevel Steering Committee, and any specific administrators/moderators of the related community space (ex. Discord moderators, GitHub organization administrators, etc.) The committee should not state who reported this incident. They should attempt to anonymize any identifying information from the report.
+Once the committee has approved the proposed behavioral adjustment and consequences, they will communicate the recommended response to the Typelevel Foundation Board of Directors, and any specific administrators/moderators of the related community space (ex. Discord moderators, GitHub organization administrators, etc.) The committee should not state who reported this incident. They should attempt to anonymize any identifying information from the report.
 
 Administrators/moderators are required to respond back with whether they accept the recommended response to the report. If they disagree with the recommended response, they should provide a detailed response or additional context as to why they disagree. Administrators/moderators are encouraged to respond within a week.
 
-In cases where the administrators/moderators disagree on the suggested resolution for a report, the Typelevel Code of Conduct Committee shall notify the Typelevel Steering Committee.
+In cases where the administrators/moderators disagree on the suggested resolution for a report, the Typelevel Code of Conduct Committee shall notify the Typelevel Foundation Board of Directors.
 
 
 ## Initial follow-up with the reported person
@@ -199,7 +199,7 @@ When on-boarding new committee members, they should be provided with a list of n
 When discussing a change to the Typelevel Code of Conduct or enforcement policies, the Typelevel Code of Conduct Committee will follow this decision-making process:
 
 * Brainstorm options. Code of Conduct committee members should discuss any relevant context and brainstorm a set of possible options. It is important to provide constructive feedback without getting side-tracked from the main question. Brainstorming should be limited to 3-7 days maximum.
-* Vote. Once a working draft is in place for the Code of Conduct and procedures, the Code of Conduct committee shall provide the Typelevel Steering Committee with a PR of the changes. The Steering Committee will vote on the changes, following the usual process and requiring at least ⅔ affirmative vote for the changes to be accepted.
+* Vote. Once a working draft is in place for the Code of Conduct and procedures, the Code of Conduct committee shall provide the Typelevel Foundation Board of Directors with a PR of the changes. The Board will vote on the changes, following the Bylaws and requiring at least ⅔ affirmative vote for the changes to be accepted.
 
 
 ### Current list of Code of Conduct Committee members

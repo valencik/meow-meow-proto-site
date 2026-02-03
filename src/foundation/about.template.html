@@ -1,0 +1,27 @@
+@:embed(/templates/main.template.html)
+<div class="bulma-section bulma-content bulma-container bulma-is-max-desktop">
+
+  <h1>About the Typelevel Foundation</h1>
+
+  ${cursor.currentDocument.fragments.about}
+
+  <h2>Board of Directors</h2>
+  <div class="bulma-grid bulma-is-col-min-12">
+    @:for(board)
+    <div class="bulma-cell">
+      @:include(/templates/bio.template.html)
+    </div>
+    @:@
+  </div>
+
+  <h2>Sponsors</h2>
+  <div class="bulma-grid bulma-is-col-min-12 bulma-is-align-items-center">
+    @:for(sponsors)
+    <div class="bulma-cell bulma-has-text-centered">
+
+    </div>
+    @:@
+  </div>
+
+</div>
+@:@

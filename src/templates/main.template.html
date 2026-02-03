@@ -22,9 +22,9 @@
   <title>${cursor.currentDocument.title}</title>
 </head>
 
-<body>
+<body class="bulma-is-flex bulma-is-flex-direction-column">
   @:include(/templates/nav.template.html)
-  <main>
+  <main class="bulma-is-flex-grow-1">
     ${_.embeddedBody}
   </main>
   @:include(/templates/footer.template.html)

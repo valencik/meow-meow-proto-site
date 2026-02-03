@@ -18,13 +18,12 @@
     </div>
     <div class="bulma-navbar-end">
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="@:target(/blog/README.md)">Blog</a>
-      </div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="@:target(/foundation/README.md)">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="@:target(/blog/README.md)">Blog</a></div>
       <div class="bulma-navbar-item">
-        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+        <a id="search-top-bar" class="bulma-button bulma-is-text" aria-label="Search" onclick="showSearchModal()">
           <span class="bulma-icon bulma-is-small">
             <i class="fas fa-magnifying-glass"></i>
           </span>
@@ -40,8 +39,8 @@
   <div class="bulma-modal-card">
     <header class="bulma-modal-card-head">
       <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
-        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
-        <span class="bulma-icon bulma-is-left">
+        <input id="search-input" class="bulma-input bulma-is-medium bulma-is-primary" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left bulma-has-text-primary">
           <i class="fas fa-magnifying-glass"></i>
         </span>
       </p>

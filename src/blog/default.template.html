@@ -1,8 +1,8 @@
 @:embed(/templates/main.template.html)
-<section class="bulma-hero bulma-is-primary bulma-is-bold">
+<section class="bulma-hero bulma-is-link bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
     <p class="bulma-title">${cursor.currentDocument.title}</p>
-    <p class="blog-post-byline bulma-subtitle">
+    <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       @:for(author)
         ${_.name}<span class="delimiter">,</span><span class="last-delimiter"> &</span>
@@ -23,50 +23,7 @@
   <div class="bulma-columns">
     @:for(author)
     <div class="bulma-column">
-      <article class="bulma-media">
-        @:for(_.avatar)
-        <figure class="bulma-media-left">
-          <p class="bulma-image bulma-is-64x64">
-            <img class="bulma-is-rounded" src="${_.avatar}" />
-          </p>
-        </figure>
-        @:@
-        <div class="bulma-media-content">
-          <div class="bulma-content">
-            <p>
-              <strong>${_.name}</strong>
-              @:for(_.bio)
-              <br />
-              ${_.bio}
-              @:@
-            </p>
-          </div>
-          <nav class="bulma-level">
-            <div class="bulma-level-left bulma-is-flex-direction-row">
-              @:for(_.github)
-              <a class="bulma-level-item" href="http://github.com/${_.github}">
-                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
-              </a>
-              @:@
-              @:for(_.bluesky)
-              <a class="bulma-level-item" href="http://bsky.app/profile/${_.bluesky}">
-                <span class="bulma-icon bulma-is-small"><i class="fab fa-bluesky"></i></span>
-              </a>
-              @:@
-              @:for(_.mastodon)
-              <a class="bulma-level-item" href="${_.mastodon}">
-                <span class="bulma-icon bulma-is-small"><i class="fab fa-mastodon"></i></span>
-              </a>
-              @:@
-              @:for(_.linkedin)
-              <a class="bulma-level-item" href="${_.linkedin}">
-                <span class="bulma-icon bulma-is-small"><i class="fab fa-linkedin"></i></span>
-              </a>
-              @:@
-            </div>
-          </nav>
-        </div>
-      </article>
+      @:include(/templates/bio.template.html)
     </div>
     @:@
   </div>

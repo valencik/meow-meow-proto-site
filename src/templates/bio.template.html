@@ -1,0 +1,45 @@
+<article class="bulma-media">
+  <figure class="bulma-media-left">
+    <p class="bulma-image bulma-is-64x64">
+      <img class="bulma-is-rounded" src="${_.avatar}" />
+    </p>
+  </figure>
+  <div class="bulma-media-content">
+    <div class="bulma-content">
+      <p>
+        <strong>${_.name}</strong>
+        <br />
+        ${_.bio}
+      </p>
+    </div>
+    <nav class="bulma-level">
+      <div class="bulma-level-left bulma-is-flex-direction-row">
+        @:for(_.email)
+        <a class="bulma-level-item" href="mailto:${_.email}">
+          <span class="bulma-icon bulma-is-small"><i class="fas fa-envelope"></i></span>
+        </a>
+        @:@
+        @:for(_.github)
+        <a class="bulma-level-item" href="http://github.com/${_.github}">
+          <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+        </a>
+        @:@
+        @:for(_.bluesky)
+        <a class="bulma-level-item" href="http://bsky.app/profile/${_.bluesky}">
+          <span class="bulma-icon bulma-is-small"><i class="fab fa-bluesky"></i></span>
+        </a>
+        @:@
+        @:for(_.mastodon)
+        <a class="bulma-level-item" href="${_.mastodon}">
+          <span class="bulma-icon bulma-is-small"><i class="fab fa-mastodon"></i></span>
+        </a>
+        @:@
+        @:for(_.linkedin)
+        <a class="bulma-level-item" href="${_.linkedin}">
+          <span class="bulma-icon bulma-is-small"><i class="fab fa-linkedin"></i></span>
+        </a>
+        @:@
+      </div>
+    </nav>
+  </div>
+</article>
