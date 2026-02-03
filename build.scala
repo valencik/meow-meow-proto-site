@@ -147,9 +147,10 @@ object LaikaBuild {
     val index =
       Renderer.of(IndexFormat).withConfig(parser.config).parallel[IO].build
 
-    html.product(index).use { (html, index) =>
+    (html, rss, index).tupled.use { (html, rss, index) =>
       parser.fromInput(input).parse.flatMap { tree =>
         html.from(tree).toDirectory(destination).render *>
+          rss.from(tree).toFile(destination / "blog" / "feed.rss").render *>
           index
             .from(tree)
             .toFile(destination / "search" / "searchIndex.idx")

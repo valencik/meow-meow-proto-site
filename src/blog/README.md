@@ -1,5 +1,6 @@
 {%
-  laika.template: blog.template.html
+  laika.html.template: blog.template.html
+  laika.targetFormats: [html]
 %}
 
 # Blog
