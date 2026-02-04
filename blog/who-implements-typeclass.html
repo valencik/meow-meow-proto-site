@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Who implements the typeclass instance?</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Who implements the typeclass instance?</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on December 20, 2017
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="who-implements-the-typeclass-instance" class="title">Who implements the typeclass instance?</h1>
+    <p>The typeclass pattern in Scala invites you to place
+    implementation-specific knowledge directly in the typeclass instances,
+    with the interface defined as the typeclass’s abstract interface.</p>
+    <p>However, GADTs permit a different organization of code. It is even
+    possible to define a typeclass that seems to do nothing at all, yet
+    still permits full type-safe typeclass usage.</p>
+    <p>The possibilities between these two extremes form a design space. If
+    you wish to practice ad-hoc polymorphism in Scala, this space is well
+    worth exploring.</p>
+    
+    <h2 id="a-glorified-overloader" class="section"><a class="anchor-link" href="#a-glorified-overloader"><code class="fas fa-link fa-sm"></code></a>A glorified overloader</h2>
+    <p>Refactoring a set of overloads into a typeclass is a fine way to get
+    some free flexibility and dynamism, because expressing overloads as a
+    typeclass gives you free fixes for common overload problems.</p>
+    <ol class="arabic">
+      <li>Methods calling the overloaded method do not themselves need to be
+      overloaded just to avoid suppressing the flexibility of the
+      overload beneath.  (See <code>addThree</code> and <code>zipAdd</code> below for
+      examples.)</li>
+      <li>Return-type overloading works, even in Scala, where it does not
+      when attempting to write overloads in the Java style, i.e. multiple
+      methods with the same name.</li>
+      <li>Overloads may be defined as recursive type rules, admitting a
+      combinatorial explosion or even infinite “effective overloads”.</li>
+    </ol>
+    <p>Let’s make a quick example of something like a typical overload.</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">OverAdd</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="identifier">x</span><span> + </span><span class="identifier">y</span><span>
+  
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">String</span><span> = </span><span class="string-literal">s&quot;</span><span class="substitution">$x$y</span><span class="string-literal">&quot;</span><span>
+  
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">l</span><span>: </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">r</span><span>: </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>] =
+    </span><span class="identifier">l</span><span> ++ </span><span class="identifier">r</span><span>
+}</span></code></pre>
+    <p>This mechanically translates to a newly introduced type, some implicit
+    instances of that type, and a function to let us call <code>add</code> the same
+    way we used to.</p>
+    <pre><code class="nohighlight"><span class="comment">// typeclasses are often defined with trait, but this is not required
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Adder</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">addImpl</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>) =&gt; </span><span class="type-name">A</span><span>)
+
+</span><span class="comment">// easier if all implicits are in this block
+</span><span class="keyword">object</span><span> </span><span class="type-name">Adder</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">addInts</span><span>: </span><span class="type-name">Adder</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Adder</span><span>((</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) =&gt; </span><span class="identifier">x</span><span> + </span><span class="identifier">y</span><span>)
+  
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">addStrings</span><span>: </span><span class="type-name">Adder</span><span>[</span><span class="type-name">String</span><span>] =
+    </span><span class="type-name">Adder</span><span>((</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) =&gt; </span><span class="string-literal">s&quot;</span><span class="substitution">$x$y</span><span class="string-literal">&quot;</span><span>)
+    
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">addVects</span><span>[</span><span class="type-name">A</span><span>]: </span><span class="type-name">Adder</span><span>[</span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]] =
+    </span><span class="type-name">Adder</span><span>((</span><span class="identifier">l</span><span>, </span><span class="identifier">r</span><span>) =&gt; </span><span class="identifier">l</span><span> ++ </span><span class="identifier">r</span><span>)
+}
+
+</span><span class="comment">// and to tie it back together
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">adder</span><span>: </span><span class="type-name">Adder</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">adder</span><span>.</span><span class="identifier">addImpl</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)</span></code></pre>
+    
+    <h2 id="overloaded-wrapping-without-overloading" class="section"><a class="anchor-link" href="#overloaded-wrapping-without-overloading"><code class="fas fa-link fa-sm"></code></a>Overloaded wrapping without overloading</h2>
+    <p>While a bit more ceremonious, this allows us to write some nice
+    functions more easily. Here’s a function to add three values.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">addThree</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Adder</span><span>](</span><span class="identifier">l</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">m</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">r</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">add</span><span>(</span><span class="identifier">l</span><span>, </span><span class="identifier">add</span><span>(</span><span class="identifier">m</span><span>, </span><span class="identifier">r</span><span>))</span></code></pre>
+    <p><code>addThree</code> supports all three “overloads” of <code>add</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">addThree</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>)
+</span><span class="identifier">res0</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">6</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">addThree</span><span>(</span><span class="string-literal">&quot;a&quot;</span><span>, </span><span class="string-literal">&quot;ba&quot;</span><span>, </span><span class="string-literal">&quot;cus&quot;</span><span>)
+</span><span class="identifier">res1</span><span>: </span><span class="type-name">String</span><span> = </span><span class="identifier">abacus</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">addThree</span><span>(</span><span class="type-name">Vector</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">1</span><span>), </span><span class="type-name">Vector</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>), </span><span class="type-name">Vector</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">1</span><span>))
+</span><span class="identifier">res2</span><span>: </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>] =
+  </span><span class="type-name">Vector</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">1</span><span>)</span></code></pre>
+    <p>With the overload style, we need three variants of this function, too,
+    each with the exact same body. The typeclass version need only be
+    written once, and automatically supports new overloads, that is, new
+    instances of <code>Adder</code>.</p>
+    <p>Same with this function.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">zipAdd</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Adder</span><span>](</span><span class="identifier">l</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">r</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="identifier">l</span><span> </span><span class="identifier">zip</span><span> </span><span class="identifier">r</span><span> </span><span class="identifier">map</span><span> {</span><span class="keyword">case</span><span> (</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) =&gt; </span><span class="identifier">add</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)}</span></code></pre>
+    <p>Functions like <code>addThree</code> and <code>zipAdd</code> are called <em>derived
+    combinators</em>. The more that you can do in derived combinators, the
+    more abstract and orthogonal your program will be.</p>
+    <pre><code>   +=============+            |   +=============+
+   |   derived   |  (open     |   |  primitive  |  (closed
+   | combinators |    set)    |   | combinators |      set)
+   +=============+            |   +=============+
+                              |
+   +----------+               |    +----------+
+   | addThree |---→---→---→---→---→| Adder    |
+   +----------+       calls   |    | -addImpl |    +===========+
+    ↑                       |→---→ +----------+    | Instances |
+    | +--------+            | |                    +===========+
+    | | zipAdd |---→---→---→- |
+    | +--------+    calls     |  +------+ +---------+ +-------+
+    ↑        ↑                |  | Ints | | Strings | | Vects |
+    |   calls|                |  +------+ +---------+ +-------+
+    |      +-----+            |      |
+    |      | ??? |            |      |
+    ↑      +-----+            |      |
+    |  (derived combinators          ↓
+    |   can derive from each other)  ---→---→---→
+    |                                           |
+    ↑          -------------------------------  |
+    |          To evaluate `addThree(1, 2, 3)`  |
+    |          -------------------------------  ↓
+    |          1. Fetch `Adder` implicitly      |
+    |-←---←---←---←---←---←---←---←---←---←---←-|
+               2. Pass to `addThree`
+               3. `addThree` uses the abstract interface to
+                  invoke the primitive `add` combinator on what,
+                  to it, is an abstract type, `A`.</code></pre>
+    
+    <h2 id="infinite-overloads-via-recursion" class="section"><a class="anchor-link" href="#infinite-overloads-via-recursion"><code class="fas fa-link fa-sm"></code></a>Infinite overloads via recursion</h2>
+    <p>Making derived combinators easier to write is very useful, but
+    typeclasses go further by letting you describe overloading rules that
+    would be impossible with normal overloading.</p>
+    <p>Given that I can add <code>Int</code> and <code>Int</code> together, I should be able to add
+    <code>(Int, Int)</code> and <code>(Int, Int)</code> to get <code>(Int, Int)</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">addIntPairs</span><span>: </span><span class="type-name">Adder</span><span>[(</span><span class="type-name">Int</span><span>, </span><span class="type-name">Int</span><span>)] =
+  </span><span class="type-name">Adder</span><span>{</span><span class="keyword">case</span><span> ((</span><span class="identifier">x1</span><span>, </span><span class="identifier">x2</span><span>), (</span><span class="identifier">y1</span><span>, </span><span class="identifier">y2</span><span>)) =&gt;
+    (</span><span class="identifier">x1</span><span> + </span><span class="identifier">y1</span><span>, </span><span class="identifier">x2</span><span> + </span><span class="identifier">y2</span><span>)}
+    
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">add</span><span>((</span><span class="number-literal">2</span><span>, </span><span class="number-literal">7</span><span>), (</span><span class="number-literal">3</span><span>, </span><span class="number-literal">8</span><span>))
+</span><span class="identifier">res3</span><span>: (</span><span class="type-name">Int</span><span>, </span><span class="type-name">Int</span><span>) = (</span><span class="number-literal">5</span><span>,</span><span class="number-literal">15</span><span>)</span></code></pre>
+    <p>But I should also be able to add pairs of <code>String</code>. And <code>(Int,
+String)</code> pairs. And <code>(String, Vector[Boolean])</code> pairs. And pairs of
+    pairs of pairs.</p>
+    <p>Typeclasses let you declare newly supported types recursively, with an
+    implicit argument list to the <code>implicit def</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">addPairs</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Adder</span><span>, </span><span class="type-name">B</span><span>: </span><span class="type-name">Adder</span><span>]
+    : </span><span class="type-name">Adder</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>)] =
+  </span><span class="type-name">Adder</span><span>{</span><span class="keyword">case</span><span> ((</span><span class="identifier">a1</span><span>, </span><span class="identifier">b1</span><span>), (</span><span class="identifier">a2</span><span>, </span><span class="identifier">b2</span><span>)) =&gt;
+    (</span><span class="identifier">add</span><span>(</span><span class="identifier">a1</span><span>, </span><span class="identifier">a2</span><span>), </span><span class="identifier">add</span><span>(</span><span class="identifier">b1</span><span>, </span><span class="identifier">b2</span><span>))
+  }</span></code></pre>
+    
+    <h2 id="surely-this-must-be-going-somewhere-new" class="section"><a class="anchor-link" href="#surely-this-must-be-going-somewhere-new"><code class="fas fa-link fa-sm"></code></a>Surely this must be going somewhere new</h2>
+    <p>If you’re familiar with type classes, all this must be old hat. But
+    this time, we’re going to expand the boundaries of the typeclass
+    design space, by exploiting <em>GADT pattern matching</em>.</p>
+    <p>We could have designed the <code>Adder</code> type class to include <code>addThree</code> as
+    a primitive combinator, and implemented it afresh for each of the four
+    instances we’ve defined so far, as well as any future instances
+    someone might define. Thinking orthogonally, however, shows us that
+    there’s a more primitive concept which strictly generalizes it: if we
+    primitively define a two-value adder, we can use it to add three
+    items, simply by using it twice.</p>
+    <p>This has a direct impact on how we structure the functions related to
+    <code>Adder</code>. The primitives must be split up, their separate
+    implementations appearing directly in the implicit instances. Derived
+    combinators may occur anywhere that is convenient to us: outside the
+    typeclass for full flexibility of location, or within the typeclass
+    for possible overrides for performance.</p>
+    <p>But how much of the primitive implementations must occur in the
+    instances, really?</p>
+    
+    <h2 id="empty-tags-as-instances" class="section"><a class="anchor-link" href="#empty-tags-as-instances"><code class="fas fa-link fa-sm"></code></a>Empty tags as instances</h2>
+    <p>There is a progression of design refinements here.</p>
+    <ol class="arabic">
+      <li>Ad hoc overloads, Java-style, impossible to abstract over.</li>
+      <li>Flip into a typeclass.</li>
+      <li>Refine the primitive/derived distinction to minimize code in
+      instances.</li>
+    </ol>
+    <p>For some typeclasses, <em>no</em> code needs to be put in the instances. For
+    example, if we want to support only <code>Int</code>, <code>String</code>, and <code>Vector</code>,
+    here is a perfectly sensible typeclass definition.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">A</span><span>]
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">ISAdder</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">AddInts</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">Int</span><span>]
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">AddStrs</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">String</span><span>]
+  
+  </span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">AddVects</span><span>[</span><span class="type-name">E</span><span>]() </span><span class="keyword">extends</span><span> </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">Vector</span><span>[</span><span class="type-name">E</span><span>]]
+  
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">addVects</span><span>[</span><span class="type-name">E</span><span>]: </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">Vector</span><span>[</span><span class="type-name">E</span><span>]] =
+    </span><span class="type-name">AddVects</span><span>()
+}</span></code></pre>
+    <p>If the instances cannot add values of the types indicated by the type
+    parameters, surely that code must exist somewhere! And it has a place,
+    in the definition of <code>add</code>.</p>
+    <p>If you recall, this method merely called <code>addImpl</code> on the typeclass
+    instance before. Now there is no such thing; the instances are empty.</p>
+    <p>Well, they are not quite empty; they contain a type.  So we can define
+    <code>add</code>, with complete type safety, as follows.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">isadd</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">adder</span><span>: </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">adder</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">ISAdder</span><span>.</span><span class="type-name">AddInts</span><span> =&gt; </span><span class="identifier">x</span><span> + </span><span class="identifier">y</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">ISAdder</span><span>.</span><span class="type-name">AddStrings</span><span> =&gt; </span><span class="string-literal">s&quot;</span><span class="substitution">$x$y</span><span class="string-literal">&quot;</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">ISAdder</span><span>.</span><span class="type-name">AddVects</span><span>() =&gt;
+      </span><span class="identifier">x</span><span> ++ </span><span class="identifier">y</span><span>
+  }</span></code></pre>
+    <p>More specifically, they contain a runtime tag, which allows
+    information about the type of <code>A</code> to be extracted with a pattern
+    match. For example, determining that <code>adder</code> is <code>AddInts</code> reveals that
+    <code>A = Int</code>, because that’s what the <code>extends</code> clause says.  This is
+    <em>GADT pattern matching</em>.</p>
+    <p>The <code>Vector</code> case is a little tricky here, because we can only
+    determine that <code>A</code> is <code>Vector[e]</code> <em>for some unknown e</em>, but that’s
+    enough information to invoke <code>++</code> and get a result also of <code>Vector[e]</code>
+    for the same <code>e</code>.</p>
+    <p>You can see this in action by using a <a href="https://groups.google.com/d/msg/scala-user/JlCsy48poIU/DjsQDnzeZboJ">variable type
+    pattern</a>
+    to assign the name <code>e</code> (a lowercase type parameter is required for
+    this usage), so you can refer to it in types.</p>
+    <pre><code class="nohighlight"><span>    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">ISAdder</span><span>.</span><span class="type-name">AddVects</span><span>[</span><span class="identifier">e</span><span>] =&gt;
+      (</span><span class="identifier">x</span><span>: </span><span class="type-name">Vector</span><span>[</span><span class="identifier">e</span><span>]) ++ </span><span class="identifier">y</span></code></pre>
+    
+    <h2 id="the-lowercase-e-names-a-gadt-skolem" class="section"><a class="anchor-link" href="#the-lowercase-e-names-a-gadt-skolem"><code class="fas fa-link fa-sm"></code></a>The lowercase <code>e</code> names a GADT skolem</h2>
+    <p>In the <code>AddVects[e]</code> pattern immediately above, <code>e</code> is a <em>variable
+    type pattern</em>. This is a type that exists only in the scope of the
+    <code>case</code>.</p>
+    <p>It’s <em>existential</em> because we don’t know what it is, only that it is
+    <em>some type</em> and we don’t get to pick here what that is. In this way,
+    it is no different from a type parameter’s treatment by the
+    implementation, which is
+    <a href="existential-inside.html">existential on the inside</a>.</p>
+    <p>It’s a <em>GADT skolem</em> because it was bound by the pattern matching
+    mechanism to a “fresh” type, unequal to any other. Recall the way
+    <code>AddVects</code> was defined:</p>
+    <pre><code class="nohighlight"><span class="type-name">AddVects</span><span>[</span><span class="type-name">E</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">Vector</span><span>[</span><span class="type-name">E</span><span>]]</span></code></pre>
+    <p>Matching <code>ISAdder</code> with <code>AddVects</code> doesn’t tell us anything about
+    bounds on the type passed to <code>AddVects</code> at construction time. This
+    isn’t true of all
+    <a href="variance-phantom.html#a-gadt-skolem">GADT skolems</a>,
+    but is only natural for this one.</p>
+    <p><code>scalac</code> will create this GADT skolem <em>regardless of whether we give
+    it a name</em>. In the pattern <code>case AddVects()</code>, it’s still known that
+    <code>A&nbsp;=&nbsp;Vector[e]</code> for some <code>e</code>; the only difference is that you haven’t
+    bound the <code>e</code> name, so you can’t actually refer to this <em>unspeakable</em>
+    type.</p>
+    <p>Usually, you do not need to assign names such as <code>e</code> to such types;
+    <code>_</code> is sufficient.  However, if you have problems getting <code>scalac</code> to
+    apply all the type equalities it ought to know about, a good first
+    step is to assign names to any skolems and try type
+    ascriptions. You’ll need a variable type pattern in other situations
+    that don’t infer, too. By contrast, with the <code>e</code> name bound, we can
+    confirm that <code>x:&nbsp;Vector[e]</code> in the above example, and <code>y</code> is
+    sufficiently well-typed for the whole expression to type-check.</p>
+    
+    <h2 id="porting-addpairs-and-other-recursive-cases" class="section"><a class="anchor-link" href="#porting-addpairs-and-other-recursive-cases"><code class="fas fa-link fa-sm"></code></a>Porting <code>addPairs</code> and other recursive cases</h2>
+    <p>Suppose we add support for pairs to <code>ISAdder</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">AddPairs</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](
+    </span><span class="keyword">val</span><span> </span><span class="identifier">fst</span><span>: </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">A</span><span>],
+    </span><span class="keyword">val</span><span> </span><span class="identifier">snd</span><span>: </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">B</span><span>]
+  ) </span><span class="keyword">extends</span><span> </span><span class="type-name">ISAdder</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>)]</span></code></pre>
+    <p>This <em>should</em> permit us to pattern-match in <code>isadd</code> to make complex
+    determinations about the <code>A</code> type given to <code>isadd</code>. This <em>ought to be</em>
+    a big win for GADT-style typeclasses, allowing “short-circuiting”
+    patterns that work in an obvious way.</p>
+    <pre><code class="nohighlight"><span class="comment">// this pattern means A=(Int, String)
+</span><span class="keyword">case</span><span> </span><span class="type-name">AddPairs</span><span>(</span><span class="type-name">AddInts</span><span>, </span><span class="type-name">AddStrs</span><span>) =&gt;
+
+</span><span class="comment">// this pattern means A=(ea, Vector[eb])
+// where ea and eb are GADT skolems
+</span><span class="keyword">case</span><span> </span><span class="type-name">AddPairs</span><span>(</span><span class="identifier">fst</span><span>, </span><span class="identifier">_</span><span>: </span><span class="type-name">AddVects</span><span>[</span><span class="identifier">eb</span><span>]) =&gt;
+
+</span><span class="comment">// here, A=(ea, eb) (again, GADT skolems)
+// calling `isadd` recursively is the most
+// straightforward implementation
+</span><span class="keyword">case</span><span> </span><span class="type-name">AddPairs</span><span>(</span><span class="identifier">fst</span><span>, </span><span class="identifier">snd</span><span>) =&gt;
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">f1</span><span>, </span><span class="identifier">s1</span><span>) = </span><span class="identifier">x</span><span>
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">f2</span><span>, </span><span class="identifier">s2</span><span>) = </span><span class="identifier">y</span><span>
+  (</span><span class="identifier">isadd</span><span>(</span><span class="identifier">f1</span><span>, </span><span class="identifier">f2</span><span>)(</span><span class="identifier">fst</span><span>), </span><span class="identifier">isadd</span><span>(</span><span class="identifier">s1</span><span>, </span><span class="identifier">s2</span><span>)(</span><span class="identifier">snd</span><span>))</span></code></pre>
+    <p>The final <code>case</code>’s body is fine. <code>scalac</code> effectively introduces
+    skolems <code>ea</code> and <code>eb</code> so that <code>A = (ea, eb)</code>, <code>fst: Adder[ea]</code>, and so
+    on, and everything lines up nicely. We are not so lucky with the other
+    cases.</p>
+    <pre><code class="nohighlight"><span>....</span><span class="identifier">scala</span><span>:</span><span class="number-literal">76</span><span>: </span><span class="identifier">pattern</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">is</span><span> </span><span class="identifier">incompatible</span><span> </span><span class="keyword">with</span><span> </span><span class="identifier">expected</span><span> </span><span class="keyword">type</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="type-name">ISAdder</span><span>.</span><span class="type-name">AddInts</span><span>.</span><span class="keyword">type</span><span>
+ </span><span class="identifier">required</span><span>: </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">Any</span><span>]
+      </span><span class="keyword">case</span><span> </span><span class="type-name">AddPairs</span><span>(</span><span class="type-name">AddInts</span><span>, </span><span class="type-name">AddStrs</span><span>) =&gt;
+                    ^
+....</span><span class="identifier">scala</span><span>:</span><span class="number-literal">76</span><span>: </span><span class="identifier">pattern</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">is</span><span> </span><span class="identifier">incompatible</span><span> </span><span class="keyword">with</span><span> </span><span class="identifier">expected</span><span> </span><span class="keyword">type</span><span>;
+
+ </span><span class="identifier">found</span><span>   : </span><span class="type-name">ISAdder</span><span>.</span><span class="type-name">AddStrs</span><span>.</span><span class="keyword">type</span><span>
+ </span><span class="identifier">required</span><span>: </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">Any</span><span>]
+      </span><span class="keyword">case</span><span> </span><span class="type-name">AddPairs</span><span>(</span><span class="type-name">AddInts</span><span>, </span><span class="type-name">AddStrs</span><span>) =&gt;
+                             ^
+....</span><span class="identifier">scala</span><span>:</span><span class="number-literal">79</span><span>: </span><span class="identifier">pattern</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">is</span><span> </span><span class="identifier">incompatible</span><span> </span><span class="keyword">with</span><span> </span><span class="identifier">expected</span><span> </span><span class="keyword">type</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="type-name">ISAdder</span><span>.</span><span class="type-name">AddVects</span><span>[</span><span class="identifier">eb</span><span>]
+ </span><span class="identifier">required</span><span>: </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">Any</span><span>]
+      </span><span class="keyword">case</span><span> </span><span class="type-name">AddPairs</span><span>(</span><span class="identifier">fst</span><span>, </span><span class="identifier">_</span><span>: </span><span class="type-name">AddVects</span><span>[</span><span class="identifier">eb</span><span>]) =&gt;
+                            ^</span></code></pre>
+    <p>This is nonsensical; the underlying code is sound, we just have to go
+    the long way around so that <code>scalac</code> doesn’t get confused. Instead of
+    the above form, you must assign names to the <code>AddPairs</code> skolems as we
+    described above, and do a sub-pattern-match.</p>
+    <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="identifier">p</span><span>: </span><span class="type-name">AddPairs</span><span>[</span><span class="identifier">ea</span><span>, </span><span class="identifier">eb</span><span>] =&gt;
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">f1</span><span>, </span><span class="identifier">s1</span><span>) = </span><span class="identifier">x</span><span>
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">f2</span><span>, </span><span class="identifier">s2</span><span>) = </span><span class="identifier">y</span><span>
+  (</span><span class="identifier">p</span><span>.</span><span class="identifier">fst</span><span>, </span><span class="identifier">p</span><span>.</span><span class="identifier">snd</span><span>) </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> (</span><span class="type-name">AddInts</span><span>, </span><span class="type-name">AddStrs</span><span>) =&gt;
+    </span><span class="keyword">case</span><span> (</span><span class="identifier">fst</span><span>, </span><span class="identifier">_</span><span>: </span><span class="type-name">AddVects</span><span>[</span><span class="identifier">eb</span><span>]) =&gt;
+    </span><span class="keyword">case</span><span> (</span><span class="identifier">fst</span><span>, </span><span class="identifier">snd</span><span>) =&gt;</span></code></pre>
+    <p>Note that we had to give up on the <code>AddPairs</code> pattern entirely,
+    because</p>
+    <ol class="arabic">
+      <li>More complex situations require type ascription.</li>
+      <li>You cannot ascribe with skolems unless you’ve bound the skolems to
+      names with variable type patterns.</li>
+      <li>You can’t use variable type patterns with the structural
+      “ADT-style” patterns; you must instead use inelegant and
+      inconvenient (non-variable) type patterns. (This may be
+      <a href="https://github.com/typelevel/scala/blob/typelevel-readme/notes/typelevel-4.md#type-arguments-on-patterns-pull5774-paulp">improved in Typelevel Scala 4</a>.)</li>
+    </ol>
+    <p>Yet this remains entirely up to shortcomings in the current pattern
+    matcher implementation. An improved pattern matcher could make the
+    nice version work, safely and soundly.</p>
+    <p>As such, I don’t want these shortcomings to discourage you from trying
+    out the pure type-tagging, “GADT-style” typeclasses. It is simply
+    nicer for many applications, and you aren’t going to code yourself
+    into a hole with them, because should you wind up in the buggy
+    territory we’ve been exploring, there’s still a way out.</p>
+    
+    <h2 id="same-typeclass-new-primitive-combinators" class="section"><a class="anchor-link" href="#same-typeclass-new-primitive-combinators"><code class="fas fa-link fa-sm"></code></a>Same typeclass, new “primitive” combinators</h2>
+    <p>“Empty” typeclasses like <code>ISAdder</code> contain no implementations of
+    primitive combinators, only “tags”. As such, they are in a sense the
+    purest form of “typeclass”; <em>to classify types</em> is the beginning and
+    end of what they do!</p>
+    <p>Every type that is a member of the “class of types” <code>ISAdder</code> is
+    either</p>
+    <ol class="arabic">
+      <li>the type <code>Int</code>,</li>
+      <li>the type <code>String</code>,</li>
+      <li>a type <code>Vector[e]</code>, where <code>e</code> is any type, or</li>
+      <li>a type <code>(x, y)</code> where <code>x</code> and <code>y</code> are types that are <em>also</em> in the
+      <code>ISAdder</code> class.</li>
+    </ol>
+    <p>This is the end of <code>ISAdder</code>’s definition; in particular, there is
+    nothing here about “adding two values to get a value”. All that
+    is said is what types are in the class!</p>
+    <p>Given this ‘undefinedness’, if we have another function we want to
+    write over the exact same class-of-types, we can just write it without
+    making any changes to <code>ISAdder</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">backwards</span><span>[</span><span class="type-name">X</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">X</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">adder</span><span>: </span><span class="type-name">ISAdder</span><span>[</span><span class="type-name">X</span><span>]): </span><span class="type-name">X</span><span> = </span><span class="identifier">adder</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">AddInts</span><span> =&gt; -</span><span class="identifier">x</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">AddStrs</span><span> =&gt; </span><span class="identifier">x</span><span>.</span><span class="identifier">reverse</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">AddVects</span><span>[</span><span class="identifier">e</span><span>] =&gt; </span><span class="identifier">x</span><span>.</span><span class="identifier">reverse</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="identifier">p</span><span>: </span><span class="type-name">AddPairs</span><span>[</span><span class="identifier">ea</span><span>, </span><span class="identifier">eb</span><span>] =&gt;
+    </span><span class="keyword">val</span><span> (</span><span class="identifier">a</span><span>, </span><span class="identifier">b</span><span>): (</span><span class="identifier">ea</span><span>, </span><span class="identifier">eb</span><span>) = </span><span class="identifier">x</span><span>
+    (</span><span class="identifier">backwards</span><span>(</span><span class="identifier">a</span><span>)(</span><span class="identifier">p</span><span>.</span><span class="identifier">fst</span><span>), </span><span class="identifier">backwards</span><span>(</span><span class="identifier">b</span><span>)(</span><span class="identifier">p</span><span>.</span><span class="identifier">snd</span><span>))
+}</span></code></pre>
+    <p>Set aside the question of whether the class of “backwards-able” types
+    ought to remain in lockstep with the class of “addable”
+    types. Supposing that it <em>should</em>, the class need be defined only
+    once.</p>
+    <p>More practically speaking, if you expose the subclasses of a typeclass
+    to users of your library, they can define primitives “in lockstep”,
+    too.  The line between primitive and derived combinators is also
+    blurred: a would-be derived combinator can pattern-match on the
+    typeclass to supply special cases for improved performance, becoming
+    “semi-primitive” in the process.  You decide whether these are good
+    things or not.</p>
+    
+    <h2 id="hybrid-clopen-typeclasses" class="section"><a class="anchor-link" href="#hybrid-clopen-typeclasses"><code class="fas fa-link fa-sm"></code></a>Hybrid “clopen” typeclasses</h2>
+    <p>Pattern-matching typeclass GADTs is subject to the same exhaustiveness
+    concerns and compiler warnings as pattern-matching ordinary ADTs. If
+    you eliminate a <code>case</code> from <code>def isadd</code>, you’ll see something like</p>
+    <pre><code class="nohighlight"><span>....</span><span class="identifier">scala</span><span>:</span><span class="number-literal">57</span><span>: </span><span class="keyword">match</span><span> </span><span class="identifier">may</span><span> </span><span class="identifier">not</span><span> </span><span class="identifier">be</span><span> </span><span class="identifier">exhaustive</span><span>.
+</span><span class="type-name">It</span><span> </span><span class="identifier">would</span><span> </span><span class="identifier">fail</span><span> </span><span class="identifier">on</span><span> </span><span class="identifier">the</span><span> </span><span class="identifier">following</span><span> </span><span class="identifier">input</span><span>: </span><span class="type-name">AddInts</span><span>
+    </span><span class="identifier">adder</span><span> </span><span class="keyword">match</span><span> {
+    ^</span></code></pre>
+    <p>We could unseal <code>ISAdder</code>, which would eliminate the warning, but
+    wouldn’t really solve anything. The function would still crash upon
+    encountering the missing case.</p>
+    <p>Pattern matches of unsealed hierarchies typically include a “fallback”
+    case, code used when none of the “special” cases match. However, for
+    pure typeclasses like <code>ISAdder</code>, this strategy is a dead end
+    too. Consider a hypothetical fallback case.</p>
+    <pre><code class="nohighlight"><span>  </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; ???</span></code></pre>
+    <p>Each of the other patterns in <code>isadd</code>, by their success, taught us
+    something useful about the <code>A</code> type parameter. For example, <code>case
+AddInts</code> tells us that <code>A = Int</code>, and accordingly <code>x: Int</code> and <code>y:
+Int</code>. It also meant that the expected result type of that block is
+    also <code>Int</code>. That’s plenty of information to actually implement
+    “adding”.</p>
+    <p>By contrast, <code>case _</code> tells us <em>nothing</em> about the <code>A</code> type. We don’t
+    know anything new about <code>x</code>, <code>y</code>, or the type of value we ought to
+    return. All we can do is return either <code>x</code> or <code>y</code> without further
+    combination; while this is a sort of “adding” <a href="https://hackage.haskell.org/package/base-4.10.1.0/docs/Data-Monoid.html#t:First">in abstract
+    algebra</a>,
+    there’s a good chance it’s not really what the caller was expecting.</p>
+    <p>Instead, we can reformulate a closed typeclass like <code>ISAdder</code> with one
+    extension point, where the typeclass is specially encoded in the usual
+    “embedded implementation” style. It’s closed and open, so
+    <a href="https://mail.haskell.org/pipermail/haskell-cafe/2014-April/113373.html">“clopen”</a>.</p>
+    
+    <h2 id="sealed-doesn-t-seal-subclasses" class="section"><a class="anchor-link" href="#sealed-doesn-t-seal-subclasses"><code class="fas fa-link fa-sm"></code></a><code>sealed</code> doesn’t seal subclasses</h2>
+    <p>Our GADT typeclass instances work by embedding type information within
+    the instances, to be rediscovered at runtime. To support open
+    extension, we need a data case that contains <em>functions</em> instead of
+    types. We know how to encode that, because that is how standard,
+    non-GADT typeclasses work.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">ISOAdder</span><span>[</span><span class="type-name">A</span><span>]
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">ExtISOAdder</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">ISOAdder</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">addImpl</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>) =&gt; </span><span class="type-name">A</span><span>
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">ISOAdder</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">AddInts</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">ISOAdder</span><span>[</span><span class="type-name">Int</span><span>]
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">AddStrs</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">ISOAdder</span><span>[</span><span class="type-name">String</span><span>]
+  
+  </span><span class="keyword">final</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">AddVects</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">ISOAdder</span><span>[</span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]]
+  
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">addVects</span><span>[</span><span class="type-name">A</span><span>]: </span><span class="type-name">ISOAdder</span><span>[</span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]] =
+    </span><span class="keyword">new</span><span> </span><span class="type-name">AddVects</span><span>
+    
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">isoadd</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">adder</span><span>: </span><span class="type-name">ISOAdder</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+    </span><span class="identifier">adder</span><span> </span><span class="keyword">match</span><span> {
+      </span><span class="keyword">case</span><span> </span><span class="type-name">AddInts</span><span> =&gt; </span><span class="identifier">x</span><span> + </span><span class="identifier">y</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="type-name">AddStrs</span><span> =&gt; </span><span class="string-literal">s&quot;</span><span class="substitution">$x$y</span><span class="string-literal">&quot;</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="type-name">AddVects</span><span>[</span><span class="identifier">e</span><span>] =&gt;
+        (</span><span class="identifier">x</span><span>: </span><span class="type-name">Vector</span><span>[</span><span class="identifier">e</span><span>]) ++ </span><span class="identifier">y</span><span>
+      </span><span class="comment">// NB: no unchecked warning here, which makes sense
+</span><span>      </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">ExtISOAdder</span><span>[</span><span class="type-name">A</span><span>] =&gt;
+        </span><span class="identifier">e</span><span>.</span><span class="identifier">addImpl</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+    }
+}</span></code></pre>
+    <p>By sealing <code>ISOAdder</code>, we ensure that the pattern match in <code>isoadd</code>
+    remains exhaustive. However, one of those cases, <code>ExtISOAdder</code>, admits
+    new subclasses, itself! This is fine because no matter how many
+    subclasses of <code>ExtISOAdder</code> we make, they’ll still match the last
+    pattern of <code>isoadd</code>.</p>
+    <p>We could also define <code>ExtISOAdder</code> as a <code>final case class</code>. The point
+    is that you can make this “extension point” in your otherwise-closed
+    typeclass using whatever style you like.</p>
+    <p>One caveat, though: “clopen” typeclasses cannot have arbitrary new
+    primitive combinators added to them. They are like ordinary open
+    typeclasses in that regard. Consider a version of <code>backwards</code> for
+    <code>ISOAdder</code>: what you could do in the <code>ExtISOAdder</code> case?</p>
+    
+    <h2 id="whoever-you-like" class="section"><a class="anchor-link" href="#whoever-you-like"><code class="fas fa-link fa-sm"></code></a>Whoever you like</h2>
+    <p>With type parameters vs. members, you can get pretty far with
+    <a href="type-members-parameters.html#when-is-existential-ok">the “rule of thumb”</a>.
+    Beyond that, even bugs in <code>scalac</code> typechecking can guide you to the
+    “right” choice.</p>
+    <p>There is no similar rule for this design space. It might seem that
+    typeclass newcomers might have an easier time with the OO-style
+    “unimplemented method” signposts in the open style, but I have also
+    seen them lament the loss of flexibility that would be provided by the
+    GADT style.</p>
+    <p>Likewise, as an advanced practitioner, your heart will be rent by the
+    tug-of-war between the boilerplate of the open style and the
+    pattern-matcher’s finickiness with the GADT style. You may then be
+    tempted to adopt the hybrid ‘clopen’ style, but this, too, is too
+    often a form of design excess.</p>
+    <p>Given all that, the only help I can offer, aside from describing the
+    design space above, is “pick whichever you like”. You know your
+    program; if you are not sure which will be nicer, try both!</p>
+    <p><em>This article was tested with Scala 2.12.4.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

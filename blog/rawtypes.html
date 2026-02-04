@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Existential types are not raw types</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Existential types are not raw types</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on February 26, 2015
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="existential-types-are-not-raw-types" class="title">Existential types are not raw types</h1>
+    <p><em>While this blog is typically strictly for Scala developers interested
+    in strongly-typed programming, this particular article is of interest
+    to Java developers as well.  You don’t need to know Scala to follow
+    along.</em></p>
+    <p>Scala makes a <em>welcome</em> simplification in its type system:
+    <a href="http://docs.scala-lang.org/tutorials/tour/generic-classes.html">type arguments</a>
+    are always required.  That is, in Java, you may (unsafely) leave off
+    the type arguments for compatibility with pre-1.5 code,
+    e.g. <code>java.util.List</code>, forming a
+    <a href="http://docs.oracle.com/javase/tutorial/java/generics/rawTypes.html"><em>raw type</em></a>.
+    Scala does not permit this, and requires you to pass a type argument.</p>
+    <p>The most frequent trouble people have with this rule is being unable
+    to implement some Java method with missing type arguments in its
+    signature, e.g. one that takes a raw <code>List</code> as an argument.  Let us
+    see why they have trouble, and why this is a good thing.</p>
+    
+    <h2 id="existentials-are-safe-raw-types-are-not" class="section"><a class="anchor-link" href="#existentials-are-safe-raw-types-are-not"><code class="fas fa-link fa-sm"></code></a>Existentials are safe, raw types are not</h2>
+    <p>Stripping the type argument list, e.g. going from
+    <code>java.util.List&lt;String&gt;</code> to <code>java.util.List</code> is <em>an unsafe cast</em>.
+    <a href="http://docs.oracle.com/javase/tutorial/extra/generics/wildcards.html"><em>Wildcarding</em></a>
+    the same type argument, e.g. going from <code>java.util.List&lt;String&gt;</code> to
+    <code>java.util.List&lt;?&gt;</code>, is <em>safe</em>.  The latter type is written
+    <code>java.util.List[_]</code>, or <code>java.util.List[T] forSome {type T}</code>, in
+    Scala.  In both Java and Scala, this is an
+    <a href="http://www.artima.com/pins1ed/combining-scala-and-java.html#29.3">existential type</a>.
+    As compiled with <code>-Xlint:rawtypes -Xlint:unchecked</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">Arrays</span><span>;
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">ArrayList</span><span>;
+</span><span class="keyword">import</span><span> </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">List</span><span>;
+
+</span><span class="keyword">public</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">TestEx</span><span> {
+    </span><span class="keyword">public</span><span> </span><span class="keyword">static</span><span> </span><span class="type-name">List</span><span>&lt;</span><span class="type-name">String</span><span>&gt; </span><span class="identifier">words</span><span>() {
+        </span><span class="keyword">return</span><span> </span><span class="keyword">new</span><span> </span><span class="type-name">ArrayList</span><span>&lt;&gt;(</span><span class="type-name">Arrays</span><span>.</span><span class="identifier">asList</span><span>(</span><span class="string-literal">&quot;hi&quot;</span><span>, </span><span class="string-literal">&quot;there&quot;</span><span>));
+    }
+
+    </span><span class="comment">// TestEx.java:17: warning: [rawtypes] found raw type: List
+</span><span>    </span><span class="comment">//  missing type arguments for generic class List&lt;E&gt;
+</span><span>    </span><span class="comment">//  where E is a type-variable:
+</span><span>    </span><span class="comment">//    E extends Object declared in interface List
+</span><span>    </span><span class="comment">//                  ↓
+</span><span>    </span><span class="keyword">public</span><span> </span><span class="keyword">static</span><span> </span><span class="keyword">final</span><span> </span><span class="type-name">List</span><span> </span><span class="identifier">wordsRaw</span><span> = </span><span class="identifier">words</span><span>();
+
+    </span><span class="comment">// there is no warning for this
+</span><span>    </span><span class="keyword">public</span><span> </span><span class="keyword">static</span><span> </span><span class="keyword">final</span><span> </span><span class="type-name">List</span><span>&lt;?&gt; </span><span class="identifier">wordsET</span><span> = </span><span class="identifier">words</span><span>();
+}</span></code></pre>
+    <p>Also note that there is no warning for the equivalent to <code>wordsET</code> in
+    Scala.  Because it, like javac, knows that it’s safe.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">TestEx</span><span>.</span><span class="identifier">words</span><span>
+</span><span class="identifier">res0</span><span>: </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>] = [</span><span class="identifier">hi</span><span>, </span><span class="identifier">there</span><span>]
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">wordsET</span><span> = </span><span class="type-name">TestEx</span><span>.</span><span class="identifier">words</span><span> : </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">List</span><span>[</span><span class="identifier">_</span><span>]
+</span><span class="identifier">wordsET</span><span>: </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">List</span><span>[</span><span class="identifier">_</span><span>] = [</span><span class="identifier">hi</span><span>, </span><span class="identifier">there</span><span>]</span></code></pre>
+    
+    <h2 id="raw-types-are-bad-stop-using-them" class="section"><a class="anchor-link" href="#raw-types-are-bad-stop-using-them"><code class="fas fa-link fa-sm"></code></a>Raw Types are bad.  Stop using them</h2>
+    <p>The reason that existentials are safe is that the rules in place for
+    values of existential type are consistent with the rest of the generic
+    system, whereas raw types contradict those rules, resulting in code
+    that should not typecheck, and only does for legacy code support.  We
+    can see this in action with two Java methods.</p>
+    <pre><code class="nohighlight"><span class="keyword">public</span><span> </span><span class="keyword">static</span><span> </span><span class="keyword">void</span><span> </span><span class="identifier">addThing</span><span>(</span><span class="keyword">final</span><span> </span><span class="type-name">List</span><span> </span><span class="identifier">xs</span><span>) {
+    </span><span class="identifier">xs</span><span>.</span><span class="identifier">add</span><span>(</span><span class="number-literal">42</span><span>);
+}
+
+</span><span class="keyword">public</span><span> </span><span class="keyword">static</span><span> </span><span class="keyword">void</span><span> </span><span class="identifier">swapAround</span><span>(</span><span class="keyword">final</span><span> </span><span class="type-name">List</span><span>&lt;?&gt; </span><span class="identifier">xs</span><span>) {
+    </span><span class="identifier">xs</span><span>.</span><span class="identifier">add</span><span>(</span><span class="number-literal">84</span><span>);
+}</span></code></pre>
+    <p>These methods are the same, except for the use of raw types versus
+    existentials.  However, the second does not compile:</p>
+    <pre><code>TestEx.java:26: error: no suitable method found for add(int)
+        xs.add(84);
+          ^
+    method Collection.add(CAP#1) is not applicable
+      (argument mismatch; int cannot be converted to CAP#1)
+    method List.add(CAP#1) is not applicable
+      (argument mismatch; int cannot be converted to CAP#1)
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?</code></pre>
+    <p>Why forbid adding 42 to the list?  The element type of list is
+    unknown.  The answer lies in that statement: <em>its unknownness isn’t a
+    freedom for the body of the method, it’s a restriction</em>.  The rawtype
+    version treats its lack of knowledge as a freedom, and the caller pays
+    for it by having its data mangled.</p>
+    <pre><code class="nohighlight"><span class="keyword">public</span><span> </span><span class="keyword">static</span><span> </span><span class="keyword">void</span><span> </span><span class="identifier">testIt</span><span>() {
+    </span><span class="keyword">final</span><span> </span><span class="type-name">List</span><span>&lt;</span><span class="type-name">String</span><span>&gt; </span><span class="identifier">someWords</span><span> = </span><span class="identifier">words</span><span>();
+    </span><span class="identifier">addThing</span><span>(</span><span class="identifier">someWords</span><span>);
+    </span><span class="type-name">System</span><span>.</span><span class="identifier">out</span><span>.</span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Contents of someWords after addThing:&quot;</span><span>);
+    </span><span class="type-name">System</span><span>.</span><span class="identifier">out</span><span>.</span><span class="identifier">println</span><span>(</span><span class="identifier">someWords</span><span>);
+    </span><span class="type-name">System</span><span>.</span><span class="identifier">out</span><span>.</span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Well that seems okay, what&#39;s the last element?&quot;</span><span>);
+    </span><span class="type-name">System</span><span>.</span><span class="identifier">out</span><span>.</span><span class="identifier">println</span><span>(</span><span class="identifier">someWords</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">someWords</span><span>.</span><span class="identifier">size</span><span>() - </span><span class="number-literal">1</span><span>));
+}</span></code></pre>
+    <p>And it compiles:</p>
+    <pre><code>TestEx.java:23: warning: [unchecked] unchecked call to add(E) as a
+                         member of the raw type List
+        xs.add(42);
+              ^
+  where E is a type-variable:
+    E extends Object declared in interface List</code></pre>
+    <p>But when we try to run it:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">TestEx</span><span>.</span><span class="identifier">testIt</span><span>()
+</span><span class="type-name">Contents</span><span> </span><span class="identifier">of</span><span> </span><span class="identifier">someWords</span><span> </span><span class="identifier">after</span><span> </span><span class="identifier">addThing</span><span>:
+[</span><span class="identifier">hi</span><span>, </span><span class="identifier">there</span><span>, </span><span class="number-literal">42</span><span>]
+</span><span class="type-name">Well</span><span> </span><span class="identifier">that</span><span> </span><span class="identifier">seems</span><span> </span><span class="identifier">okay</span><span>, </span><span class="identifier">what</span><span>&#39;</span><span class="identifier">s</span><span> </span><span class="identifier">the</span><span> </span><span class="identifier">last</span><span> </span><span class="identifier">element</span><span>?
+</span><span class="identifier">java</span><span>.</span><span class="identifier">lang</span><span>.</span><span class="type-name">ClassCastException</span><span>: </span><span class="identifier">java</span><span>.</span><span class="identifier">lang</span><span>.</span><span class="type-name">Integer</span><span> </span><span class="identifier">cannot</span><span> </span><span class="identifier">be</span><span> </span><span class="identifier">cast</span><span> </span><span class="identifier">to</span><span>
+                              </span><span class="identifier">java</span><span>.</span><span class="identifier">lang</span><span>.</span><span class="type-name">String</span><span>
+  </span><span class="identifier">at</span><span> </span><span class="identifier">rawtypes</span><span>.</span><span class="type-name">TestEx</span><span>.</span><span class="identifier">testIt</span><span>(</span><span class="type-name">TestEx</span><span>.</span><span class="identifier">java</span><span>:</span><span class="number-literal">32</span><span>)
+  ... </span><span class="number-literal">43</span><span> </span><span class="identifier">elided</span></code></pre>
+    <p>It is a mistake to think that just because some code throws
+    <code>ClassCastException</code>, it must be to blame for a type error.  This line
+    is blameless.  It is the fault of the unchecked cast when we called
+    <code>addThing</code>, and more specifically, the unsafe assumption about the
+    <code>List</code>’s element type that was made in its body.</p>
+    
+    <h2 id="existentials-are-much-better" class="section"><a class="anchor-link" href="#existentials-are-much-better"><code class="fas fa-link fa-sm"></code></a>Existentials are much better</h2>
+    <p>When we used the wildcard, we were forbidden from doing the unsafe
+    thing.  But what kinds of things can we do with the safe, existential
+    form?  Here’s one:</p>
+    <pre><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">static</span><span> &lt;</span><span class="type-name">E</span><span>&gt; </span><span class="keyword">void</span><span> </span><span class="identifier">swapAroundAux</span><span>(</span><span class="keyword">final</span><span> </span><span class="type-name">List</span><span>&lt;</span><span class="type-name">E</span><span>&gt; </span><span class="identifier">xs</span><span>) {
+    </span><span class="identifier">xs</span><span>.</span><span class="identifier">add</span><span>(</span><span class="identifier">xs</span><span>.</span><span class="identifier">get</span><span>(</span><span class="number-literal">0</span><span>));
+}
+
+</span><span class="keyword">public</span><span> </span><span class="keyword">static</span><span> </span><span class="keyword">void</span><span> </span><span class="identifier">swapAround</span><span>(</span><span class="keyword">final</span><span> </span><span class="type-name">List</span><span>&lt;?&gt; </span><span class="identifier">xs</span><span>) {
+    </span><span class="identifier">swapAroundAux</span><span>(</span><span class="identifier">xs</span><span>);
+}</span></code></pre>
+    <p>In other words: let <code>E</code> be the <em>unknown</em> element type of <code>xs</code>.
+    <code>xs.get()</code> has type <code>E</code>, and <code>xs.add</code> has argument type <code>E</code>.  They
+    line up, so this is okay, no matter what the element type of <code>xs</code>
+    turns out to be.  Let’s try a test:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">w</span><span> = </span><span class="type-name">TestEx</span><span>.</span><span class="identifier">words</span><span>
+</span><span class="identifier">w</span><span>: </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>] = [</span><span class="identifier">hi</span><span>, </span><span class="identifier">there</span><span>]
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">TestEx</span><span>.</span><span class="identifier">swapAround</span><span>(</span><span class="identifier">w</span><span>)
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">w</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">w</span><span>.</span><span class="identifier">size</span><span> - </span><span class="number-literal">1</span><span>)
+</span><span class="identifier">res1</span><span>: </span><span class="type-name">String</span><span> = </span><span class="identifier">hi</span></code></pre>
+    <p>The body of <code>swapAround</code> is guaranteed not to mangle its argument by
+    the type checker, so we, as a caller, can safely call it, and know
+    that our argument’s type integrity is protected.</p>
+    <p>Scala has more features to let us get away without <code>swapAroundAux</code>.
+    This translation uses a lowercase
+    <a href="http://www.scala-lang.org/files/archive/spec/2.11/08-pattern-matching.html#type-parameter-inference-for-constructor-patterns."><em>type variable pattern</em></a>
+    to name the existential.  To the right of the <code>=&gt;</code>, we can declare
+    variables of type <code>e</code> and use <code>e</code> to construct more types, while still
+    referring to the <code>_</code> in the <code>xs</code> argument’s type.  But in this case,
+    we just do the same as <code>swapAroundAux</code> above.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">swapAround</span><span>(</span><span class="identifier">xs</span><span>: </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">List</span><span>[</span><span class="identifier">_</span><span>]): </span><span class="type-name">Unit</span><span> =
+  </span><span class="identifier">xs</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">xs2</span><span>: </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">List</span><span>[</span><span class="identifier">e</span><span>] =&gt; </span><span class="identifier">xs2</span><span>.</span><span class="identifier">add</span><span>(</span><span class="identifier">xs2</span><span>.</span><span class="identifier">get</span><span>(</span><span class="number-literal">0</span><span>))
+  }</span></code></pre>
+    
+    <h2 id="crushing-the-existential" class="section"><a class="anchor-link" href="#crushing-the-existential"><code class="fas fa-link fa-sm"></code></a>Crushing the existential</h2>
+    <p>Let’s consider the <code>xs.get()</code> and <code>xs.add</code> methods, which have return
+    type and argument type <code>E</code>, respectively.  As you can’t write the name
+    of an existential type in Java, what happens when we “crush” it,
+    choosing the closest safe type we can write the name of?</p>
+    <p>First, we can simplify by considering every existential to be bounded.
+    That is, instead of <code>E</code>, we think about <code>E extends Object super
+Nothing</code>, or <code>E &lt;: Any &gt;: Nothing</code> in Scala.  While <code>Object</code> or <code>Any</code>
+    is the “top” of the type hierarchy, which <em>every</em> type is a subtype
+    of, <code>Nothing</code> is the “bottom”, sadly left out of Java’s type system,
+    which <em>every</em> type is a <em>supertype</em> of.</p>
+    <p>For <code>get</code>, the <code>E</code> appears in the result type, a <em>covariant</em> position.
+    So we crush it to the upper bound, <code>Any</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">wordsET</span><span>.</span><span class="identifier">get</span><span> </span><span class="identifier">_</span><span>
+</span><span class="identifier">res2</span><span>: </span><span class="type-name">Int</span><span> =&gt; </span><span class="type-name">Any</span><span> = &lt;</span><span class="identifier">function1</span><span>&gt;</span></code></pre>
+    <p>However, for <code>add</code>, the <code>E</code> appears in the argument type, a
+    <em>contravariant</em> position.  So if it is to be crushed, it must be
+    crushed to the lower bound, <code>Nothing</code>, instead.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; (</span><span class="identifier">wordsET</span><span>: </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">Collection</span><span>[</span><span class="identifier">_</span><span>]).</span><span class="identifier">add</span><span> </span><span class="identifier">_</span><span> : (</span><span class="type-name">Any</span><span> =&gt; </span><span class="type-name">Boolean</span><span>)
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">12</span><span>: </span><span class="identifier">error</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">_$1</span><span> =&gt; </span><span class="type-name">Boolean</span><span> </span><span class="identifier">where</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">_$1</span><span>
+ </span><span class="identifier">required</span><span>: </span><span class="type-name">Any</span><span> =&gt; </span><span class="type-name">Boolean</span><span>
+              (</span><span class="identifier">wordsET</span><span>: </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">Collection</span><span>[</span><span class="identifier">_</span><span>]).</span><span class="identifier">add</span><span> </span><span class="identifier">_</span><span> : (</span><span class="type-name">Any</span><span> =&gt; </span><span class="type-name">Boolean</span><span>)
+                                                 ^
+</span><span class="identifier">scala</span><span>&gt; (</span><span class="identifier">wordsET</span><span>: </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">Collection</span><span>[</span><span class="identifier">_</span><span>]).</span><span class="identifier">add</span><span> </span><span class="identifier">_</span><span> : (</span><span class="type-name">Nothing</span><span> =&gt; </span><span class="type-name">Boolean</span><span>)
+</span><span class="identifier">res8</span><span>: </span><span class="type-name">Nothing</span><span> =&gt; </span><span class="type-name">Boolean</span><span> = &lt;</span><span class="identifier">function1</span><span>&gt;</span></code></pre>
+    <p>Each occurrence of an existential in a signature may be crushed
+    independently.  However, a variable that appears once but may be
+    distributed to either side, such as in a generic type parameter, is
+    <em>invariant</em>, and may not be crushed at that point.  That is why the
+    existential is preserved in the inferred type of <code>wordsET</code> itself.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">wordsET</span><span>
+</span><span class="identifier">res9</span><span>: </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">List</span><span>[</span><span class="identifier">_</span><span>] = [</span><span class="identifier">hi</span><span>, </span><span class="identifier">there</span><span>]</span></code></pre>
+    <p>Herein lies something closer to a formalization of the problem with
+    raw types: they crush existential occurrences in contravariant and
+    invariant positions to the upper bound, <code>Object</code>, when the only safe
+    positions to crush in this way are the covariant positions.</p>
+    
+    <h2 id="how-do-list-and-list-relate" class="section"><a class="anchor-link" href="#how-do-list-and-list-relate"><code class="fas fa-link fa-sm"></code></a>How do <code>List</code> and <code>List&lt;?&gt;</code> relate?</h2>
+    <p>It is well understood that, in Java, <code>List&lt;String&gt;</code> is not a subtype
+    of <code>List&lt;Object&gt;</code>.  In Scala terms, this is because all type
+    parameters are <em>invariant</em>, which has exactly the meaning it had in
+    the previous section.  However, that doesn’t mean it’s impossible to
+    draw subtyping relationships between different <code>List</code>s for different
+    type arguments; they must merely be mediated by existentials, as is
+    common in the Java standard library.</p>
+    <p>The basic technique is as follows: we can convert any <code>T</code> in <code>List&lt;T&gt;</code>
+    to <code>? extends T super T</code>.  Following that, we can raise the argument
+    to <code>extends</code> and lower the argument to <code>super</code> as we like.  A <code>?</code> by
+    itself, I have described above, is merely the most extreme course of
+    this formula you can take.  So <code>List&lt;T&gt;</code> for any <code>T</code> is a subtype of
+    <code>List&lt;?&gt;</code>.  (This only applies at one level of depth;
+    e.g. <code>List&lt;List&lt;T&gt;&gt;</code> is not necessarily a subtype of <code>List&lt;List&lt;?&gt;&gt;</code>.)</p>
+    <p>Does this mean that <code>List</code> is a subtype of <code>List&lt;?&gt;</code>?  Well, kind of.
+    Following the rule for specialization of method signatures in
+    subclasses, we should be able to override a method that returns
+    <code>List&lt;?&gt;</code> with one that returns <code>List</code>, and override a method that
+    takes <code>List</code> as an argument with one that takes <code>List&lt;?&gt;</code> as an
+    argument.  However, this is like building a house on a foam mattress:
+    the conversion that got us a raw type wasn’t sound in the first place,
+    so what soundness value does this relationship have?</p>
+    
+    <h2 id="the-frequent-java-library-bug" class="section"><a class="anchor-link" href="#the-frequent-java-library-bug"><code class="fas fa-link fa-sm"></code></a>The frequent Java library bug</h2>
+    <p>Let’s see the specific problem that people usually encounter in Scala.
+    Suppose <code>addThing</code>, defined above, is an instance member of <code>TestEx</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">TestEx2</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">TestEx</span><span> {
+    </span><span class="annotation">@Override</span><span>
+    </span><span class="keyword">public</span><span> </span><span class="keyword">void</span><span> </span><span class="identifier">addThing</span><span>(</span><span class="keyword">final</span><span> </span><span class="type-name">List</span><span>&lt;?&gt; </span><span class="identifier">xs</span><span>) {}
+}</span></code></pre>
+    <p>Or the Scala version:</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">TestEx3</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">TestEx</span><span> {
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">addThing</span><span>(</span><span class="identifier">xs</span><span>: </span><span class="identifier">java</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">List</span><span>[</span><span class="identifier">_</span><span>]): </span><span class="type-name">Unit</span><span> = ()
+}</span></code></pre>
+    <p><code>javac</code> gives us this error:</p>
+    <pre><code>TestEx.java:48: error: name clash: addThing(List&lt;?&gt;) in TestEx2 and
+                addThing(List) in TestEx have the same erasure, yet
+                neither overrides the other
+    public void addThing(final List&lt;?&gt; xs) {}
+                ^
+TestEx.java:47: error: method does not override or implement a method
+                from a supertype
+    @Override
+    ^</code></pre>
+    <p>scalac is forgiving, though.  I’m not sure how forgiving it is.
+    However, the forgiveness is unsound: it lets us return less specific
+    types when overriding methods than we got out.</p>
+    
+    <h2 id="how-to-fix-it" class="section"><a class="anchor-link" href="#how-to-fix-it"><code class="fas fa-link fa-sm"></code></a>How to fix it</h2>
+    <ol class="arabic">
+      <li>
+        <p>Stop using raw types.</p>
+      </li>
+      <li>
+        <p><strong>If you maintain a Java library with raw types in its API, you are
+        doing a disservice to your users.  Eliminate them.</strong></p>
+      </li>
+      <li>
+        <p>If you are using such a library, report a bug, or submit a patch,
+        to eliminate the raw types.  If you add <code>-Xlint:rawtypes</code> to the
+        <code>javac</code> options, the compiler will tell you where you’re using
+        them.  Fix all the warnings, and you’re definitely not using raw
+        types anymore.</p>
+      </li>
+      <li>
+        <p>Help Java projects, including your own, avoid introducing raw types
+        by adding <code>-Xlint:rawtypes</code> permanently to their <code>javac</code> options.
+        <strong><code>rawtypes</code> is more serious than <code>unchecked</code></strong>; even if you do not
+        care about <code>unchecked</code> warnings, you should still turn on and fix
+        <code>rawtypes</code> warnings.</p>
+      </li>
+    </ol>
+    <p>You may also turn on <code>-Xlint:cast</code> to point out casts that are no
+    longer necessary now that your types are cleaner.  If possible, add
+    <code>-Werror</code> to your build as well, to convert <code>rawtypes</code> warnings to
+    errors.</p>
+    
+    <h2 id="why-not-just-add-wildcards-automatically" class="section"><a class="anchor-link" href="#why-not-just-add-wildcards-automatically"><code class="fas fa-link fa-sm"></code></a>Why not just add wildcards automatically?</h2>
+    <p>Adding wildcards isn’t a panacea.  For certain raw types, you need to
+    add a proper type parameter, even adding type parameters to your own
+    API.  The Internet has no copy and paste solutions to offer you; it
+    all depends on how to model your specific scenario.  Here are a few
+    possibilities.</p>
+    <ol class="arabic">
+      <li>
+        <p>Pass a type argument representing what’s actually in the structure.
+        For example, replace <code>List</code> with <code>List&lt;String&gt;</code> if that’s what it
+        is.</p>
+      </li>
+      <li>
+        <p>Pass a wildcard.</p>
+      </li>
+      <li>
+        <p>Propagate the type argument outward.  For example, if you have a
+        method <code>List doThis(final List xs)</code>, maybe it should be <code>&lt;E&gt;
+List&lt;E&gt; doThis(final List&lt;E&gt; xs)</code>.  Or if you have a <code>class
+Blah&lt;X&gt;</code> containing a <code>List</code>, maybe it should be a <code>class Blah&lt;A,
+X&gt;</code> containing a <code>List&lt;A&gt;</code>.  This is often the most flexible
+        option, but it can take time to implement.</p>
+      </li>
+      <li>
+        <p>Combine any of these.  For example, in some circumstances, a more
+        flexible version of #3 would be to define <code>Blah&lt;A, X&gt;</code> containing a
+        <code>List&lt;? extends A&gt;</code>.</p>
+      </li>
+    </ol>
+    <p>Wildcards and existentials are historically misunderstood in the Java
+    community; Scala developers have the advantage of more powerful
+    language tools for talking about them.  So <strong>if you are unsure of how
+    to eliminate some raw types, consider asking a Scala developer what to
+    do!</strong> Perhaps they will tell you “use Scala instead”, and maybe that’s
+    worth considering, but you’re likely to get helpful advice regardless
+    of how you feel about language advocacy.</p>
+    
+    <h2 id="the-scala-philosophy" class="section"><a class="anchor-link" href="#the-scala-philosophy"><code class="fas fa-link fa-sm"></code></a>The Scala philosophy</h2>
+    <p>As you can see, the Java compatibility story in Scala is not as simple
+    as is advertised.  However, I favor the strong stance against this
+    unsound legacy feature.  If Scala can bring an end to the scourge of
+    raw types, it will have been worth the compatibility trouble.</p>
+    <p><em>This article was tested with Scala 2.11.5 and javac 1.8.0_31.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

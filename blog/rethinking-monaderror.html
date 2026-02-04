@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Rethinking MonadError</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Rethinking MonadError</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Luka Jacobowitz<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on April 13, 2018
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="rethinking-monaderror" class="title">Rethinking MonadError</h1>
+    <p><code>MonadError</code> is a very old type class, hackage shows me it was originally added in 2001, long before I had ever begun doing functional programming, just check the <a href="https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Error-Class.html">hackage page</a>.
+    In this blog post I&#39;d like to rethink the way we use <code>MonadError</code> today.
+    It&#39;s usually used to signal that a type might be capable of error handling and is basically like a type class encoding of <code>Either</code>s ability to short circuit.
+    That makes it pretty useful for building computations from sequences of values that may fail and then halt the computation or to catch those errors in order to resume the computation.
+    It&#39;s also parametrized by its error type, making it one of the most common example of multi-parameter type classes.
+    Some very common instances include <code>Either</code> and <code>IO</code>, but there are a ton more.</p>
+    <p>We can divide instances into 3 loosely defined groups:</p>
+    <p>First we have simple data types like <code>Either</code>, <code>Option</code> or <code>Ior</code> (with <code>Validated</code> not having a <code>Monad</code> instance). </p>
+    <p>Secondly we&#39;ve got the <code>IO</code>-like types, the various <code>IO</code>s, <code>Task</code>s and the like. These are used to suspend side effects which might have errors and therefore need to be able to handle these.</p>
+    <p>Thirdly and least importantly, we have monad transformers, which get their instances from their respective underlying monads. Since they basically just propagate their underlying instances we&#39;re only going to talk about the first two groups for now.</p>
+    <p>The simple data types all define <code>MonadError</code> instances, but I wager they&#39;re not actually used as much. This is because <code>MonadError</code> doesn&#39;t actually allow us to deconstruct e.g. an <code>Either</code> to actually handle the errors. We&#39;ll see more on that later, next let&#39;s look at the <code>IO</code>-like types and their instances.</p>
+    <p><code>cats.effect.IO</code> currently defines a <code>MonadError[IO, Throwable]</code>, meaning that it&#39;s fully able to raise and catch errors that might be thrown during evaluation of encapsulated side effects.
+    Using <code>MonadError</code> with these effect types seems a lot more sensical at first, as you can&#39;t escape <code>IO</code> even when you handle errors, so it looks like it makes sense to stay within <code>IO</code> due to the side effect capture. </p>
+    <p>The problem I see with <code>MonadError</code> is that it does not address the fundamental difference between these two types of instances. I can pattern match an <code>Option[A]</code> with a default value to get back an <code>A</code>. With <code>IO</code> that is just not possible. So these two groups of types are pretty different, when does it actually make sense to abstract over both of them?
+    Well, it turns out there a few instances where it might be useful, but as we&#39;ll see later, I&#39;m proposing something that will be equally useful to both groups.</p>
+    <p>Now before we continue, let&#39;s look at the <code>MonadError</code> type class in a bit more detail.
+    <code>MonadError</code> currently comprises two parts, throwing and catching errors.
+    To begin let&#39;s have a look at the <code>throw</code> part, sometimes also called <code>MonadThrow</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">raiseError</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">e</span><span>: </span><span class="type-name">E</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+
+  ...
+}</span></code></pre>
+    <p>This looks fine for now, but one thing that strikes me is that the <code>F</code> type seems to &quot;swallow&quot; errors.
+    If we look at <code>F[A]</code> we have no clue that it might actually yield an error of type <code>E</code>, that fact is not required to be represented at all.
+    However, that&#39;s not a really big issue, so now let&#39;s look at the <code>catch</code> part:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">MonadThrow</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>] {
+  ...
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleErrorWith</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+}</span></code></pre>
+    <p>Immediately I have a few questions, if the errors are handled, why does it return the exact same type?
+    Furthermore if this is really supposed to handle errors, what happens if I have errors in the <code>E =&gt; F[A]</code> function? 
+    This is even more blatant in the <code>attempt</code> function:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">attempt</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>]]
+}</span></code></pre>
+    <p>Here there is no way the outer <code>F</code> still has any errors, so why does it have the same type?
+    Shouldn&#39;t we represent the fact that we handled all the errors in the type system?
+    This means you can&#39;t actually observe that the errors are now inside <code>Either</code>. That leads to this being fully legal code:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="comment">// import cats.implicits._
+</span><span>
+</span><span class="type-name">Option</span><span>(</span><span class="number-literal">42</span><span>).</span><span class="identifier">attempt</span><span>.</span><span class="identifier">attempt</span><span>.</span><span class="identifier">attempt</span><span>.</span><span class="identifier">attempt</span><span>
+</span><span class="comment">// res0: Option[Either[Unit,Either[Unit,Either[Unit,Either[Unit,Int]]]]] = Some(Right(Right(Right(Right(42)))))</span></code></pre>
+    <p>Another example that demonstrates this is the fact that calling <code>handleError</code>, which looks like this:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">handleError</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+    <p>also returns an <code>F[A]</code>. This method takes a pure function <code>E =&gt; A</code> and thus can not fail during recovery like <code>handleErrorWith</code>, yet it still doesn&#39;t give us any sign that it doesn&#39;t throw errors.
+    For <code>IO</code>-like types this is somewhat excusable as something like an unexceptional <code>IO</code> is still very uncommon, but for simple data types like <code>Either</code> or <code>Some</code> that function should just return an <code>A</code>, since that&#39;s the only thing it can be.
+    Just like with <code>attempt</code>, we can infinitely chain calls to <code>handleError</code>, as it will never change the type.</p>
+    <p>Ideally our type system should stop us from being able to write this nonsensical code and give us a way to show anyone reading the code that we&#39;ve already handled errors.
+    Now I&#39;m not saying that the functions on <code>MonadError</code> aren&#39;t useful, but only that they could be more constrained and thus more accurate in their representation. </p>
+    <p>For this purpose let&#39;s try to write a different <code>MonadError</code> type class, one that&#39;s designed to leverage the type system to show when values are error-free, we&#39;ll call it <code>MonadBlunder</code> for now.</p>
+    <p>To mitigate the problems with <code>MonadError</code> we have a few options, the first one I&#39;d like to present is using two different type constructors to represent types that might fail and types that are guaranteed not to. So instead of only a single type constructor our <code>MonadBlunder</code> class will have two:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>]</span></code></pre>
+    <p>Our type class now has the shape <code>(* -&gt; *) -&gt; (* -&gt; *) -&gt; * -&gt; *</code>, which is quite a handful, but I believe we can justify its usefulness.
+    The first type parameter <code>F[_]</code> will represent our error-handling type, which will be able to yield values of type <code>E</code>.
+    The second type parameter <code>G[_]</code> will represent a corresponding type that does not allow any errors and can therefore guarantee that computations of the form <code>G[A]</code> will always yield a value of type <code>A</code>.</p>
+    <p>Now that we figured out the shape, let&#39;s see what we can actually do with it.
+    For throwing errors, we&#39;ll create a <code>raiseError</code> function that should return a value inside <code>F</code>, as it will obviously be able to yield an error.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">raiseError</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">e</span><span>: </span><span class="type-name">E</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+}</span></code></pre>
+    <p>This definition looks identical to the one defined one <code>MonadError</code> so let&#39;s move on to error-handling.
+    For handled errors, we want to return a value inside <code>G</code>, so our <code>handleErrorWith</code> function should indeed return a <code>G[A]</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] {
+  ...
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleErrorWith</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>]
+}</span></code></pre>
+    <p>Looks good so far, right? 
+    Well, we still have the problem that <code>f</code> might return an erronous value, so if we want to guarantee that the result won&#39;t have any errors, we&#39;ll have to change that to <code>G[A]</code> as well:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] {
+  ...
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleErrorWith</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>]
+}</span></code></pre>
+    <p>And now we&#39;re off to a pretty good start, we fixed one short coming of <code>MonadError</code> with this approach.</p>
+    <p>Another approach, maybe more obvious to some, might be to require the type constructor to take two arguments, one for the value and one for the error type.
+    Let&#39;s see if we can define <code>raiseError</code> on top of it:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">raiseError</span><span>[</span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>](</span><span class="identifier">e</span><span>: </span><span class="type-name">E</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>]
+
+  ...
+}</span></code></pre>
+    <p>This looks pretty similar to what we already have, though now we have the guarantee that our type doesn&#39;t actually &quot;hide&quot; the error-type somewhere.
+    Next up is <code>handleErrorWith</code>. Ideally after we handled the error we should again get back a type that signals that it doesn&#39;t have any errors. 
+    We can do exactly that by choosing an unhabited type like <code>Nothing</code> as our error-type:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>]] {
+  ...
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleErrorWith</span><span>[</span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">Nothing</span><span>, </span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Nothing</span><span>, </span><span class="type-name">A</span><span>]
+}</span></code></pre>
+    <p>And this approach works as well, however now we&#39;ve forced the two type parameter shape onto implementors. This <code>MonadBlunder</code> has the following kind <code>(* -&gt; * -&gt; *) -&gt; *</code>.
+    This means we can very easily define instances for types with two type parameters like <code>Either</code>.
+    However, one issue might be that it&#39;s much easier to fit a type with two type parameters onto a type class that expects a single type constructor <code>(* -&gt; *)</code> than to do it the other way around.</p>
+    <p>For example try to implement the above <code>MonadBlunder[F[_, _]]</code> for the standard <code>cats.effect.IO</code>.
+    It&#39;s not going to be simple, whereas with the first encoding we can easily encode both <code>Either</code> and <code>IO</code>. For this reason, I will continue this article with the first encoding using the two different type constructors.</p>
+    <p>Next we&#39;re going to look at laws we can define to make sense of the behaviour we want.
+    The first two laws should be fairly obvious. 
+    If we <code>flatMap</code> over a value created by <code>raiseError</code> it shouldn&#39;t propogate:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">raiseErrorStops</span><span>(</span><span class="identifier">e</span><span>: </span><span class="type-name">E</span><span>, </span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Boolean</span><span> =
+  </span><span class="type-name">F</span><span>.</span><span class="identifier">raiseError</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">e</span><span>).</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">f</span><span>) === </span><span class="type-name">F</span><span>.</span><span class="identifier">raiseError</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">e</span><span>)</span></code></pre>
+    <p>Next we&#39;re going to formulate a law that states, that raising an error and then immediatly handling it with a given function should be equivalent to just calling that function on the error value:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">raiseErrorHandleErrorWith</span><span>(</span><span class="identifier">e</span><span>: </span><span class="type-name">E</span><span>, </span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Boolean</span><span> =
+  </span><span class="identifier">raiseError</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">e</span><span>).</span><span class="identifier">handleErrorWith</span><span>(</span><span class="identifier">f</span><span>) === </span><span class="identifier">f</span><span>(</span><span class="identifier">e</span><span>)</span></code></pre>
+    <p>Another law could state that handling errors for a pure value lifted into the <code>F</code> context does nothing and is equal to the pure value in the <code>G</code> context:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">handleErrorPureIsPure</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Boolean</span><span> =
+  </span><span class="identifier">a</span><span>.</span><span class="identifier">pure</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">handleErrorWith</span><span>(</span><span class="identifier">f</span><span>) === </span><span class="identifier">a</span><span>.</span><span class="identifier">pure</span><span>[</span><span class="type-name">G</span><span>]</span></code></pre>
+    <p>Those should be good for now, but we&#39;ll be able to find more when we add more derived functions to our type class.
+    Also note that none of the laws are set in stone, these are just the ones I came up with for now, it&#39;s completely possible that we&#39;ll need to revise these in the future.</p>
+    <p>Now let&#39;s focus on adding extra functions to our type class. <code>MonadError</code> offer us a bunch of derived methods that can be really useful. For most of those however we need access to methods like <code>flatMap</code> for both <code>F</code> and <code>G</code>, so before we figure out derived combinators, let&#39;s revisit how exactly we define the type class.</p>
+    <p>The easiest would be to give both <code>F</code> and <code>G</code> a <code>Monad</code> constraint and move on. 
+    But then we&#39;d have two type classes that both define a <code>raiseError</code> function extends <code>Monad</code>, and we wouldn&#39;t be able to use them together, since that would cause ambiguities and as I&#39;ve said before, the functions on <code>MonadError</code> are useful in some cases.</p>
+    <p>Instead, since I don&#39;t really like duplication and the fact that we&#39;re not going to deprecate <code>MonadError</code> overnight, I decided to extend <code>MonadBlunder</code> from <code>MonadError</code> for the <code>F</code> type, to get access to the <code>raiseError</code> function.
+    If <code>raiseError</code> and <code>handleErrorWith</code> were instead separated into separate type classes (as is currently the case in the PureScript prelude), we could extend only the <code>raiseError</code> part.
+    This also allows us to define laws that our counterparts of functions like <code>attempt</code> and <code>ensure</code> are consistent with the ones defined on <code>MonadError</code>.
+    So the type signature now looks like this (expressed in Haskell, since it&#39;s easier on the eyes):</p>
+    <pre><code class="nohighlight"><span class="identifier">class</span><span> (</span><span class="type-name">MonadError</span><span> </span><span class="identifier">f</span><span> </span><span class="identifier">e</span><span>, </span><span class="type-name">Monad</span><span> </span><span class="identifier">g</span><span>) =&gt; </span><span class="type-name">MonadBlunder</span><span> </span><span class="identifier">f</span><span> </span><span class="identifier">g</span><span> </span><span class="identifier">e</span><span> |&nbsp;</span><span class="identifier">f</span><span> -&gt; </span><span class="identifier">e</span><span>, </span><span class="identifier">f</span><span> -&gt; </span><span class="identifier">g</span><span> </span><span class="keyword">where</span><span>
+  ...</span></code></pre>
+    <p>In Scala, we can&#39;t express this as nicely, so we&#39;re going to have to use something close to the <code>cats-mtl</code> encoding:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">monadErrorF</span><span>: </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>]
+  </span><span class="keyword">val</span><span> </span><span class="identifier">monadG</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">G</span><span>]
+  
+  ...
+}</span></code></pre>
+    <p>Now since this means that any instance of <code>MonadBlunder</code> will also have an instance of <code>MonadError</code> on <code>F</code>, we might want to rename the functions we&#39;ve got so far.
+    Here&#39;s a complete definition of what we&#39;ve come up with with <code>raiseError</code> removed and <code>handleErrorWith</code> renamed to <code>handleBlunderWith</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">monadErrorF</span><span>: </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>]
+  </span><span class="keyword">val</span><span> </span><span class="identifier">monadG</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">G</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleBlunderWith</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>]
+}</span></code></pre>
+    <p>Now let us go back to defining more derived functions for <code>MonadBlunder</code>.
+    The easiest probably being <code>handleError</code>, so let&#39;s see if we can come up with a good alternative:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] {
+  ...
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleBlunder</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>] = 
+    </span><span class="identifier">handleBlunderWith</span><span>(</span><span class="identifier">fa</span><span>)(</span><span class="identifier">f</span><span> </span><span class="identifier">andThen</span><span> (</span><span class="identifier">_</span><span>.</span><span class="identifier">pure</span><span>[</span><span class="type-name">G</span><span>]))
+}</span></code></pre>
+    <p>This one is almost exactly like <code>handleBlunderWith</code>, but takes a function from <code>E</code> to <code>A</code> instead of to <code>G[A]</code>. We can easily reuse <code>handleBlunderWith</code> by using <code>pure</code> to go back to <code>E =&gt; G[A]</code>.</p>
+    <p>Next another function that&#39;s really useful is <code>attempt</code>.
+    Our alternative, let&#39;s call it <code>endeavor</code> for now, should return a value in <code>G</code> instead, which doesn&#39;t have a <code>MonadError</code> instance and therefore can not make any additional calls to <code>endeavor</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] {
+  ...
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">endeavor</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">G</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>]] =
+    </span><span class="identifier">handleBlunder</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">map</span><span>(</span><span class="type-name">Right</span><span>(</span><span class="identifier">_</span><span>)))(</span><span class="type-name">Left</span><span>(</span><span class="identifier">_</span><span>))
+}</span></code></pre>
+    <p>The implementation is fairly straightforward as well, we just handle all the errors by lifting them into the left side of an <code>Either</code> and map successful values to the right side of <code>Either</code>.</p>
+    <p>Next, let&#39;s look at the dual to <code>attempt</code>, called <code>rethrow</code> in Cats. 
+    For <code>MonadError</code> it turns an <code>F[Either[E, A]]</code> back into an <code>F</code>, but we&#39;re going to use our unexceptional type again:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] {
+  ...
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">absolve</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">G</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] = ???
+}</span></code></pre>
+    <p>But looking at this signature, we quickly realize that we need a way to get back to <code>F[A]</code> from <code>G[A]</code>.
+    So we&#39;re going to add another function to our minimal definition:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">monadErrorF</span><span>: </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>]
+  </span><span class="keyword">val</span><span> </span><span class="identifier">monadG</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">G</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleBlunderWith</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">accept</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">ga</span><span>: </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+
+}</span></code></pre>
+    <p>This function <code>accept</code>, allows us to lift any value without errors into a context where errors might be present.</p>
+    <p>We can now formulate a law that values in <code>G</code> never stop propagating, so <code>flatMap</code> should always work, we do this by specifying that calling <code>handleBlunder</code> after calling <code>accept</code> on any <code>G[A]</code>, is never going to actually change the value:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">gNeverHasErrors</span><span>(</span><span class="identifier">ga</span><span>: </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">Boolean</span><span> =
+  </span><span class="identifier">accept</span><span>(</span><span class="identifier">ga</span><span>).</span><span class="identifier">handleBlunder</span><span>(</span><span class="identifier">f</span><span>) === </span><span class="identifier">ga</span></code></pre>
+    <p>Now we can go back to implementing the <code>absolve</code> function:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">absolve</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">gea</span><span>: </span><span class="type-name">G</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="identifier">accept</span><span>(</span><span class="identifier">gea</span><span>).</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">fold</span><span>(</span><span class="identifier">raiseError</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">_</span><span>.</span><span class="identifier">pure</span><span>[</span><span class="type-name">F</span><span>]))</span></code></pre>
+    <p>Now that we&#39;ve got the equivalent of both <code>attempt</code> and <code>rethrow</code>, let&#39;s add a law that states that the two should cancel each other out:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">endeavorAbsolve</span><span>(</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Boolean</span><span> =
+  </span><span class="identifier">absolve</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">endeavor</span><span>) === </span><span class="identifier">fa</span></code></pre>
+    <p>We can also add laws so that <code>handleBlunder</code> and <code>endeavor</code> are consistent with their counterparts now that we have <code>accept</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">deriveHandleError</span><span>(</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">Boolean</span><span> =
+  </span><span class="identifier">accept</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">handleBlunder</span><span>(</span><span class="identifier">f</span><span>)) === </span><span class="identifier">fa</span><span>.</span><span class="identifier">handleError</span><span>(</span><span class="identifier">f</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">deriveAttempt</span><span>(</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Boolean</span><span> =
+  </span><span class="identifier">accept</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">endeavor</span><span>) === </span><span class="identifier">fa</span><span>.</span><span class="identifier">attempt</span></code></pre>
+    <p>One nice thing about <code>attempt</code>, is that it&#39;s really easy to add a derivative combinator that doesn&#39;t go to <code>F[Either[E, A]]</code>, but to the isomorphic monad transformer <code>EitherT[F, E, A]</code>.
+    We can do the exact same thing with <code>endeavor</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">endeavorT</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">G</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>] =
+  </span><span class="type-name">EitherT</span><span>(</span><span class="identifier">endeavor</span><span>(</span><span class="identifier">fa</span><span>))</span></code></pre>
+    <p>One last combinator I&#39;d like to &quot;port&quot; from <code>MonadError</code> is the <code>ensureOr</code> function.
+    <code>ensureOr</code> turns a successful value into an error if it does not satisfy a given predicate.
+    We&#39;re going to name the counterpart <code>assureOr</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">assureOr</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">ga</span><span>: </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">error</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">E</span><span>)(</span><span class="identifier">predicate</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">Boolean</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="identifier">accept</span><span>(</span><span class="identifier">ga</span><span>).</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">a</span><span> =&gt;
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">predicate</span><span>(</span><span class="identifier">a</span><span>)) </span><span class="identifier">a</span><span>.</span><span class="identifier">pure</span><span>[</span><span class="type-name">F</span><span>] </span><span class="keyword">else</span><span> </span><span class="identifier">raiseError</span><span>(</span><span class="identifier">error</span><span>(</span><span class="identifier">a</span><span>))
+  )</span></code></pre>
+    <p>This plays nicely with the rest of our combinators and we can again add a law that dictates it must be consistent with <code>ensureOr</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">deriveEnsureOr</span><span>(</span><span class="identifier">ga</span><span>: </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">error</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">E</span><span>)(</span><span class="identifier">predicate</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">Boolean</span><span>): </span><span class="type-name">Boolean</span><span> =
+  </span><span class="identifier">ensureOr</span><span>(</span><span class="identifier">accept</span><span>(</span><span class="identifier">ga</span><span>))(</span><span class="identifier">error</span><span>)(</span><span class="identifier">predicate</span><span>) === </span><span class="identifier">assureOr</span><span>(</span><span class="identifier">ga</span><span>)(</span><span class="identifier">error</span><span>)(</span><span class="identifier">predicate</span><span>)</span></code></pre>
+    <p>Now we have a great base to work with laws that should guarantee principled and sensible behaviour.
+    Next we&#39;ll actually start defining some instances for our type class.</p>
+    <p>The easiest definitions are for <code>Either</code> and <code>Option</code>, though I&#39;m not going to cover both, as the instances for <code>Option</code> can simply be derived by <code>Either[Unit, A]</code>and I&#39;m going to link to the code at the end.
+    For <code>Either[E, A]</code>, when we handle all errors of type <code>E</code>, all we end up with is <code>A</code>, so the corresponding <code>G</code> type for our instance should be <code>Id</code>.
+    That leaves us with the following definition:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">monadBlunderEither</span><span>[</span><span class="type-name">E</span><span>]: </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">E</span><span>, ?], </span><span class="type-name">Id</span><span>, </span><span class="type-name">E</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">E</span><span>, ?], </span><span class="type-name">Id</span><span>, </span><span class="type-name">E</span><span>] {
+    </span><span class="keyword">val</span><span> </span><span class="identifier">monadErrorF</span><span> = </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">E</span><span>, ?], </span><span class="type-name">E</span><span>]
+    </span><span class="keyword">val</span><span> </span><span class="identifier">monadG</span><span> = </span><span class="type-name">Monad</span><span>[</span><span class="type-name">Id</span><span>]
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleBlunderWith</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = </span><span class="identifier">fa</span><span> </span><span class="keyword">match</span><span> {
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Left</span><span>(</span><span class="identifier">e</span><span>) =&gt; </span><span class="identifier">f</span><span>(</span><span class="identifier">e</span><span>)
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Right</span><span>(</span><span class="identifier">a</span><span>) =&gt; </span><span class="identifier">a</span><span>
+    }
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">accept</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">ga</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Either</span><span>[</span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>] = </span><span class="type-name">Right</span><span>(</span><span class="identifier">ga</span><span>)
+  }</span></code></pre>
+    <p>Fairly straightforward, as <code>Id[A]</code> is just <code>A</code>, but with this instance we can already see a small part of the power we gain over <code>MonadError</code>.
+    When we handle errors with <code>handleBlunder</code>, we&#39;re no longer &quot;stuck&quot; inside the <code>Either</code> Monad, but instead have a guarantee that our value is free of errors.
+    Sometimes it&#39;ll make sense to stay inside <code>Either</code>, but we can easily get back into <code>Either</code>, so we have full control over what we want to do.</p>
+    <p>Next up, we&#39;ll look at <code>IO</code> and the type that inspired this whole blog post <code>UIO</code>.
+    <code>UIO</code> is equivalent to an <code>IO</code> type where all errors are handled and is short for &quot;unexceptional IO&quot;.
+    <code>UIO</code> currently lives inside my own <code>cats-uio</code> library, but if things go well, we might see it inside <code>cats-effect</code> eventually. This would also work for <code>IO</code> types who use two type parameters <code>IO[E, A]</code> where the first represents the error type and the second the actual value. There you&#39;d choose <code>IO[E, A]</code> as the <code>F</code> type and <code>IO[Nothing, A]</code> as the <code>G</code> type. <code>IO[Nothing, A]</code> there is equivalent to <code>UIO[A]</code>.</p>
+    <p>As one might expect, you can not simply go from <code>IO[A]</code> to <code>UIO[A]</code>, but we&#39;ll need to go from <code>IO[A]</code> to <code>UIO[Either[E, A]]</code> instead, which if you look at it, is exactly the definition of <code>endeavor</code>.
+    Now let&#39;s have a look at how the <code>MonadBlunder</code> instance for <code>IO</code> and <code>UIO</code> looks:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">monadBlunderIO</span><span>: </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">UIO</span><span>, </span><span class="type-name">Throwable</span><span>] = 
+  </span><span class="keyword">new</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">UIO</span><span>, </span><span class="type-name">Throwable</span><span>] {
+    </span><span class="keyword">val</span><span> </span><span class="identifier">monadErrorF</span><span> = </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Throwable</span><span>]
+    </span><span class="keyword">val</span><span> </span><span class="identifier">monadG</span><span> = </span><span class="type-name">Monad</span><span>[</span><span class="type-name">UIO</span><span>]
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleBlunderWith</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">Throwable</span><span> =&gt; </span><span class="type-name">UIO</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">UIO</span><span>[</span><span class="type-name">A</span><span>] =
+      </span><span class="type-name">UIO</span><span>.</span><span class="identifier">unsafeFromIO</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">handleErrorWith</span><span>(</span><span class="identifier">f</span><span> </span><span class="identifier">andThen</span><span> </span><span class="identifier">accept</span><span>))
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">accept</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">ga</span><span>: </span><span class="type-name">UIO</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">UIO</span><span>.</span><span class="identifier">runUIO</span><span>(</span><span class="identifier">ga</span><span>)
+  }</span></code></pre>
+    <p>And voila! We&#39;ve got a fully working implementation that will allow us to switch between these two types whenever we have a guarantee that all errors are handled.
+    This makes a lot of things much simpler.
+    For example, if one wants to use <code>bracket</code> with <code>UIO</code>, you just need to <code>flatMap</code> to the finalizer, as <code>flatMap</code> is always guaranteed to not short-circuit.</p>
+    <p>We can also define instances for <code>EitherT</code> and <code>OptionT</code> (being isomorphic to <code>EitherT[F, Unit, A]</code>), where the corresponding unexceptional type is just the outer <code>F</code>, so <code>endeavor</code> is just a call to <code>.value</code>: </p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">catsEndeavorForEitherT</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>, </span><span class="type-name">E</span><span>]: </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, ?], </span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, ?], </span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>] {
+    </span><span class="keyword">val</span><span> </span><span class="identifier">monadErrorF</span><span> = </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, ?], </span><span class="type-name">E</span><span>]
+    </span><span class="keyword">val</span><span> </span><span class="identifier">monadG</span><span> = </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>]
+
+    </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">endeavor</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>]] =
+      </span><span class="identifier">fa</span><span>.</span><span class="identifier">value</span><span>
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleBlunderWith</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] =
+      </span><span class="identifier">fa</span><span>.</span><span class="identifier">value</span><span>.</span><span class="identifier">flatMap</span><span> {
+        </span><span class="keyword">case</span><span> </span><span class="type-name">Left</span><span>(</span><span class="identifier">e</span><span>) =&gt; </span><span class="identifier">f</span><span>(</span><span class="identifier">e</span><span>)
+        </span><span class="keyword">case</span><span> </span><span class="type-name">Right</span><span>(</span><span class="identifier">a</span><span>) =&gt; </span><span class="identifier">a</span><span>.</span><span class="identifier">pure</span><span>[</span><span class="type-name">F</span><span>]
+      }
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">accept</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">ga</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>] =
+      </span><span class="type-name">EitherT</span><span>.</span><span class="identifier">liftF</span><span>(</span><span class="identifier">ga</span><span>)
+
+  }</span></code></pre>
+    <p>Finally, it&#39;s also possible to create instances for other standard monad transformers like <code>WriterT</code>, <code>ReaderT</code> or <code>StateT</code> as long as their underlying monads themselves have instances for <code>MonadBlunder</code>, as is typical in mtl.
+    As their implementations are very similar we&#39;ll only show the <code>StateT</code> transformer instance:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">catsEndeavorForStateT</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">S</span><span>, </span><span class="type-name">E</span><span>]
+  (</span><span class="keyword">implicit</span><span> </span><span class="type-name">M</span><span>: </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">G</span><span>, </span><span class="type-name">E</span><span>]): </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, ?], </span><span class="type-name">StateT</span><span>[</span><span class="type-name">G</span><span>, </span><span class="type-name">S</span><span>, ?], </span><span class="type-name">E</span><span>] =
+    </span><span class="keyword">new</span><span> </span><span class="type-name">MonadBlunder</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, ?], </span><span class="type-name">StateT</span><span>[</span><span class="type-name">G</span><span>, </span><span class="type-name">S</span><span>, ?], </span><span class="type-name">E</span><span>] {
+      </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>] = </span><span class="type-name">M</span><span>.</span><span class="identifier">monadErrorF</span><span>
+      </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">G</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">G</span><span>] = </span><span class="type-name">M</span><span>.</span><span class="identifier">monadG</span><span>
+
+      </span><span class="keyword">val</span><span> </span><span class="identifier">monadErrorF</span><span> = </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, ?], </span><span class="type-name">E</span><span>]
+      </span><span class="keyword">val</span><span> </span><span class="identifier">monadG</span><span> = </span><span class="type-name">Monad</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">G</span><span>, </span><span class="type-name">S</span><span>, ?]]
+
+      </span><span class="keyword">def</span><span> </span><span class="declaration-name">accept</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">ga</span><span>: </span><span class="type-name">StateT</span><span>[</span><span class="type-name">G</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>]): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>] = </span><span class="identifier">ga</span><span>.</span><span class="identifier">mapK</span><span>(</span><span class="keyword">new</span><span> (</span><span class="type-name">G</span><span> ~&gt; </span><span class="type-name">F</span><span>) {
+        </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">ga</span><span>: </span><span class="type-name">G</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">T</span><span>] = </span><span class="type-name">M</span><span>.</span><span class="identifier">accept</span><span>(</span><span class="identifier">ga</span><span>)
+      })
+
+      </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleBlunderWith</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">StateT</span><span>[</span><span class="type-name">G</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>]): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">G</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>] =
+        </span><span class="type-name">IndexedStateT</span><span>(</span><span class="identifier">s</span><span> =&gt; </span><span class="type-name">M</span><span>.</span><span class="identifier">handleBlunderWith</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">run</span><span>(</span><span class="identifier">s</span><span>))(</span><span class="identifier">e</span><span> =&gt; </span><span class="identifier">f</span><span>(</span><span class="identifier">e</span><span>).</span><span class="identifier">run</span><span>(</span><span class="identifier">s</span><span>)))
+
+    }</span></code></pre>
+    <p>In practice this means we can call <code>handleBlunderWith</code> on things like <code>StateT[IO, S, A]</code> and get back a <code>StateT[UIO, S, A]</code>. Pretty neat!
+    You can also create instances for pretty much any <code>MonadError</code> using <code>Unexceptional</code>, e.g.: <code>MonadBlunder[Future, Unexceptional[Future, ?], Throwable]</code>. The <code>Unexceptional</code> type is designed to turn any erroring type into one that doesn&#39;t throw errors by catching them with <code>attempt</code>. </p>
+    
+    <h2 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h2>
+    <p>In this article, I&#39;ve tried to present the argument that <code>MonadError</code> is insufficient for principled error handling.
+    We also tried to build a solution that deals with the shortcomings described earlier.
+    Thereby it seeks not to replace, but to expand on <code>MonadError</code> to get a great variety of error handling capabilities.
+    I believe the <code>MonadBlunder</code> type class, or whatever it will be renamed to, can be a great addition not just to the Cats community, but to the functional community at large, especially as it&#39;s much easier to express in languages like <code>PureScript</code> and <code>Haskell</code>.</p>
+    <p>For now, all of the code lives inside the <a href="https://github.com/LukaJCB/cats-uio">cats-uio repo</a>, which houses the <code>MonadBlunder</code> type class the <code>UIO</code> data type and the <code>Unexceptional</code> data type.
+    I hope that this blog post gave a motivation as to why I created the library and why it might be nice to adopt some of its features into the core typelevel libraries.</p>
+    <p>Note again, that none of this is final or set in stone and before it arrives anywhere might still change a lot, especially in regards to naming (which I&#39;m not really happy with at the moment), so if you have any feedback of any sorts, please do chime in! Would love to hear your thoughts and thank you for reading this far!</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/LukaJCB.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Luka Jacobowitz</strong>
+              
+              <br />
+              Luka is a functional programmer in love with finding great abstractions to engineering problems. He’s also a maintainer of several typelevel projects and seeks to make learning of pure functional programming as easy as possible.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/LukaJCB">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Optimizing Tagless Final – Saying farewell to Free</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Optimizing Tagless Final – Saying farewell to Free</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Luka Jacobowitz<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on December 27, 2017
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="optimizing-tagless-final-saying-farewell-to-free" class="title">Optimizing Tagless Final – Saying farewell to Free</h1>
+    <p>The Tagless Final encoding has gained some steam recently, with some people hailing 2017 as the year of Tagless Final.
+    Being conceptually similar to the Free Monad, different comparisons have been brought up and the one trade-off that always comes up is the lack or the difficulty of inspection of tagless final programs and in fact, I couldn&#39;t find a single example on the web.
+    This seems to make sense, as programs in the tagless final encoding aren&#39;t values, like programs expressed in terms of free structures. 
+    However, in this blog post, I&#39;d like to dispell the myth that inspecting and optimizing tagless final programs is more difficult than using <code>Free</code>.</p>
+    <p>Without further ado, let&#39;s get into it, starting with our example algebra, a very simple key-value store:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">put</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+}</span></code></pre>
+    <p>To get the easiest example out of the way, here&#39;s how to achieve parallelism in a tagless final program:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">program</span><span>[</span><span class="type-name">M</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">FlatMap</span><span>, </span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>)(</span><span class="type-name">K</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">M</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="type-name">P</span><span>: </span><span class="type-name">Parallel</span><span>[</span><span class="type-name">M</span><span>, </span><span class="type-name">F</span><span>]) =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="type-name">K</span><span>.</span><span class="identifier">put</span><span>(</span><span class="string-literal">&quot;A&quot;</span><span>, </span><span class="identifier">a</span><span>)
+    </span><span class="identifier">x</span><span> &lt;- (</span><span class="type-name">K</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;B&quot;</span><span>), </span><span class="type-name">K</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;C&quot;</span><span>)).</span><span class="identifier">parMapN</span><span>(</span><span class="identifier">_</span><span> |+| </span><span class="identifier">_</span><span>)
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="type-name">K</span><span>.</span><span class="identifier">put</span><span>(</span><span class="string-literal">&quot;X&quot;</span><span>, </span><span class="identifier">x</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="string-literal">&quot;-&quot;</span><span>))
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">x</span></code></pre>
+    <p>This programs makes use of the <code>cats.Parallel</code> type class, that allows us to make use of the <code>parMapN</code> combinator to use independent computations with a related <code>Applicative</code> type. This is already much simpler than doing the same thing with <code>Free</code> and <code>FreeApplicative</code>. For more info on <code>Parallel</code> check out the cats docs <a href="https://typelevel.org/cats/typeclasses/parallel.html">here</a>.</p>
+    <p>However this is kind of like cheating, we&#39;re not really inspecting the structure of our program at all, so let&#39;s look at an example where we actually have access to the structure to do optimizations with.</p>
+    <p>Let&#39;s say we have the following program:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">program</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Apply</span><span>](</span><span class="type-name">F</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] =
+    (</span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;Cats&quot;</span><span>), </span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;Dogs&quot;</span><span>), </span><span class="type-name">F</span><span>.</span><span class="identifier">put</span><span>(</span><span class="string-literal">&quot;Mice&quot;</span><span>, </span><span class="string-literal">&quot;42&quot;</span><span>), </span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;Cats&quot;</span><span>))
+      .</span><span class="identifier">mapN</span><span>((</span><span class="identifier">f</span><span>, </span><span class="identifier">s</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">t</span><span>) =&gt; </span><span class="type-name">List</span><span>(</span><span class="identifier">f</span><span>, </span><span class="identifier">s</span><span>, </span><span class="identifier">t</span><span>).</span><span class="identifier">flatten</span><span>)</span></code></pre>
+    <p>Not a very exciting program, but it has some definite optimization potential.
+    Right now, if our KVStore implementation is an asynchronous one with a network boundary, our program will make 4 network requests sequentially if interpreted with the standard <code>Apply</code> instance of something like <code>cats.effect.IO</code>.
+    We also have a duplicate request with the <code>&quot;Cats&quot;</code>-key.</p>
+    <p>So let&#39;s look at what we could potentially do about this.
+    The first thing we should do, is extract the static information.
+    The easiest way to do so, is to interpret it into something we can use using a <code>Monoid</code>.
+    This is essentially equivalent to the <code>analyze</code> function commonly found on <code>FreeApplicative</code>.</p>
+    <p>Getting this done, is actually quite simple, as we can use <code>cats.Const</code> as our <code>Applicative</code> data type, whenever the lefthand side of <code>Const</code> is a <code>Monoid</code>. 
+    I.e. if <code>M</code> has a <code>Monoid</code> instance, <code>Const[M, A]</code> has an <code>Applicative</code> instance.
+    You can read more about <code>Const</code> <a href="https://typelevel.org/cats/datatypes/const.html">here</a>.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">analysisInterpreter</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">Const</span><span>[(</span><span class="type-name">Set</span><span>[</span><span class="type-name">String</span><span>], </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]), ?]] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">Const</span><span>[(</span><span class="type-name">Set</span><span>[</span><span class="type-name">String</span><span>], </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]), ?]] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>) = </span><span class="type-name">Const</span><span>((</span><span class="type-name">Set</span><span>(</span><span class="identifier">key</span><span>), </span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>))
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">put</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>) = </span><span class="type-name">Const</span><span>((</span><span class="type-name">Set</span><span>.</span><span class="identifier">empty</span><span>, </span><span class="type-name">Map</span><span>(</span><span class="identifier">key</span><span> -&gt; </span><span class="identifier">a</span><span>)))
+  }
+
+</span><span class="identifier">program</span><span>(</span><span class="identifier">analysisInterpreter</span><span>).</span><span class="identifier">getConst</span><span>
+</span><span class="comment">// res0: (Set[String], Map[String,String]) = (Set(Cats, Dogs),Map(Mice -&gt; 42))</span></code></pre>
+    <p>By using a Tuple of <code>Set</code> and <code>Map</code> as our <code>Monoid</code>, we now get all the unique keys for our <code>get</code> and <code>put</code> operations.
+    Next, we can use this information to recreate our program in an optimized way.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">optimizedProgram</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>](</span><span class="type-name">F</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] = {
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">gets</span><span>, </span><span class="identifier">puts</span><span>) = </span><span class="identifier">program</span><span>(</span><span class="identifier">analysisInterpreter</span><span>).</span><span class="identifier">getConst</span><span>
+
+  </span><span class="identifier">puts</span><span>.</span><span class="identifier">toList</span><span>.</span><span class="identifier">traverse</span><span> { </span><span class="keyword">case</span><span> (</span><span class="identifier">k</span><span>, </span><span class="identifier">v</span><span>) =&gt; </span><span class="type-name">F</span><span>.</span><span class="identifier">put</span><span>(</span><span class="identifier">k</span><span>, </span><span class="identifier">v</span><span>) } 
+    *&gt; </span><span class="identifier">gets</span><span>.</span><span class="identifier">toList</span><span>.</span><span class="identifier">traverse</span><span>(</span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">flatten</span><span>)
+}</span></code></pre>
+    <p>And we got our first very simple optimization.
+    It&#39;s not much, but we can imagine the power of this technique.
+    For example, if we were using something like <code>GraphQL</code>, we could sum all of our <code>get</code> requests into one large request, so only one network roundtrip is made.
+    We could imagine similar things for other use cases, e.g. if we&#39;re querying a bunch of team members that all belong to the same team, it might make sense to just make one request to all the team&#39;s members instead of requesting them all individually.</p>
+    <p>Other more complex optimizations could involve writing a new interpreter with the information we gained from our static analysis.
+    One could also precompute some of the computations and then create a new interpreter with those computations in mind.</p>
+    <p>Embedding our Applicative program inside a larger monadic program is also trivial:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">program</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Apply</span><span>](</span><span class="identifier">mouse</span><span>: </span><span class="type-name">String</span><span>)(</span><span class="type-name">F</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] =
+  (</span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;Cats&quot;</span><span>), </span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;Dogs&quot;</span><span>), </span><span class="type-name">F</span><span>.</span><span class="identifier">put</span><span>(</span><span class="string-literal">&quot;Mice&quot;</span><span>, </span><span class="identifier">mouse</span><span>), </span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;Cats&quot;</span><span>))
+    .</span><span class="identifier">mapN</span><span>((</span><span class="identifier">f</span><span>, </span><span class="identifier">s</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">t</span><span>) =&gt; </span><span class="type-name">List</span><span>(</span><span class="identifier">f</span><span>, </span><span class="identifier">s</span><span>, </span><span class="identifier">t</span><span>).</span><span class="identifier">flatten</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">optimizedProgram</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>](</span><span class="identifier">mouse</span><span>: </span><span class="type-name">String</span><span>)(</span><span class="type-name">F</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] = {
+  </span><span class="keyword">val</span><span> (</span><span class="identifier">gets</span><span>, </span><span class="identifier">puts</span><span>) = </span><span class="identifier">program</span><span>(</span><span class="identifier">mouse</span><span>)(</span><span class="identifier">analysisInterpreter</span><span>).</span><span class="identifier">getConst</span><span>
+
+  </span><span class="identifier">puts</span><span>.</span><span class="identifier">toList</span><span>.</span><span class="identifier">traverse</span><span> { </span><span class="keyword">case</span><span> (</span><span class="identifier">k</span><span>, </span><span class="identifier">v</span><span>) =&gt; </span><span class="type-name">F</span><span>.</span><span class="identifier">put</span><span>(</span><span class="identifier">k</span><span>, </span><span class="identifier">v</span><span>) } 
+    *&gt; </span><span class="identifier">gets</span><span>.</span><span class="identifier">toList</span><span>.</span><span class="identifier">traverse</span><span>(</span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">flatten</span><span>)
+}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">monadicProgram</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>](</span><span class="type-name">F</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="keyword">for</span><span> {
+  </span><span class="identifier">mouse</span><span> &lt;- </span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;Mice&quot;</span><span>)
+  </span><span class="identifier">list</span><span> &lt;- </span><span class="identifier">optimizedProgram</span><span>(</span><span class="identifier">mouse</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="string-literal">&quot;64&quot;</span><span>))(</span><span class="type-name">F</span><span>)
+  </span><span class="identifier">_</span><span> &lt;- </span><span class="type-name">F</span><span>.</span><span class="identifier">put</span><span>(</span><span class="string-literal">&quot;Birds&quot;</span><span>, </span><span class="identifier">list</span><span>.</span><span class="identifier">headOption</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="string-literal">&quot;128&quot;</span><span>))
+} </span><span class="keyword">yield</span><span> ()</span></code></pre>
+    <p>Here we refactor our <code>optimizedProgram</code> to take an extra parameter <code>mouse</code>. Then in our larger <code>monadicProgram</code>, we perform a <code>get</code> operation and then apply its result to <code>optimizedProgram</code>.</p>
+    <p>So now we have a way to optimize our one specific program, next we should see if we can introduce some abstraction.
+    Sadly Scala lacks Rank-N types, which makes this a bit difficult as we&#39;ll see.</p>
+    <p>First we&#39;ll have to look at the shape of a generic program, they usually are functions from an interpreter <code>Algebra[F]</code> to an expression inside the type constructor <code>F</code>, such as <code>F[A]</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">Program</span><span>[</span><span class="type-name">Alg</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]], </span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>] = </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>] =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+    <p>The problem of Rank-N types becomes apparent when we want to write a function where we interpret our program with two different interpreters, as we did before when interpreting into <code>Const</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">optimize</span><span>[</span><span class="type-name">Alg</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]], </span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>, </span><span class="type-name">A</span><span>, </span><span class="type-name">M</span><span>: </span><span class="type-name">Monoid</span><span>]
+  (</span><span class="identifier">program</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>] =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])
+  (</span><span class="identifier">extract</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">Const</span><span>[</span><span class="type-name">M</span><span>, ?]])
+  (</span><span class="identifier">restructure</span><span>: </span><span class="type-name">M</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>] =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] = { </span><span class="identifier">interp</span><span> =&gt;
+
+    </span><span class="keyword">val</span><span> </span><span class="identifier">m</span><span> = </span><span class="identifier">program</span><span>(</span><span class="identifier">extract</span><span>).</span><span class="identifier">getConst</span><span> </span><span class="comment">// error: type mismatch;
+</span><span>    </span><span class="comment">// found   : extract.type (with underlying type Alg[[β$0$]cats.data.Const[M,β$0$]])
+</span><span>    </span><span class="comment">// required: Alg[F]
+</span><span>
+    </span><span class="identifier">restructure</span><span>(</span><span class="identifier">m</span><span>)
+  }</span></code></pre>
+    <p>So, because of the lack of Rank-N types, this simple definition for our program is not enough to say that our program works for ALL type constructors <code>F[_]: Applicative</code>.</p>
+    <p>Fortunately there is a workaround, albeit requiring a bit more boilerplate:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Program</span><span>[</span><span class="type-name">Alg</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]], </span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>](</span><span class="identifier">interpreter</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>]) : </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">optimize</span><span>[</span><span class="type-name">Alg</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]], </span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>, </span><span class="type-name">A</span><span>, </span><span class="type-name">M</span><span>: </span><span class="type-name">Monoid</span><span>]
+  (</span><span class="identifier">program</span><span>: </span><span class="type-name">Program</span><span>[</span><span class="type-name">Alg</span><span>, </span><span class="type-name">A</span><span>])
+  (</span><span class="identifier">extract</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">Const</span><span>[</span><span class="type-name">M</span><span>, ?]])
+  (</span><span class="identifier">restructure</span><span>: </span><span class="type-name">M</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>] =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] = { </span><span class="identifier">interp</span><span> =&gt;
+    </span><span class="keyword">val</span><span> </span><span class="identifier">m</span><span> = </span><span class="identifier">program</span><span>(</span><span class="identifier">extract</span><span>).</span><span class="identifier">getConst</span><span>
+
+    </span><span class="identifier">restructure</span><span>(</span><span class="identifier">m</span><span>)
+  }</span></code></pre>
+    <p>And now it should compile without a problem.
+    Now we should be able to express our original optimization with this new generic approach:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">program</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Apply</span><span>](</span><span class="identifier">mouse</span><span>: </span><span class="type-name">String</span><span>)(</span><span class="type-name">F</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] =
+  (</span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;Cats&quot;</span><span>), </span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;Dogs&quot;</span><span>), </span><span class="type-name">F</span><span>.</span><span class="identifier">put</span><span>(</span><span class="string-literal">&quot;Mice&quot;</span><span>, </span><span class="identifier">mouse</span><span>), </span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;Cats&quot;</span><span>))
+    .</span><span class="identifier">mapN</span><span>((</span><span class="identifier">f</span><span>, </span><span class="identifier">s</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">t</span><span>) =&gt; </span><span class="type-name">List</span><span>(</span><span class="identifier">f</span><span>, </span><span class="identifier">s</span><span>, </span><span class="identifier">t</span><span>).</span><span class="identifier">flatten</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">wrappedProgram</span><span>(</span><span class="identifier">mouse</span><span>: </span><span class="type-name">String</span><span>) = </span><span class="keyword">new</span><span> </span><span class="type-name">Program</span><span>[</span><span class="type-name">KVStore</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>](</span><span class="identifier">alg</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] = </span><span class="identifier">program</span><span>(</span><span class="identifier">mouse</span><span>)(</span><span class="identifier">alg</span><span>)
+}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">optimizedProgram</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>](</span><span class="identifier">mouse</span><span>: </span><span class="type-name">String</span><span>)(</span><span class="type-name">F</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>] =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] = 
+  </span><span class="identifier">optimize</span><span>(</span><span class="identifier">wrappedProgram</span><span>(</span><span class="identifier">mouse</span><span>))(</span><span class="identifier">analysisInterpreter</span><span>) { </span><span class="keyword">case</span><span> (</span><span class="identifier">gets</span><span>, </span><span class="identifier">puts</span><span>) =&gt;
+    </span><span class="identifier">puts</span><span>.</span><span class="identifier">toList</span><span>.</span><span class="identifier">traverse</span><span> { </span><span class="keyword">case</span><span> (</span><span class="identifier">k</span><span>, </span><span class="identifier">v</span><span>) =&gt; </span><span class="type-name">F</span><span>.</span><span class="identifier">put</span><span>(</span><span class="identifier">k</span><span>, </span><span class="identifier">v</span><span>) } *&gt; </span><span class="identifier">gets</span><span>.</span><span class="identifier">toList</span><span>.</span><span class="identifier">traverseFilter</span><span>(</span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>)
+  }</span></code></pre>
+    <p>So far so good, we&#39;ve managed to write a function to generically optimize tagless final programs.
+    However, one of the main advantages of tagless final is that implementation and logic should be separate concerns.
+    With what we have right now, we&#39;re violating the separation, by mixing the optimization part with the program logic part.
+    Our optimization should be handled by the interpreter, just as the sequencing of individual steps of a monadic program is the job of the target <code>Monad</code> instance.</p>
+    <p>One way to go forward, is to create a typeclass that requires certain algebras to be optimizable.
+    This typeclass could be written using the generic function we wrote before, so let&#39;s see what we can come up with:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Optimizer</span><span>[</span><span class="type-name">Alg</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]], </span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">M</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">monoidM</span><span>: </span><span class="type-name">Monoid</span><span>[</span><span class="type-name">M</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">monadF</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">extract</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">Const</span><span>[</span><span class="type-name">M</span><span>, ?]]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">rebuild</span><span>(</span><span class="identifier">m</span><span>: </span><span class="type-name">M</span><span>, </span><span class="identifier">interpreter</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>]]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">optimize</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">p</span><span>: </span><span class="type-name">Program</span><span>[</span><span class="type-name">Alg</span><span>, </span><span class="type-name">A</span><span>]): </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>] =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] = { </span><span class="identifier">interpreter</span><span> =&gt;
+    </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">M</span><span>: </span><span class="type-name">Monoid</span><span>[</span><span class="type-name">M</span><span>] = </span><span class="identifier">monoidM</span><span>
+    </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>] = </span><span class="identifier">monadF</span><span>
+
+    </span><span class="keyword">val</span><span> </span><span class="identifier">m</span><span>: </span><span class="type-name">M</span><span> = </span><span class="identifier">p</span><span>(</span><span class="identifier">extract</span><span>).</span><span class="identifier">getConst</span><span>
+
+    </span><span class="identifier">rebuild</span><span>(</span><span class="identifier">m</span><span>, </span><span class="identifier">interpreter</span><span>).</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">interp</span><span> =&gt; </span><span class="identifier">p</span><span>(</span><span class="identifier">interp</span><span>))
+  }
+}</span></code></pre>
+    <p>This might look a bit daunting at first, but we&#39;ll go through it bit by bit.
+    First we define our type class <code>Optimizer</code> parameterized by an algebra <code>Alg[_[_]]</code> and a type constructor <code>F[_]</code>.
+    This means we can define different optimizations for different algebras and different target types.
+    For example, we might want a different optimization for a production <code>Optimizer[KVStore, EitherT[Task, E, ?]]</code> and a testing <code>Optimizer[KVStore, Id]</code>.
+    Next, for our interpreter we need a <code>Monoid M</code> for our static analysis, however we don&#39;t to parameterize our <code>Optimizer</code> with an extra type parameter, since the actual type of <code>M</code> isn&#39;t necessary for the API, so we use an abstract type member instead.</p>
+    <p>Next we need actual <code>Monoid</code> and <code>Monad</code> instances for <code>F[_]</code> and <code>M</code> respectively.
+    The other two functions should seem familiar, the <code>extract</code> function defines an interpreter to get an <code>M</code> out of our program.
+    The <code>rebuild</code> function takes that value of <code>M</code> and the interpreter and produces an <code>F[Alg[F]]</code>, which can be understood as an <code>F</code> of an interpreter.
+    This means that we can statically analyze a program and then use the result of that to create a new optimized interpreter and this is exactly what the <code>optimize</code> function does.
+    This is also why we needed the <code>Monad</code> constraint on <code>F</code>, we could also get away with returning just a new interpreter <code>Alg[F]</code> from the <code>rebuild</code> method and get away with an <code>Applicative</code> constraint, but we can do more different things this way.</p>
+    <p>We&#39;ll also define some quick syntax sugar for this type class to make using it a tiny bit more ergonomic.</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">OptimizerOps</span><span>[</span><span class="type-name">Alg</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]], </span><span class="type-name">A</span><span>](</span><span class="keyword">val</span><span> </span><span class="identifier">value</span><span>: </span><span class="type-name">Program</span><span>[</span><span class="type-name">Alg</span><span>, </span><span class="type-name">A</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyVal</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">optimize</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>](</span><span class="identifier">interp</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="type-name">O</span><span>: </span><span class="type-name">Optimizer</span><span>[</span><span class="type-name">Alg</span><span>, </span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] =
+    </span><span class="type-name">O</span><span>.</span><span class="identifier">optimize</span><span>(</span><span class="identifier">value</span><span>)(</span><span class="identifier">interp</span><span>)
+}</span></code></pre>
+    <p>Let&#39;s see what our program would look like with this new functionality:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">monadicProgram</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>](</span><span class="type-name">F</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="type-name">O</span><span>: </span><span class="type-name">Optimizer</span><span>[</span><span class="type-name">KVStore</span><span>, </span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="keyword">for</span><span> {
+  </span><span class="identifier">mouse</span><span> &lt;- </span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;Mice&quot;</span><span>)
+  </span><span class="identifier">list</span><span> &lt;- </span><span class="identifier">wrappedProgram</span><span>(</span><span class="identifier">mouse</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="string-literal">&quot;64&quot;</span><span>)).</span><span class="identifier">optimize</span><span>(</span><span class="type-name">F</span><span>)
+  </span><span class="identifier">_</span><span> &lt;- </span><span class="type-name">F</span><span>.</span><span class="identifier">put</span><span>(</span><span class="string-literal">&quot;Birds&quot;</span><span>, </span><span class="identifier">list</span><span>.</span><span class="identifier">headOption</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="string-literal">&quot;128&quot;</span><span>))
+} </span><span class="keyword">yield</span><span> ()</span></code></pre>
+    <p>Looking good so far, now all we need to run this is an actual instance of <code>Optimizer</code>.
+    We&#39;ll use a Monix <code>Task</code> for this and for simplicity our new optimization will only look at the <code>get</code> operations:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">kvStoreTaskOptimizer</span><span>: </span><span class="type-name">Optimizer</span><span>[</span><span class="type-name">KVStore</span><span>, </span><span class="type-name">Task</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">Optimizer</span><span>[</span><span class="type-name">KVStore</span><span>, </span><span class="type-name">Task</span><span>] {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">M</span><span> = </span><span class="type-name">Set</span><span>[</span><span class="type-name">String</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">monoidM</span><span> = </span><span class="identifier">implicitly</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">monadF</span><span> = </span><span class="identifier">implicitly</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">extract</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">Const</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">String</span><span>], ?]] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>) = </span><span class="type-name">Const</span><span>(</span><span class="type-name">Set</span><span>(</span><span class="identifier">key</span><span>))
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">put</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Const</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">String</span><span>], </span><span class="type-name">Unit</span><span>] = </span><span class="type-name">Const</span><span>(</span><span class="type-name">Set</span><span>.</span><span class="identifier">empty</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">rebuild</span><span>(</span><span class="identifier">gs</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">String</span><span>], </span><span class="identifier">interp</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">Task</span><span>]): </span><span class="type-name">Task</span><span>[</span><span class="type-name">KVStore</span><span>[</span><span class="type-name">Task</span><span>]] =
+    </span><span class="identifier">gs</span><span>.</span><span class="identifier">toList</span><span>
+      .</span><span class="identifier">parTraverse</span><span>(</span><span class="identifier">key</span><span> =&gt; </span><span class="identifier">interp</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">s</span><span> =&gt; (</span><span class="identifier">key</span><span>, </span><span class="identifier">s</span><span>))))
+      .</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">flattenOption</span><span>.</span><span class="identifier">toMap</span><span>)
+      .</span><span class="identifier">map</span><span> { </span><span class="identifier">m</span><span> =&gt;
+        </span><span class="keyword">new</span><span> </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">Task</span><span>] {
+          </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>) = </span><span class="identifier">m</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>) </span><span class="keyword">match</span><span> {
+            </span><span class="keyword">case</span><span> </span><span class="identifier">v</span><span> @ </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>) =&gt; </span><span class="identifier">v</span><span>.</span><span class="identifier">pure</span><span>[</span><span class="type-name">Task</span><span>]
+            </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="identifier">interp</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>)
+          }
+
+          </span><span class="keyword">def</span><span> </span><span class="declaration-name">put</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Task</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="identifier">interp</span><span>.</span><span class="identifier">put</span><span>(</span><span class="identifier">key</span><span>, </span><span class="identifier">a</span><span>)
+        }
+      }
+
+}</span></code></pre>
+    <p>Our <code>Monoid</code> type is just a simple <code>Set[String]</code> here, as the <code>extract</code> function will only extract the <code>get</code> operations inside the <code>Set</code>.
+    Then with the <code>rebuild</code> we build up our new interpreter.
+    First we want to precompute all the values of the program.
+    To do so, we just run all the operations in parallel and put them into a <code>Map</code>, while discarding values where the <code>get</code> operation returned <code>None</code>.
+    Now when we have that precomputed <code>Map</code>, we&#39;ll create a new interpreter with it, that will check if the key given to <code>get</code> operation is in the precomputed <code>Map</code> instead of performing an actual request.
+    We can then lift the value into a <code>Task[Option[String]]</code>.
+    For all the <code>put</code> operations, we&#39;ll simply run the interpreter.</p>
+    <p>Now we should have a great optimizer for <code>KVStore</code> programs interpreted into a <code>Task</code>.
+    Let&#39;s see how we did by interpreting into a silly implementation that only prints whenever you use one of the operations:</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">TestInterpreter</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">Task</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Task</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]] = </span><span class="type-name">Task</span><span> {
+
+    </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Hit network for &quot;</span><span> + </span><span class="identifier">key</span><span>)
+
+    </span><span class="type-name">Option</span><span>(</span><span class="identifier">key</span><span> + </span><span class="string-literal">&quot;!&quot;</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">put</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Task</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="type-name">Task</span><span> {
+    </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Put something: &quot;</span><span> + </span><span class="identifier">a</span><span>)
+
+    ()
+  }
+}</span></code></pre>
+    <p>Now let&#39;s run our program with this interpreter and the optimizations!</p>
+    <pre><code class="nohighlight"><span class="identifier">monadicProgram</span><span>(</span><span class="type-name">TestInterpreter</span><span>).</span><span class="identifier">runAsync</span><span>
+</span><span class="comment">// Hit network for Mice
+// Hit network for Cats
+// Hit network for Dogs
+// Put something: Mice!
+// Put something: Cats!</span></code></pre>
+    <p>And it works, we&#39;ve now got a principled way to write programs that can then be potentially optimized.</p>
+    
+    <h2 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h2>
+    <p>Designing a way to completely separate the problem description from the actual problem solution is fairly difficult. The tagless final encoding allows us one such fairly simple way.
+    Using the technique described in this blog post, we should be able to have even more control over the problem solution by inspecting the structure of our program statically.
+    We&#39;ve seen a few roadblocks along the way, such as the lack of Rank-N types in Scala, but we might be able to come up with a macro for that in the future, making it even more ergonomic.
+    Another thing we haven&#39;t covered here, are programs with multiple algebras, which is quite a bit more complex as you can surely imagine, maybe that will be the topic of a follow up blog post.</p>
+    <p>The code is published <a href="https://github.com/LukaJCB/sphynx">right here</a>, but might still change after getting a feeling for which API feels best.</p>
+    <p>What kind of problems and techniques would you like to see with regards to tagless final?
+    Would love to hear from you in the comments!</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/LukaJCB.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Luka Jacobowitz</strong>
+              
+              <br />
+              Luka is a functional programmer in love with finding great abstractions to engineering problems. He’s also a maintainer of several typelevel projects and seeks to make learning of pure functional programming as easy as possible.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/LukaJCB">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

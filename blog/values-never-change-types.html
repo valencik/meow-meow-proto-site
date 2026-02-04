@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Values never change types</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Values never change types</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on July 30, 2015
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="values-never-change-types" class="title">Values never change types</h1>
+    <p><em>This is the sixth of a series of articles on “Type Parameters and
+    Type Members”.  If you haven’t yet, you should
+    <a href="type-members-parameters.html">start at the beginning</a>,
+    which introduces code we refer to throughout this article without
+    further ado.</em></p>
+    <p>In a subtyping language such as Java or Scala, first-class
+    existentials are a helpful ally for modeling values and methods that
+    abstract over subtypes in different ways.  In a language with
+    mutation, such as Java or Scala, existentials help deal with certain
+    kinds of state changes without violating type safety.</p>
+    <p>But values, <em>themselves</em>, never change types.  When you first practice
+    with existentials, the Java and Scala compilers seem to become
+    veritable minefields of type errors—do something slightly different in
+    your code, and everything falls apart.  But this is just about
+    <a href="http://blog.higher-order.com/blog/2014/12/21/maximally-powerful/">nothing being a free lunch</a>:
+    <strong>the wide variety of values meeting any given existential type,
+    combined with the possibility for mutation, means a sound typechecker
+    must be very conservative about what it permits when using those
+    values</strong>.</p>
+    <p>So, in this article, we’ll explore some of these type error pitfalls,
+    see why it’s perfectly reasonable for the compilers to complain about
+    these pieces of code, and fix the errors using the equivalence rules
+    we’ve learned about in previous articles.  This is a big topic, so in
+    the next article, we’ll talk about taking advantage of the freedoms
+    that the compilers are concerned about in this one.</p>
+    
+    <h2 id="aliasing-prevents-replacement" class="section"><a class="anchor-link" href="#aliasing-prevents-replacement"><code class="fas fa-link fa-sm"></code></a>Aliasing prevents replacement</h2>
+    <p>Let’s say you have a list of strings, <code>strs:&nbsp;List[String]</code>.  But you
+    want that value to change: you want it to be a <code>List[Int]</code> instead.
+    Maybe every value in the list parses to an integer and you want to
+    “map in place”; maybe you want to use <code>-1</code> for every string that can’t
+    be parsed.</p>
+    <p>Generic systems like those of Java, Scala, and the ML family don’t let
+    you do this for a few reasons.</p>
+    <p>First, with regard to structures like <code>List</code>, let’s suppose we are
+    adding this feature to the type system, and that the list has type
+    <code>List[String]</code> before replacement, and <code>List[Int]</code> after.  What type
+    does it have when we’re halfway done?  The type system requires us to
+    <em>guarantee</em> that there are no strings, only ints, left once we’re
+    done; how do we track our progress?  Remember that vague promises of
+    “I tested the code” are meaningless to the type system; you have to
+    <em>prove</em> it mathematically.  This is a solvable problem, but the known
+    solutions far complicate the type system beyond the design goals of
+    these languages: the cost is far too high for the benefit.</p>
+    <p>Second, let us suppose that we’ve solved the first problem.  Or, let
+    us suppose that we introduce a structure for which this isn’t a
+    problem.</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">OneThing</span><span>[</span><span class="type-name">T</span><span>](</span><span class="keyword">var</span><span> </span><span class="identifier">value</span><span>: </span><span class="type-name">T</span><span>)</span></code></pre>
+    <p>There, no chance of “halfway done” there!  But something else happens.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">strs</span><span>: </span><span class="type-name">OneThing</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">OneThing</span><span>(</span><span class="string-literal">&quot;hi&quot;</span><span>)
+</span><span class="identifier">strs</span><span>.</span><span class="identifier">value</span><span> = </span><span class="number-literal">42</span><span>
+</span><span class="comment">// won&#39;t compile, just a thought experiment</span></code></pre>
+    <p>Now, presumably, completely aside from the value, the variable <code>strs</code>
+    has <em>changed types</em> to <code>OneThing[Int]</code>.  Not just the value in it, the
+    variable itself.  OK, so what if that variable came from someplace
+    else?</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">replaceWithInt</span><span>(</span><span class="identifier">ote</span><span>: </span><span class="type-name">OneThing</span><span>[</span><span class="identifier">_</span><span>]): </span><span class="type-name">Unit</span><span> =
+  </span><span class="identifier">t</span><span>.</span><span class="identifier">value</span><span> = </span><span class="number-literal">42</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">strs</span><span>: </span><span class="type-name">OneThing</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">OneThing</span><span>(</span><span class="string-literal">&quot;hi&quot;</span><span>)
+</span><span class="identifier">replaceWithInt</span><span>(</span><span class="identifier">strs</span><span>)
+</span><span class="comment">// also won&#39;t compile, thought experiment</span></code></pre>
+    <p>Now, the type of <code>replaceWithInt</code> must contain a note that “by the
+    way, the type of <code>ote</code>, and any variables that refer to it, and any
+    variables that refer to <em>those</em> variables, and so on until it stops,
+    will change as a result of this call”.</p>
+    <p>This is a problem of <em>aliases</em>, all the locations that may refer to a
+    value.  If you change the type of the value, you also have to update
+    every reference to it, at compile time!  This is <em>the&nbsp;type&nbsp;system</em>;
+    your promise that you have no other references is not good enough.
+    You have to <em>prove</em> it.</p>
+    <p>As with the previous problem, the known solutions to this problem
+    would complicate the type systems of Java and Scala beyond their
+    design goals.  In a sense, <strong>this aspect of their type systems can be
+    considered to encourage functional programming</strong>.  A type-changing map
+    that builds a new list of the new type, or what have you, instead of
+    mutating the old one, is <em>trivial</em> in the Java/Scala generics systems.
+    There are no chances of aliasing problems, because no one could
+    possibly have an unknown reference to the value you just constructed.
+    This is a even more obvious design choice in the ML family languages,
+    which make no secret of favoring functional programming.</p>
+    
+    <h2 id="assignment-rewrites-existentials" class="section"><a class="anchor-link" href="#assignment-rewrites-existentials"><code class="fas fa-link fa-sm"></code></a>Assignment rewrites existentials</h2>
+    <p><a href="method-equiv.html">We saw earlier</a> that a simple get from a
+    <code>List&lt;?&gt;</code>, followed by adding that value right back to the same list,
+    didn’t work, but if we took that <code>xs</code> and passed it to a
+    type-parameterized version, everything worked fine.  Why is that?</p>
+    <p>If you have a <em>mutable</em> variable of an existential type, the
+    existentialized part of the type may have different (type) values at
+    different parts of the program.  Let’s use
+    <a href="type-projection.html#a-good-reason-to-use-type-members">the <code>StSource</code> from the projection post</a>.
+    Note that the <code>S</code> member is existential, because we did not bind it.</p>
+    <pre><code class="nohighlight"><span class="keyword">var</span><span> </span><span class="identifier">mxs</span><span>: </span><span class="type-name">StSource</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">StSource</span><span>(</span><span class="number-literal">0</span><span>)(</span><span class="identifier">x</span><span> =&gt; (</span><span class="identifier">x</span><span>.</span><span class="identifier">toString</span><span>, </span><span class="identifier">x</span><span> + </span><span class="number-literal">1</span><span>))
+</span><span class="comment">// at this point in the program, the S is Int
+</span><span class="keyword">val</span><span> </span><span class="identifier">s1</span><span> = </span><span class="identifier">mxs</span><span>.</span><span class="identifier">init</span><span>
+</span><span class="comment">// now I&#39;m going to change mxs
+</span><span class="identifier">mxs</span><span> = </span><span class="type-name">StSource</span><span>(</span><span class="string-literal">&quot;ab&quot;</span><span>)(</span><span class="identifier">x</span><span> =&gt; (</span><span class="identifier">x</span><span>, </span><span class="identifier">x</span><span>.</span><span class="identifier">reverse</span><span>))
+</span><span class="comment">// at this point in the program, the S is String
+</span><span class="identifier">mxs</span><span>.</span><span class="identifier">emit</span><span>(</span><span class="identifier">s1</span><span>)
+
+</span><span class="type-name">TmTp6</span><span>.</span><span class="identifier">scala</span><span>:</span><span class="number-literal">14</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">tmtp6</span><span>.</span><span class="type-name">Tmtp4Funs</span><span>.</span><span class="identifier">s1</span><span>.</span><span class="keyword">type</span><span> (</span><span class="keyword">with</span><span> </span><span class="identifier">underlying</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">tmtp4</span><span>.</span><span class="type-name">StSource</span><span>[</span><span class="type-name">String</span><span>]#</span><span class="type-name">S</span><span>)
+ </span><span class="identifier">required</span><span>: </span><span class="identifier">_2</span><span>.</span><span class="type-name">S</span><span> </span><span class="identifier">where</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">_2</span><span>: </span><span class="identifier">tmtp4</span><span>.</span><span class="type-name">StSource</span><span>[</span><span class="type-name">String</span><span>]
+</span><span class="identifier">mxs</span><span>.</span><span class="identifier">emit</span><span>(</span><span class="identifier">s1</span><span>)
+         ^</span></code></pre>
+    <p>And it’s good that this happens, because the value we got from <code>init</code>
+    is definitely incompatible with the argument type to <code>emit</code>.</p>
+    <p>If we don’t want to track when this happens—and we certainly can’t
+    decide, in all cases, when a mutable variable such as this has been
+    overwritten so as to change its existentials, given the freedoms
+    afforded by Java—how can we treat a mutable variable with existentials
+    as safe?  The type system makes a simplifying assumption: <em>every
+    reference to the variable gets fresh values to fill in the
+    existentials</em>.</p>
+    <p>If it helps, you can think of a mutable variable as an <em>immutable</em>
+    variable that wraps its type with an extra layer.  In fact, that&#39;s
+    <a href="https://github.com/scala/scala/blob/v2.11.7/src/library/scala/runtime/ObjectRef.java#L14-L17">what scalac does when you capture a <code>var</code></a>.
+    So <code>mxs</code> is, in a sense, of type <code>Ref[StSource[String]]</code>, where</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Ref</span><span>[</span><span class="type-name">T</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">value</span><span>: </span><span class="type-name">T</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">update</span><span>(</span><span class="identifier">t</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">Unit</span><span>
+}</span></code></pre>
+    <p>So, by substitution, the variable <code>mxs</code> is really a pair of functions,
+    <code>()&nbsp;=&gt;&nbsp;StSource[String]</code> and <code>StSource[String]&nbsp;=&gt;&nbsp;Unit</code>.  The “getter”
+    returns <code>StSource[String]</code>; each time you invoke that getter, you
+    might get an <code>StSource[String]</code> with a different <code>S</code> member, because
+    the <code>forSome</code> effectively occurs inside the body, as described in
+    <a href="nested-existentials.html#what-if-we-list-different-existentials">the substitutions of “Nested existentials”</a>.</p>
+    <p>Of course, this means you can take advantage of this in your own
+    designs, to get <em>some</em> of the behavior of a type-changing value
+    mutation.  The use of variable references to delineate existentials
+    means that, even when we replace <code>mxs</code> above, the behavior of the
+    variable in the context of an instance hasn’t really changed, so
+    nothing about the containing value’s type has changed.  We thus
+    preserve our property, that values never change types.</p>
+    <p>When you make a single reference, it has to be consistent; subsequent
+    mutations have no effect on the value we got from that reference.  So
+    we can pass that reference somewhere that asserts that this doesn’t
+    happen in its own context, such as a type-parameterized
+    ≡<em>&lt;sub&gt;&lt;small&gt;m&lt;/small&gt;&lt;/sub&gt;</em> method.  If you have a mutable variable
+    of type <code>List&lt;T&gt;</code>, even if you don’t know what <code>T</code> is, you know that
+    any updates to that variable will keep the same <code>T</code>.</p>
+    
+    <h2 id="making-variables-read-only-matters" class="section"><a class="anchor-link" href="#making-variables-read-only-matters"><code class="fas fa-link fa-sm"></code></a>Making variables read-only matters</h2>
+    <p>If I change the variable to <code>final</code> in Java, and remove mutation, I
+    shouldn’t have this problem anymore.  Surprisingly, I do; this is what
+    happened in
+    <a href="method-equiv.html">the original <code>copyToZero</code> example</a>,
+    where the argument was declared <code>final</code>.  I assume that this is just a
+    simplifying assumption in <code>javac</code>, that the extra guarantee of
+    unchanging existentials offered by <code>final</code> isn’t understood by the
+    compiler.</p>
+    <p>In the case of Scala, though, <strong>when you are using existential type
+    members, Scala can understand the implications of an immutable
+    variable, declared with <code>val</code></strong>.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">imxs</span><span>: </span><span class="type-name">StSource</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">StSource</span><span>(</span><span class="number-literal">0</span><span>)(</span><span class="identifier">x</span><span> =&gt; (</span><span class="identifier">x</span><span>.</span><span class="identifier">toString</span><span>, </span><span class="identifier">x</span><span> + </span><span class="number-literal">1</span><span>))
+</span><span class="keyword">val</span><span> </span><span class="identifier">s1</span><span> = </span><span class="identifier">imxs</span><span>.</span><span class="identifier">init</span><span>
+</span><span class="comment">// you can do whatever you want here; the compiler will stop you from
+// changing imxs
+</span><span class="identifier">imxs</span><span>.</span><span class="identifier">emit</span><span>(</span><span class="identifier">s1</span><span>)</span></code></pre>
+    <p>It can’t pull off this trick for type parameters, having just as much
+    trouble as Java there.  So this is another reason for
+    <a href="type-members-parameters.html">our original rule of thumb</a>.</p>
+    
+    <h2 id="naming-the-existential" class="section"><a class="anchor-link" href="#naming-the-existential"><code class="fas fa-link fa-sm"></code></a>Naming the existential</h2>
+    <p>The benefit we get from
+    <a href="method-equiv.html">passing <code>copyToZeroP</code>’s argument to <code>copyToZeroT</code></a>
+    is that we <em>name</em> the existential for the single reference to the
+    argument that we make.  We name it <code>T</code> there, for the scope of its
+    invocation.</p>
+    <p>Likewise, in Scala, each <code>val</code> introduces, while it is in scope, each
+    existential member it has, as a type name.  There are
+    <a href="http://www.scala-lang.org/files/archive/spec/2.11/03-types.html#paths">a lot of rules in Scala</a>
+    for exactly when this happens, but you may want to simply experiment.
+    We got a hint of what that name is
+    <a href="type-projection.html#type-parameters-see-existentially">when we used <code>StSource</code> existentially in the REPL</a>.
+    Here’s the previous example again, with a type annotation for <code>s1</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">imxs</span><span>: </span><span class="type-name">StSource</span><span>[</span><span class="type-name">String</span><span>] = </span><span class="type-name">StSource</span><span>(</span><span class="number-literal">0</span><span>)(</span><span class="identifier">x</span><span> =&gt; (</span><span class="identifier">x</span><span>.</span><span class="identifier">toString</span><span>, </span><span class="identifier">x</span><span> + </span><span class="number-literal">1</span><span>))
+</span><span class="keyword">val</span><span> </span><span class="identifier">s1</span><span>: </span><span class="identifier">imxs</span><span>.</span><span class="type-name">S</span><span> = </span><span class="identifier">imxs</span><span>.</span><span class="identifier">init</span><span>
+</span><span class="identifier">imxs</span><span>.</span><span class="identifier">emit</span><span>(</span><span class="identifier">s1</span><span>)</span></code></pre>
+    <p>We have gained convenience, not power, with this <em>path-dependent
+    types</em> feature; we can always pass into a type-parameterized local
+    method, with only the inconvenience of having to write out the whole
+    polymorphic method and call dance.  Moreover, this is nowhere near
+    <a href="type-projection.html#a-failed-attempt-at-simplified-emitting">a solution to the type projection problem</a>;
+    there are too many things that a type parameter can do that we can’t
+    with this feature.  But we’ll dive into that in a later post.</p>
+    
+    <h2 id="by-name-existential-arguments-aren-t-equivalent" class="section"><a class="anchor-link" href="#by-name-existential-arguments-aren-t-equivalent"><code class="fas fa-link fa-sm"></code></a>By-name existential arguments aren’t equivalent!</h2>
+    <p>There is another little corner case in method equivalence to consider.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">copyToZeroNP</span><span>(</span><span class="identifier">xs</span><span>: =&gt; </span><span class="type-name">PList</span><span>[</span><span class="identifier">_</span><span>]): </span><span class="type-name">Unit</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">copyToZeroNT</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">xs</span><span>: =&gt; </span><span class="type-name">PList</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Unit</span></code></pre>
+    <p>These method types are not equivalent!  That’s because <code>copyToZeroNP</code>
+    can be called with a by-name <em>that evaluates to a list with a
+    different element type each time</em>; <code>copyToZeroNT</code> doesn’t allow this.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">time</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="identifier">_</span><span>] = {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">t</span><span> = </span><span class="type-name">System</span><span>.</span><span class="identifier">currentTimeMillis</span><span>
+  </span><span class="keyword">if</span><span> (</span><span class="identifier">t</span><span> % </span><span class="number-literal">2</span><span> == </span><span class="number-literal">0</span><span>) </span><span class="type-name">PCons</span><span>(</span><span class="string-literal">&quot;even&quot;</span><span>, </span><span class="type-name">PNil</span><span>())
+  </span><span class="keyword">else</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="number-literal">66</span><span>, </span><span class="type-name">PNil</span><span>())
+}
+
+</span><span class="identifier">copyToZeroNP</span><span>(</span><span class="identifier">time</span><span>)  </span><span class="comment">// ok
+</span><span class="identifier">copyToZeroNT</span><span>(</span><span class="identifier">time</span><span>)  </span><span class="comment">// not ok</span></code></pre>
+    <p>In effect, <code>=&gt;</code> is like a type constructor; we can think of these
+    arguments as <code>byname[PList[_]]</code> and <code>byname[PList[T]]</code>.  So we have
+    exactly the same problem as we had with
+    <a href="../todo/"><code>plenLength</code> and <code>plenLengthTP</code></a>.</p>
+    <p>Unfortunately,
+    <a href="https://issues.scala-lang.org/browse/SI-9419">Scala currently accepts this, where it shouldn’t</a>.</p>
+    <p>The difference between these two methods gives us a hint about working
+    with existentials: if we can shift the scope for a given existential
+    outside the function that keeps giving us different types on every
+    reference, we might have an easier time working with it, even if we
+    can’t change it to a <code>val</code>; maybe it needs to be lazy and not saved,
+    for example.  So, despite the occasional convenience of path-dependent
+    types, <strong>type parameterized methods are still your best friends when
+    working with existential types</strong>.</p>
+    <p>In
+    <a href="change-values.html">the next article, “To change types, change values”</a>,
+    we’ll look at some programs that make use of the two kinds of “type
+    changing” discussed above.  After that, we’ll finally talk about
+    methods that <em>return</em> values of existential type, rather than merely
+    taking them as arguments.</p>
+    <p><em>This article was tested with Scala 2.11.7.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

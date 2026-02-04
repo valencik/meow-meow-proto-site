@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>How to use Spire&#39;s Ops macros in your own project</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">How to use Spire&#39;s Ops macros in your own project</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Erik Osheim<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on October 13, 2013
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="how-to-use-spire-s-ops-macros-in-your-own-project" class="title">How to use Spire&#39;s Ops macros in your own project</h1>
+    
+    <h2 id="what-are-spire-s-ops-macros" class="section"><a class="anchor-link" href="#what-are-spire-s-ops-macros"><code class="fas fa-link fa-sm"></code></a>What are Spire&#39;s Ops macros?</h2>
+    <p>Spire&#39;s type classes abstract over very basic operators like <code>+</code> and
+    <code>*</code>.  These operations are normally very fast. This means that any
+    extra work that happens on a per-operation basis (like boxing or
+    object allocation) will cause generic code to be slower than its
+    direct equivalent.</p>
+    <p>Efficient, generic numeric programming is Spire&#39;s raison d&#39;être. We
+    have developed a set of Ops macros to avoid unnecessary object
+    instantiations at compile-time. This post explains how, and
+    illustrates how you can use these macros in your code!</p>
+    
+    <h2 id="how-implicit-operators-on-type-classes-usually-work" class="section"><a class="anchor-link" href="#how-implicit-operators-on-type-classes-usually-work"><code class="fas fa-link fa-sm"></code></a>How implicit operators on type classes usually work</h2>
+    <p>When using type classes in Scala, we rely on implicit conversions to
+    &quot;add&quot; operators to an otherwise generic type.</p>
+    <p>In this example, <code>A</code> is the generic type, <code>Ordering</code> is the type
+    class, and <code>&gt;</code> is the implicit operator. <code>foo1</code> is the code that the
+    programmer writes, and <code>foo4</code> is a translation of that code after
+    implicits are resolved, and syntactic sugar is expanded.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">math</span><span>.</span><span class="type-name">Ordering</span><span>
+</span><span class="keyword">import</span><span> </span><span class="type-name">Ordering</span><span>.</span><span class="type-name">Implicits</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">foo1</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Ordering</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">x</span><span> &gt; </span><span class="identifier">y</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">foo2</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Ordering</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">x</span><span> &gt; </span><span class="identifier">y</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">foo3</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Ordering</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">infixOrderingOps</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>)(</span><span class="identifier">ev</span><span>) &gt; </span><span class="identifier">y</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">foo4</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Ordering</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="keyword">new</span><span> </span><span class="identifier">ev</span><span>.</span><span class="type-name">Ops</span><span>(</span><span class="identifier">x</span><span>) &gt; </span><span class="identifier">y</span></code></pre>
+    <p>(This is actually slightly wrong. The expansion to <code>foo4</code> won&#39;t happen
+    until runtime, when <code>infixOrderingOps</code> is called. But it helps
+    illustrate the point.)</p>
+    <p>Notice that we instantiate an <code>ev.Ops</code> instance for every call to
+    <code>&gt;</code>. This is not a big deal in many cases, but for a call that is
+    normally quite fast it will add up when done many (e.g. millions) of
+    times.</p>
+    <p>It is possible to work around this:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">bar</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Ordering</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">ev</span><span>.</span><span class="identifier">gt</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)</span></code></pre>
+    <p>The <code>ev</code> parameter contains the method we actually want (<code>gt</code>), so
+    instead of instantiating <code>ev.Ops</code> this code calls <code>ev.gt</code> directly.
+    But this approach is ugly. Compare these two methods:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">qux1</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Field</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> =
+  ((</span><span class="identifier">x</span><span> </span><span class="identifier">pow</span><span> </span><span class="number-literal">2</span><span>) + (</span><span class="identifier">y</span><span> </span><span class="identifier">pow</span><span> </span><span class="number-literal">2</span><span>)).</span><span class="identifier">sqrt</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">qux2</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Field</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">ev</span><span>.</span><span class="identifier">sqrt</span><span>(</span><span class="identifier">ev</span><span>.</span><span class="identifier">plus</span><span>(</span><span class="identifier">ev</span><span>.</span><span class="identifier">pow</span><span>(</span><span class="identifier">x</span><span>, </span><span class="number-literal">2</span><span>), </span><span class="identifier">ev</span><span>.</span><span class="identifier">pow</span><span>(</span><span class="identifier">y</span><span>, </span><span class="number-literal">2</span><span>)))</span></code></pre>
+    <p>If you have trouble reading <code>qux2</code>, you are not alone.</p>
+    <p>At this point, it looks like we can either write clean, readable code
+    (<code>qux1</code>), or code defensively to avoid object allocations (<code>qux2</code>).
+    Most programmers will just choose one or the other (probably the
+    former) and go on with their lives.</p>
+    <p>However, since this issue affects Spire deeply, we spent a bit more
+    time looking at this problem to see what could be done.</p>
+    
+    <h2 id="having-our-cake-and-eating-it-too" class="section"><a class="anchor-link" href="#having-our-cake-and-eating-it-too"><code class="fas fa-link fa-sm"></code></a>Having our cake and eating it too</h2>
+    <p>Let&#39;s look at another example, to compare how the &quot;nice&quot; and &quot;fast&quot;
+    code snippets look after implicits are resolved:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">niceBefore</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Ring</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> =
+  (</span><span class="identifier">x</span><span> + </span><span class="identifier">y</span><span>) * </span><span class="identifier">z</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">niceAfter</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Ring</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">RingOps</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">RingOps</span><span>(</span><span class="identifier">x</span><span>)(</span><span class="identifier">ev</span><span>).+(</span><span class="identifier">y</span><span>))(</span><span class="identifier">ev</span><span>).*(</span><span class="identifier">z</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">fast</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Ring</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">ev</span><span>.</span><span class="identifier">times</span><span>(</span><span class="identifier">ev</span><span>.</span><span class="identifier">plus</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>), </span><span class="identifier">z</span><span>)</span></code></pre>
+    <p>As we can see, <code>niceAfter</code> and <code>fast</code> are actually quite similar. If
+    we wanted to transform <code>niceAfter</code> into <code>fast</code>, we&#39;d just have to:</p>
+    <ol class="arabic">
+      <li>
+        <p>Figure out the appropriate name for symbolic operators. In this
+        example, <code>+</code> becomes <code>plus</code> and <code>*</code> becomes <code>times</code>.</p>
+      </li>
+      <li>
+        <p>Rewrite the object instantiation and method call, calling the
+        method on <code>ev</code> instead and passing <code>x</code> and <code>y</code> as arguments. In
+        this example, <code>new Ops(x)(ev).foo(y)</code> becomes <code>ev.foo(x, y)</code>.</p>
+      </li>
+    </ol>
+    <p>In a nutshell, this transformation is what Spire&#39;s Ops macros do.</p>
+    
+    <h2 id="using-the-ops-macros" class="section"><a class="anchor-link" href="#using-the-ops-macros"><code class="fas fa-link fa-sm"></code></a>Using the Ops macros</h2>
+    <p>Your project must use Scala 2.10+ to be able to use macros.</p>
+    <p>To use Spire&#39;s Ops macros, you&#39;ll need to depend on the <code>spire-macros</code>
+    package. If you use SBT, you can do this by adding the following line
+    to <code>build.sbt</code>:</p>
+    <pre><code class="nohighlight"><span class="identifier">libraryDependencies</span><span> += </span><span class="string-literal">&quot;org.spire-math&quot;</span><span> %% </span><span class="string-literal">&quot;spire-macros&quot;</span><span> % </span><span class="string-literal">&quot;0.6.1&quot;</span></code></pre>
+    <p>You will also need to enable macros at the declaration site of your
+    ops classes:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">language</span><span>.</span><span class="identifier">experimental</span><span>.</span><span class="identifier">macros</span></code></pre>
+    
+    <h2 id="let-s-see-an-example" class="section"><a class="anchor-link" href="#let-s-see-an-example"><code class="fas fa-link fa-sm"></code></a>Let&#39;s see an example</h2>
+    <p>Consider <code>Sized</code>, a type class that abstracts over the notion of
+    having a size. Type class instances for <code>Char</code>, <code>Map</code>, and <code>List</code> are
+    provided in the companion object. Of course, users can also provide
+    their own instances.</p>
+    <p>Here&#39;s the code:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Sized</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">size</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Int</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">isEmpty</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">size</span><span>(</span><span class="identifier">a</span><span>) == </span><span class="number-literal">0</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">nonEmpty</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Boolean</span><span> = !</span><span class="identifier">isEmpty</span><span>(</span><span class="identifier">a</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">sizeCompare</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="identifier">size</span><span>(</span><span class="identifier">x</span><span>) </span><span class="identifier">compare</span><span> </span><span class="identifier">size</span><span>(</span><span class="identifier">y</span><span>)
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Sized</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">charSized</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Sized</span><span>[</span><span class="type-name">Char</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">size</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">Char</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="identifier">a</span><span>.</span><span class="identifier">toInt</span><span>
+  }
+
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">mapSized</span><span>[</span><span class="type-name">K</span><span>, </span><span class="type-name">V</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">Sized</span><span>[</span><span class="type-name">Map</span><span>[</span><span class="type-name">K</span><span>, </span><span class="type-name">V</span><span>]] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">size</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">K</span><span>, </span><span class="type-name">V</span><span>]): </span><span class="type-name">Int</span><span> = </span><span class="identifier">a</span><span>.</span><span class="identifier">size</span><span>
+  }
+
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">listSized</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">Sized</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">size</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Int</span><span> = </span><span class="identifier">a</span><span>.</span><span class="identifier">length</span><span>
+    </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">isEmpty</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">a</span><span>.</span><span class="identifier">isEmpty</span><span>
+    </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">sizeCompare</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">y</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Int</span><span> = (</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) </span><span class="keyword">match</span><span> {
+      </span><span class="keyword">case</span><span> (</span><span class="type-name">Nil</span><span>, </span><span class="type-name">Nil</span><span>) =&gt; </span><span class="number-literal">0</span><span>
+      </span><span class="keyword">case</span><span> (</span><span class="type-name">Nil</span><span>, </span><span class="identifier">_</span><span>) =&gt; -</span><span class="number-literal">1</span><span>
+      </span><span class="keyword">case</span><span> (</span><span class="identifier">_</span><span>, </span><span class="type-name">Nil</span><span>) =&gt; </span><span class="number-literal">1</span><span>
+      </span><span class="keyword">case</span><span> (</span><span class="identifier">_</span><span> :: </span><span class="identifier">xt</span><span>, </span><span class="identifier">_</span><span> :: </span><span class="identifier">yt</span><span>) =&gt; </span><span class="identifier">sizeCompare</span><span>(</span><span class="identifier">xt</span><span>, </span><span class="identifier">yt</span><span>)
+    }
+  }
+}</span></code></pre>
+    <p>(Notice that <code>Sized[List[A]]</code> overrides some of the &quot;default&quot;
+    implementations to be more efficient, since taking the full length of
+    a list is an O(n) operation.)</p>
+    <p>We&#39;d like to be able to call these methods directly on a generic type
+    <code>A</code> when we have an implicit instance of <code>Sized[A]</code> available. So
+    let&#39;s define a <code>SizedOps</code> class, using Spire&#39;s Ops macros:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">spire</span><span>.</span><span class="identifier">macrosk</span><span>.</span><span class="type-name">Ops</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">language</span><span>.</span><span class="identifier">experimental</span><span>.</span><span class="identifier">macros</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Implicits</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">SizedOps</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Sized</span><span>](</span><span class="identifier">lhs</span><span>: </span><span class="type-name">A</span><span>) {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">size</span><span>(): </span><span class="type-name">Int</span><span> = </span><span class="identifier">macro</span><span> </span><span class="type-name">Ops</span><span>.</span><span class="identifier">unop</span><span>[</span><span class="type-name">Int</span><span>]
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">isEmpty</span><span>(): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">macro</span><span> </span><span class="type-name">Ops</span><span>.</span><span class="identifier">unop</span><span>[</span><span class="type-name">Boolean</span><span>]
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">nonEmpty</span><span>(): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">macro</span><span> </span><span class="type-name">Ops</span><span>.</span><span class="identifier">unop</span><span>[</span><span class="type-name">Boolean</span><span>]
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">sizeCompare</span><span>(</span><span class="identifier">rhs</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="identifier">macro</span><span> </span><span class="type-name">Ops</span><span>.</span><span class="identifier">binop</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">Int</span><span>]
+  }
+}</span></code></pre>
+    <p>That&#39;s it!</p>
+    <p>Here&#39;s what it would look like to use this type class:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="type-name">Implicits</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">findSmallest</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Sized</span><span>](</span><span class="identifier">as</span><span>: </span><span class="type-name">Iterable</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">as</span><span>.</span><span class="identifier">reduceLeft</span><span> { (</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) =&gt;
+    </span><span class="keyword">if</span><span> ((</span><span class="identifier">x</span><span> </span><span class="identifier">sizeCompare</span><span> </span><span class="identifier">y</span><span>) &lt; </span><span class="number-literal">0</span><span>) </span><span class="identifier">x</span><span> </span><span class="keyword">else</span><span> </span><span class="identifier">y</span><span>
+  }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">compact</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Sized</span><span>](</span><span class="identifier">as</span><span>: </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="identifier">as</span><span>.</span><span class="identifier">filter</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">nonEmpty</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">totalSize</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Sized</span><span>](</span><span class="identifier">as</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">as</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="number-literal">0</span><span>)(</span><span class="identifier">_</span><span> + </span><span class="identifier">_</span><span>.</span><span class="identifier">size</span><span>)</span></code></pre>
+    <p>Not bad, eh?</p>
+    
+    <h2 id="the-fine-print" class="section"><a class="anchor-link" href="#the-fine-print"><code class="fas fa-link fa-sm"></code></a>The fine print</h2>
+    <p>Of course, there&#39;s always some fine-print.</p>
+    <p>In this case, the implicit class <strong>must</strong> use the same parameter names
+    as above. The constructor parameter to <code>SizedOps</code> <strong>must</strong> be called
+    <code>lhs</code> and the method parameter (if any) <strong>must</strong> be called
+    <code>rhs</code>. Also, unary operators (methods that take no parameters, like
+    <code>size</code>) <strong>must</strong> have parenthesis.</p>
+    <p>How the macros handle classes with multiple constructor parameters, or
+    multiple method parameters? They don&#39;t. We haven&#39;t needed to support
+    these kinds of exotic classes, but it would probably be easy to extend
+    Spire&#39;s Ops macros to support other shapes as well.</p>
+    <p>If you fail to follow these rules, or if your class has the wrong
+    shape, your code will fail to compile. So don&#39;t worry. If your code
+    compiles, it means you got it right!</p>
+    
+    <h2 id="symbolic-names" class="section"><a class="anchor-link" href="#symbolic-names"><code class="fas fa-link fa-sm"></code></a>Symbolic names</h2>
+    <p>The previous example illustrates rewriting method calls to avoid
+    allocations, but what about mapping symbolic operators to method
+    names?</p>
+    <p>Here&#39;s an example showing the mapping from <code>*</code> to <code>times</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">CanMultiply</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">times</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span>
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Implicits</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MultiplyOps</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">CanMultiply</span><span>](</span><span class="identifier">lhs</span><span>: </span><span class="type-name">A</span><span>) {
+    </span><span class="keyword">def</span><span> *(</span><span class="identifier">rhs</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = </span><span class="identifier">macro</span><span> </span><span class="type-name">Ops</span><span>.</span><span class="identifier">binop</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>]
+  }
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Example</span><span> {
+  </span><span class="keyword">import</span><span> </span><span class="type-name">Implicits</span><span>.</span><span class="identifier">_</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">gak</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">CanMultiply</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">as</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+    </span><span class="identifier">as</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="identifier">a</span><span>)(</span><span class="identifier">_</span><span> * </span><span class="identifier">_</span><span>)
+  }
+}</span></code></pre>
+    <p>Currently, the Ops macros have a large (but Spire-specific)
+    <a href="https://github.com/non/spire/blob/9eaa5c34549b7fe85c223f207f0790873075c048/macros/src/main/scala/spire/macros/Ops.scala#L143">mapping</a>
+    from symbols to names. However, your project may want to use different names
+    (or different symbols). What then?</p>
+    <p>For now, you are out of luck. In Spire 0.7.0, we plan to make it
+    possible to use your own mapping. This should make it easier for other
+    libraries that make heavy use of implicit symbolic operators
+    (e.g. Scalaz) to use these macros as well.</p>
+    
+    <h2 id="other-considerations" class="section"><a class="anchor-link" href="#other-considerations"><code class="fas fa-link fa-sm"></code></a>Other considerations</h2>
+    <p>You might wonder how the Ops macros interact with
+    specialization. Fortunately, macros are expanded before the
+    specialization phase. This means you don&#39;t need to worry about it! If
+    your type class is specialized, and you invoke the implicit from a
+    specialized (or non-generic) context, the result will be a specialized
+    call.</p>
+    <p>(Of course, using Scala&#39;s specialization is tricky, and deserves its
+    own blog post. The good news is that type classes are some of the
+    easiest structures to specialize correctly in Scala.)</p>
+    <p>Evaluating the macros at compile-time also means that if there are
+    problems with the macro, you&#39;ll find out about those at compile-time
+    as well. While we expect that many projects will benefit from the Ops
+    macros, they were designed specifically for Spire so it&#39;s possible
+    that your project will discover problems, or need new features.</p>
+    <p>If you do end up using these macros,
+    <a href="https://groups.google.com/forum/#!forum/spire-math">let us know how</a>
+    they work for you. If you have problems, please open an
+    <a href="https://github.com/non/spire/issues">issue</a>, and if you have bug
+    fixes (or new features) feel free to open a
+    <a href="https://github.com/non/spire/pulls">pull request</a>!</p>
+    
+    <h2 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h2>
+    <p>We are used to thinking about abstractions having a cost. So we often
+    end up doing mental accounting: &quot;Is it worth making this generic? Can
+    I afford this syntactic sugar? What will the runtime impact of this
+    code be?&quot; These condition us to expect that code can either be
+    beautiful or fast, but not both.</p>
+    <p>By removing the cost of implicit object instantiation, Spire&#39;s Ops
+    macros raise the abstraction ceiling. They allow us to make free use
+    of type classes without compromising performance. Our goal is to close
+    the gap between direct and generic performance, and to encourage the
+    widest possible use of generic types and type classes in Scala.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/non.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Erik Osheim</strong>
+              
+              <br />
+              Erik Osheim is one of the founders of Typelevel, and maintains several Scala libraries including Cats, Spire, and others. He hacks Scala for a living at Stripe, and is committed to having his cake and eating it too when it comes to functional programming. Besides programming he spends time playing music, drinking tea, and cycling around Providence, Rhode Island.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/non">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

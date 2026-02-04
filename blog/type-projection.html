@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Type projection isn&#39;t that specific</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Type projection isn&#39;t that specific</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on July 23, 2015
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="type-projection-isn-t-that-specific" class="title">Type projection isn&#39;t that specific</h1>
+    <p><em>This is the fourth of a series of articles on “Type Parameters and
+    Type Members”.  If you haven’t yet, you should
+    <a href="type-members-parameters.html">start at the beginning</a>,
+    which introduces code we refer to throughout this article without
+    further ado.</em></p>
+    <p>In the absence of the <code>Aux</code> trick presented at the end of
+    <a href="forget-refinement-aux.html">the previous article</a>,
+    the continuous use of structural refinement to accomplish basic tasks
+    admittedly imposes a high cognitive load.  That is to say, it’s a lot
+    of work to say something that ought to be very simple.</p>
+    <p>Some people go looking for a solution, and find something that almost
+    seems to make sense:
+    <a href="http://www.scala-lang.org/files/archive/spec/2.11/03-types.html#type-projection">type projection</a>,
+    or <code>MList#T</code> in terms of
+    <a href="type-members-parameters.html#two-lists-all-alike">our ongoing example</a>.
+    But <strong>type projection is, in almost all cases, too vague to really
+    solve problems you have using type members</strong>.</p>
+    
+    <h2 id="a-good-reason-to-use-type-members" class="section"><a class="anchor-link" href="#a-good-reason-to-use-type-members"><code class="fas fa-link fa-sm"></code></a>A good reason to use type members</h2>
+    <p>Let’s see a simple example.  Here’s a sort of “value emitter”, that
+    operates in the space of some state, emitting a new value with each
+    step.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">StSource</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">S</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">init</span><span>: </span><span class="type-name">S</span><span>            </span><span class="comment">// create the initial state
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">emit</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>): (</span><span class="type-name">A</span><span>, </span><span class="type-name">S</span><span>) </span><span class="comment">// emit a value, and update state
+</span><span>}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">StSource</span><span> {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">Aux</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">S0</span><span>] = </span><span class="type-name">StSource</span><span>[</span><span class="type-name">A</span><span>] {</span><span class="keyword">type</span><span> </span><span class="type-name">S</span><span> = </span><span class="type-name">S0</span><span>}
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">S0</span><span>](</span><span class="identifier">i</span><span>: </span><span class="type-name">S0</span><span>)(</span><span class="identifier">f</span><span>: </span><span class="type-name">S0</span><span> =&gt; (</span><span class="type-name">A</span><span>, </span><span class="type-name">S0</span><span>)): </span><span class="type-name">Aux</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">S0</span><span>] =
+    </span><span class="keyword">new</span><span> </span><span class="type-name">StSource</span><span>[</span><span class="type-name">A</span><span>] {
+      </span><span class="keyword">type</span><span> </span><span class="type-name">S</span><span> = </span><span class="type-name">S0</span><span>
+      </span><span class="keyword">def</span><span> </span><span class="declaration-name">init</span><span> = </span><span class="identifier">i</span><span>
+      </span><span class="keyword">def</span><span> </span><span class="declaration-name">emit</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">S0</span><span>) = </span><span class="identifier">f</span><span>(</span><span class="identifier">s</span><span>)
+    }
+}</span></code></pre>
+    <p>Unlike <code>MList</code>, there are actually good reasons to use type members
+    for the “state” in this sort of type definition; i.e. there are
+    reasonable designs in which you want to use member <code>S</code> existentially.
+    Thus, depending on how we intend to use it, it seems to meet our first
+    rule of thumb about when to use type members, as described in
+    <a href="type-members-parameters.html#when-is-existential-ok">the first article of this series</a>.</p>
+    
+    <h2 id="a-failed-attempt-at-simplified-emitting" class="section"><a class="anchor-link" href="#a-failed-attempt-at-simplified-emitting"><code class="fas fa-link fa-sm"></code></a>A failed attempt at simplified emitting</h2>
+    <p>So, under this theory, you’ve got some values of type <code>StSource[A]</code>
+    lying around.  And you want a simple function to take a source and its
+    state, and return the “next” value and the new state.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">runStSource</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">ss</span><span>: </span><span class="type-name">StSource</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">s</span><span>: ??): (</span><span class="type-name">A</span><span>, ??) = </span><span class="identifier">ss</span><span>.</span><span class="identifier">emit</span><span>(</span><span class="identifier">s</span><span>)</span></code></pre>
+    <p>But what do you put where the <code>??</code> is?  The surprising guess is often
+    <code>StSource[A]#S</code>.  After all, it means “the <code>StSource</code>’s <code>S</code>”, and
+    we’re trying to talk about an <code>StSource</code>’s <code>S</code>, right?</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">runStSource</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">ss</span><span>: </span><span class="type-name">StSource</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">s</span><span>: </span><span class="type-name">StSource</span><span>[</span><span class="type-name">A</span><span>]#</span><span class="type-name">S</span><span>)
+  : (</span><span class="type-name">A</span><span>, </span><span class="type-name">StSource</span><span>[</span><span class="type-name">A</span><span>]#</span><span class="type-name">S</span><span>) = </span><span class="identifier">ss</span><span>.</span><span class="identifier">emit</span><span>(</span><span class="identifier">s</span><span>)
+
+</span><span class="type-name">TmTp4</span><span>.</span><span class="identifier">scala</span><span>:</span><span class="number-literal">22</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">s</span><span>.</span><span class="keyword">type</span><span> (</span><span class="keyword">with</span><span> </span><span class="identifier">underlying</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">tmtp4</span><span>.</span><span class="type-name">StSource</span><span>[</span><span class="type-name">A</span><span>]#</span><span class="type-name">S</span><span>)
+ </span><span class="identifier">required</span><span>: </span><span class="identifier">ss</span><span>.</span><span class="type-name">S</span><span>
+  : (</span><span class="type-name">A</span><span>, </span><span class="type-name">StSource</span><span>[</span><span class="type-name">A</span><span>]#</span><span class="type-name">S</span><span>) = </span><span class="identifier">ss</span><span>.</span><span class="identifier">emit</span><span>(</span><span class="identifier">s</span><span>)
+                                 ^</span></code></pre>
+    <p>Setting aside that it won’t compile with the above signature—the usual
+    outcome of experiments with type projection, that the types aren’t
+    strong enough to be workable without cheating by casting—the reality
+    <em>sounds</em> so close to the above that it is understandable that type
+    projection is often confused with something useful.</p>
+    <p>&lt;div class=&quot;side-note&quot;&gt;
+      There &lt;em&gt;are&lt;/em&gt; uses for type projection.  But they are so rare, so
+      exotic (they look
+      &lt;a href=&quot;https://github.com/scalaz/scalaz/blob/bdd6d5653313b10af08efdc6884cbbefe41051a2/core/src/main/scala/scalaz/Unapply.scala#L404-L409&quot;&gt;like this&lt;/a&gt;),
+      and even the legitimate ones better off rewritten to avoid them,
+      that the safer assumption is that you’ve gone down the wrong path if
+      you’re trying to use them at all.  My suggestion can usually be
+      phrased something like “move it to a companion object”.
+    &lt;/div&gt;</p>
+    <p>In reality, <code>StSource[A]#S</code> means <em>some</em> <code>StSource</code>’s <code>S</code>.  Not the
+    one you gave, just any particular one.  It’s the supertype of all
+    possible <code>S</code> choices.  So, the failure of the above signature is like
+    the failure of <code>mdropFirstE</code> from
+    <a href="method-equiv.html#when-are-two-methods-less-alike">the second post of this series</a>:
+    a failure to relate types strongly enough.  The problem with
+    <code>mdropFirstE</code> was failure to relate the result type to argument type,
+    whereas the problem with <code>runStSource</code> is to fail to relate the two
+    arguments’ types to each other.</p>
+    
+    <h2 id="type-parameters-see-existentially" class="section"><a class="anchor-link" href="#type-parameters-see-existentially"><code class="fas fa-link fa-sm"></code></a>Type parameters see existentially</h2>
+    <p>As with <code>mdropFirstE</code>, one correct solution here is, again, lifting the
+    member to a method type parameter.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">runStSource</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">S</span><span>](</span><span class="identifier">ss</span><span>: </span><span class="type-name">StSource</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">S</span><span>], </span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>): (</span><span class="type-name">A</span><span>, </span><span class="type-name">S</span><span>) = </span><span class="identifier">ss</span><span>.</span><span class="identifier">emit</span><span>(</span><span class="identifier">s</span><span>)</span></code></pre>
+    <p>The surprising feature of this sort of signature is that it can be
+    invoked on <code>ss</code> arguments of type <code>StSource[A]</code>.</p>
+    <pre><code>scala&gt; val ss: StSource[Int] = StSource(0){i: Int =&gt; (i, i)}
+ss: tmtp4.StSource[Int] = tmtp4.StSource$$anon$1@300b5011
+
+scala&gt; runStSource(ss, ss.init)
+res0: (Int, ss.S) = (0,0)</code></pre>
+    <p>In other words, <strong>methods can assign names to unspecified, existential
+    type members</strong>.  So even though we have a value whose type doesn’t
+    refine <code>S</code>, Scala still infers this type as the <code>S</code> argument to pass
+    to <code>runStSource</code>.</p>
+    <p>By analogy with type parameters, though, this isn’t too surprising.
+    <a href="method-equiv.html">We’ve already seen</a>
+    that <code>copyToZeroE</code> inferred its argument’s existential parameter to
+    pass along to the named parameter to <code>copyToZeroP</code>, in the second part
+    of this series.  We even saw it apply directly to type members when
+    <code>mdropFirstE</code> was able to invoke <code>mdropFirstT</code>.  However, for whatever
+    reason, we’re used to existential parameters being able to do this;
+    even Java manages the task.  But it just seems <em>odder</em> that merely
+    calling a method can create a whole refinement <code>{...}</code> raincloud, from
+    scratch, filling in the blanks with sensible types along the way.</p>
+    <p>It’s completely sound, though.  An <code>StSource</code> (that exists as a value)
+    <em>must</em> have an <code>S</code>, even if we existentialized it away.  So, as with
+    <code>_</code>s, let’s just give it a name to pass as the inferred type
+    parameter.  It makes a whole lot more sense than supposing
+    <code>StSource[A]#S</code> will just do what I mean.</p>
+    <p>In a future post, we’ll use this “infer the whole refinement” feature
+    to demonstrate that some of the most magical-seeming Scala type system
+    features aren’t really so magical.  But before we get to that, we need
+    to see just why existentials are anything but “wildcards”, and why it
+    doesn’t <em>always</em> make sense to be able to lift existentials like <code>S</code>
+    to type parameters.  That’s coming in
+    <a href="nested-existentials.html">the next post, “Nested existentials”</a>.</p>
+    <p><em>This article was tested with Scala 2.11.7.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

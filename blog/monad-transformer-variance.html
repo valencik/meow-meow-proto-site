@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Variance of Monad Transformers</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Variance of Monad Transformers</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Cody Allen<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on September 29, 2018
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="variance-of-monad-transformers" class="title">Variance of Monad Transformers</h1>
+    <p>A question that <a href="https://github.com/typelevel/cats/issues/556">repeatedly</a> <a href="https://github.com/typelevel/cats/issues/2310">pops</a> <a href="https://github.com/typelevel/cats/issues/2538">up</a> about <a href="https://typelevel.org/cats/">Cats</a> is why monad transformer types like <code>OptionT</code> and <code>EitherT</code> aren&#39;t covariant like their <code>Option</code> and <code>Either</code> counterparts. This blog post aims to answer that question.</p>
+    
+    <h1 id="covariance" class="section"><a class="anchor-link" href="#covariance"><code class="fas fa-link fa-sm"></code></a>Covariance</h1>
+    <p>What does it mean to say that <code>Option</code> is covariant? It means that an <code>Option[B]</code> is allowed to be treated as an <code>Option[A]</code> if <code>B</code> is a subtype of <code>A</code>. For example:</p>
+    <pre><code class="nohighlight"><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Err</span><span>(</span><span class="keyword">val</span><span> </span><span class="identifier">msg</span><span>: </span><span class="type-name">String</span><span>)
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">NotFound</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">Long</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">Err</span><span>(</span><span class="string-literal">s&quot;Not found: </span><span class="substitution">$id</span><span class="string-literal">&quot;</span><span>)</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">optionNotFound</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">NotFound</span><span>] = </span><span class="type-name">Some</span><span>(</span><span class="type-name">NotFound</span><span>(</span><span class="number-literal">42L</span><span>))
+</span><span class="comment">// optionNotFound: Option[NotFound] = Some(NotFound(42))
+</span><span>
+</span><span class="identifier">optionNotFound</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Err</span><span>]
+</span><span class="comment">// res0: Option[Err] = Some(NotFound(42))</span></code></pre>
+    <p>Great. If you want to treat your <code>Option[NotFound]</code> as an <code>Option[Err]</code>, you are free to.</p>
+    <p>This is made possible because the <code>Option</code> type is declared as <code>sealed abstract class Option[+A]</code>, where the <code>+</code> in front of the <code>A</code> means that it is covariant in the <code>A</code> type parameter.</p>
+    <p>What happens if we try to do the same with <code>OptionT</code>?</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Eval</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">data</span><span>.</span><span class="type-name">OptionT</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">optionTNotFound</span><span>: </span><span class="type-name">OptionT</span><span>[</span><span class="type-name">Eval</span><span>, </span><span class="type-name">NotFound</span><span>] = </span><span class="type-name">OptionT</span><span>(</span><span class="type-name">Eval</span><span>.</span><span class="identifier">now</span><span>(</span><span class="identifier">optionNotFound</span><span>))
+</span><span class="comment">// optionTNotFound: cats.data.OptionT[cats.Eval,NotFound] = OptionT(Now(Some(NotFound(42))))</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">optionTNotFound</span><span>: </span><span class="type-name">OptionT</span><span>[</span><span class="type-name">Eval</span><span>, </span><span class="type-name">Err</span><span>]
+</span><span class="comment">// &lt;console&gt;:17: error: type mismatch;
+//  found   : cats.data.OptionT[cats.Eval,NotFound]
+//  required: cats.data.OptionT[cats.Eval,Err]
+// Note: NotFound &lt;: Err, but class OptionT is invariant in type A.
+// You may wish to define A as +A instead. (SLS 4.5)
+//        optionTNotFound: OptionT[Eval, Err]
+//        ^</span></code></pre>
+    <p>The compiler complains that an <code>OptionT[Eval, NotFound]</code> is <em>not</em> an <code>OptionT[Eval, Err]</code>, but it also suggests that we may be able to fix this by using <code>+A</code> like is done with <code>Option</code>.</p>
+    <p><code>OptionT</code> in Cats is defined as:</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">OptionT</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">value</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">A</span><span>]])</span></code></pre>
+    <p>Let&#39;s try to make the suggested change with an experimental <code>MyOptionT</code> structure:</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyOptionT</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], +</span><span class="type-name">A</span><span>](</span><span class="identifier">value</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">A</span><span>]])
+</span><span class="comment">// &lt;console&gt;:14: error: covariant type A occurs in invariant position in type =&gt; F[Option[A]] of value value
+//        final case class MyOptionT[F[_], +A](value: F[Option[A]])
+//                                             ^</span></code></pre>
+    <p>Now it&#39;s complaining that <code>A</code> is a covariant type but shows up in an invariant position. We&#39;ll discuss more about what this means later in the post, but for now let&#39;s just try declaring <code>F</code> as covariant:</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">CovariantOptionT</span><span>[</span><span class="type-name">F</span><span>[+</span><span class="identifier">_</span><span>], +</span><span class="type-name">A</span><span>](</span><span class="identifier">value</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">A</span><span>]])</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">covOptionTNotFound</span><span>: </span><span class="type-name">CovariantOptionT</span><span>[</span><span class="type-name">Eval</span><span>, </span><span class="type-name">NotFound</span><span>] = </span><span class="type-name">CovariantOptionT</span><span>(</span><span class="type-name">Eval</span><span>.</span><span class="identifier">now</span><span>(</span><span class="identifier">optionNotFound</span><span>))
+</span><span class="comment">// covOptionTNotFound: CovariantOptionT[cats.Eval,NotFound] = CovariantOptionT(Now(Some(NotFound(42))))
+</span><span>
+</span><span class="identifier">covOptionTNotFound</span><span>: </span><span class="type-name">CovariantOptionT</span><span>[</span><span class="type-name">Eval</span><span>, </span><span class="type-name">Err</span><span>]
+</span><span class="comment">// res2: CovariantOptionT[cats.Eval,Err] = CovariantOptionT(Now(Some(NotFound(42))))</span></code></pre>
+    <p>Woohoo! Problem solved, right?</p>
+    <p>Well, not exactly. This works great if <code>F</code> is in fact covariant, but what if it&#39;s not? For example, the JSON library <a href="https://circe.github.io/circe/">circe</a> has a <code>Decoder</code> type that <em>could</em> be covariant but isn&#39;t (at least as of circe 0.10.0). With the invariant <code>OptionT</code> in Cats we can do something like this:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">circe</span><span>.</span><span class="type-name">Decoder</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">defaultValueDecoder</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">defaultValue</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">optionDecoder</span><span>: </span><span class="type-name">Decoder</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">A</span><span>]]): </span><span class="type-name">Decoder</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="type-name">OptionT</span><span>(</span><span class="identifier">optionDecoder</span><span>).</span><span class="identifier">getOrElse</span><span>(</span><span class="identifier">defaultValue</span><span>)</span></code></pre>
+    <p>However, we can&#39;t do the same with our <code>CovariantOptionT</code>, because we can&#39;t even create an <code>OptionT</code> where the <code>F</code> type isn&#39;t covariant:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">wrap</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">optionDecoder</span><span>: </span><span class="type-name">Decoder</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">A</span><span>]]): </span><span class="type-name">CovariantOptionT</span><span>[</span><span class="type-name">Decoder</span><span>, </span><span class="type-name">A</span><span>] =
+  </span><span class="type-name">CovariantOptionT</span><span>[</span><span class="type-name">Decoder</span><span>, </span><span class="type-name">A</span><span>](</span><span class="identifier">optionDecoder</span><span>)
+</span><span class="comment">// &lt;console&gt;:18: error: kinds of the type arguments (io.circe.Decoder,A) do not conform to the expected kinds of the type parameters (type F,type A).
+// io.circe.Decoder&#39;s type parameters do not match type F&#39;s expected parameters:
+// type A is invariant, but type _ is declared covariant
+//          CovariantOptionT[Decoder, A](optionDecoder)
+//                          ^</span></code></pre>
+    <p>In this particular case, <code>Decoder</code> <em>could</em> be declared as covariant, but it&#39;s not. It would be unfortunate to lose the ability to use a monad transformer because a 3rd party library chose not to make a type covariant. And perhaps more importantly, sometimes you might want to use an <code>OptionT</code> with an <code>F</code> type that fundamentally isn&#39;t covariant in nature, such as <code>Monoid</code> (which is invariant) or <code>Order</code> (which is contravariant in nature and is declared as invariant in its type definition). Later in this post there will be some examples of using <code>OptionT</code> with a contravariant functor type (<code>Eq</code>) to gain acess to a handy <code>contramap</code> operation.</p>
+    
+    <h1 id="workaround" class="section"><a class="anchor-link" href="#workaround"><code class="fas fa-link fa-sm"></code></a>Workaround</h1>
+    <p>It&#39;s completely reasonable to want to be able to take your <code>OptionT[Eval, NotFound]</code> and treat it as an <code>OptionT[Eval, Err]</code>, and in some cases it may only be typed as <code>OptionT[Eval, NotFound]</code> because of type inference picking a more specific type than you intended. Luckily Cats has some handy methods to make this easy:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">optionTNotFound</span><span>.</span><span class="identifier">widen</span><span>[</span><span class="type-name">Err</span><span>]
+</span><span class="comment">// res4: cats.data.OptionT[cats.Eval,Err] = OptionT(Now(Some(NotFound(42))))</span></code></pre>
+    <p>The <code>.widen</code> method is available for any type that has a <code>Functor</code>. If you are working with a type that represents a <code>Bifunctor</code>, such as <code>EitherT</code>, then you can use <code>widen</code> for the type on the right and <code>leftWiden</code> for the type on the left:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">data</span><span>.</span><span class="type-name">EitherT</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">eitherTNotFound</span><span>: </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">Eval</span><span>, </span><span class="type-name">NotFound</span><span>, </span><span class="type-name">Some</span><span>[</span><span class="type-name">Int</span><span>]] = </span><span class="type-name">EitherT</span><span>.</span><span class="identifier">leftT</span><span>[</span><span class="type-name">Eval</span><span>, </span><span class="type-name">Some</span><span>[</span><span class="type-name">Int</span><span>]](</span><span class="type-name">NotFound</span><span>(</span><span class="number-literal">42L</span><span>))
+</span><span class="comment">// eitherTNotFound: cats.data.EitherT[cats.Eval,NotFound,Some[Int]] = EitherT(Now(Left(NotFound(42))))
+</span><span>
+</span><span class="identifier">eitherTNotFound</span><span>.</span><span class="identifier">widen</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Int</span><span>]]
+</span><span class="comment">// res5: cats.data.EitherT[cats.Eval,NotFound,Option[Int]] = EitherT(Now(Left(NotFound(42))))
+</span><span>
+</span><span class="identifier">eitherTNotFound</span><span>.</span><span class="identifier">leftWiden</span><span>[</span><span class="type-name">Err</span><span>]
+</span><span class="comment">// res6: cats.data.EitherT[cats.Eval,Err,Some[Int]] = EitherT(Now(Left(NotFound(42))))</span></code></pre>
+    <p>Similarly there is a <code>narrow</code> method for contravariant functors:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Eq</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">optionTEqErr</span><span>: </span><span class="type-name">OptionT</span><span>[</span><span class="type-name">Eq</span><span>, </span><span class="type-name">Err</span><span>] = </span><span class="type-name">OptionT</span><span>(</span><span class="type-name">Eq</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]]).</span><span class="identifier">contramap</span><span>((</span><span class="identifier">err</span><span>: </span><span class="type-name">Err</span><span>) =&gt; </span><span class="identifier">err</span><span>.</span><span class="identifier">msg</span><span>)
+</span><span class="comment">// optionTEqErr: cats.data.OptionT[cats.Eq,Err] = OptionT(cats.kernel.Eq$$anon$103@65c9a471)
+</span><span>
+</span><span class="identifier">optionTEqErr</span><span>.</span><span class="identifier">narrow</span><span>[</span><span class="type-name">NotFound</span><span>]
+</span><span class="comment">// res7: cats.data.OptionT[cats.Eq,NotFound] = OptionT(cats.kernel.Eq$$anon$103@65c9a471)</span></code></pre>
+    
+    <h1 id="back-to-that-compile-error" class="section"><a class="anchor-link" href="#back-to-that-compile-error"><code class="fas fa-link fa-sm"></code></a>Back to that compile error...</h1>
+    <p>Let&#39;s return to that <code>covariant type A occurs in invariant position</code> compile error that was triggered when we tried to declare <code>final case class MyOptionT[F[_], +A](value: F[Option[A]])</code>. Why did this happen?</p>
+    <p>Pretend for a minute that the Scala compiler <em>did</em> allow us to do this. We could then write:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">eqOptionNotFound</span><span>: </span><span class="type-name">Eq</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">NotFound</span><span>]] = </span><span class="type-name">Eq</span><span>.</span><span class="identifier">instance</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">NotFound</span><span>]]{
+  </span><span class="keyword">case</span><span> (</span><span class="type-name">None</span><span>, </span><span class="type-name">None</span><span>) =&gt; </span><span class="boolean-literal">true</span><span>
+  </span><span class="keyword">case</span><span> (</span><span class="type-name">None</span><span>, </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>)) =&gt; </span><span class="boolean-literal">false</span><span>
+  </span><span class="keyword">case</span><span> (</span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>), </span><span class="type-name">None</span><span>) =&gt; </span><span class="boolean-literal">false</span><span>
+  </span><span class="keyword">case</span><span> (</span><span class="type-name">Some</span><span>(</span><span class="identifier">x</span><span>), </span><span class="type-name">Some</span><span>(</span><span class="identifier">y</span><span>)) =&gt; </span><span class="identifier">x</span><span>.</span><span class="identifier">id</span><span> === </span><span class="identifier">y</span><span>.</span><span class="identifier">id</span><span>
+}</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">optionTEqNotFound</span><span>: </span><span class="type-name">MyOptionT</span><span>[</span><span class="type-name">Eq</span><span>, </span><span class="type-name">NotFound</span><span>] = </span><span class="type-name">MyOptionT</span><span>(</span><span class="identifier">eqOptionNotfound</span><span>) </span><span class="comment">// only allowed in our pretend world
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">optionTEqErr</span><span>: </span><span class="type-name">MyOptionT</span><span>[</span><span class="type-name">Eq</span><span>, </span><span class="type-name">Err</span><span>] = </span><span class="identifier">optionTEqNotFound</span><span> </span><span class="comment">// only allowed in our pretend world</span></code></pre>
+    <p>Because <code>MyOptionT</code> would be covariant in <code>A</code>, this <code>MyOptionT[Eq, NotFound]</code> could be treated as a <code>MyOptionT[Eq, Err]</code>. That is, it would have a <code>value</code> that is an <code>Eq[Option[Err]]</code>. But if you look at how we implemented our equality check, it&#39;s taking two <code>NotFound</code> instances and comparing their <code>id</code> fields. For a general <code>Err</code>, we have no guarantee that it will be a <code>NotFound</code> and that it will have an <code>id</code> field. We can&#39;t treat an <code>Eq[Option[NotFound]]</code> as an <code>Eq[Option[Err]]</code>, because <code>Eq</code> is contravariant and <em>not</em> covariant in nature. The <code>covariant type A occurs in invariant position</code> message that the scala compiler gave us was the compiler correctly identifying that our code was unsound.</p>
+    
+    <h1 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h1>
+    <p>There are some use-cases in which having monad transforers such as <code>OptionT</code> and <code>EitherT</code> be defined as covariant would be convenient, such as helping to nudge type inference in the right direction. However, if Cats were to define these types as covariant, it would eliminate the possibility of using them with non-covariant types. Forcing covariance in Cats would be overly restrictive, since third-party libraries might not declare types as covariant, and monad transformers can be useful for invariant a contravariant types. Luckily, methods such as <code>widen</code>, <code>leftWiden</code>, and <code>narrow</code> provide concise solutions to turning a monad transformer (or other type that forms a functor) into the type that you need.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/ceedubs.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Cody Allen</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/ceedubs">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

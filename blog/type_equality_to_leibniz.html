@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>A function from type equality to Leibniz</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">A function from type equality to Leibniz</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on July 2, 2014
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="a-function-from-type-equality-to-leibniz" class="title">A function from type equality to Leibniz</h1>
+    <p>The Scala standard library provides evidence of two types being equal
+    at the data level: a value of type
+    <a href="http://www.scala-lang.org/api/2.11.1/scala/Predef$$$eq$colon$eq.html"><code>(A&nbsp;=:=&nbsp;B)</code></a>
+    witnesses that <code>A</code> and <code>B</code> are the same type. Accordingly, it provides
+    an implicit conversion from <code>A</code> to <code>B</code>. So you can write <code>Int</code>-summing
+    functions on your generic foldable types.</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">XList</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">xs</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]) {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">sum</span><span>(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">A</span><span> =:= </span><span class="type-name">Int</span><span>): </span><span class="type-name">Int</span><span> =
+    </span><span class="identifier">xs</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="number-literal">0</span><span>)(</span><span class="identifier">_</span><span> + </span><span class="identifier">_</span><span>)
+}</span></code></pre>
+    <p>That works because <code>ev</code> is inserted as an implicit conversion over
+    that lambda&#39;s second parameter.</p>
+    
+    <h2 id="fragility" class="section"><a class="anchor-link" href="#fragility"><code class="fas fa-link fa-sm"></code></a>Fragility</h2>
+    <p>That&#39;s not really what we want, though. In particular, flipping <code>A</code>
+    and <code>Int</code> in the <code>ev</code> type declaration will break it:</p>
+    <pre><code>….scala:5: overloaded method value + with alternatives:
+  (x: Int)Int &lt;and&gt;
+  (x: Char)Int &lt;and&gt;
+  (x: Short)Int &lt;and&gt;
+  (x: Byte)Int
+ cannot be applied to (A)
+    xs.foldLeft(0)(_ + _)
+                     ^</code></pre>
+    <p>That doesn&#39;t make sense, though. Type equality is symmetric: Scala
+    knows it goes both ways, so why is this finicky?</p>
+    <p>Additionally, we apply the conversion for each <code>Int</code>. It is a logical
+    implication that, if <code>A</code> is <code>B</code>, then <code>List[A]</code> must be <code>List[B]</code> as
+    well. But we can&#39;t get that cheap, single conversion without a cast.</p>
+    
+    <h2 id="substitution" class="section"><a class="anchor-link" href="#substitution"><code class="fas fa-link fa-sm"></code></a>Substitution</h2>
+    <p>Scalaz instead provides
+    <a href="http://docs.typelevel.org/api/scalaz/stable/7.0.4/doc/scalaz/Leibniz.html"><code>Leibniz</code></a>,
+    a more perfect type equality. A simplified version follows, which we
+    will use for the remainder.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Leib</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">subst</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+}</span></code></pre>
+    <p>This reads “<code>Leib[A, B]</code> can replace <code>A</code> with <code>B</code> in <strong>any</strong> type
+    function”. That “any” is pretty important: it gives us both the
+    theorem that we want, and a tremendous consequent power that gives us
+    most of what we can get in Scala from value-level type equality, by
+    choosing the right <code>F</code> type parameter to <code>subst</code>.</p>
+    
+    <h2 id="what-could-it-be" class="section"><a class="anchor-link" href="#what-could-it-be"><code class="fas fa-link fa-sm"></code></a>What could it be?</h2>
+    <p>Following the Scalazzi rules, where no <code>null</code>, type testing or
+    casting, or <code>AnyRef</code>-defined functions are permitted, what might go in
+    the body of that function? Even if you know what <code>A</code> is, as a <code>Leib</code>
+    implementer, it&#39;s hidden behind the unknown <code>F</code>. Even if you know that
+    <code>B</code> is a supertype of <code>A</code>, you don&#39;t know that <code>F</code> is covariant,
+    <a href="liskov_lifting.html">by scalac or otherwise</a>.
+    Even if you know that <code>A</code> is <code>Int</code> and <code>B</code> is <code>Double</code>, what are you
+    going to do with that information?</p>
+    <p>So there&#39;s only one thing this <code>Leib</code> could be, because you <strong>do</strong>
+    have an <code>F</code> of <em>something</em>.</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">refl</span><span>[</span><span class="type-name">A</span><span>]: </span><span class="type-name">Leib</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">Leib</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">subst</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="identifier">fa</span><span>
+}</span></code></pre>
+    <p>Every type is equal to itself. Every well-formed <code>Leib</code> instance
+    starts out this way, in this function.</p>
+    
+    <h2 id="recovery" class="section"><a class="anchor-link" href="#recovery"><code class="fas fa-link fa-sm"></code></a>Recovery</h2>
+    <p>So, it&#39;s great that <em>we</em> know the implication of the <code>subst</code> method&#39;s
+    generality. But that&#39;s not good enough; we had that with <code>=:=</code>
+    already. We want to write well-typed operations that represent all the
+    implications of the <code>Leib</code> type equality as <em>new</em> <code>Leib</code>s representing
+    <em>those</em> type equalities.</p>
+    <p>First, let&#39;s solve the original problem, using infix type application
+    to show the similarity to <code>=:=</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">sum2</span><span>(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">A</span><span> </span><span class="type-name">Leib</span><span> </span><span class="type-name">Int</span><span>): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">ev</span><span>.</span><span class="identifier">subst</span><span>[</span><span class="type-name">List</span><span>](</span><span class="identifier">xs</span><span>).</span><span class="identifier">foldLeft</span><span>(</span><span class="number-literal">0</span><span>)(</span><span class="identifier">_</span><span> + </span><span class="identifier">_</span><span>)</span></code></pre>
+    <p>There is no more implicit conversion, the result of <code>subst</code> is the same
+    object as the argument, and <code>[List]</code> would be inferred, but I have
+    merely specified it for clarity in this example.</p>
+    <p>This doesn&#39;t compose, though. What if, having <code>subst</code>ed <code>Int</code> into
+    that <code>List</code> type, I now want to <code>subst</code> <code>List[A]</code> for <code>List[Int]</code> in
+    some type function? Specifically, what about a <code>Leib</code> that represents
+    that type equality? To handle that, we can <code>subst</code> into <code>Leib</code> itself!</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">lift</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">ab</span><span>: </span><span class="type-name">Leib</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]): </span><span class="type-name">Leib</span><span>[</span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]] =
+  </span><span class="identifier">ab</span><span>.</span><span class="identifier">subst</span><span>[</span><span class="type-name">Lambda</span><span>[</span><span class="type-name">X</span><span> =&gt; </span><span class="type-name">Leib</span><span>[</span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="type-name">F</span><span>[</span><span class="type-name">X</span><span>]]]](</span><span class="type-name">Leib</span><span>.</span><span class="identifier">refl</span><span>[</span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]])</span></code></pre>
+    <p>Again, the final <code>[F[A]]</code> could be inferred.</p>
+    <p>As an exercise, define the <code>symm</code> and <code>compose</code> operations, which
+    represent that <code>Leib</code> is symmetric and transitive as well. Hints: the
+    <code>symm</code> body is the same except for the type parameters given, and
+    <code>compose</code> doesn&#39;t use <code>refl</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">symm</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">ab</span><span>: </span><span class="type-name">Leib</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]): </span><span class="type-name">Leib</span><span>[</span><span class="type-name">B</span><span>, </span><span class="type-name">A</span><span>]
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">compose</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>](</span><span class="identifier">ab</span><span>: </span><span class="type-name">Leib</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>], </span><span class="identifier">bc</span><span>: </span><span class="type-name">Leib</span><span>[</span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>]): </span><span class="type-name">Leib</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">C</span><span>]</span></code></pre>
+    
+    <h2 id="leib-power" class="section"><a class="anchor-link" href="#leib-power"><code class="fas fa-link fa-sm"></code></a>Leib power</h2>
+    <p>In Scalaz, <code>Leibniz</code> is already defined, and
+    <a href="https://github.com/scalaz/scalaz/blob/v7.0.6/core/src/main/scala/scalaz/syntax/TraverseSyntax.scala#L22-L26">used in a few places</a>.
+    Though their <code>subst</code> definitions are completely incompatible at the
+    scalac level, they have a weird equivalence due to the awesome power
+    of <code>subst</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Leibniz</span><span>, </span><span class="type-name">Leibniz</span><span>.===
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">toScalaz</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">ab</span><span>: </span><span class="type-name">A</span><span> </span><span class="type-name">Leib</span><span> </span><span class="type-name">B</span><span>): </span><span class="type-name">A</span><span> === </span><span class="type-name">B</span><span> =
+  </span><span class="identifier">ab</span><span>.</span><span class="identifier">subst</span><span>[</span><span class="type-name">A</span><span> === ?](</span><span class="type-name">Leibniz</span><span>.</span><span class="identifier">refl</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">toLeib</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">ab</span><span>: </span><span class="type-name">A</span><span> === </span><span class="type-name">B</span><span>): </span><span class="type-name">A</span><span> </span><span class="type-name">Leib</span><span> </span><span class="type-name">B</span><span> =
+  </span><span class="identifier">ab</span><span>.</span><span class="identifier">subst</span><span>[</span><span class="type-name">A</span><span> </span><span class="type-name">Leib</span><span> ?](</span><span class="type-name">Leib</span><span>.</span><span class="identifier">refl</span><span>)</span></code></pre>
+    <p>…where <code>?</code> is to type-lambdas as <code>_</code> is to Scala lambdas, thanks to
+    <a href="https://github.com/non/kind-projector#kind-projector">the Kind Projector plugin</a>.</p>
+    <p>And so it would be with any pair of <code>Leibniz</code> representations with such
+    <code>subst</code> methods that you might define. Unfortunately, <code>=:=</code> cannot
+    participate in this universe of isomorphisms; it lacks the <code>subst</code>
+    method that serves as the <code>Leibniz</code> certificate of authenticity. You can
+    get a <code>=:=</code> from a <code>Leibniz</code>, but not vice versa.</p>
+    <p>Why would you want that weak sauce anyway?</p>
+    
+    <h2 id="looking-up" class="section"><a class="anchor-link" href="#looking-up"><code class="fas fa-link fa-sm"></code></a>Looking up</h2>
+    <p>These are just the basics.  Above:</p>
+    <ul>
+      <li>The weakness of Scala&#39;s own <code>=:=</code>,</li>
+      <li>the sole primitive <code>Leibniz</code> operator <code>subst</code>,</li>
+      <li>how to logically derive other type equalities,</li>
+      <li>the isomorphism between each <code>Leibniz</code> representation and all
+      others.</li>
+    </ul>
+    <p><a href="higher_leibniz.html">In the next part</a>, we&#39;ll
+    look at:</p>
+    <ul>
+      <li>Why it matters that <code>subst</code> always executes to use a type equality,</li>
+      <li>the Haskell implementation,</li>
+      <li>higher-kinded type equalities and their <code>Leibniz</code>es,</li>
+      <li>why
+      <a href="https://github.com/scala/scala/blob/v2.11.1/src/library/scala/Predef.scala#L399-L402">the <code>=:=</code> singleton trick</a>
+      is unsafe,</li>
+      <li>simulating GADTs with <code>Leibniz</code> members of data constructors.</li>
+    </ul>
+    <p><em>This article was tested with Scala 2.11.1, Scalaz 7.0.6, and Kind
+    Projector 0.5.2.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Using scalaz.Unapply</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Using scalaz.Unapply</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on September 11, 2013
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="using-scalaz-unapply" class="title">Using scalaz.Unapply</h1>
+    <p>Once you&#39;ve started really taking advantage of Scalaz&#39;s typeclasses
+    for generic programming, you might have noticed a need to write
+    typelambdas to use some of your neat abstractions, or use syntax like
+    <code>traverse</code> or <code>kleisli</code> with a strangely-shaped type as an argument.
+    Here&#39;s a simple generalization, a <code>List</code>-based <code>traverse</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Applicative</span><span>, </span><span class="identifier">scalaz</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">applicative</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">sequenceList</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>, </span><span class="type-name">A</span><span>](</span><span class="identifier">xs</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]]): </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]] =
+  </span><span class="identifier">xs</span><span>.</span><span class="identifier">foldRight</span><span>(</span><span class="type-name">List</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">A</span><span>].</span><span class="identifier">point</span><span>[</span><span class="type-name">F</span><span>])((</span><span class="identifier">a</span><span>, </span><span class="identifier">b</span><span>) =&gt; ^(</span><span class="identifier">a</span><span>, </span><span class="identifier">b</span><span>)(</span><span class="identifier">_</span><span> :: </span><span class="identifier">_</span><span>))</span></code></pre>
+    <p>This works fine for a while.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.</span><span class="identifier">std</span><span>.</span><span class="identifier">option</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.</span><span class="identifier">std</span><span>.</span><span class="identifier">option</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">sequenceList</span><span>(</span><span class="type-name">List</span><span>(</span><span class="identifier">some</span><span>(</span><span class="number-literal">1</span><span>),</span><span class="identifier">some</span><span>(</span><span class="number-literal">2</span><span>)))
+</span><span class="identifier">res1</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]] = </span><span class="type-name">Some</span><span>(</span><span class="type-name">List</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>))
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">sequenceList</span><span>(</span><span class="type-name">List</span><span>(</span><span class="identifier">some</span><span>(</span><span class="number-literal">1</span><span>),</span><span class="identifier">none</span><span>))
+</span><span class="identifier">res2</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]] = </span><span class="type-name">None</span></code></pre>
+    
+    <h2 id="the-problem" class="section"><a class="anchor-link" href="#the-problem"><code class="fas fa-link fa-sm"></code></a>The problem</h2>
+    <p>The type of the input in the above example, <code>List[Option[Int]]</code>, can be
+    neatly destructured into the <code>F</code> and <code>A</code> type params needed by
+    <code>sequenceList</code>.  It has the “shape” <code>F[x]</code>, so <code>F</code> can be picked out by
+    Scala easily.</p>
+    <p>Consider something else with a convenient <code>Applicative</code> instance,
+    though.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.\/
+</span><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.</span><span class="identifier">$bslash$div</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">sequenceList</span><span>(</span><span class="type-name">List</span><span>(\/.</span><span class="identifier">right</span><span>(</span><span class="number-literal">42</span><span>), \/.</span><span class="identifier">left</span><span>(</span><span class="type-name">NonEmptyList</span><span>(</span><span class="string-literal">&quot;oops&quot;</span><span>))))
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">23</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">no</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">parameters</span><span> </span><span class="keyword">for</span><span> </span><span class="identifier">method</span><span> 
+  </span><span class="identifier">sequenceList</span><span>: (</span><span class="identifier">xs</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]])(</span><span class="keyword">implicit</span><span> </span><span class="identifier">evidence$1</span><span>: </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>])</span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]]
+  </span><span class="identifier">exist</span><span> </span><span class="identifier">so</span><span> </span><span class="identifier">that</span><span> </span><span class="identifier">it</span><span> </span><span class="identifier">can</span><span> </span><span class="identifier">be</span><span> </span><span class="identifier">applied</span><span> </span><span class="identifier">to</span><span> </span><span class="identifier">arguments</span><span>
+  (</span><span class="type-name">List</span><span>[</span><span class="identifier">scalaz</span><span>.\/[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>],</span><span class="type-name">Int</span><span>]])
+ --- </span><span class="identifier">because</span><span> ---
+</span><span class="identifier">argument</span><span> </span><span class="identifier">expression</span><span>&#39;</span><span class="identifier">s</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">is</span><span> </span><span class="identifier">not</span><span> </span><span class="identifier">compatible</span><span> </span><span class="keyword">with</span><span> </span><span class="identifier">formal</span><span> </span><span class="identifier">parameter</span><span> </span><span class="keyword">type</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="type-name">List</span><span>[</span><span class="identifier">scalaz</span><span>.\/[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>],</span><span class="type-name">Int</span><span>]]
+ </span><span class="identifier">required</span><span>: </span><span class="type-name">List</span><span>[?</span><span class="type-name">F</span><span>]
+
+              </span><span class="identifier">sequenceList</span><span>(</span><span class="type-name">List</span><span>(\/.</span><span class="identifier">right</span><span>(</span><span class="number-literal">42</span><span>), \/.</span><span class="identifier">left</span><span>(</span><span class="type-name">NonEmptyList</span><span>(</span><span class="string-literal">&quot;oops&quot;</span><span>))))
+              ^</span></code></pre>
+    <p>Here, <code>?F</code> meaning it couldn&#39;t figure out that you meant <code>({type λ[α]
+= NonEmptyList[String] \/ α})#λ</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">sequenceList</span><span>[({</span><span class="keyword">type</span><span> λ[α] = </span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>] \/ α})#λ, </span><span class="type-name">Int</span><span>
+                  ](</span><span class="type-name">List</span><span>(\/.</span><span class="identifier">right</span><span>(</span><span class="number-literal">42</span><span>), \/.</span><span class="identifier">left</span><span>(</span><span class="type-name">NonEmptyList</span><span>(</span><span class="string-literal">&quot;oops&quot;</span><span>))))
+</span><span class="identifier">res5</span><span>: </span><span class="identifier">scalaz</span><span>.\/[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>],</span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]] =
+        -\/(</span><span class="type-name">NonEmptyList</span><span>(</span><span class="identifier">oops</span><span>))</span></code></pre>
+    <p>The problem is that <code>NonEmptyList[String] \/ Int</code> has the shape
+    <code>F[A, B]</code>, with <code>F</code> of kind <code>* -&gt; * -&gt; *</code> after a fashion, whereas the
+    <code>F</code> it wants must have kind <code>* -&gt; *</code>, and Scala kinds aren&#39;t curried
+    at all.</p>
+    
+    <h2 id="finding-an-unapply-instance" class="section"><a class="anchor-link" href="#finding-an-unapply-instance"><code class="fas fa-link fa-sm"></code></a>Finding an <code>Unapply</code> instance</h2>
+    <p><code>Unapply</code>, though, <em>does</em> have implicit instances matching the
+    <code>F[A, B]</code> shape, <code>unapplyMAB1</code> and <code>unapplyMAB2</code>, in its companion so
+    effectively always visible.  What&#39;s special about them is that their
+    type parameters match the “shape” you&#39;re working with, <code>F[A, B]</code>.</p>
+    <p>You should
+    <a href="https://github.com/scalaz/scalaz/blob/v7.0.3/core/src/main/scala/scalaz/Unapply.scala#L210">look at their source</a>
+    to follow along.</p>
+    <p>Let&#39;s see if one of them works.  For implicit resolution to finish,
+    it&#39;s important that <em>exactly</em> one of them works.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Unapply</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Unapply</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Unapply</span><span>.</span><span class="identifier">unapplyMAB1</span><span>[</span><span class="type-name">Applicative</span><span>, \/, </span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>], </span><span class="type-name">Int</span><span>]
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">23</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">could</span><span> </span><span class="identifier">not</span><span> </span><span class="identifier">find</span><span> </span><span class="keyword">implicit</span><span> </span><span class="identifier">value</span><span> </span><span class="keyword">for</span><span> </span><span class="identifier">parameter</span><span>
+</span><span class="type-name">TC0</span><span>: </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Applicative</span><span>[[α]</span><span class="identifier">scalaz</span><span>.\/[α,</span><span class="type-name">Int</span><span>]]
+              </span><span class="type-name">Unapply</span><span>.</span><span class="identifier">unapplyMAB1</span><span>[</span><span class="type-name">Applicative</span><span>, \/, </span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>], </span><span class="type-name">Int</span><span>]
+                                 ^
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Unapply</span><span>.</span><span class="identifier">unapplyMAB2</span><span>[</span><span class="type-name">Applicative</span><span>, \/, </span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>], </span><span class="type-name">Int</span><span>]
+</span><span class="identifier">res7</span><span>: </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Unapply</span><span>[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Applicative</span><span>,
+                     </span><span class="identifier">scalaz</span><span>.\/[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>],</span><span class="type-name">Int</span><span>]]{
+        </span><span class="keyword">type</span><span> </span><span class="type-name">M</span><span>[</span><span class="type-name">X</span><span>] = </span><span class="identifier">scalaz</span><span>.\/[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>],</span><span class="type-name">X</span><span>];
+        </span><span class="keyword">type</span><span> </span><span class="type-name">A</span><span> = </span><span class="type-name">Int</span><span>
+      } = </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Unapply_0$$anon$13</span><span>@5402af</span><span class="number-literal">61</span></code></pre>
+    <p>Here, the type <code>res7.M</code> represents the typelambda being passed to
+    <code>sequenceList</code>.  You can see that work.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">sequenceList</span><span>[</span><span class="identifier">res7</span><span>.</span><span class="type-name">M</span><span>, </span><span class="identifier">res7</span><span>.</span><span class="type-name">A</span><span>](
+                   </span><span class="type-name">List</span><span>(\/.</span><span class="identifier">right</span><span>(</span><span class="number-literal">42</span><span>), \/.</span><span class="identifier">left</span><span>(</span><span class="type-name">NonEmptyList</span><span>(</span><span class="string-literal">&quot;oops&quot;</span><span>))))
+</span><span class="identifier">res8</span><span>: </span><span class="identifier">res7</span><span>.</span><span class="type-name">M</span><span>[</span><span class="type-name">List</span><span>[</span><span class="identifier">res7</span><span>.</span><span class="type-name">A</span><span>]] = -\/(</span><span class="type-name">NonEmptyList</span><span>(</span><span class="identifier">oops</span><span>))
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">res8</span><span> : </span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>] \/ </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]
+</span><span class="identifier">res9</span><span>: </span><span class="identifier">scalaz</span><span>.\/[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>],</span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]] =
+        -\/(</span><span class="type-name">NonEmptyList</span><span>(</span><span class="identifier">oops</span><span>))</span></code></pre>
+    <p>The <code>res8</code> conformance test shows that Scala can still reduce the
+    path-dependent <code>res7.M</code> and <code>res7.A</code> types at this level, outside
+    <code>sequenceList</code>.</p>
+    
+    <h2 id="searching-for-the-right-shape" class="section"><a class="anchor-link" href="#searching-for-the-right-shape"><code class="fas fa-link fa-sm"></code></a>Searching for the right shape</h2>
+    <p>Implicit resolution can pick the call to <code>unapplyMAB2</code> partly because
+    it can pick all of its type parameters without weird typelambda
+    structures.  But in Scalaz, we use typeclasses to guide its choice.</p>
+    <p>Why didn&#39;t <code>unapplyMAB1</code> work?  In this case, you can trust <code>scalac</code>
+    to say exactly the right thing: it looked for
+    <code>Applicative[[α]scalaz.\/[α,Int]]</code>, and didn&#39;t find one.  Sure enough,
+    <code>\/</code> being right-biased means we don&#39;t offer that instance.</p>
+    <p>Incidentally, if you were to introduce that instance, you&#39;d break code
+    relying on right-biased <code>Unapply</code> resolution to work.</p>
+    <p><code>unapplyMAB2</code> needs evidence of <code>TC[({type λ[α] = M0[A0, α]})#λ]</code>.
+    But that&#39;s okay, because we have that, where <code>TC=Applicative</code>,
+    <code>M0=\/</code>, and <code>A0=NonEmptyList[String]</code>!</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Applicative</span><span>[({</span><span class="keyword">type</span><span> λ[α] = \/[</span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>], α]})#λ]
+</span><span class="identifier">res10</span><span>: </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Applicative</span><span>[[α]</span><span class="identifier">scalaz</span><span>.\/[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>],α]]
+         = </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">DisjunctionInstances2$$anon$1</span><span>@</span><span class="number-literal">2f658816</span></code></pre>
+    <p>Scala doesn&#39;t need to figure out any typelambda itself for this to
+    work; we did everything by putting the typelambda right into
+    <code>unapplyMAB2</code>&#39;s evidence requirement, so it just has to find the
+    conforming implicit value.</p>
+    
+    <h2 id="using-unapply-generically" class="section"><a class="anchor-link" href="#using-unapply-generically"><code class="fas fa-link fa-sm"></code></a>Using <code>Unapply</code> generically</h2>
+    <p>Now you can write a <code>sequenceList</code> wrapper that works for <code>\/</code> and
+    many other shapes, including user-provided shapes in the form of new
+    <code>Unapply</code> implicit instances.  If you&#39;re using Scala 2.9 (still?!) you
+    need to add <code>-Ydependent-method-types</code> to <code>scalacOptions</code> to write
+    this function.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">sequenceListU</span><span>[</span><span class="type-name">FA</span><span>](</span><span class="identifier">xs</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">FA</span><span>])
+                     (</span><span class="keyword">implicit</span><span> </span><span class="type-name">U</span><span>: </span><span class="type-name">Unapply</span><span>[</span><span class="type-name">Applicative</span><span>, </span><span class="type-name">FA</span><span>]
+                     ): </span><span class="type-name">U</span><span>.</span><span class="type-name">M</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">U</span><span>.</span><span class="type-name">A</span><span>]] =
+  </span><span class="identifier">sequenceList</span><span>(</span><span class="type-name">U</span><span>.</span><span class="identifier">leibniz</span><span>.</span><span class="identifier">subst</span><span>(</span><span class="identifier">xs</span><span>))(</span><span class="type-name">U</span><span>.</span><span class="type-name">TC</span><span>)</span></code></pre>
+    <p>Instead of <code>xs</code> being <code>List[F[A]]</code>, it&#39;s <code>List[FA]</code>, and that&#39;s
+    destructured into <code>U.M</code> and <code>U.A</code>.  The latter are path-dependent
+    types on <code>U</code>, the conventional name of the <code>Unapply</code> parameter.  We
+    have also followed the convention of naming the <code>Unapply</code>-taking
+    variant function ending with a <code>U</code>.</p>
+    <p>And that works great!</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">sequenceListU</span><span>(</span><span class="type-name">List</span><span>(\/.</span><span class="identifier">right</span><span>(</span><span class="number-literal">42</span><span>), \/.</span><span class="identifier">left</span><span>(</span><span class="type-name">NonEmptyList</span><span>(</span><span class="string-literal">&quot;oops&quot;</span><span>))))
+</span><span class="identifier">res11</span><span>: </span><span class="identifier">scalaz</span><span>.\/[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">String</span><span>],</span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]] =
+   -\/(</span><span class="type-name">NonEmptyList</span><span>(</span><span class="identifier">oops</span><span>))</span></code></pre>
+    <p>Of course, there&#39;s that strange-looking function body to consider,
+    still.</p>
+    
+    <h2 id="using-the-u-evidence" class="section"><a class="anchor-link" href="#using-the-u-evidence"><code class="fas fa-link fa-sm"></code></a>Using the <code>U</code> evidence</h2>
+    <p>The type equalities of the original <code>U.M</code> and <code>U.A</code> to the original
+    types can be seen where <code>res8</code> is refined to <code>res9</code> above.  But only
+    the <em>caller</em> of the function knows those equalities, because it
+    produced and supplied the <code>unapplyMAB2</code> call, which has a structural
+    type containing those equalities.</p>
+    <p>The body of <code>sequenceListU</code> doesn&#39;t know those things.  In particular,
+    it <em>still</em> can&#39;t pick type parameters to pass to <code>sequenceList</code>
+    without a little help.</p>
+    <p>The <code>leibniz</code> member is a reified type equality of <code>FA === U.M[U.A]</code>,
+    meaning those are the same at the type level, even though Scala can&#39;t
+    see it in this context.  It represents genuine evidence that those two
+    types are equal, and is much more powerful than scala-library&#39;s own
+    <code>=:=</code>.  We&#39;re using the core Leibniz operator, <code>subst</code>, directly to
+    prove that, <em>as a consequence of that type equality</em>, <code>List[FA] ===
+List[U.M[U.A]]</code> is <em>also</em> a type equality, and that therefore this
+    (constant-time) coercion is valid.  This lifting is applicable in all
+    contexts, not just covariant ones like <code>List</code>&#39;s.  Take a look at
+    <a href="https://github.com/scalaz/scalaz/blob/v7.0.3/core/src/main/scala/scalaz/Leibniz.scala">the full API</a>
+    for more, though you&#39;ll typically just need to come up with the right
+    type parameter for <code>subst</code>.</p>
+    <p>You can&#39;t ask for an <code>Unapply</code> and <em>also</em> ask for an
+    <code>Applicative[U.M]</code>; Scala won&#39;t allow it.  So, because we needed to
+    resolve the typeclass anyway to find the <code>Unapply</code> implicit to use, we
+    just cart it along with the <code>U</code> and give it to the function, which
+    almost always needs to use it anyway.  Because it&#39;s not implicitly
+    available, you usually need to grab it, <code>U.TC</code>, and use it directly.</p>
+    
+    <h2 id="using-in-scalaz-syntax" class="section"><a class="anchor-link" href="#using-in-scalaz-syntax"><code class="fas fa-link fa-sm"></code></a>Using in <code>scalaz.syntax</code></h2>
+    <p><code>map</code> comes from functor syntax; it&#39;s not a method on <code>Function1</code>.  So
+    how come this works?</p>
+    <pre><code>scala&gt; import scalaz.std.function._
+import scalaz.std.function._
+
+scala&gt; ((_:Int) + 42) map (_ * 33)
+res13: Int =&gt; Int = &lt;function1&gt;
+
+scala&gt; res13(1)
+res14: Int = 1419</code></pre>
+    <p>When you import syntax, as <code>Functor</code> syntax was imported with
+    <code>scalaz.syntax.applicative._</code> above, you get at least two conversions:
+    the plain one, like <code>ToFunctorOps[F[_],A]</code>, which works if you have
+    the right shape, and the fancy one, <code>ToFunctorOpsUnapply[FA]</code>, which
+    uses an <code>Unapply</code> to effectively invoke <code>ToFunctorOps</code> as in the
+    above.  The latter is lower-priority, so Scala will pick the former if
+    the value has the <code>F[A]</code> shape.</p>
+    <p>That gives access to all the methods in <code>FunctorOps</code>, and other ops
+    classes, with only one special <code>U</code>-taking method.  If you have several
+    functions operating on the same value type, or you can make that type
+    similar with Leibnizian equality as implicit arguments to your
+    methods, I suggest grouping them in this way, too, to cut down on
+    boilerplate.</p>
+    
+    <h2 id="provide-both-anyway" class="section"><a class="anchor-link" href="#provide-both-anyway"><code class="fas fa-link fa-sm"></code></a>Provide both anyway</h2>
+    <p>We sometimes get asked “why not just provide the <code>Unapply</code> version of
+    the function or ops?”</p>
+    <p>We do it, and suggest it for your own code, despite the confusion,
+    because it&#39;s easier to work with real type equalities than with
+    Leibnizian equality, which you can do in your “real” function
+    implementation, and as seen in <code>res8</code> above, the path-dependent type
+    resolution can leave funny artifacts in the inferred result.  Here&#39;s
+    an extreme example from
+    <a href="https://groups.google.com/d/msg/scalaz/9zAIGETrePI/o1rBsOcWJWAJ">an earlier demonstration</a>.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">itt</span><span> = </span><span class="type-name">IdentityT</span><span> </span><span class="identifier">lift</span><span> </span><span class="identifier">it</span><span>
+</span><span class="identifier">itt</span><span>: </span><span class="type-name">IdentityT</span><span>[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Unapply</span><span>[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Monad</span><span>,</span><span class="type-name">IdentityT</span><span>[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Unapply</span><span>[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Monad</span><span>,</span><span class="type-name">Identity</span><span>[</span><span class="type-name">Int</span><span>]]
+                                                       {</span><span class="keyword">type</span><span> </span><span class="type-name">M</span><span>[</span><span class="type-name">X</span><span>] = </span><span class="type-name">Identity</span><span>[</span><span class="type-name">X</span><span>]; </span><span class="keyword">type</span><span> </span><span class="type-name">A</span><span> = </span><span class="type-name">Int</span><span>}#</span><span class="type-name">M</span><span>,
+                                                     </span><span class="type-name">Int</span><span>]]
+                 {</span><span class="keyword">type</span><span> </span><span class="type-name">M</span><span>[</span><span class="type-name">X</span><span>] = </span><span class="type-name">IdentityT</span><span>[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Unapply</span><span>[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Monad</span><span>,</span><span class="type-name">Identity</span><span>[</span><span class="type-name">Int</span><span>]]
+                                          {</span><span class="keyword">type</span><span> </span><span class="type-name">M</span><span>[</span><span class="type-name">X</span><span>] = </span><span class="type-name">Identity</span><span>[</span><span class="type-name">X</span><span>]; </span><span class="keyword">type</span><span> </span><span class="type-name">A</span><span> = </span><span class="type-name">Int</span><span>}#</span><span class="type-name">M</span><span>,
+                                        </span><span class="type-name">X</span><span>];
+                  </span><span class="keyword">type</span><span> </span><span class="type-name">A</span><span> = </span><span class="type-name">Int</span><span>}#</span><span class="type-name">M</span><span>,
+               </span><span class="type-name">Int</span><span>]
+  = </span><span class="type-name">IdentityT</span><span>(</span><span class="type-name">IdentityT</span><span>(</span><span class="type-name">Identity</span><span>(</span><span class="number-literal">42</span><span>)))</span></code></pre>
+    
+    <h2 id="credits" class="section"><a class="anchor-link" href="#credits"><code class="fas fa-link fa-sm"></code></a>Credits</h2>
+    <p><a href="https://twitter.com/retronym">Jason Zaugg</a> implemented Scalaz
+    <code>Unapply</code>, based on
+    <a href="https://issues.scala-lang.org/browse/SI-2712?focusedCommentId=55239&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-55239">ideas</a>
+    from <a href="https://twitter.com/milessabin">Miles Sabin</a> and
+    <a href="https://github.com/pchiusano">Paul Chiusano</a>.</p>
+    <p>Leibnizian equality was implemented for Scalaz by
+    <a href="https://github.com/ekmett">Edward Kmett</a>.</p>
+    <p><a href="https://twitter.com/larsr_h">Lars Hupel</a>&#39;s talk
+    (<a href="https://speakerdeck.com/larsrh/seven-at-one-blow-new-and-polished-features-in-scalaz-7">slides</a>,
+    <a href="https://www.youtube.com/watch?feature=player_embedded&v=KzoqOVD7mvE">video</a>)
+    on the features in the then-upcoming Scalaz 7 at nescala 2013,
+    including <code>Unapply</code>, gave me the missing “guided by typeclasses”
+    detail, inspiring me to tell more people about the whole thing at the
+    conference, and then, much later, write it down here.</p>
+    <p><em>This article was tested with Scala 2.10.2 &amp; Scalaz 7.0.3.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

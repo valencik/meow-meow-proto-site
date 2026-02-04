@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Type members are almost type parameters</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Type members are almost type parameters</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on July 13, 2015
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="type-members-are-almost-type-parameters" class="title">Type members are almost type parameters</h1>
+    <p><em>This is the first of a series of articles on “Type Parameters and Type
+    Members”.</em></p>
+    <p>Type members like <code>Member</code></p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">Blah</span><span> {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">Member</span><span>
+}</span></code></pre>
+    <p>and parameters like <code>Param</code></p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">Blah2</span><span>[</span><span class="type-name">Param</span><span>]</span></code></pre>
+    <p>have more similarities than differences.  The choice of which to use
+    for a given situation is usually a matter of convenience.  In brief, a
+    rule of thumb: <strong>a type&nbsp;parameter is usually more convenient and
+    harder to screw up, but if you intend to use it&nbsp;existentially in most
+    cases, changing it to a member is probably better</strong>.</p>
+    <p>Here, and in later posts, we will discuss what on earth that means,
+    among other things.  In this series of articles on <em>Type&nbsp;Parameters
+    and&nbsp;Type&nbsp;Members</em>, I want to tackle a variety of Scala types that look
+    very different, but are really talking about the same thing, or
+    almost.</p>
+    
+    <h2 id="two-lists-all-alike" class="section"><a class="anchor-link" href="#two-lists-all-alike"><code class="fas fa-link fa-sm"></code></a>Two lists, all alike</h2>
+    <p>To illustrate, let’s see two versions of
+    <a href="http://www.artima.com/pins1ed/working-with-lists.html">the functional&nbsp;list</a>.
+    Typically, it isn’t used existentially, so the usual choice of
+    parameter over member fits our rule of thumb above.  It’s instructive
+    anyway, so let’s see it.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PList</span><span>[</span><span class="type-name">T</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PNil</span><span>[</span><span class="type-name">T</span><span>]() </span><span class="keyword">extends</span><span> </span><span class="type-name">PList</span><span>[</span><span class="type-name">T</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PCons</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">head</span><span>: </span><span class="type-name">T</span><span>, </span><span class="identifier">tail</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">T</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">PList</span><span>[</span><span class="type-name">T</span><span>]
+
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MList</span><span> {</span><span class="identifier">self</span><span> =&gt;
+  </span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">uncons</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">MCons</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="identifier">self</span><span>.</span><span class="type-name">T</span><span>}]
+}
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MNil</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">MList</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">uncons</span><span> = </span><span class="type-name">None</span><span>
+}
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MCons</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">MList</span><span> {</span><span class="identifier">self</span><span> =&gt;
+  </span><span class="keyword">val</span><span> </span><span class="identifier">head</span><span>: </span><span class="type-name">T</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">tail</span><span>: </span><span class="type-name">MList</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="identifier">self</span><span>.</span><span class="type-name">T</span><span>}
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">uncons</span><span> = </span><span class="type-name">Some</span><span>(</span><span class="identifier">self</span><span>: </span><span class="type-name">MCons</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="identifier">self</span><span>.</span><span class="type-name">T</span><span>})
+}</span></code></pre>
+    <p>We’re not quite done; we’re missing a way to <em>make</em> <code>MNil</code>s and
+    <code>MCons</code>es, which <code>PNil</code> and <code>PCons</code> have already provided
+    for&nbsp;themselves, by virtue of being <code>case&nbsp;class</code>es.  But it’s already
+    pretty clear that <em>a type parameter is a more straightforward way to
+    define this particular data&nbsp;type</em>.</p>
+    <p>The instance creation takes just a bit more scaffolding for our
+    examples:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">MNil</span><span>[</span><span class="type-name">T0</span><span>](): </span><span class="type-name">MNil</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="type-name">T0</span><span>} =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">MNil</span><span> {
+    </span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="type-name">T0</span><span>
+  }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">MCons</span><span>[</span><span class="type-name">T0</span><span>](</span><span class="identifier">hd</span><span>: </span><span class="type-name">T0</span><span>, </span><span class="identifier">tl</span><span>: </span><span class="type-name">MList</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="type-name">T0</span><span>})
+  : </span><span class="type-name">MCons</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="type-name">T0</span><span>} =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">MCons</span><span> {
+    </span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="type-name">T0</span><span>
+    </span><span class="keyword">val</span><span> </span><span class="identifier">head</span><span> = </span><span class="identifier">hd</span><span>
+    </span><span class="keyword">val</span><span> </span><span class="identifier">tail</span><span> = </span><span class="identifier">tl</span><span>
+  }</span></code></pre>
+    
+    <h2 id="why-all-the-type-t" class="section"><a class="anchor-link" href="#why-all-the-type-t"><code class="fas fa-link fa-sm"></code></a>Why all the <code>{type T = ...}</code>?</h2>
+    <p>After all, isn’t the virtue of type members that we don’t have to pass
+    the type around everywhere?</p>
+    <p>Let’s see what happens when we attempt to apply that theory.  Suppose
+    we remove only one of the
+    <a href="http://www.scala-lang.org/files/archive/spec/2.11/03-types.html#compound-types"><em>refinement</em>s</a>
+    above, as these <code>{...}</code> rainclouds at the type level are called.
+    Let’s remove the one in <code>val tail</code>, so <code>class MCons</code> looks like this:</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MCons</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">MList</span><span> {</span><span class="identifier">self</span><span> =&gt;
+  </span><span class="keyword">val</span><span> </span><span class="identifier">head</span><span>: </span><span class="type-name">T</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">tail</span><span>: </span><span class="type-name">MList</span><span>
+}</span></code></pre>
+    <p>Now let us put a couple members into the list, and add them together.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">nums</span><span> = </span><span class="type-name">MCons</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="type-name">MCons</span><span>(</span><span class="number-literal">3</span><span>, </span><span class="type-name">MNil</span><span>())): </span><span class="type-name">MCons</span><span>{</span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="type-name">Int</span><span>}
+</span><span class="identifier">nums</span><span>: </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">MCons</span><span>{</span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="type-name">Int</span><span>} = </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">MList$$anon$2</span><span>@3c</span><span class="number-literal">649f69</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">nums</span><span>.</span><span class="identifier">head</span><span>
+</span><span class="identifier">res1</span><span>: </span><span class="identifier">nums</span><span>.</span><span class="type-name">T</span><span> = </span><span class="number-literal">2</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">res1</span><span> + </span><span class="identifier">res1</span><span>
+</span><span class="identifier">res2</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">4</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">nums</span><span>.</span><span class="identifier">tail</span><span>.</span><span class="identifier">uncons</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">head</span><span>)
+</span><span class="identifier">res3</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="identifier">nums</span><span>.</span><span class="identifier">tail</span><span>.</span><span class="type-name">T</span><span>] = </span><span class="type-name">Some</span><span>(</span><span class="number-literal">3</span><span>)
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">res3</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span> - </span><span class="identifier">res2</span><span>)
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">21</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">value</span><span> - </span><span class="identifier">is</span><span> </span><span class="identifier">not</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">member</span><span> </span><span class="identifier">of</span><span> </span><span class="identifier">nums</span><span>.</span><span class="identifier">tail</span><span>.</span><span class="type-name">T</span><span>
+       </span><span class="identifier">res3</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span> - </span><span class="identifier">res2</span><span>)
+                  ^</span></code></pre>
+    <p>When we took the refinement off of <code>tail</code>, we eliminated any evidence
+    about what its <code>type&nbsp;T</code> might be.  We only know that <em>it must be some
+    type</em>.  That’s what <em>existential</em> means.</p>
+    <p><strong>In terms of type parameters, <code>MList</code> is like <code>PList[_]</code>, and <code>MList
+{type T = Int}</code> is like <code>PList[Int]</code>.</strong>  For the former, we say that
+    the member, or parameter, is existential.</p>
+    
+    <h2 id="when-is-existential-ok" class="section"><a class="anchor-link" href="#when-is-existential-ok"><code class="fas fa-link fa-sm"></code></a>When is existential OK?</h2>
+    <p>Despite the limitation implied by the error above, there <em>are</em> useful
+    functions that can be written on the existential&nbsp;version.  Here’s one
+    of the simplest:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">mlength</span><span>(</span><span class="identifier">xs</span><span>: </span><span class="type-name">MList</span><span>): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">xs</span><span>.</span><span class="identifier">uncons</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="number-literal">0</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">c</span><span>) =&gt; </span><span class="number-literal">1</span><span> + </span><span class="identifier">mlength</span><span>(</span><span class="identifier">c</span><span>.</span><span class="identifier">tail</span><span>)
+  }</span></code></pre>
+    <p>For the type parameter&nbsp;equivalent, the parameter on the argument is
+    usually carried out or <em>lifted</em> to the function, like so:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">plengthT</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">xs</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">xs</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PNil</span><span>() =&gt; </span><span class="number-literal">0</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">t</span><span>) =&gt; </span><span class="number-literal">1</span><span> + </span><span class="identifier">plengthT</span><span>(</span><span class="identifier">t</span><span>)
+  }</span></code></pre>
+    <p>By the conversion rules above, though, we should be able to write an
+    existential&nbsp;equivalent of <code>mlength</code> for <code>PList</code>, and indeed we can:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">plengthE</span><span>(</span><span class="identifier">xs</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="identifier">_</span><span>]): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">xs</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PNil</span><span>() =&gt; </span><span class="number-literal">0</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">t</span><span>) =&gt; </span><span class="number-literal">1</span><span> + </span><span class="identifier">plengthE</span><span>(</span><span class="identifier">t</span><span>)
+  }</span></code></pre>
+    <p>There’s another simple rule we can follow when determining whether we
+    can rewrite in an existential&nbsp;manner.</p>
+    <ol class="arabic">
+      <li>When a type parameter appears only in one argument, and</li>
+      <li>appears nowhere in the result type,</li>
+    </ol>
+    <p>we should always, ideally, be able to write the function in an
+    existential&nbsp;manner.  (We will discuss why it’s only “ideally” in
+    <a href="method-equiv.html">the next article</a>.)</p>
+    <p>You can demonstrate this to yourself by having the parameterized
+    variant (e.g. <code>plengthT</code>) call the existential variant
+    (e.g. <code>plengthE</code>), and, voilà, it compiles, so it must be right.</p>
+    <p>This hints at what is usually, though not always, <strong>an advantage for
+    type parameters: you have to ask for an existential, rather than
+    silently getting one just because you forgot a refinement</strong>.  We will
+    discuss
+    <a href="forget-refinement-aux.html">what happens when you forget one in a later post</a>.</p>
+    
+    <h2 id="equivalence-as-a-learning-tool" class="section"><a class="anchor-link" href="#equivalence-as-a-learning-tool"><code class="fas fa-link fa-sm"></code></a>Equivalence as a learning tool</h2>
+    <p>Scala is large enough that very few understand all of it.  Moreover,
+    there are many aspects of it that are poorly understood in general.</p>
+    <p>So why focus on how different&nbsp;features are similar?  When we
+    understand one area of Scala well, but another one poorly, we can form
+    sensible ideas about the latter by drawing analogies with the former.
+    This is how we solve problems with computers in general: we create an
+    informal&nbsp;model in our heads, which we translate to a
+    mathematical&nbsp;statement that a program can interpret, and it gives back
+    a result that we can translate back to our informal&nbsp;model.</p>
+    <p>My guess is that type parameters are much better understood than type
+    members, but that existentials&nbsp;via type members are better understood
+    than existentials&nbsp;introduced by <code>_</code> or <code>forSome</code>, though I’d wager
+    that neither form of existential is particularly well understood.</p>
+    <p>By knowing about equivalences and being able to discover more, you
+    have a powerful tool for understanding unfamiliar aspects of Scala:
+    just translate the problem back to what you know and think about what
+    it means there, because the conclusion will still hold when you
+    translate it&nbsp;forward.  (Category theorists, eat your hearts out.)</p>
+    <p>In this vein, we will next generalize the above rule about existential
+    methods, discovering a simple tool for determining whether two
+    method&nbsp;types <em>in general</em> are equivalent, whereby things you know
+    about one easily carry over to the other.  We will also explore
+    methods that <em>cannot</em> be written in the existential style, at least
+    under Scala’s restrictions.</p>
+    <p>That all happens in
+    <a href="method-equiv.html">the next part, “When are two methods alike?”</a>.</p>
+    <p><em>This article was tested with Scala 2.11.7.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Typelevel Summer of Code 2024</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Typelevel Summer of Code 2024</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Arman Bilge<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on March 2, 2024
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="typelevel-summer-of-code-2024" class="title">Typelevel Summer of Code 2024</h1>
+    <p>We are excited to share that Typelevel will be participating in <a href="https://summerofcode.withgoogle.com/">Google Summer of Code 2024</a>, thanks to the gracious support of the <a href="https://scala.epfl.ch/">Scala Center</a>! If you are a student, this is a wonderful opportunity to spend your summer working on Scala open source projects with mentorship from Typelevel maintainers, while earning a stipend.</p>
+    <p>This year we have <a href="../todo/">several project ideas and mentors lined up</a> spanning AI/ML, serverless, data streaming, observability, systems programming, and more. We will continue adding ideas, so please keep checking back! Also, if you have an idea of your own, we would love to hear it: Typelevel members have a wide range of interests and a special fondness for building “at the cutting edge of some incredibly bizarre stuff.”</p>
+    <p>We look forward to welcoming you to the Typelevel community and we hope that this program will be only the beginning of your open source journey. <a href="https://summerofcode.withgoogle.com/get-started">Applications open on March 18!</a> Until then, please join us on <a href="https://discord.gg/hAKabfGjUw">Discord</a> or email us at <a href="mailto:gsoc@typelevel.org"><a href="mailto:gsoc@typelevel.org">gsoc@typelevel.org</a></a>; we look forward to getting to know you :)</p>
+    
+    <h2 id="_2023-recap" class="section"><a class="anchor-link" href="#_2023-recap"><code class="fas fa-link fa-sm"></code></a>2023 recap</h2>
+    <p>We are proud of our GSoC contributors&#39; accomplishments last year:</p>
+    <ul>
+      <li><a href="https://github.com/danghieutrung">Hieu</a> implemented a pure FP Scala <a href="https://github.com/http4s/http4s/pull/7261">WebSocket client</a> in <a href="https://http4s.org/v0.23/docs/integrations.html#ember">http4s Ember</a> that supports JVM, Node.js, and Scala Native. His work is being adopted across the ecosystem, such as by the <a href="https://github.com/joan38/kubernetes-client/pull/239">Kubernetes client</a>.</li>
+      <li><a href="https://github.com/sherriesyt">Sherrie</a> carefully reviewed <a href="https://github.com/typelevel/otel4s">otel4s</a> and <a href="https://github.com/typelevel/otel4s/pull/236">designed new APIs</a> that better follow the <a href="https://opentelemetry.io/">Open Telemetry</a> specification. Her enhancements shipped as part of the <a href="https://github.com/typelevel/otel4s/releases/tag/v0.3.0">v0.3.0 release</a>.</li>
+      <li><a href="https://github.com/antoniojimeneznieto">Antonio</a> demonstrated the awesome potential of <a href="https://en.wikipedia.org/wiki/Io_uring">io_uring</a> when <a href="https://http4s.org/v0.23/docs/integrations.html#ember">http4s Ember</a> performed <a href="https://github.com/typelevel/cats-effect/issues/3692#issuecomment-1697974751">more than 3x faster in benchmarks</a> thanks to his <a href="https://github.com/armanbilge/fs2-io_uring/pull/78">I/O integrated runtime</a>. He is returning this year as a mentor on multiple follow-up projects.</li>
+    </ul>
+    <p>To learn more about their projects, check out the <a href="https://youtu.be/3HAStrljVwY">lightning talks</a> they gave at the <a href="https://nescalas.github.io/">2023 Northeast Scala Symposium</a>. Their success would not have been possible without the support and mentorship of our community, especially Diego Alonso, Ross Baker, Chris Davenport, Brian Holt, Maksym Ochenashko, and Daniel Spiewak. Thank you for your enthusiasm and generosity; it made an impression on our students, and it made an impression on me :)</p>
+    <p>Lastly, we were surprised by the breadth of the response we got to our announcement last year: there are many people eager to contribute. Even if you are not eligible to participate in GSoC, you are <em>always</em> welcome to join the Typelevel community and contribute to our projects!</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/armanbilge.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Arman Bilge</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/armanbilge">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

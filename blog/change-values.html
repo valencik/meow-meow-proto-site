@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>To change types, change values</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">To change types, change values</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on September 21, 2015
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="to-change-types-change-values" class="title">To change types, change values</h1>
+    <p><em>This is the seventh of a series of articles on “Type Parameters and
+    Type Members”.  You may wish to
+    <a href="type-members-parameters.html">start at the beginning</a>;
+    more specifically, this post is meant as a followup to
+    <a href="values-never-change-types.html">the previous entry</a>.
+    However, in a first for this series, it stands on its own, as
+    introductory matter.</em></p>
+    <p>A program is a system for converting data from one format to another,
+    which we have endowed with the color of magic.  In typed programming,
+    we use a constellation of types to mediate this transformation; a
+    function’s result can only be passed as another function’s argument to
+    the extent to which those parts of the functions’ types unify.</p>
+    <p>We rely on the richness of our types in these descriptions.  So it is
+    natural to want the types to change as you move to different parts of
+    the process; each change reflects the reality of what has just
+    happened.  For example, when you parse a string into an AST, your
+    program’s state has changed types, from <code>String</code> to <code>MyAST</code>.</p>
+    <p>But, as we have just seen, due to decisions we have made to simplify
+    our lives,
+    <a href="values-never-change-types.html">values cannot change types</a>,
+    no matter how important it is to the sanity of our code.  At the same
+    time, we don’t want to give up the richness of using more than one
+    type to describe our data.</p>
+    <p>Fortunately, there is a solution that satisfies these competing
+    concerns: to change types, change values.  You can’t do anything about
+    the values you have, but you can create new ones of the right type,
+    and use those instead.</p>
+    
+    <h2 id="type-changing-is-program-organization" class="section"><a class="anchor-link" href="#type-changing-is-program-organization"><code class="fas fa-link fa-sm"></code></a>Type-changing is program organization</h2>
+    <p>In values with complex construction semantics, it is common to write
+    imperative programs that leave “holes” in the data structures using
+    the terrible <code>null</code> misfeature of Java, Scala, and many other
+    languages.  This looks something like this.</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">Document</span><span>(</span><span class="identifier">filename</span><span>: </span><span class="type-name">Path</span><span>) {
+  </span><span class="comment">// this structure has three parts:
+</span><span>  </span><span class="keyword">var</span><span> </span><span class="identifier">text</span><span>: </span><span class="type-name">String</span><span> = </span><span class="literal-value">null</span><span> </span><span class="comment">// ← a body of text,
+</span><span>  </span><span class="keyword">var</span><span> </span><span class="identifier">wordIndex</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]] = </span><span class="literal-value">null</span><span>
+    </span><span class="comment">// ↑ an index of words to every
+</span><span>    </span><span class="comment">// occurrence in the text,
+</span><span>  </span><span class="keyword">var</span><span> </span><span class="identifier">mostPopular</span><span>: </span><span class="type-name">List</span><span>[(</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>)] = </span><span class="literal-value">null</span><span>
+    </span><span class="comment">// ↑ the most frequently used words
+</span><span>    </span><span class="comment">// in the text, and their number of
+</span><span>    </span><span class="comment">// occurrences
+</span><span>...</span></code></pre>
+    <p>Now, we must fill in these variables, by computing and assigning to
+    each in turn.  First, we compute the corpus text.</p>
+    <pre><code class="nohighlight"><span>  </span><span class="identifier">initText</span><span>()</span></code></pre>
+    <p>Then, we compute and fill in the word index.  If we didn’t fill in
+    <code>text</code> first, this compiles, but crashes at runtime.</p>
+    <pre><code class="nohighlight"><span>  </span><span class="identifier">initWordIndex</span><span>()</span></code></pre>
+    <p>Finally, we figure out which words are most popular.  If we didn’t
+    fill in <code>wordIndex</code> first, this compiles, but crashes.</p>
+    <pre><code class="nohighlight"><span>  </span><span class="identifier">initMostPopular</span><span>()</span></code></pre>
+    <p>How do I know that?  Well, I have to inspect the definitions of these
+    three methods.</p>
+    <pre><code class="nohighlight"><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initText</span><span>(): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">text</span><span> = </span><span class="type-name">Source</span><span>.</span><span class="identifier">fromFile</span><span>(</span><span class="identifier">filename</span><span>.</span><span class="identifier">toFile</span><span>).</span><span class="identifier">mkString</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initWordIndex</span><span>(): </span><span class="type-name">Unit</span><span> = {
+    </span><span class="keyword">val</span><span> </span><span class="identifier">words</span><span> = </span><span class="string-literal">&quot;&quot;&quot;\w+&quot;&quot;&quot;</span><span>.</span><span class="identifier">r</span><span> </span><span class="identifier">findAllMatchIn</span><span> </span><span class="identifier">text</span><span>
+    </span><span class="identifier">wordIndex</span><span> = </span><span class="identifier">words</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]]()){
+      (</span><span class="identifier">m</span><span>, </span><span class="identifier">mtch</span><span>) =&gt;
+        </span><span class="keyword">val</span><span> </span><span class="identifier">word</span><span> = </span><span class="identifier">mtch</span><span>.</span><span class="identifier">matched</span><span>
+        </span><span class="keyword">val</span><span> </span><span class="identifier">idx</span><span> = </span><span class="identifier">mtch</span><span>.</span><span class="identifier">start</span><span>
+        </span><span class="identifier">m</span><span> + (</span><span class="identifier">word</span><span> -&gt; (</span><span class="identifier">idx</span><span> :: </span><span class="identifier">m</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="identifier">word</span><span>, </span><span class="type-name">Nil</span><span>)))
+      }
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initMostPopular</span><span>(): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">mostPopular</span><span> = </span><span class="identifier">wordIndex</span><span>.</span><span class="identifier">mapValues</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">size</span><span>).</span><span class="identifier">toList</span><span>
+      .</span><span class="identifier">sortBy</span><span>(</span><span class="identifier">p</span><span> =&gt; </span><span class="number-literal">0</span><span> - </span><span class="identifier">p</span><span class="number-literal">._2</span><span>).</span><span class="identifier">take</span><span>(</span><span class="number-literal">10</span><span>)</span></code></pre>
+    <p>This method of organizing object initialization is popular because,
+    among other properties:</p>
+    <ol class="arabic">
+      <li>it <em>seems</em> self-documenting,</li>
+      <li>you don’t have to pass data around, and</li>
+      <li>steps can be customized by subclassing and overriding.</li>
+    </ol>
+    <p>However!  It has the tremendous drawback of preventing the compiler
+    from helping you get the order of initialization correct.  Go, look;
+    see if you can spot why I said the latter two calls would crash if you
+    don’t get the order exactly right.  Now, I have four questions for
+    you.</p>
+    <ol class="arabic">
+      <li>Would you trust yourself to notice these implicit dependencies
+      every time you look at this code?</li>
+      <li>Suppose you commented on the dependencies.  Would you trust these
+      comments to be updated when the initialization details change?</li>
+      <li>Would you trust subclasses that customize the initialization to
+      respect the order in which we call these three <code>init</code> functions?</li>
+      <li>Could you keep track of this if the initialization was
+      significantly more complex?  (This <em>is</em> a toy example for a blog
+      post, after all.)</li>
+    </ol>
+    <p>Ironically, as your initialization becomes more complex, the compiler
+    becomes less able to help you with uninitialized-variable warnings and
+    the like.  But, this is not the natural order of things; it is a
+    consequence of using imperative variable initialization but not
+    representing this
+    <a href="https://github.com/facebook/flow/releases/tag/v0.14.0">variable refinement</a>
+    in the type system.  By initializing in a different way, we can
+    recover type safety.</p>
+    <p>&lt;div class=&quot;side-note&quot;&gt;
+      The implications of refinement, linked above, are much less severe
+      than those of unrestricted type-changing of a variable.  So Flow did
+      not solve, nor did it aim to solve, those difficulties by
+      introducing the refinement feature.
+    &lt;/div&gt;</p>
+    
+    <h2 id="the-four-types-of-document" class="section"><a class="anchor-link" href="#the-four-types-of-document"><code class="fas fa-link fa-sm"></code></a>The four types of <code>Document</code></h2>
+    <p>If we consider <code>Document</code> as the simple product of its three state
+    variables, with some special functions associated with them as
+    whatever <code>Document</code> methods we intend to support, we have a simple
+    3-tuple.</p>
+    <pre><code class="nohighlight"><span>(</span><span class="type-name">String</span><span>, </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]],
+ </span><span class="type-name">List</span><span>[(</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>)])</span></code></pre>
+    <p>Let us no longer pretend that it is any more complicated than that.</p>
+    <p>But this cannot be mutated to fill these in as they are initialized,
+    you say!  Yes, that’s right, we want a <em>type-changing</em> transformation.
+    By <em>changing values</em>, this is easy.  There are three phases of
+    initialization, so four states, including uninitialized.</p>
+    <pre><code class="nohighlight"><span class="type-name">Path</span><span>
+</span><span class="type-name">String</span><span>
+(</span><span class="type-name">String</span><span>, </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]])
+(</span><span class="type-name">String</span><span>, </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]], </span><span class="type-name">List</span><span>[(</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>)])</span></code></pre>
+    <p>For interesting phases, such as the final one, we might create a <code>case
+class</code> to hold its contents, instead.  Let us call that class, for
+    this example, <code>Doc</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Doc</span><span>
+  (</span><span class="identifier">text</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">wordIndex</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]],
+   </span><span class="identifier">mostPopular</span><span>: </span><span class="type-name">List</span><span>[(</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>)])</span></code></pre>
+    <p>Finally, we can build 3 functions to take us through these steps.
+    Each begins by taking one as an argument, and produces the next state
+    as a return type.</p>
+    <pre><code class="nohighlight"><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initText</span><span>(</span><span class="identifier">filename</span><span>: </span><span class="type-name">Path</span><span>): </span><span class="type-name">String</span><span> =
+    </span><span class="type-name">Source</span><span>.</span><span class="identifier">fromFile</span><span>(</span><span class="identifier">filename</span><span>.</span><span class="identifier">toFile</span><span>).</span><span class="identifier">mkString</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initWordIndex</span><span>(</span><span class="identifier">text</span><span>: </span><span class="type-name">String</span><span>): (</span><span class="type-name">String</span><span>, </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]]) = {
+    </span><span class="keyword">val</span><span> </span><span class="identifier">words</span><span> = </span><span class="string-literal">&quot;&quot;&quot;\w+&quot;&quot;&quot;</span><span>.</span><span class="identifier">r</span><span> </span><span class="identifier">findAllMatchIn</span><span> </span><span class="identifier">text</span><span>
+    (</span><span class="identifier">text</span><span>, </span><span class="identifier">words</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]]()){
+       (</span><span class="identifier">m</span><span>, </span><span class="identifier">mtch</span><span>) =&gt;
+       </span><span class="keyword">val</span><span> </span><span class="identifier">word</span><span> = </span><span class="identifier">mtch</span><span>.</span><span class="identifier">matched</span><span>
+       </span><span class="keyword">val</span><span> </span><span class="identifier">idx</span><span> = </span><span class="identifier">mtch</span><span>.</span><span class="identifier">start</span><span>
+       </span><span class="identifier">m</span><span> + (</span><span class="identifier">word</span><span> -&gt; (</span><span class="identifier">idx</span><span> :: </span><span class="identifier">m</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="identifier">word</span><span>, </span><span class="type-name">Nil</span><span>)))
+     })
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initMostPopular</span><span>(</span><span class="identifier">twi</span><span>: (</span><span class="type-name">String</span><span>, </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]])): </span><span class="type-name">Doc</span><span> = {
+    </span><span class="keyword">val</span><span> (</span><span class="identifier">text</span><span>, </span><span class="identifier">wordIndex</span><span>) = </span><span class="identifier">twi</span><span>
+    </span><span class="type-name">Doc</span><span>(</span><span class="identifier">text</span><span>, </span><span class="identifier">wordIndex</span><span>,
+        </span><span class="identifier">wordIndex</span><span>.</span><span class="identifier">mapValues</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">size</span><span>).</span><span class="identifier">toList</span><span>
+          .</span><span class="identifier">sortBy</span><span>(</span><span class="identifier">p</span><span> =&gt; </span><span class="number-literal">0</span><span> - </span><span class="identifier">p</span><span class="number-literal">._2</span><span>).</span><span class="identifier">take</span><span>(</span><span class="number-literal">10</span><span>))
+  }</span></code></pre>
+    <p>If we have a <code>Path</code>, we can get a <code>Doc</code> by <code>(initText&nbsp;_) andThen
+initWordIndex andThen initMostPopular: Path&nbsp;=&gt;&nbsp;Doc</code>.  But that hardly
+    replicates the rich runtime behavior of our imperative version, does
+    it?  That is, we can do reordering of operations in a larger context
+    with <code>Document</code>, but not <code>Doc</code>.  Let us see what that means.</p>
+    
+    <h2 id="many-docs" class="section"><a class="anchor-link" href="#many-docs"><code class="fas fa-link fa-sm"></code></a>Many docs</h2>
+    <p>Dealing with one document in isolation is one thing, but suppose we
+    have a structure of <code>Document</code>s.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DocumentTree</span><span>
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">SingleDocument</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">doc</span><span>: </span><span class="type-name">Document</span><span>)
+  </span><span class="keyword">extends</span><span> </span><span class="type-name">DocumentTree</span><span>
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DocumentCategory</span><span>
+  (</span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">members</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">DocumentTree</span><span>])
+  </span><span class="keyword">extends</span><span> </span><span class="type-name">DocumentTree</span></code></pre>
+    <p>In the imperative mode, we can batch and reorder initialization.  Say,
+    for example, we don’t initialize <code>Document</code> when we create it.  This
+    tree then contains <code>Document</code>s that contain only <code>Path</code>s.  We can walk
+    the tree, doing step 1 for every <code>Document</code>.</p>
+    <pre><code class="nohighlight"><span>  </span><span class="comment">// add this to DocumentTree
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">foreach</span><span>(</span><span class="identifier">f</span><span>: </span><span class="type-name">Document</span><span> =&gt; </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Unit</span><span> =
+    </span><span class="keyword">this</span><span> </span><span class="keyword">match</span><span> {
+      </span><span class="keyword">case</span><span> </span><span class="type-name">SingleDocument</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">d</span><span>) =&gt; </span><span class="identifier">f</span><span>(</span><span class="identifier">d</span><span>)
+      </span><span class="keyword">case</span><span> </span><span class="type-name">DocumentCategory</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">dts</span><span>) =&gt; </span><span class="identifier">dts</span><span> </span><span class="identifier">foreach</span><span> (</span><span class="identifier">_</span><span> </span><span class="identifier">foreach</span><span> </span><span class="identifier">f</span><span>)
+    }
+
+</span><span class="comment">// now we can initialize the text everywhere,
+// given some dtree: DocumentTree
+</span><span class="identifier">dtree</span><span> </span><span class="identifier">foreach</span><span> (</span><span class="identifier">_</span><span>.</span><span class="identifier">initText</span><span>())</span></code></pre>
+    <p>The way software does, it got more complex.  And we can be ever less
+    sure that we’re doing things right, under this arrangement.</p>
+    
+    <h2 id="the-four-phases-problem-stuck-in-a-tree" class="section"><a class="anchor-link" href="#the-four-phases-problem-stuck-in-a-tree"><code class="fas fa-link fa-sm"></code></a>The four phases problem, stuck in a tree</h2>
+    <p>Our tree only supports one type of document.  We could choose the
+    final one, <code>Doc</code>, but there is no way to replicate more exotic
+    document tree initializations like the one above.</p>
+    <p>Instead, we want the type of the tree to adapt along with the document
+    changes.  If we have four states, <em>Foo</em>, <em>Bar</em>, <em>Baz</em>, and <em>Quux</em>, we
+    want four different kinds of <code>DocumentTree</code> to go along with them.  In
+    a language with type parameters, this is easy: we can model those four
+    as <code>DocTree[Foo]</code>, <code>DocTree[Bar]</code>, <code>DocTree[Baz]</code>, and
+    <code>DocTree[Quux]</code>, respectively, by adding a type parameter.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DocTree</span><span>[</span><span class="type-name">D</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">SingleDoc</span><span>[</span><span class="type-name">D</span><span>](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">doc</span><span>: </span><span class="type-name">D</span><span>)
+  </span><span class="keyword">extends</span><span> </span><span class="type-name">DocTree</span><span>[</span><span class="type-name">D</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DocCategory</span><span>[</span><span class="type-name">D</span><span>]
+  (</span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">members</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">DocTree</span><span>[</span><span class="type-name">D</span><span>]])
+  </span><span class="keyword">extends</span><span> </span><span class="type-name">DocTree</span><span>[</span><span class="type-name">D</span><span>]</span></code></pre>
+    <p>Now we need a replacement for the <code>foreach</code> that we used with the
+    unparameterized <code>DocumentTree</code> to perform each initialization step on
+    every <code>Document</code> therein.  Now that <code>DocTree</code> is agnostic with respect
+    to the specific document type, this is a little more abstract, but
+    quite idiomatic.</p>
+    <pre><code class="nohighlight"><span>  </span><span class="comment">// add this to DocTree
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">D2</span><span>](</span><span class="identifier">f</span><span>: </span><span class="type-name">D</span><span> =&gt; </span><span class="type-name">D2</span><span>): </span><span class="type-name">DocTree</span><span>[</span><span class="type-name">D2</span><span>] =
+    </span><span class="keyword">this</span><span> </span><span class="keyword">match</span><span> {
+      </span><span class="keyword">case</span><span> </span><span class="type-name">SingleDoc</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">d</span><span>) =&gt; </span><span class="type-name">SingleDoc</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">f</span><span>(</span><span class="identifier">d</span><span>))
+      </span><span class="keyword">case</span><span> </span><span class="type-name">DocCategory</span><span>(</span><span class="identifier">c</span><span>, </span><span class="identifier">dts</span><span>) =&gt;
+        </span><span class="type-name">DocCategory</span><span>(</span><span class="identifier">c</span><span>, </span><span class="identifier">dts</span><span> </span><span class="identifier">map</span><span> (</span><span class="identifier">_</span><span> </span><span class="identifier">map</span><span> </span><span class="identifier">f</span><span>))
+    }</span></code></pre>
+    <p>It’s worth comparing these side by side.  Now we should be able to
+    step through initialization of <code>DocTree</code> with <code>map</code>, just as with
+    <code>DocumentTree</code> and <code>foreach</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">dtp</span><span>: </span><span class="type-name">DocTree</span><span>[</span><span class="type-name">Path</span><span>] = </span><span class="type-name">DocCategory</span><span>(</span><span class="string-literal">&quot;rt&quot;</span><span>, </span><span class="type-name">List</span><span>(</span><span class="type-name">SingleDoc</span><span>(</span><span class="number-literal">42</span><span>, </span><span class="type-name">Paths</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;hello.md&quot;</span><span>))))
+</span><span class="identifier">dtp</span><span>: </span><span class="identifier">tmtp7</span><span>.</span><span class="type-name">DocTree</span><span>[</span><span class="identifier">java</span><span>.</span><span class="identifier">nio</span><span>.</span><span class="identifier">file</span><span>.</span><span class="type-name">Path</span><span>] = </span><span class="type-name">DocCategory</span><span>(</span><span class="identifier">rt</span><span>,</span><span class="type-name">List</span><span>(</span><span class="type-name">SingleDoc</span><span>(</span><span class="number-literal">42</span><span>,</span><span class="identifier">hello</span><span>.</span><span class="identifier">md</span><span>)))
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">dtp</span><span> </span><span class="identifier">map</span><span> </span><span class="type-name">Doc</span><span>.</span><span class="identifier">initText</span><span>
+</span><span class="identifier">res3</span><span>: </span><span class="identifier">tmtp7</span><span>.</span><span class="type-name">DocTree</span><span>[</span><span class="type-name">String</span><span>] =
+</span><span class="type-name">DocCategory</span><span>(</span><span class="identifier">rt</span><span>,</span><span class="type-name">List</span><span>(</span><span class="type-name">SingleDoc</span><span>(</span><span class="number-literal">42</span><span>,</span><span class="identifier">contents</span><span> </span><span class="identifier">of</span><span> </span><span class="identifier">the</span><span> </span><span class="identifier">hello</span><span>.</span><span class="identifier">md</span><span> </span><span class="identifier">file</span><span>!)))</span></code></pre>
+    
+    <h2 id="you-wouldn-t-avoid-writing-functions-would-you" class="section"><a class="anchor-link" href="#you-wouldn-t-avoid-writing-functions-would-you"><code class="fas fa-link fa-sm"></code></a>You wouldn’t avoid writing functions, would you?</h2>
+    <p>There is nothing magical about <code>DocTree</code> that makes it especially
+    amenable to the introduction of a type parameter.  This is <em>not</em> a
+    feature whose proper use is limited to highly abstract or
+    general-purpose data structures; with its <code>String</code>s and <code>Int</code>s strewn
+    about, it is <em>utterly</em> domain-specific, “business” code.</p>
+    <p>In fact, if we were likely to annotate <code>Doc</code>s with more data, <code>Doc</code>
+    would be a perfect place to add a type parameter!</p>
+    <pre><code class="nohighlight"><span class="comment">// suppose we add some &quot;extra&quot; data
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Doc</span><span>[</span><span class="type-name">A</span><span>]
+  (</span><span class="identifier">text</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">wordIndex</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]],
+   </span><span class="identifier">mostPopular</span><span>: </span><span class="type-name">List</span><span>[(</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>)],
+   </span><span class="identifier">extra</span><span>: </span><span class="type-name">A</span><span>)</span></code></pre>
+    <p>You can use a type parameter to represent one simple slot in an
+    otherwise concretely specified structure, as above.  You can
+    <a href="https://bitbucket.org/ermine-language/ermine-writers/src/9ec9a98c30bc9924cc49888895f8832e8ce4f8e1/writers/html/src/main/scala/com/clarifi/reporting/writers/HTMLDeps.scala?at=default#HTMLDeps.scala-37">use one to represent 10 slots</a>.</p>
+    <p>Parameterized types are the type system’s version of functions.  They
+    aren’t just for collections, abstract code, or highly general-purpose
+    libraries: they’re for <em>your</em> code!</p>
+    <p>Unless you are going to suggest that <em>functions</em> are “too academic”.
+    Or that functions have no place in “business logic”.  Or perhaps that,
+    while it would be nice to define functions to solve this, that, and
+    sundry, you’ll just do the quick no-defining-functions hack for now
+    and maybe come back to add some functions later when “paying off
+    technical debt”.  <em>Then</em>, I’m not sure what to say.</p>
+    
+    <h2 id="the-virtuous-circle-of-fp-and-types" class="section"><a class="anchor-link" href="#the-virtuous-circle-of-fp-and-types"><code class="fas fa-link fa-sm"></code></a>The virtuous circle of FP and types</h2>
+    <p>Now we are doing something very close to functional programming.
+    Moreover, we were led here not by a desire for referential
+    transparency, nor for purity, but merely for a way to represent the
+    states of our program in a more well-typed way.</p>
+    <p>In this series of posts, I have deliberately avoided discussion of
+    functional programming until this section; my chosen subject is types,
+    not functional programming.  But the features we have been considering
+    unavoidably coalesce here into an empirical argument for functional
+    programming.  Type parameters let us elegantly lift transformations
+    from one part of our program to another; the intractable complexities
+    of imperative type-changing direct us to program more functionally, by
+    computing new values instead of changing old ones, if we want access
+    to these features.  This, in turn, encourages ever more of our program
+    to be written in a functional style, just as the switch to different
+    <code>Doc</code> representations induced a switch to different document tree
+    representations, <code>map</code> instead of <code>foreach</code>.</p>
+    
+    <h2 id="paying-it-back" class="section"><a class="anchor-link" href="#paying-it-back"><code class="fas fa-link fa-sm"></code></a>Paying it Back</h2>
+    <p>Likewise, the use of functional programming style feeds back, in the
+    aforementioned virtuous circle, to encourage the use of stronger
+    types.</p>
+    <p>When we wanted stronger guarantees about the initialization of our
+    documents, and thereby also of the larger structures incorporating
+    them, we turned to the most powerful tool we have at our disposal for
+    describing and ensuring such guarantees: the type system.  In so
+    doing, we induced an explosion of explicit data representations; where
+    we had two, we now have eight, whose connections to each other are
+    mediated by the types of functions involved.</p>
+    <p>With the increase in the number of explicit concepts in the code comes
+    a greater need for an automatic method of keeping track of all these
+    connections.  The type system is ideally suited to this role.</p>
+    <p>&lt;div class=&quot;side-note&quot;&gt;
+      We induced more &lt;em&gt;explicit&lt;/em&gt; data representation, not more
+      representations overall.  The imperative &lt;code&gt;Document&lt;/code&gt; has
+      four stages of initialization, at each of which it exhibits
+      different behavior.  All we have done is expose this fact to the
+      type system level, at which our usage can be checked.
+    &lt;/div&gt;</p>
+    
+    <h2 id="don-t-miss-one" class="section"><a class="anchor-link" href="#don-t-miss-one"><code class="fas fa-link fa-sm"></code></a>Don’t miss one!</h2>
+    <p>As it is declared, the type-changing <code>DocTree#map</code> has another
+    wonderful advantage over <code>DocumentTree#foreach</code>.</p>
+    <p>Let us say that each category should also have a document of its own,
+    not just a list of subtrees.  In refactoring, we adjust the
+    definitions of <code>DocumentCategory</code> or <code>DocCategory</code>.</p>
+    <pre><code class="nohighlight"><span class="comment">// imperative version
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DocumentCategory</span><span>
+  (</span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">doc</span><span>: </span><span class="type-name">Document</span><span>,
+   </span><span class="identifier">members</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">DocumentTree</span><span>])
+   </span><span class="keyword">extends</span><span> </span><span class="type-name">DocumentTree</span><span>
+
+</span><span class="comment">// functional version
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DocCategory</span><span>[</span><span class="type-name">D</span><span>]
+  (</span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">doc</span><span>: </span><span class="type-name">D</span><span>,
+   </span><span class="identifier">members</span><span>: </span><span class="type-name">DocTree</span><span>[</span><span class="type-name">D</span><span>])
+  </span><span class="keyword">extends</span><span> </span><span class="type-name">DocTree</span><span>[</span><span class="type-name">D</span><span>]</span></code></pre>
+    <p>So far, so good.  Next, neither <code>foreach</code> nor <code>map</code> compile anymore.</p>
+    <pre><code>TmTp7.scala:70: wrong number of arguments for pattern
+⤹ tmtp7.DocumentCategory(name: String,doc: tmtp7.Document,
+⤹                        members: List[tmtp7.DocumentTree])
+      case DocumentCategory(_, dts) =&gt;
+                           ^
+TmTp7.scala:71: not found: value d
+        f(d)
+          ^
+TmTp7.scala:91: wrong number of arguments for pattern
+⤹ tmtp7.DocCategory[D](name: String,doc: D,members: List[tmtp7.DocTree[D]])
+      case DocCategory(c, dts) =&gt;
+                      ^
+TmTp7.scala:92: not enough arguments for method
+⤹ apply: (name: String, doc: D, members: List[tmtp7.DocTree[D]]
+⤹        )tmtp7.DocCategory[D] in object DocCategory.
+Unspecified value parameter members.
+        DocCategory(c, dts map (_ map f))
+                   ^</code></pre>
+    <p>So let us fix <code>foreach</code> in the simplest way possible.</p>
+    <pre><code class="nohighlight"><span>    </span><span class="comment">//                 added ↓
+</span><span>    </span><span class="keyword">case</span><span> </span><span class="type-name">DocumentCategory</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">dts</span><span>) =&gt; ...</span></code></pre>
+    <p>This compiles.  It is wrong, and we can figure out exactly why by
+    trying the same shortcut with <code>map</code>.</p>
+    <pre><code class="nohighlight"><span>      </span><span class="keyword">case</span><span> </span><span class="type-name">DocCategory</span><span>(</span><span class="identifier">c</span><span>, </span><span class="identifier">d</span><span>, </span><span class="identifier">dts</span><span>) =&gt;
+        </span><span class="type-name">DocCategory</span><span>(</span><span class="identifier">c</span><span>, </span><span class="identifier">d</span><span>, </span><span class="identifier">dts</span><span> </span><span class="identifier">map</span><span> (</span><span class="identifier">_</span><span> </span><span class="identifier">map</span><span> </span><span class="identifier">f</span><span>))</span></code></pre>
+    <p>We are treating the <code>d:&nbsp;D</code> like the <code>name:&nbsp;String</code>, just passing it
+    through.  It is “ignored” in precisely the same way as the <code>foreach</code>
+    ignores the new data.  But this version does not compile!</p>
+    <pre><code class="nohighlight"><span class="type-name">TmTp7</span><span>.</span><span class="identifier">scala</span><span>:</span><span class="number-literal">90</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">d</span><span>.</span><span class="keyword">type</span><span> (</span><span class="keyword">with</span><span> </span><span class="identifier">underlying</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">D</span><span>)
+ </span><span class="identifier">required</span><span>: </span><span class="type-name">D2</span><span>
+        </span><span class="type-name">DocCategory</span><span>(</span><span class="identifier">c</span><span>, </span><span class="identifier">d</span><span>, </span><span class="identifier">dts</span><span> </span><span class="identifier">map</span><span> (</span><span class="identifier">_</span><span> </span><span class="identifier">map</span><span> </span><span class="identifier">f</span><span>))
+                       ^</span></code></pre>
+    <p>More broadly, <code>map</code> must return a <code>DocTree[D2]</code>.  By implication, the
+    second argument must be a <code>D2</code>, not a <code>D</code>.  We can fix it by using
+    <code>f</code>.</p>
+    <pre><code class="nohighlight"><span>      </span><span class="type-name">DocCategory</span><span>(</span><span class="identifier">c</span><span>, </span><span class="identifier">f</span><span>(</span><span class="identifier">d</span><span>), </span><span class="identifier">dts</span><span> </span><span class="identifier">map</span><span> (</span><span class="identifier">_</span><span> </span><span class="identifier">map</span><span> </span><span class="identifier">f</span><span>))</span></code></pre>
+    <p>Likewise, we should make a similar fix to <code>DocumentTree#foreach</code>.</p>
+    <pre><code class="nohighlight"><span>    </span><span class="keyword">case</span><span> </span><span class="type-name">DocumentCategory</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">d</span><span>, </span><span class="identifier">dts</span><span>) =&gt;
+      </span><span class="identifier">f</span><span>(</span><span class="identifier">d</span><span>)
+      </span><span class="identifier">dts</span><span> </span><span class="identifier">foreach</span><span> (</span><span class="identifier">_</span><span> </span><span class="identifier">foreach</span><span> </span><span class="identifier">f</span><span>)</span></code></pre>
+    <p>But only in the case of <code>map</code> did we get help from the compiler.
+    That’s because <code>DocumentTree</code> is not the only thing to gain a type
+    parameter in this new design.  When we made <code>DocTree</code> take one, it was
+    only natural to define <code>map</code> with one, too.</p>
+    <p>We can see how this works out by looking at both <code>foreach</code> and <code>map</code>
+    as the agents of our practical goal: transformation of the tree by
+    transforming the documents therein.  <code>foreach</code> works like this.</p>
+    <pre><code>              document transformer
+               (Document =&gt; Unit)
+ DocumentTree ~~~~~~~~~~~~~~~~~~~&gt; DocumentTree
+ ------------                      -----------------
+initial state                      final state
+  (old tree)                       (same type, “new”
+                                    but same tree)</code></pre>
+    <p>The way <code>map</code> looks at <code>DocTree</code> is very similar, and we give it the
+    responsibilities that <code>foreach</code> had, so it is unsurprising that the
+    “shape” we imagine for transformation is similar.</p>
+    <pre><code>               document transformer
+                    (D =&gt; D2)
+    DocTree[D] ~~~~~~~~~~~~~~~~~~~~&gt; DocTree[D2]
+ -------------                       ----------------
+ initial state                       final state
+  (old tree)                         (changed type,
+                                      changed value!)</code></pre>
+    <p>The replacement of <code>D</code> with <code>D2</code> also means that values of type <code>D</code>
+    cannot occur anywhere in the result, as <code>D</code> is abstract, so only
+    appears as <code>doc</code> by virtue of being the type parameter passed to
+    <code>DocTree</code> and its data constructors (er, “subclasses”).</p>
+    <p>As our result type is <code>DocTree[D2]</code>, we have two options, considering
+    only the result type:</p>
+    <ol class="arabic">
+      <li>return a <code>DocTree</code> with no <code>D2</code>s in its representation, one role of
+      <code>None</code> and <code>Nil</code> in <code>Option</code> and <code>List</code> respectively, or</li>
+      <li>make <code>D2</code>s from the <code>D</code>s in the <code>DocTree[D]</code> we have in hand, by
+      passing them to the ‘document transformer’ <code>D&nbsp;=&gt;&nbsp;D2</code>.</li>
+    </ol>
+    <p>Similarly, no <code>DocTree[D]</code> values can appear anywhere in the result.
+    As with the <code>D</code>s, they must all be transformed or dropped, with a
+    different ‘empty’ <code>DocTree</code> chosen.</p>
+    
+    <h2 id="the-dangers-of-simplifying" class="section"><a class="anchor-link" href="#the-dangers-of-simplifying"><code class="fas fa-link fa-sm"></code></a>The dangers of “simplifying”</h2>
+    <p>Suppose we instead defined <code>map</code> as follows.</p>
+    <pre><code class="nohighlight"><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>(</span><span class="identifier">f</span><span>: </span><span class="type-name">D</span><span> =&gt; </span><span class="type-name">D</span><span>): </span><span class="type-name">DocTree</span><span>[</span><span class="type-name">D</span><span>]</span></code></pre>
+    <p>If you subscribe to the idea of type parameters being for wonky
+    academics, this is “simpler”.  And it’s fine, I suppose, if you only
+    have one <code>D</code> in mind, one document type in mind.  Setting aside that
+    we have four, there is another problem.  Let’s take a look at the
+    “shape” of this transformation.</p>
+    <pre><code>               document transformer
+                     (D =&gt; D)
+    DocTree[D] ~~~~~~~~~~~~~~~~~~~~&gt; DocTree[D]
+ -------------                       ----------------
+ initial state                       final state
+  (old tree)                         (but no promise,
+                                      same type!)</code></pre>
+    <p>The problem with a <code>D&nbsp;=&gt;&nbsp;D</code> transformer is that we can’t make promises
+    that all our data passed through it.  After all, a source <code>d</code> has the
+    same type as <code>f(d)</code>.  We could even get away with</p>
+    <pre><code class="nohighlight"><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>(</span><span class="identifier">f</span><span>: </span><span class="type-name">D</span><span> =&gt; </span><span class="type-name">D</span><span>): </span><span class="type-name">DocTree</span><span>[</span><span class="type-name">D</span><span>] = </span><span class="keyword">this</span></code></pre>
+    <p><code>map[D2]</code> is strictly more general.  <strong>Even if we have only one <code>D</code> in
+    mind for <code>DocTree</code>, it still pays to type-parameterize it and to add
+    ‘type-changing’ extra type parameters like <code>D2</code>.</strong></p>
+    
+    <h2 id="the-dangers-of-missing-values" class="section"><a class="anchor-link" href="#the-dangers-of-missing-values"><code class="fas fa-link fa-sm"></code></a>The dangers of missing values</h2>
+    <p>Have you ever started getting a new bill, then missed a payment
+    because you thought you were covered for the month?</p>
+    <p>Have you ever gone on vacation and, in your relief at having not left
+    anything important at home, left something behind when packing for
+    your return trip?</p>
+    <p>This kind of thing cannot be characterized in the manner of “well, I
+    would just get a runtime error if I didn’t have a type checker, so
+    it’s fine.”  Yet it simply falls out of the system we have chosen;
+    moreover, we have barely begun to consider the possibilities.</p>
+    <p>In this series, I have focused on existential types, which we can in
+    one sense consider merely abstract types that the compiler checks that
+    we treat as independent, like <code>D</code> and <code>D2</code>.  Existential types are
+    only one natural outcome of the system of type abstraction brought to
+    us by type parameters; there are many more interesting conclusions,
+    like the ones described above.</p>
+    <p>Next, in
+    <a href="existential-inside.html">“It’s existential on the inside”</a>,
+    we will see how deeply intertwined universal and existential types
+    really are.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

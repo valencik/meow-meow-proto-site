@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Law Enforcement using Discipline</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Law Enforcement using Discipline</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Lars Hupel<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on November 17, 2013
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="law-enforcement-using-discipline" class="title">Law Enforcement using Discipline</h1>
+    <p>Some nine or ten months ago, <a href="http://github.com/non/spire">Spire</a>&#39;s project structure underwent a major reorganization.
+    Simultaneously, the <a href="http://www.scalacheck.org/">Scalacheck</a> bindings were refactored, completely overhauling the law-checking infrastructure.</p>
+    
+    <h2 id="requirements" class="section"><a class="anchor-link" href="#requirements"><code class="fas fa-link fa-sm"></code></a>Requirements</h2>
+    <p>The main goal was to make it easy to check that instances of Spire&#39;s type classes adhere to the set of algebraic laws of the respective type classes.
+    <a href="https://github.com/scalaz/scalaz">Scalaz</a> also has such an infrastructure, so why not take that one?
+    The problem is that in Spire, the hierarchy of type classes is a little bit more complex:</p>
+    <p>On the one hand, there is a &quot;generic&quot; tower of type classes including <code>Semigroup</code>, <code>Monoid</code> and the like, where each successive type extends its predecessor.
+    On the other hand, this tower is replicated <em>twice</em> for their &quot;additive&quot; and &quot;multiplicative&quot; counterparts.
+    These classes are isomorphic, up to the semantics, and hence naming of their operations.</p>
+    <p>This distinction is quite useful, because now one can write:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Semiring</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">AdditiveMonoid</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">with</span><span> </span><span class="type-name">MultiplicativeSemigroup</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="comment">// ...
+</span><span>}</span></code></pre>
+    <p>without clashes between the additive and multiplicative binary operations.
+    Also, a semiring can now be quite naturally treated as an additive monoid and a multiplicative semigroup (but not as a generic semigroup, which would be ambiguous).
+    (One could consider this the <em>third</em> hierarchy of algebraic type classes in spire.)</p>
+    <p>When checking laws, we do not want to repeat the same laws over and over again.
+    Hence, we need some way to express that certain type classes share laws with others which are not necessarily in the same type hierarchy.</p>
+    
+    <h2 id="interface" class="section"><a class="anchor-link" href="#interface"><code class="fas fa-link fa-sm"></code></a>Interface</h2>
+    <p>The implementation fundamentally depends on Scalacheck.
+    To be more specific, it uses <code>Prop</code> as the elementary unit of testing.</p>
+    <p>Now, a set of named <code>Prop</code>s do not quite suffice as the &quot;law&quot; of a type class.
+    First, to avoid ambiguous naming, let us call the complete law of a type class (including dependencies), a &quot;rule set&quot;.</p>
+    <p>To satisfy our requirement of having dependencies from (potentially) different hierarchies, we will distinguish <em>parents</em> and <em>bases</em>.
+    A <em>parent</em> is a rule set of a type class in the same hierachy, whereas a <em>base</em> can come from everywhere.
+    This distinction is expressed with the use of path-dependent types:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Laws</span><span> {
+
+  </span><span class="keyword">trait</span><span> </span><span class="type-name">RuleSet</span><span> {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">name</span><span>: </span><span class="type-name">String</span><span>
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">bases</span><span>: </span><span class="type-name">Seq</span><span>[(</span><span class="type-name">String</span><span>, </span><span class="type-name">Laws</span><span>#</span><span class="type-name">RuleSet</span><span>)] = </span><span class="type-name">Seq</span><span>()
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">parents</span><span>: </span><span class="type-name">Seq</span><span>[</span><span class="type-name">RuleSet</span><span>] = </span><span class="type-name">Seq</span><span>()
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">props</span><span>: </span><span class="type-name">Seq</span><span>[(</span><span class="type-name">String</span><span>, </span><span class="type-name">Prop</span><span>)] = </span><span class="type-name">Seq</span><span>()
+
+    </span><span class="comment">// ...
+</span><span>  }
+
+}</span></code></pre>
+    <p>As we can see, <code>parents</code> uses type <code>RuleSet</code>, which constrains parents to the same outer <code>Laws</code> instance.
+    In contrast, <code>bases</code> uses the type <code>Laws#RuleSet</code> which means that bases can come from other instances of <code>Laws</code>.</p>
+    <p>When you define type classes, the general idea is to define one instance of <code>Laws</code> for each <em>hierarchy</em> of type classes.
+    Coming back to the Spire example, that could look like this:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">GroupLaws</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">semigroup</span><span>(</span><span class="keyword">implicit</span><span> </span><span class="type-name">A</span><span>: </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">RuleSet</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">RuleSet</span><span> {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">name</span><span> = </span><span class="string-literal">&quot;semigroup&quot;</span><span>
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">props</span><span> = </span><span class="comment">// ...
+</span><span>  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">monoid</span><span>(</span><span class="keyword">implicit</span><span> </span><span class="type-name">A</span><span>: </span><span class="type-name">Monoid</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">RuleSet</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">RuleSet</span><span> {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">name</span><span> = </span><span class="string-literal">&quot;monoid&quot;</span><span>
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">parents</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="identifier">semigroup</span><span>)
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">props</span><span> = </span><span class="comment">// ...
+</span><span>  }
+}
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">AdditiveLaws</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">groupLaws</span><span>: </span><span class="type-name">GroupLaws</span><span>[</span><span class="type-name">A</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">semigroup</span><span>(</span><span class="keyword">implicit</span><span> </span><span class="type-name">A</span><span>: </span><span class="type-name">AdditiveSemigroup</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">RuleSet</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">RuleSet</span><span> {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">name</span><span> = </span><span class="string-literal">&quot;additive semigroup&quot;</span><span>
+
+    </span><span class="comment">// `.additive` converts an additive X to a generic X
+</span><span>    </span><span class="keyword">def</span><span> </span><span class="declaration-name">bases</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="string-literal">&quot;additive&quot;</span><span> → </span><span class="identifier">groupLaws</span><span>.</span><span class="identifier">semigroup</span><span>(</span><span class="type-name">A</span><span>.</span><span class="identifier">additive</span><span>))
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">monoid</span><span>(</span><span class="keyword">implicit</span><span> </span><span class="type-name">A</span><span>: </span><span class="type-name">AdditiveMonoid</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">RuleSet</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">RuleSet</span><span> {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">name</span><span> = </span><span class="string-literal">&quot;additive monoid&quot;</span><span>
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">bases</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="string-literal">&quot;additive&quot;</span><span> → </span><span class="identifier">groupLaws</span><span>.</span><span class="identifier">monoid</span><span>(</span><span class="type-name">A</span><span>.</span><span class="identifier">additive</span><span>))
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">parent</span><span> = </span><span class="type-name">Seq</span><span>(</span><span class="identifier">semigroup</span><span>)
+  }
+}</span></code></pre>
+    <p>This now clearly expresses the intention:</p>
+    <ul>
+      <li>A monoid is a semigroup.</li>
+      <li>An additive semigroup should satisfy the laws of a semigroup.</li>
+      <li>An additive monoid is an additive semigroup and should satisfy the laws of a monoid.</li>
+    </ul>
+    <p>Note that in the definitions inside <code>AdditiveLaws</code>, no properties have been restated.
+    The system will automatically take care that all the properties of the parents and the bases are being checked.</p>
+    <p>Obviously, this is not very interesting yet, because so far it could have been achieved by other means.
+    If you are interested in more complex examples, check the sources of Spire:
+    There are a couple of examples where the additive and multiplicative versions have extra checks which are not covered by the generic version.</p>
+    
+    <h2 id="implementation" class="section"><a class="anchor-link" href="#implementation"><code class="fas fa-link fa-sm"></code></a>Implementation</h2>
+    <p>Now, the question is how to compute the set of all properties which need to be checked.
+    A naïve algorithm would just recursively traverse all bases and parents, and check the union of all the property sets.</p>
+    <p>However, this leads to unnecessary work.
+    Consider the rule set of an additive monoid.
+    There, the properties of semigroup would be included twice:
+    once via the semigroup base of the additive semigroup parent, and once via the semigroup parent of the monoid base.</p>
+    <p>While checking properties twice certainly does no damage, we still do not want to pay for that overhead.
+    Hence, a slightly smarter algorithm is used.
+    We compute the set of all properties of a certain class by taking the union of these sets:</p>
+    <ul>
+      <li>the properties of the class itself</li>
+      <li>recursively, the properties of all its parents (ignoring their bases)</li>
+      <li>recursively, the set of all properties of its bases</li>
+    </ul>
+    <p>In order to present the user a more transparent output, the names of the properties are hierarchical.
+    When a base is pulled in as dependency, their properties are additionally prefixed with the name of the base.
+    This should make it very easy to see where exactly a property came from.</p>
+    <p>There is a slight complication, though.
+    Recall the definition of a semiring in spire, which is given above.
+    A semiring actually consists of two different semigroups of which we must check the laws separately.
+    At this point, it is not immediately clear what would happen with the presented algorithm.
+    With just a minor clarification it turns out that this is not actually a problem:
+    The rule set of a semiring specifies two bases (one for the additive component and one for the multiplicative component), and we only need to make sure that they have different names.
+    Laws pulled in via different bases are considered different, and are hence not conflated.</p>
+    
+    <h2 id="usage" class="section"><a class="anchor-link" href="#usage"><code class="fas fa-link fa-sm"></code></a>Usage</h2>
+    <p>Previously, this new law checking infrastructure was tailored to be used just in Spire.
+    Since it is useful outside of Spire, too, it has recently been generalized and pulled out into a separate project: <a href="https://github.com/typelevel/discipline">Discipline</a>.</p>
+    <p>In there, you can find a stripped-down example of the Spire use case.</p>
+    <p>Furthermore, there is integration with Specs2 and ScalaTest.
+    You just have to extend the <code>specs2.Discipline</code> (or <code>scalatest.Discipline</code>, respectively) trait, and write</p>
+    <pre><code class="nohighlight"><span class="identifier">checkAll</span><span>(</span><span class="string-literal">&quot;Int&quot;</span><span>, </span><span class="type-name">RingLaws</span><span>[</span><span class="type-name">Int</span><span>].</span><span class="identifier">ring</span><span> </span><span class="comment">/* put your own `RuleSet` here */</span><span>)</span></code></pre>
+    <p>and rule sets are expanded and turned into individual tests automatically.
+    For a Specs2-based tests, this will result in the following output (similar for ScalaTest):</p>
+    <pre><code>[info] ring laws must hold for Int
+[info]
+[info]  + ring.additive:group.base:group.associative
+[info]  + ring.additive:group.base:group.identity
+[info]  + ring.additive:group.base:group.inverse
+[info]  + ring.multiplicative:monoid.base:monoid.associative
+[info]  + ring.multiplicative:monoid.base:monoid.identity
+[info]  + ring.distributive</code></pre>
+    <p>Observe that the associativity law for semigroups shows up twice (additive and multiplicative), but not four times (as would have happened with the naïve algorithm).</p>
+    <p>In the future, we will investigate whether Scalaz can also be migrated towards Discipline, for a more unified approach to law checking.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/larsrh.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Lars Hupel</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/larsrh">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Deriving Type Class Instances</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Deriving Type Class Instances</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Lars Hupel<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on June 24, 2013
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="deriving-type-class-instances" class="title">Deriving Type Class Instances</h1>
+    
+    <h2 id="motivating-example" class="section"><a class="anchor-link" href="#motivating-example"><code class="fas fa-link fa-sm"></code></a>Motivating example</h2>
+    <p>Assume that you have a <code>case class</code> representing vectors in three-dimensional space:</p>
+    <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Vector3D</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">z</span><span>: </span><span class="type-name">Int</span><span>)</span></code></pre>
+    <p>Now you want to implement addition on this class.
+    Currently, you have to do that manually:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> +(</span><span class="identifier">that</span><span>: </span><span class="type-name">Vector3D</span><span>): </span><span class="type-name">Vector3D</span><span> =
+  </span><span class="type-name">Vector3D</span><span>(</span><span class="keyword">this</span><span>.</span><span class="identifier">x</span><span> + </span><span class="identifier">that</span><span>.</span><span class="identifier">x</span><span>, </span><span class="keyword">this</span><span>.</span><span class="identifier">y</span><span> + </span><span class="identifier">that</span><span>.</span><span class="identifier">y</span><span>, </span><span class="keyword">this</span><span>.</span><span class="identifier">z</span><span> + </span><span class="identifier">that</span><span>.</span><span class="identifier">z</span><span>)</span></code></pre>
+    <p>If you are writing some code involving three-dimensional vectors, chances are that you also have to deal with two-dimensional ones:</p>
+    <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Vector2D</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">Int</span><span>) {
+  </span><span class="keyword">def</span><span> +(</span><span class="identifier">that</span><span>: </span><span class="type-name">Vector2D</span><span>): </span><span class="type-name">Vector2D</span><span> =
+    </span><span class="type-name">Vector2D</span><span>(</span><span class="keyword">this</span><span>.</span><span class="identifier">x</span><span> + </span><span class="identifier">that</span><span>.</span><span class="identifier">x</span><span>, </span><span class="keyword">this</span><span>.</span><span class="identifier">y</span><span> + </span><span class="identifier">that</span><span>.</span><span class="identifier">y</span><span>)
+}</span></code></pre>
+    <p>Observe that the hand-written implementation of <code>+</code> is quite repetitive.
+    We want to avoid that sort of boilerplate code as much as possible.</p>
+    <p>In this post, we will introduce an abstraction over the <em>addition</em> operation, namely <em>semigroups</em>,
+    and introduce a macro-based facility which allows you to get the implementation of <code>+</code> for free.
+    In the end, the only thing you will have to write is this:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">vector2DSemigroup</span><span> = </span><span class="type-name">TypeClass</span><span>[</span><span class="type-name">Semigroup</span><span>, </span><span class="type-name">Vector2D</span><span>]
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">vector3DSemigroup</span><span> = </span><span class="type-name">TypeClass</span><span>[</span><span class="type-name">Semigroup</span><span>, </span><span class="type-name">Vector3D</span><span>]</span></code></pre>
+    <p>That is still a little bit of boilerplate, right? How about:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="type-name">Semigroup</span><span>.</span><span class="identifier">auto</span><span>.</span><span class="identifier">_</span></code></pre>
+    <p>This will give you <code>Semigroup</code> instances for <em>all</em> of your data types – with zero boilerplate!</p>
+    <p>But first, let us introduce all the related concepts properly.</p>
+    
+    <h2 id="abstracting-all-the-things" class="section"><a class="anchor-link" href="#abstracting-all-the-things"><code class="fas fa-link fa-sm"></code></a>Abstracting all the things</h2>
+    <p>&lt;div class=&quot;side-note&quot;&gt;
+      If you are already familiar with type classes in general and algebraic structures in particular, you can safely skip this and the next section.
+      Keep in mind though that we are dealing with classes for types of kind $<em>$ only. Type classes for $</em> \rightarrow *$ are different and not supported.
+    &lt;/div&gt;</p>
+    <p>Type classes are an incredibly useful abstraction mechanism, originally introduced in Haskell.
+    If you have been using some of the typelevel.scala libraries already, you probably know how type classes and their instances are represented in Scala: as traits and implicits.
+    In the following section, we will get started with an example type class from abstract algebra, which is implemented in <em>spire</em>.</p>
+    
+    <h2 id="group-theory" class="section"><a class="anchor-link" href="#group-theory"><code class="fas fa-link fa-sm"></code></a>Group theory</h2>
+    <p>Group theory is a very important field of research in mathematics and has a very broad range of applications, especially in computer science.
+    One of the most fundamental structures is a <em>semigroup</em>, which consists of a set of elements equipped with one operation (often called <em>append</em>, <em>mplus</em>, or similarly; in textbooks you will often find $\circ$ or $\oplus$).
+    Additionally, the operation has to obey the <em>law of associativity</em>, meaning that for any three values $s_1, s_2,$ and $s_3$, it does not matter if you append $s_1$ and $s_2$ first and then append $s_3$, or append $s_2$ and $s_3$ first and then append $s_1$ and the result of that.
+    In other words, the precise order in which the steps of a larger operation are executed does not matter.
+    A good analogy here is when flattening a list:
+    On the surface, you just do not care if it proceeds by splitting the list recursively or if the concatenation is done sequentially by folding.</p>
+    <p>&lt;div class=&quot;side-note&quot;&gt;
+      In fact, some list operations actually require associativity. From the Scaladoc of the &lt;code&gt;fold&lt;/code&gt; method on &lt;code&gt;Seq&lt;/code&gt;:
+      &lt;blockquote&gt;
+        Folds the elements of this collection or iterator using the specified associative binary operator.
+        The order in which operations are performed on elements is unspecified and may be nondeterministic. 
+      &lt;/blockquote&gt;
+      This allows a particular collection implementation to use whichever order is most efficient.
+    &lt;/div&gt;</p>
+    <p>Lists are already a good example for a semigroup: Any <code>List[T]</code> is a semigroup, with the semigroup operation being list concatenation!
+    A <code>Map[K, V]</code> is a semigroup too, given that <code>V</code> is a semigroup.
+    The operation is just &quot;merging&quot; two maps, and if you have two duplicate keys, you can use the semigroup operation for <code>V</code>.</p>
+    <p>Enough examples. We can represent the concept of a semigroup in Scala using a trait:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">S</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">append</span><span>(</span><span class="identifier">s1</span><span>: </span><span class="type-name">S</span><span>, </span><span class="identifier">s2</span><span>: </span><span class="type-name">S</span><span>): </span><span class="type-name">S</span><span>
+}</span></code></pre>
+    <p>Obviously, we can also implement a semigroup for base types like <code>Int</code>. An instance could look like this:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">intInstance</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">Int</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">append</span><span>(</span><span class="identifier">s1</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">s2</span><span>: </span><span class="type-name">Int</span><span>) = </span><span class="identifier">s1</span><span> + </span><span class="identifier">s2</span><span>
+}</span></code></pre>
+    <p>In other words, we just use the built-in addition function.</p>
+    <p>&lt;div class=&quot;side-note&quot;&gt;If you want to know more about applications of abstract algebra in programming, especially in &lt;em&gt;spire&lt;/em&gt;, head over to YouTube and watch &lt;a href=&quot;http://www.youtube.com/watch?v=xO9AoZNSOH4&quot;&gt;an introduction by Tom Switzer&lt;/a&gt;.&lt;/div&gt;</p>
+    
+    <h2 id="composing-instances" class="section"><a class="anchor-link" href="#composing-instances"><code class="fas fa-link fa-sm"></code></a>Composing instances</h2>
+    <p>Now suppose you are working with three-dimensional images.
+    Most likely, you will encounter a data structure for vectors (or points), which we recall from above:</p>
+    <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Vector3D</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">z</span><span>: </span><span class="type-name">Int</span><span>)</span></code></pre>
+    <p>And since you know your maths, you also know that vectors can be added, and that vector addition forms a semigroup!
+    Hence, a semigroup instance for <code>Vector3D</code> is the next logical step.</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">vectorInstance</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">Vector3D</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">append</span><span>(</span><span class="identifier">u</span><span>: </span><span class="type-name">Vector3D</span><span>, </span><span class="identifier">v</span><span>: </span><span class="type-name">Vector3D</span><span>) =
+    </span><span class="type-name">Vector3D</span><span>(</span><span class="identifier">u</span><span>.</span><span class="identifier">x</span><span> + </span><span class="identifier">v</span><span>.</span><span class="identifier">x</span><span>, </span><span class="identifier">u</span><span>.</span><span class="identifier">y</span><span> + </span><span class="identifier">v</span><span>.</span><span class="identifier">y</span><span>, </span><span class="identifier">u</span><span>.</span><span class="identifier">z</span><span> + </span><span class="identifier">v</span><span>.</span><span class="identifier">z</span><span>)
+}</span></code></pre>
+    <p>Now, that was a bit tedious, right? We would love to have a way the compiler could write that instance for us.
+    (I mean, it already generates reasonable defaults for <code>equals</code>, <code>hashCode</code> and <code>toString</code>, so why not for that?)</p>
+    <p>In any case, you can see a pattern here: Each element of the case class is added separately.
+    Here, we could have even delegated the addition to our <code>intInstance</code> from above.</p>
+    <p>In essence, what we need is a way to combine smaller instances (e.g. for <code>Int</code>) into larger instances (e.g. for <code>Vector3D</code> consisting of three <code>Int</code>s).
+    Luckily, this is completely mechanic. As an exercise, try writing the following instance:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">tupleInstance</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="keyword">implicit</span><span> </span><span class="type-name">A</span><span>: </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">A</span><span>], </span><span class="type-name">B</span><span>: </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">B</span><span>]) =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Semigroup</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>)] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">append</span><span>(</span><span class="identifier">t1</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>), </span><span class="identifier">t2</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>)): (</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>) = ???
+  }</span></code></pre>
+    
+    <h2 id="representing-data-types" class="section"><a class="anchor-link" href="#representing-data-types"><code class="fas fa-link fa-sm"></code></a>Representing data types</h2>
+    <p>Once we know how to produce an instance for a pair, we can apply that two times and obtain an instance for a triple.
+    However, there are still two problems here:</p>
+    <ol class="arabic">
+      <li>We would like an instance for <code>Vector3D</code>, but we have an instance for <code>(Int, Int, Int)</code>.</li>
+      <li>This is still a lie. We actually have an instance for <code>(Int, (Int, Int))</code>.</li>
+    </ol>
+    <p>Let us address these problems now. The following sections assume familiarity with <code>HList</code>s, as implemented in <em>shapeless</em>.</p>
+    <p>&lt;div class=&quot;side-note&quot;&gt;
+      If you are not familiar with &lt;code&gt;HList&lt;/code&gt;s yet,
+      watch Miles Sabin&#39;s &lt;a href=&quot;http://www.youtube.com/watch?v=GDbNxL8bqkY&quot;&gt;talk about &lt;em&gt;shapeless&lt;/em&gt;&lt;/a&gt; at the Northeast Scala Symposium 2012.
+      There&#39;s also a &lt;a href=&quot;http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/&quot;&gt;blog series&lt;/a&gt; exploring type-level programming in general by Mark Harrah.
+    &lt;/div&gt;</p>
+    <p>Now, we want to generate an instance for <code>Vector3D</code> and countless other data types.
+    That means that we cannot just special-case for every possible data type, but we have to abstract over them.
+    The trick is actually quite simple:
+    For the purposes of automatic instance derivation, we temporarily convert data types into a canonical <em>representation</em> using <code>HList</code>s, where each case class parameter corresponds to an element in the <code>HList</code>.</p>
+    <p>In our example, that representation is <code>Int :: Int :: Int :: HNil</code>.
+    Yes, that type is completely equivalent to <code>Vector3D</code>, and you can implement the conversion functions straightforwardly:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">to</span><span>(</span><span class="identifier">vec</span><span>: </span><span class="type-name">Vector3D</span><span>): </span><span class="type-name">Int</span><span> :: </span><span class="type-name">Int</span><span> :: </span><span class="type-name">Int</span><span> :: </span><span class="type-name">HNil</span><span> =
+  </span><span class="identifier">vec</span><span>.</span><span class="identifier">x</span><span> :: </span><span class="identifier">vec</span><span>.</span><span class="identifier">y</span><span> :: </span><span class="identifier">vec</span><span>.</span><span class="identifier">z</span><span> :: </span><span class="type-name">HNil</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">from</span><span>(</span><span class="identifier">hlist</span><span>: </span><span class="type-name">Int</span><span> :: </span><span class="type-name">Int</span><span> :: </span><span class="type-name">Int</span><span> :: </span><span class="type-name">HNil</span><span>) =
+  ??? </span><span class="comment">// fun exercise!</span></code></pre>
+    <p>Because we are lazy, we let a macro automatically generate the <code>to</code> and <code>from</code> methods.
+    We will see in the second part of the series how that works.
+    For now, just assume that you can invoke some method, magic happens, and you get the conversions out.</p>
+    
+    <h2 id="using-the-representation" class="section"><a class="anchor-link" href="#using-the-representation"><code class="fas fa-link fa-sm"></code></a>Using the representation</h2>
+    <p>At this point, we have a canonical representation for arbitrary case classes.
+    We will also assume that there are <code>Semigroup</code> instances for each of its elements.
+    Now we would like to combine those base instances into an instance for the representation.
+    We need two implicits for that:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">nilInstance</span><span> =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">HNil</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">append</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">HNil</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">HNil</span><span>) = </span><span class="type-name">HNil</span><span>
+  }
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">consInstance</span><span>[</span><span class="type-name">H</span><span>, </span><span class="type-name">T</span><span> &lt;: </span><span class="type-name">HList</span><span>](</span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">H</span><span>: </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">H</span><span>], </span><span class="type-name">T</span><span>: </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">T</span><span>]) =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">H</span><span> :: </span><span class="type-name">T</span><span>] {
+    </span><span class="comment">// actual implementation doesn&#39;t matter that much
+</span><span>    </span><span class="keyword">def</span><span> </span><span class="declaration-name">append</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">H</span><span> :: </span><span class="type-name">T</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">H</span><span> :: </span><span class="type-name">T</span><span>) = ???
+  }</span></code></pre>
+    <p>The key insight is that the compiler can come up with an instance for <code>Int :: Int :: Int :: HNil</code>, just because these two implicits are in scope.</p>
+    <p>Now we just need a way to get an instance for <code>Vector3D</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">subst</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">to</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>, </span><span class="identifier">from</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">A</span><span>, </span><span class="identifier">instance</span><span>: </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">B</span><span>]) =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">A</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">append</span><span>(</span><span class="identifier">a1</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">a2</span><span>: </span><span class="type-name">A</span><span>) =
+      </span><span class="identifier">from</span><span>(</span><span class="identifier">instance</span><span>.</span><span class="identifier">append</span><span>(</span><span class="identifier">to</span><span>(</span><span class="identifier">a1</span><span>), </span><span class="identifier">to</span><span>(</span><span class="identifier">a2</span><span>))
+  }</span></code></pre>
+    <p>Easy enough, right?
+    To get our much-wanted <code>Semigroup[Vector3D]</code>, we ask the compiler to make an instance its <code>HList</code> representation, conjure the conversion functions and plug all that stuff into the <code>subst</code> machine. Voilà, done!
+    Add some teaspoons of macros, and we are able to write</p>
+    <pre><code class="nohighlight"><span class="type-name">Semigroup</span><span>.</span><span class="identifier">derive</span><span>[</span><span class="type-name">Vector3D</span><span>]</span></code></pre>
+    <p>Are we done yet? No. We can go even further.</p>
+    
+    <h2 id="abstracting-over-type-classes" class="section"><a class="anchor-link" href="#abstracting-over-type-classes"><code class="fas fa-link fa-sm"></code></a>Abstracting over type classes</h2>
+    <p><code>Semigroup</code> is not the only type class around. For example, there is a whole tower of classes from group theory for varying use cases. Then there are some type classes from <em>scalaz</em>:</p>
+    <ul>
+      <li><code>Show</code> provides a way to convert a value to a <code>String</code></li>
+      <li><code>Equal</code> for type-safe equality</li>
+      <li><code>Order</code> provides total ordering on values</li>
+    </ul>
+    <p>... and many more!</p>
+    <p>Another key insight is that <em>all</em> of those classes are able to deal with <code>HLists</code> and also support the <code>subst</code> operation.
+    Hence, one could be tempted to write:</p>
+    <pre><code class="nohighlight"><span class="type-name">Show</span><span>.</span><span class="identifier">derive</span><span>[</span><span class="type-name">Vector3D</span><span>]
+</span><span class="type-name">Equal</span><span>.</span><span class="identifier">derive</span><span>[</span><span class="type-name">Vector3D</span><span>]
+</span><span class="comment">// and more</span></code></pre>
+    <p>I hate duplication, though. I do not want to implement the <code>derive</code> macro over and over again.
+    Now, if only there was a way to abstract over common functionality of types ...</p>
+    
+    <h2 id="a-type-class-called-typeclass" class="section"><a class="anchor-link" href="#a-type-class-called-typeclass"><code class="fas fa-link fa-sm"></code></a>A type class called &quot;TypeClass&quot;</h2>
+    <p>&quot;What,&quot; I hear you saying, &quot;the <code>TypeClass</code> type class? You can&#39;t be serious!&quot;</p>
+    <p>I am serious.</p>
+    <p>We use type classes to abstract over types.
+    <code>Semigroup</code> abstracts over types which offer some sort of addition functionality.</p>
+    <p>However, type classes are themselves just types in Scala.
+    Thus, we can use type classes to abstract over type classes.
+    We are defining a type class which abstracts over type classes whose instances can be combined to form larger instances.</p>
+    <p>So, without further ado:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">TypeClass</span><span>[</span><span class="type-name">C</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">nil</span><span>: </span><span class="type-name">C</span><span>[</span><span class="type-name">HNil</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cons</span><span>[</span><span class="type-name">H</span><span>, </span><span class="type-name">T</span><span> &lt;: </span><span class="type-name">HList</span><span>](</span><span class="type-name">H</span><span>: </span><span class="type-name">C</span><span>[</span><span class="type-name">H</span><span>], </span><span class="type-name">T</span><span>: </span><span class="type-name">C</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">C</span><span>[</span><span class="type-name">H</span><span> :: </span><span class="type-name">T</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">subst</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">to</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>, </span><span class="identifier">from</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">A</span><span>, </span><span class="identifier">instance</span><span>: </span><span class="type-name">C</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">C</span><span>[</span><span class="type-name">A</span><span>]
+}</span></code></pre>
+    <p>This should actually be not too surprising. We already know exactly how to implement <code>TypeClass[Semigroup]</code>.
+    If we put this implementation into the companion object of <code>Semigroup</code>, it will be available for the macro to use.</p>
+    
+    <h2 id="wrapping-it-up" class="section"><a class="anchor-link" href="#wrapping-it-up"><code class="fas fa-link fa-sm"></code></a>Wrapping it up</h2>
+    <p>How can this actually be used?
+    The work can be roughly divided between three roles:</p>
+    <ol class="arabic">
+      <li>
+        <p>The macro author, who has to implement all the nitty-gritty details of the derivation process.</p>
+        <p>That is already done and implemented in <em>shapeless</em>.
+        The upcoming 2.0.0 release will contain all the necessary bits and pieces, but requires at least Scala 2.10.2 (it will not work for 2.10.1 or earlier).
+        If you are brave, try the latest snapshot version which is available on Sonatype.</p>
+      </li>
+      <li>
+        <p>The library author, who defines type classes, fundamental instances thereof, and of course the necessary <code>TypeClass</code> instances.</p>
+        <p>These are usually contained in the libraries you use, but the last part will additionally require a bridge library.
+        But fear not, those bridge libraries already exist, at least for the typelevel.scala libraries, and can be readily added as dependency for your build.
+        Head over to the &lt;a href=&quot;https://github.com/typelevel/shapeless-contrib#readme&quot;&gt;GitHub project&lt;/a&gt;, we will keep you posted for when a new version comes out.
+        We also plan to put a compatibility chart on this site.</p>
+      </li>
+      <li>
+        <p>The library user, who defines data types and wants to get instances without all the boilerplate.</p>
+        <p>This is the simplest task of all: All you have to do is to put</p>
+        <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">myInstance</span><span> = </span><span class="type-name">TypeClass</span><span>[</span><span class="type-name">Semigroup</span><span>, </span><span class="type-name">Vector3D</span><span>]
+</span><span class="comment">// or
+</span><span class="keyword">import</span><span> </span><span class="type-name">Semigroup</span><span>.</span><span class="identifier">auto</span><span>.</span><span class="identifier">_</span></code></pre>
+        <p>somewhere into your scope, and you are done!</p>
+        <p>Providing &quot;explicit&quot; implicit declarations for each type class instance provides the tightest control over your implicit scope and ensures you only have the instances that you want.
+        Importing <code>auto</code> reduces the boilerplate to the absolute minimum, which is often desirable, but might result in more instances being materialized than you expect.
+        Which to choose is partly a matter of taste and partly a function of the size and complexity of the scopes you are importing in to:
+        large or complex scopes might favour explicit declarations; tighter, simpler scopes might favour <code>auto</code>.</p>
+      </li>
+    </ol>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/larsrh.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Lars Hupel</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/larsrh">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

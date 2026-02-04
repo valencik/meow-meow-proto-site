@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Typelevel Code of Conduct Committee Enforcement Procedures</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="../blog/">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+  <div class="bulma-section bulma-content bulma-container bulma-is-max-desktop">
+    <h1 id="typelevel-code-of-conduct-committee-enforcement-procedures" class="title">Typelevel Code of Conduct Committee Enforcement Procedures</h1>
+    <p>This document summarizes the procedures the Typelevel Code of Conduct Committee uses to enforce the <a href="index.html">Code of Conduct</a>.</p>
+    
+    <h2 id="summary-of-processes" class="section"><a class="anchor-link" href="#summary-of-processes"><code class="fas fa-link fa-sm"></code></a>Summary of processes</h2>
+    <p>When the committee receives a report of a possible Code of Conduct violation, it will:</p>
+    <ol class="arabic">
+      <li>Acknowledge the receipt of the report.</li>
+      <li>Evaluate conflicts of interest.</li>
+      <li>Call a meeting of committee members without a conflict of interest.</li>
+      <li>Evaluate the reported incident.</li>
+      <li>Propose a behavior adjustment.</li>
+      <li>Propose consequences for the reported behavior.</li>
+      <li>Vote on behavior adjustment and consequences for the reported person.</li>
+      <li>Contact online community administrators/moderators to approve the behavior adjustment and consequences.</li>
+      <li>Follow up with the reported person.</li>
+      <li>Decide further responses.</li>
+      <li>Follow up with the reporter.</li>
+    </ol>
+    
+    <h3 id="affiliate-project-processes" class="section"><a class="anchor-link" href="#affiliate-project-processes"><code class="fas fa-link fa-sm"></code></a>Affiliate project processes</h3>
+    <p>Typelevel affiliate projects are also covered by the Typelevel Code of Conduct. An affiliate project may choose to nominate dedicated moderators, who will work with the Typelevel Code of Conduct Committee to handle reports.</p>
+    <p>If a moderator of an affiliate project receives a report, they should:</p>
+    <ol class="arabic">
+      <li>Acknowledge the receipt of the report.</li>
+      <li>Contact the Code of Conduct Committee, stating &quot;I have a report that involves [REPORTED PERSON]&quot; so that Code of Conduct Committee members can evaluate conflicts of interest.</li>
+      <li>The reporting process will proceed as usual, with the affiliate moderator/s included as acting members of the Code of Conduct Committee.</li>
+    </ol>
+    <p>If the Code of Conduct Committee receives a report regarding an affiliate project, the affiliate moderator/s will be included in the conflict of interest evaluation. If no conflict exists, the affiliate moderator/s will be included in the reporting process as acting Code of Conduct committee members.</p>
+    
+    <h3 id="moderator-processes" class="section"><a class="anchor-link" href="#moderator-processes"><code class="fas fa-link fa-sm"></code></a>Moderator Processes</h3>
+    <p>Typelevel Code of Conduct committee members, affiliate project moderators, and moderators in other spaces covered by the Typelevel Code of Conduct are empowered to enforce the Code of Conduct pro-actively. Code of Conduct violations should still be reported as a follow up, with a note about any action taken in the moment.</p>
+    
+    <h2 id="acknowledge-the-report" class="section"><a class="anchor-link" href="#acknowledge-the-report"><code class="fas fa-link fa-sm"></code></a>Acknowledge the report</h2>
+    <p>Reporters should receive an acknowledgment of the receipt of their report within 24 hours, via their preferred communication channel.</p>
+    
+    <h2 id="conflict-of-interest-policy" class="section"><a class="anchor-link" href="#conflict-of-interest-policy"><code class="fas fa-link fa-sm"></code></a>Conflict of interest policy</h2>
+    <p>Examples of conflicts of interest include but are not limited to the following circumstances, where the reporter or reported person is</p>
+    <ul>
+      <li>your manager.</li>
+      <li>a romantic partner, <a href="https://solopoly.net/2012/09/29/whats-a-metamour-on-my-terms/">metamour</a>, or close friend. It&#39;s fine to participate if they are an acquaintance.</li>
+      <li>your family member.</li>
+      <li>your direct client.</li>
+      <li>someone you work closely with. This could be someone on your team or someone who works on the same project as you.</li>
+      <li>a maintainer who regularly reviews your contributions.</li>
+    </ul>
+    <p>Committee members do not need to state why they have a conflict of interest, only that one exists. Other committee members should not ask why the person has a conflict of interest.</p>
+    <p>Anyone who has a conflict of interest will remove themselves from the discussion of the incident, and recuse themselves from voting on a response to the report.</p>
+    
+    <h2 id="evaluating-a-report" class="section"><a class="anchor-link" href="#evaluating-a-report"><code class="fas fa-link fa-sm"></code></a>Evaluating a report</h2>
+    
+    <h3 id="jurisdiction" class="section"><a class="anchor-link" href="#jurisdiction"><code class="fas fa-link fa-sm"></code></a>Jurisdiction</h3>
+    <ul>
+      <li><em>Is this a Code of Conduct violation?</em> Is this behavior on our list of inappropriate behavior? Is it borderline inappropriate behavior? Does it violate our community norms?</li>
+      <li><em>Did this occur in a space that is within our Code of Conduct&#39;s scope?</em> If the incident occurred outside the community, but a community member&#39;s mental health or physical safety may be negatively impacted if no action is taken, the incident may be in scope. Private conversations in community spaces are also in scope.</li>
+    </ul>
+    
+    <h3 id="impact" class="section"><a class="anchor-link" href="#impact"><code class="fas fa-link fa-sm"></code></a>Impact</h3>
+    <ul>
+      <li><em>Did this incident occur in a private or public space?</em> The more community members are able to access or were present in such a space where the incident occurred, the larger the negative impact.</li>
+      <li><em>Does this behavior negatively impact a marginalized group in our community?</em> Is the reporter a person from a marginalized group in our community? How is the reporter being negatively impacted by the reported person&#39;s behavior? Are members of the marginalized group likely to disengage with the community if no action was taken on this report?</li>
+      <li><em>Does this incident involve a community leader?</em> Community members often look up to community leaders to set the standard of acceptable behavior, and so reports involving a community leader can have significant negative impact.</li>
+    </ul>
+    
+    <h3 id="risk" class="section"><a class="anchor-link" href="#risk"><code class="fas fa-link fa-sm"></code></a>Risk</h3>
+    <ul>
+      <li><em>Does this incident include sexual harassment?</em></li>
+      <li><em>Does this pose a safety risk?</em> Does the behavior put a person&#39;s physical safety at risk? Will this incident severely negatively impact someone&#39;s mental health?</li>
+      <li><em>Is there a risk of this behavior being repeated?</em> Does the reported person understand why their behavior was inappropriate? Is there an established pattern of behavior from past reports?</li>
+    </ul>
+    <p>Reports which involve higher risk or higher impact may face more severe consequences than reports which involve lower risk or lower impact.</p>
+    
+    <h2 id="propose-a-behavior-adjustment" class="section"><a class="anchor-link" href="#propose-a-behavior-adjustment"><code class="fas fa-link fa-sm"></code></a>Propose a behavior adjustment</h2>
+    <p>The committee will propose a concrete behavior adjustment that ensures the inappropriate behavior is not repeated. The committee will also discuss what actions may need to be taken if the reported person does not agree to the proposed behavioral adjustment.</p>
+    <p>What follows are examples of possible behavioral adjustments for incidents that occur in online spaces under the scope of this Code of Conduct. This behavioral adjustment list is not exhaustive, and the Typelevel Code of Conduct Committee reserves the right to take any action it deems necessary.</p>
+    <ul>
+      <li>Requiring that the reported person not use specific language</li>
+      <li>Requiring that the reported person not join in on specific types of discussions</li>
+      <li>Requiring that the reported person not send private messages to a community member</li>
+      <li>Requiring that the reported person not join, or leave, specific communication channels</li>
+      <li>Removing the reported person from administrator or moderator rights to community infrastructure</li>
+      <li>Removing a volunteer from their duties and responsibilities</li>
+      <li>Removing a person from leadership of relevant organizations</li>
+      <li>Removing a person from membership of relevant organizations</li>
+    </ul>
+    
+    <h2 id="propose-consequences" class="section"><a class="anchor-link" href="#propose-consequences"><code class="fas fa-link fa-sm"></code></a>Propose consequences</h2>
+    <p>What follows are examples of possible consequences to an incident report. This consequences list is not exhaustive, and the Typelevel Code of Conduct Committee reserves the right to take any action it deems necessary.</p>
+    <p>Possible private responses to an incident include:</p>
+    <ul>
+      <li>Nothing, if the behavior was determined to not be a Code of Conduct violation</li>
+      <li>A verbal or emailed warning</li>
+      <li>A final warning</li>
+      <li>Temporarily removing the reported person from the online community</li>
+      <li>Permanently removing the reported person from the online community</li>
+    </ul>
+    <p>If deemed necessary for community safety, a public account of an incident, and consequences, may be published.</p>
+    
+    <h2 id="committee-vote" class="section"><a class="anchor-link" href="#committee-vote"><code class="fas fa-link fa-sm"></code></a>Committee vote</h2>
+    <p>Some committee members may have a conflict of interest and may be excluded from discussions of a particular incident report. Excluding those members, decisions on the behavioral adjustment and consequences will be determined by a two-thirds majority vote of the Typelevel Code of Conduct Committee.</p>
+    
+    <h2 id="administrators-moderators-communication" class="section"><a class="anchor-link" href="#administrators-moderators-communication"><code class="fas fa-link fa-sm"></code></a>Administrators/moderators Communication</h2>
+    <p>Once the committee has approved the proposed behavioral adjustment and consequences, they will communicate the recommended response to the Typelevel Steering Committee, and any specific administrators/moderators of the related community space (ex. Discord moderators, GitHub organization administrators, etc.) The committee should not state who reported this incident. They should attempt to anonymize any identifying information from the report.</p>
+    <p>Administrators/moderators are required to respond back with whether they accept the recommended response to the report. If they disagree with the recommended response, they should provide a detailed response or additional context as to why they disagree. Administrators/moderators are encouraged to respond within a week.</p>
+    <p>In cases where the administrators/moderators disagree on the suggested resolution for a report, the Typelevel Code of Conduct Committee shall notify the Typelevel Steering Committee.</p>
+    
+    <h2 id="initial-follow-up-with-the-reported-person" class="section"><a class="anchor-link" href="#initial-follow-up-with-the-reported-person"><code class="fas fa-link fa-sm"></code></a>Initial follow-up with the reported person</h2>
+    <p>The Typelevel Code of Conduct Committee will draft a response to the reported person.
+    The response should contain:</p>
+    <ul>
+      <li>A description of the person&#39;s behavior in neutral language</li>
+      <li>The negative impact of that behavior</li>
+      <li>A concrete proposed behavior adjustment</li>
+      <li>Any consequences of their behavior</li>
+    </ul>
+    <p>The committee should not state who reported this incident. They should attempt to anonymize any identifying information from the report. The reported person should be discouraged from contacting the reporter to discuss the report.</p>
+    
+    <h2 id="further-responses" class="section"><a class="anchor-link" href="#further-responses"><code class="fas fa-link fa-sm"></code></a>Further responses</h2>
+    <p>The reported person may respond with additional context. Depending on the response, the Typelevel Code of Conduct Committee may re-evaluate the proposed behavior adjustment and consequences. If the reported person wishes to apologize to the reporter, the committee can accept the apology on behalf of the reporter.</p>
+    
+    <h2 id="follow-up-with-the-reporter" class="section"><a class="anchor-link" href="#follow-up-with-the-reporter"><code class="fas fa-link fa-sm"></code></a>Follow-up with the reporter</h2>
+    <p>A person who makes a report should receive a follow up, via their preferred communication channel, stating what action was taken in response to the report. If the committee decided no response was needed, they should explain why it was not a Code of Conduct violation. Reports that are not made in good faith (such as &quot;reverse sexism&quot; or &quot;reverse racism&quot;) may receive no response.</p>
+    <p>The follow up should be sent no later than one week after the receipt of the report. If deliberation or follow up with the reported person takes longer than one week, the committee should send a status update to the reporter.</p>
+    
+    <h2 id="documentation-and-privacy-policies" class="section"><a class="anchor-link" href="#documentation-and-privacy-policies"><code class="fas fa-link fa-sm"></code></a>Documentation and Privacy Policies</h2>
+    
+    <h3 id="committee-shared-email-address" class="section"><a class="anchor-link" href="#committee-shared-email-address"><code class="fas fa-link fa-sm"></code></a>Committee shared email address</h3>
+    <p>It is convenient for all members of the Code of Conduct committee to be reached by a single email address. The committee should use an email alias which forwards email to individual members.</p>
+    <p>Using a mailing list is not recommended. This is because mailing lists typically archive all emails. This means new committee members gain access to all past archives. They can deliberately or accidentally see past reports where they have a conflict of interest. In order to prevent potential conflicts of interest, it is recommended to not have a mailing list archive.</p>
+    
+    <h3 id="committee-online-discussion" class="section"><a class="anchor-link" href="#committee-online-discussion"><code class="fas fa-link fa-sm"></code></a>Committee online discussion</h3>
+    <p>The Code of Conduct Committee will use an encrypted service for online discussion and deliberation. The Committee may choose something that works for the majority of current members; two possible recommendations are Matrix or Signal.</p>
+    <p>When a report comes in and a discussion needs to happen in an online space, care needs to be taken to avoid conflicts of interest. In the committee chat channel, state &#39;We have a report that involves [REPORTED PERSON]&#39;. Do not say who was the reporter or who were witnesses if the report was sent to an individual committee member. Ask which committee members do not have a conflict of interest. Add those committee members to a group discussion, separate from the committee channel. If a committee member does not respond, do not add them to the new group discussion. If a committee member finds they have a conflict of interest because of who reported the incident or who witnessed it, they should recuse themselves from the discussion.</p>
+    
+    <h3 id="shared-documentation" class="section"><a class="anchor-link" href="#shared-documentation"><code class="fas fa-link fa-sm"></code></a>Shared Documentation</h3>
+    <p>The Code of Conduct committee should keep two types of shared documents:</p>
+    <ul>
+      <li>A spreadsheet with the status of open and closed cases</li>
+      <li>A separate, encrypted, document for each report</li>
+    </ul>
+    
+    <h4 id="status-spreadsheet" class="section"><a class="anchor-link" href="#status-spreadsheet"><code class="fas fa-link fa-sm"></code></a>Status Spreadsheet</h4>
+    <p>The spreadsheet for Typelevel Code of Conduct reports is linked in the private steering repository README.
+    Keep resolutions and notes vague enough that enforcement team members with a conflict of interest don&#39;t know the details of the incident. Use gender neutral language when describing the reported person in the spreadsheet.</p>
+    
+    <h4 id="report-documentation" class="section"><a class="anchor-link" href="#report-documentation"><code class="fas fa-link fa-sm"></code></a>Report Documentation</h4>
+    <p>A template report document is linked in the status spreadsheet, as well as the private steering repository README. Report documentation must be encrypted to protect personally identifiable information (PII).</p>
+    
+    <h4 id="privacy-concerns" class="section"><a class="anchor-link" href="#privacy-concerns"><code class="fas fa-link fa-sm"></code></a>Privacy Concerns</h4>
+    <p>There are some common privacy pitfalls to online tools like Google Docs. Make sure to always share the document with committee members who don&#39;t have a conflict of interest, rather than turning link sharing on. This prevents people outside of the committee from accessing the documents.</p>
+    <p>Another common issue is that when a folder is shared with the whole committee, even if a person doesn&#39;t have edit or view access to an individual report, they can still see the document&#39;s title. This can give information away, and that&#39;s why the report template instructs naming the document with a random phrase.</p>
+    <p>When on-boarding new committee members, they should be provided with a list of names of people who have been reported in a Code of Conduct incident. The new committee member should state whether they have any conflicts of interest with reviewing documentation for those cases. If not, they will be given access to the report documents.</p>
+    
+    <h2 id="changes-to-code-of-conduct" class="section"><a class="anchor-link" href="#changes-to-code-of-conduct"><code class="fas fa-link fa-sm"></code></a>Changes to Code of Conduct</h2>
+    <p>When discussing a change to the Typelevel Code of Conduct or enforcement policies, the Typelevel Code of Conduct Committee will follow this decision-making process:</p>
+    <ul>
+      <li>Brainstorm options. Code of Conduct committee members should discuss any relevant context and brainstorm a set of possible options. It is important to provide constructive feedback without getting side-tracked from the main question. Brainstorming should be limited to 3-7 days maximum.</li>
+      <li>Vote. Once a working draft is in place for the Code of Conduct and procedures, the Code of Conduct committee shall provide the Typelevel Steering Committee with a PR of the changes. The Steering Committee will vote on the changes, following the usual process and requiring at least ⅔ affirmative vote for the changes to be accepted.</li>
+    </ul>
+    
+    <h3 id="current-list-of-code-of-conduct-committee-members" class="section"><a class="anchor-link" href="#current-list-of-code-of-conduct-committee-members"><code class="fas fa-link fa-sm"></code></a>Current list of Code of Conduct Committee members</h3>
+    <p>Sam Pillsworth, Andrew Valencik, Kateu Herbert, Arman Bilge, Lucas Satabin</p>
+    
+    <h2 id="attribution" class="section"><a class="anchor-link" href="#attribution"><code class="fas fa-link fa-sm"></code></a>Attribution</h2>
+    <p>This enforcement policy is a modified version of the <a href="https://www.python.org/psf/conduct/enforcement/">Python Software Foundation Code of Conduct Enforcement Policy</a>, part of the Python Software Foundation Code of Conduct, licensed under the <a href="https://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
+    <ul>
+      <li>The <a href="https://us.pycon.org/2018/about/code-of-conduct/">PyCon Code of Conduct</a> is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported License</a>.</li>
+      <li>Ada Initiative&#39;s guide titled &quot;<a href="http://geekfeminism.wikia.com/wiki/Conference_anti-harassment/Responding_to_reports">Conference anti-harassment/Responding to Reports</a>&quot; is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported License</a></li>
+      <li>Audrey Eschright of <a href="http://safetyfirstpdx.org/">Safety First PDX</a> provided the impact vs risk assessment framework, which is licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike 3.0 Unported License</a> by Audrey Eschright of <a href="http://safetyfirstpdx.org/">Safety First PDX</a></li>
+      <li><a href="https://github.com/sagesharp/code-of-conduct-template/">Code of Conduct template</a> was created by <a href="https://otter.technology/code-of-conduct-training">Otter Tech</a> and is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported License</a></li>
+    </ul>
+  </div>
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="index.html">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

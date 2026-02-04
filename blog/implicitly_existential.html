@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>When implicitly isn&#39;t specific enough</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">When implicitly isn&#39;t specific enough</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on January 18, 2014
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="when-implicitly-isn-t-specific-enough" class="title">When implicitly isn&#39;t specific enough</h1>
+    <p>When working with implicit-encoded dependent function types, such as
+    <code>scalaz.Unapply</code> and numerous Shapeless operations, you&#39;d frequently
+    like to acquire instances of those functions to see what types get
+    calculated for them.</p>
+    <p>For example, <code>++</code> on Shapeless <code>HList</code>s is driven by <code>Prepend</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> ++[</span><span class="type-name">S</span><span> &lt;: </span><span class="type-name">HList</span><span>](</span><span class="identifier">suffix</span><span> : </span><span class="type-name">S</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">prepend</span><span> : </span><span class="type-name">Prepend</span><span>[</span><span class="type-name">L</span><span>, </span><span class="type-name">S</span><span>])
+  : </span><span class="identifier">prepend</span><span>.</span><span class="type-name">Out</span><span> = </span><span class="identifier">prepend</span><span>(</span><span class="identifier">l</span><span>, </span><span class="identifier">suffix</span><span>)</span></code></pre>
+    <p>So given some <code>HList</code>s, we can expect to be able to combine them in a
+    couple ways.  First, by using the syntax function above, and then by
+    acquiring a value of <code>prepend</code>&#39;s type directly and invoking it, just
+    as in the body of the above function.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">shapeless</span><span>.</span><span class="identifier">_</span><span>, </span><span class="identifier">ops</span><span>.</span><span class="identifier">hlist</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.</span><span class="identifier">_</span><span>, </span><span class="identifier">std</span><span>.</span><span class="identifier">string</span><span>.</span><span class="identifier">_</span><span>, </span><span class="identifier">std</span><span>.</span><span class="identifier">tuple</span><span>.</span><span class="identifier">_</span><span>, </span><span class="identifier">syntax</span><span>.</span><span class="identifier">applicative</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">ohi</span><span> = </span><span class="number-literal">1</span><span> :: </span><span class="string-literal">&quot;hi&quot;</span><span> :: </span><span class="type-name">HNil</span><span>
+</span><span class="identifier">ohi</span><span>: </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]]
+        = </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="type-name">HNil</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">ohi</span><span> ++ </span><span class="identifier">ohi</span><span>
+</span><span class="identifier">res0</span><span>: </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]]]] = </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="type-name">HNil</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">ohipohi</span><span> = </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Prepend</span><span>[</span><span class="type-name">String</span><span> :: </span><span class="type-name">Int</span><span> :: </span><span class="type-name">HNil</span><span>, </span><span class="type-name">String</span><span> :: </span><span class="type-name">Int</span><span> :: </span><span class="type-name">HNil</span><span>]]
+</span><span class="identifier">ohipohi</span><span>: </span><span class="identifier">shapeless</span><span>.</span><span class="identifier">ops</span><span>.</span><span class="identifier">hlist</span><span>.</span><span class="type-name">Prepend</span><span>[
+           </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]],
+           </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]]]
+  = </span><span class="identifier">shapeless</span><span>.</span><span class="identifier">ops</span><span>.</span><span class="identifier">hlist$Prepend$$anon$58</span><span>@</span><span class="number-literal">13399e98</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">ohipohi</span><span>(</span><span class="identifier">ohi</span><span>, </span><span class="identifier">ohi</span><span>)
+</span><span class="identifier">res3</span><span>: </span><span class="identifier">ohipohi</span><span>.</span><span class="type-name">Out</span><span> = </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="type-name">HNil</span></code></pre>
+    <p>Back over in Scalaz, for purposes of an <code>Applicative</code> instance,
+    <code>(String, Int)</code> selects its second type parameter.  Just as the
+    <code>To*OpsUnapply</code> functions acquire <code>Unapply</code> instances to do their
+    work:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">ToApplicativeOpsUnapply</span><span>[</span><span class="type-name">FA</span><span>](</span><span class="identifier">v</span><span>: </span><span class="type-name">FA</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="type-name">F0</span><span>: </span><span class="type-name">Unapply</span><span>[</span><span class="type-name">Applicative</span><span>, </span><span class="type-name">FA</span><span>]) =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">ApplicativeOps</span><span>[</span><span class="type-name">F0</span><span>.</span><span class="type-name">M</span><span>,</span><span class="type-name">F0</span><span>.</span><span class="type-name">A</span><span>](</span><span class="type-name">F0</span><span>(</span><span class="identifier">v</span><span>))(</span><span class="type-name">F0</span><span>.</span><span class="type-name">TC</span><span>)</span></code></pre>
+    <p>We can acquire an instance and use it.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">t2ap</span><span> = </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Unapply</span><span>[</span><span class="type-name">Applicative</span><span>, (</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>)]]
+</span><span class="identifier">t2ap</span><span>: </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Unapply</span><span>[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Applicative</span><span>,(</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>)] =
+</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Unapply_0$$anon$13</span><span>@</span><span class="number-literal">18214797</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">t2ap</span><span>.</span><span class="type-name">TC</span><span>.</span><span class="identifier">point</span><span>(</span><span class="number-literal">42</span><span>)
+</span><span class="identifier">res5</span><span>: </span><span class="identifier">t2ap</span><span>.</span><span class="type-name">M</span><span>[</span><span class="type-name">Int</span><span>] = (</span><span class="string-literal">&quot;&quot;</span><span>,</span><span class="number-literal">42</span><span>)</span></code></pre>
+    
+    <h2 id="the-mysterious-result" class="section"><a class="anchor-link" href="#the-mysterious-result"><code class="fas fa-link fa-sm"></code></a>The mysterious result</h2>
+    <p>Now let&#39;s get that first element out of that tuple we got by calling
+    <code>point</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">res5</span><span class="number-literal">._1</span><span>
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">31</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">value</span><span> </span><span class="identifier">_1</span><span> </span><span class="identifier">is</span><span> </span><span class="identifier">not</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">member</span><span> </span><span class="identifier">of</span><span> </span><span class="identifier">t2ap</span><span>.</span><span class="type-name">M</span><span>[</span><span class="type-name">Int</span><span>]
+              </span><span class="identifier">res5</span><span class="number-literal">._1</span><span>
+                   ^</span></code></pre>
+    <p>Uh, huh?  Let&#39;s try adding the <code>HList</code>s we got from <code>ohipohi</code> before.</p>
+    <pre><code class="nohighlight"><span class="identifier">cala</span><span>&gt; </span><span class="identifier">res3</span><span> ++ </span><span class="identifier">res3</span><span>
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">32</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">could</span><span> </span><span class="identifier">not</span><span> </span><span class="identifier">find</span><span> </span><span class="keyword">implicit</span><span> </span><span class="identifier">value</span><span> </span><span class="keyword">for</span><span> </span><span class="identifier">parameter</span><span>
+              </span><span class="identifier">prepend</span><span>: </span><span class="identifier">shapeless</span><span>.</span><span class="identifier">ops</span><span>.</span><span class="identifier">hlist</span><span>.</span><span class="type-name">Prepend</span><span>[</span><span class="identifier">ohipohi</span><span>.</span><span class="type-name">Out</span><span>,</span><span class="identifier">ohipohi</span><span>.</span><span class="type-name">Out</span><span>]
+              </span><span class="identifier">res3</span><span> ++ </span><span class="identifier">res3</span><span>
+                   ^</span></code></pre>
+    <p>The clue is in the type report in the above: path-dependent type
+    members of <code>t2ap</code> and <code>ohipohi</code> appear.  That wouldn&#39;t be a problem,
+    normally, as we know what they are, but <strong>they&#39;re existential</strong> to
+    Scala.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">implicitly</span><span>[</span><span class="identifier">t2ap</span><span>.</span><span class="type-name">M</span><span>[</span><span class="type-name">Int</span><span>] =:= (</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>)]
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">30</span><span>: </span><span class="identifier">error</span><span>: </span><span class="type-name">Cannot</span><span> </span><span class="identifier">prove</span><span> </span><span class="identifier">that</span><span> </span><span class="identifier">t2ap</span><span>.</span><span class="type-name">M</span><span>[</span><span class="type-name">Int</span><span>] =:= (</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>).
+              </span><span class="identifier">implicitly</span><span>[</span><span class="identifier">t2ap</span><span>.</span><span class="type-name">M</span><span>[</span><span class="type-name">Int</span><span>] =:= (</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>)]
+                        ^</span></code></pre>
+    
+    <h2 id="implicitly-only-gives-what-you-ask-for" class="section"><a class="anchor-link" href="#implicitly-only-gives-what-you-ask-for"><code class="fas fa-link fa-sm"></code></a><code>implicitly</code> only gives what you ask for</h2>
+    <p>The explanation lies with the <code>implicitly</code> calls we made to acquire
+    the specific dependent functions we wanted to use.  Let&#39;s look at the
+    definition of <code>implicitly</code> and see if it can enlighten:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">implicitly</span><span>[</span><span class="type-name">T</span><span>](</span><span class="keyword">implicit</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">T</span></code></pre>
+    <p>In other words, <code>implicitly</code> returns exactly what you asked for,
+    type-wise.  Recall the inferred type of <code>ohipohi</code> when it was defined:</p>
+    <pre><code class="nohighlight"><span class="identifier">ohipohi</span><span>: </span><span class="identifier">shapeless</span><span>.</span><span class="identifier">ops</span><span>.</span><span class="identifier">hlist</span><span>.</span><span class="type-name">Prepend</span><span>[
+           </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]],
+           </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]]]</span></code></pre>
+    <p>Not coincidentally, <em>this is the exact type we gave as a type
+    parameter to <code>implicitly</code></em>.  What&#39;s important is that <code>Out</code>, the type
+    member of <code>Prepend</code> that determines its result type, is existential in
+    both cases.</p>
+    <p>In other words, the rule of <code>implicitly</code> is “you asked for it, you got
+    it”.</p>
+    
+    <h2 id="a-more-specific-implicitly" class="section"><a class="anchor-link" href="#a-more-specific-implicitly"><code class="fas fa-link fa-sm"></code></a>A more specific <code>implicitly</code></h2>
+    <p>The answer here is to simulate the weird way in which dependent method
+    types, like <code>++</code> and <code>ToApplicativeOpsUnapply</code>, can pass through extra
+    type information about their implicit parameters that would otherwise
+    be lost.  We do this by reinventing <code>implicitly</code>.</p>
+    <p>The first try is obvious: follow the comment in the <code>Predef.scala</code>
+    source and give <code>implicitly</code> a singleton type result.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">implicitly2</span><span>[</span><span class="type-name">T</span><span> &lt;: </span><span class="type-name">AnyRef</span><span>](</span><span class="keyword">implicit</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">T</span><span>): </span><span class="type-name">T</span><span> </span><span class="keyword">with</span><span> </span><span class="identifier">e</span><span>.</span><span class="keyword">type</span><span> = </span><span class="identifier">e</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">ohipohi2</span><span> = </span><span class="identifier">implicitly2</span><span>[</span><span class="type-name">Prepend</span><span>[</span><span class="type-name">Int</span><span> :: </span><span class="type-name">String</span><span> :: </span><span class="type-name">HNil</span><span>, </span><span class="type-name">Int</span><span> :: </span><span class="type-name">String</span><span> :: </span><span class="type-name">HNil</span><span>]]
+</span><span class="identifier">ohipohi2</span><span>: </span><span class="identifier">shapeless</span><span>.</span><span class="identifier">ops</span><span>.</span><span class="identifier">hlist</span><span>.</span><span class="type-name">Prepend</span><span>[
+              </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]],
+              </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]]]
+     </span><span class="keyword">with</span><span> </span><span class="identifier">e</span><span>.</span><span class="keyword">type</span><span> = </span><span class="identifier">shapeless</span><span>.</span><span class="identifier">ops</span><span>.</span><span class="identifier">hlist$Prepend$$anon$58</span><span>@4abe65da
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">ohipohi2</span><span>(</span><span class="identifier">ohi</span><span>, </span><span class="identifier">ohi</span><span>)
+</span><span class="identifier">res9</span><span>: </span><span class="identifier">ohipohi2</span><span>.</span><span class="type-name">Out</span><span> = </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="type-name">HNil</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">res9</span><span> ++ </span><span class="identifier">res9</span><span>
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">33</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">could</span><span> </span><span class="identifier">not</span><span> </span><span class="identifier">find</span><span> </span><span class="keyword">implicit</span><span> </span><span class="identifier">value</span><span> </span><span class="keyword">for</span><span> </span><span class="identifier">parameter</span><span>
+              </span><span class="identifier">prepend</span><span>: </span><span class="identifier">shapeless</span><span>.</span><span class="identifier">ops</span><span>.</span><span class="identifier">hlist</span><span>.</span><span class="type-name">Prepend</span><span>[</span><span class="identifier">ohipohi2</span><span>.</span><span class="type-name">Out</span><span>,</span><span class="identifier">ohipohi2</span><span>.</span><span class="type-name">Out</span><span>]
+              </span><span class="identifier">res9</span><span> ++ </span><span class="identifier">res9</span><span>
+                   ^</span></code></pre>
+    <p>Not quite good enough.</p>
+    
+    <h2 id="an-even-more-albeit-less-specific-implicitly" class="section"><a class="anchor-link" href="#an-even-more-albeit-less-specific-implicitly"><code class="fas fa-link fa-sm"></code></a>An even more, albeit less, specific <code>implicitly</code></h2>
+    <p>I think it&#39;s strange that the above doesn&#39;t work, but we can deal with
+    it by being a little more specific.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">implicitlyDepFn</span><span>[</span><span class="type-name">T</span><span> &lt;: </span><span class="type-name">DepFn2</span><span>[</span><span class="identifier">_</span><span>,</span><span class="identifier">_</span><span>]](</span><span class="keyword">implicit</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">T</span><span>)
+    : </span><span class="type-name">T</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="identifier">e</span><span>.</span><span class="type-name">Out</span><span>} = </span><span class="identifier">e</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">ohipohi3</span><span> = </span><span class="identifier">implicitlyDepFn</span><span>[</span><span class="type-name">Prepend</span><span>[</span><span class="type-name">Int</span><span> :: </span><span class="type-name">String</span><span> :: </span><span class="type-name">HNil</span><span>, </span><span class="type-name">Int</span><span> :: </span><span class="type-name">String</span><span> :: </span><span class="type-name">HNil</span><span>]]
+</span><span class="identifier">ohipohi3</span><span>: </span><span class="identifier">shapeless</span><span>.</span><span class="identifier">ops</span><span>.</span><span class="identifier">hlist</span><span>.</span><span class="type-name">Prepend</span><span>[
+              </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]],
+              </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]]]{
+                </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,
+                            </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]]]]
+          } = </span><span class="identifier">shapeless</span><span>.</span><span class="identifier">ops</span><span>.</span><span class="identifier">hlist$Prepend$$anon$58</span><span>@</span><span class="number-literal">7306572f</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">ohipohi3</span><span>(</span><span class="identifier">ohi</span><span>, </span><span class="identifier">ohi</span><span>)
+</span><span class="identifier">res11</span><span>: </span><span class="identifier">ohipohi3</span><span>.</span><span class="type-name">Out</span><span> = </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="type-name">HNil</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">res11</span><span> ++ </span><span class="identifier">res11</span><span>
+</span><span class="identifier">res12</span><span>: </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,
+       </span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">Int</span><span>,</span><span class="identifier">shapeless</span><span>.::[</span><span class="type-name">String</span><span>,
+       </span><span class="identifier">shapeless</span><span>.</span><span class="type-name">HNil</span><span>]]]]]]]]
+   = </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="number-literal">1</span><span> :: </span><span class="identifier">hi</span><span> :: </span><span class="type-name">HNil</span></code></pre>
+    <p>Now that&#39;s more like it.  The trick is in the return type of
+    <code>implicitlyDepFn</code>, which includes the structural refinement <code>{type Out
+= e.Out}</code>.</p>
+    <p>Again, it&#39;s weird that this structural refinement isn&#39;t subsumed by
+    the return type <code>e.type</code> from <code>implicitly2</code>&#39;s definition, but I&#39;m not
+    sure it&#39;s wrong, either, given the ephemeral nature of type stability.</p>
+    <p>Thankfully, most of the evidence for dependent function types in
+    Shapeless extends from the <code>DepFn*</code> traits, so you only need one of
+    these special <code>implicitly</code> variants for each, rather than one for each
+    individual dependent function type you wish to acquire instances of in
+    this way.</p>
+    
+    <h2 id="and-likewise-with-unapply" class="section"><a class="anchor-link" href="#and-likewise-with-unapply"><code class="fas fa-link fa-sm"></code></a>And likewise with <code>Unapply</code></h2>
+    <p>We can similarly acquire instances of <code>scalaz.Unapply</code> conveniently.
+    I believe this function will be supplied with Scalaz 7.0.6, and it is
+    <a href="https://github.com/scalaz/scalaz/pull/621">already included in the 7.1 development branch</a>,
+    so you will be able to write <code>Unapply[TC, type]</code> to get instances as
+    with plain typeclass lookup in Scalaz, but it&#39;s easy enough to define
+    yourself.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">unap</span><span>[</span><span class="type-name">TC</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]], </span><span class="type-name">MA</span><span>](</span><span class="keyword">implicit</span><span> </span><span class="type-name">U</span><span>: </span><span class="type-name">Unapply</span><span>[</span><span class="type-name">TC</span><span>, </span><span class="type-name">MA</span><span>]): </span><span class="type-name">U</span><span>.</span><span class="keyword">type</span><span> {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">M</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">U</span><span>.</span><span class="type-name">M</span><span>[</span><span class="type-name">A</span><span>]
+  </span><span class="keyword">type</span><span> </span><span class="type-name">A</span><span> = </span><span class="type-name">U</span><span>.</span><span class="type-name">A</span><span>
+} = </span><span class="type-name">U</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">t2ap2</span><span> = </span><span class="identifier">unap</span><span>[</span><span class="type-name">Applicative</span><span>, (</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>)]
+</span><span class="identifier">t2ap2</span><span>: </span><span class="type-name">U</span><span>.</span><span class="keyword">type</span><span>{</span><span class="keyword">type</span><span> </span><span class="type-name">M</span><span>[</span><span class="type-name">A</span><span>] = (</span><span class="type-name">String</span><span>, </span><span class="type-name">A</span><span>); </span><span class="keyword">type</span><span> </span><span class="type-name">A</span><span> = </span><span class="type-name">Int</span><span>} 
+  = </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Unapply_0$$anon$13</span><span>@3adb</span><span class="number-literal">9933</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">t2ap2</span><span>.</span><span class="type-name">TC</span><span>.</span><span class="identifier">point</span><span>(</span><span class="number-literal">42</span><span>)
+</span><span class="identifier">res13</span><span>: (</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>) = (</span><span class="string-literal">&quot;&quot;</span><span>,</span><span class="number-literal">42</span><span>)
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">res13</span><span class="number-literal">._1</span><span>
+</span><span class="identifier">res14</span><span>: </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;&quot;</span></code></pre>
+    <p><em>This article was tested with Scala 2.10.3, Scalaz 7.0.5, and
+    Shapeless 2.0.0-M1.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

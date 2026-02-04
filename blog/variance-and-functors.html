@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Of variance and functors</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Of variance and functors</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Adelbert Chang<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on February 4, 2016
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="of-variance-and-functors" class="title">Of variance and functors</h1>
+    <p>Scala&#39;s type system allows us to annotate type parameters with their variance: covariant, contravariant, invariant.
+    Variance allows us to define the subtyping relationships between type constructors – that is, under which
+    conditions <code>F[A]</code> is a subtype of <code>F[B]</code>.</p>
+    <p>Similarly in functional programming, there are covariant functors, contravariant functors, and invariant functors. The
+    similarity in names is not coincidental.</p>
+    
+    <h1 id="covariance" class="section"><a class="anchor-link" href="#covariance"><code class="fas fa-link fa-sm"></code></a>Covariance</h1>
+    <p>The common example is <code>List[+A]</code> which is covariant in its type parameter, denoted by the <code>+</code> next to the <code>A</code>.
+    A type constructor with a covariant type parameter means that if there is a subtyping relationship between the
+    type parameter, there is a subtyping relationship between the two instances of the type constructor.
+    For example if we have a <code>List[Circle]</code>, we can substitute it anywhere we have a <code>List[Shape]</code>.</p>
+    
+    <h2 id="read" class="section"><a class="anchor-link" href="#read"><code class="fas fa-link fa-sm"></code></a>Read</h2>
+    <p>Another example of covariance is in parsing, for example in the following <code>Read</code> type class.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Read</span><span>[+</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">read</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">A</span><span>]
+}</span></code></pre>
+    <p>It makes sense to make <code>Read</code> covariant because if we can read a subtype, then we can read the supertype by
+    reading the subtype and throwing away the subtype-specific information. For instance, if we can read a
+    <code>Circle</code>, we can read a valid <code>Shape</code> by reading the <code>Circle</code> and ignoring any <code>Circle</code>-specific information.</p>
+    
+    <h2 id="array" class="section"><a class="anchor-link" href="#array"><code class="fas fa-link fa-sm"></code></a>Array</h2>
+    <p>A type that cannot safely be made covariant is <code>Array</code>. If <code>Array</code> were covariant, we could substitute
+    an <code>Array[Circle]</code> for an <code>Array[Shape]</code>. This can get us in a nasty situation.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">circles</span><span>: </span><span class="type-name">Array</span><span>[</span><span class="type-name">Circle</span><span>] = </span><span class="type-name">Array</span><span>.</span><span class="identifier">fill</span><span>(</span><span class="number-literal">10</span><span>)(</span><span class="type-name">Circle</span><span>(..))
+</span><span class="keyword">val</span><span> </span><span class="identifier">shapes</span><span>: </span><span class="type-name">Array</span><span>[</span><span class="type-name">Shape</span><span>] = </span><span class="identifier">circles</span><span> </span><span class="comment">// works only if Array is covariant
+</span><span class="identifier">shapes</span><span>(</span><span class="number-literal">0</span><span>) = </span><span class="type-name">Square</span><span>(..) </span><span class="comment">// Square is a subtype of Shape</span></code></pre>
+    <p>If <code>Array</code> was covariant this would compile fine, but fail at runtime. In fact, Java arrays are
+    covariant and so the analogous Java code would compile, throwing an <code>ArrayStoreException</code> when
+    run. The compiler accepts this because it is valid to upcast an <code>Array[Circle]</code> into an <code>Array[Shape]</code>,
+    and it is valid to insert a <code>Shape</code> into an <code>Array[Shape]</code>. However the runtime representation of
+    <code>shapes</code> is still an <code>Array[Circle]</code> and inserting a <code>Square</code> into that isn&#39;t allowed.</p>
+    
+    <h2 id="read-only-and-covariance" class="section"><a class="anchor-link" href="#read-only-and-covariance"><code class="fas fa-link fa-sm"></code></a>Read-only and covariance</h2>
+    <p>In general, a type can be made safely covariant if it is read-only. If we know how to read a specific type, we know
+    how to read a more general type by throwing away any extra information. <code>List</code> is safe to to make
+    covariant because it is immutable and we can only ever read information off of it. With <code>Array</code>, we
+    cannot make it covariant because we are able to write to it.</p>
+    
+    <h2 id="functor" class="section"><a class="anchor-link" href="#functor"><code class="fas fa-link fa-sm"></code></a>Functor</h2>
+    <p>As we&#39;ve just seen, covariance states that when <code>A</code> subtypes <code>B</code>, then <code>F[A]</code> subtypes <code>F[B]</code>. Put differently,
+    if <code>A</code> can be turned into a <code>B</code>, then <code>F[A]</code> can be turned into an <code>F[B]</code>. We can encode this behavior
+    literally in the notion of a <code>Functor</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+}</span></code></pre>
+    <p>This is often encoded slightly differently by changing the order of the arguments:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+}</span></code></pre>
+    <p>We can implement <code>Functor</code> for <code>List</code> and <code>Read</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">listFunctor</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">List</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">List</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="identifier">fa</span><span> </span><span class="keyword">match</span><span> {
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Nil</span><span> =&gt; </span><span class="type-name">Nil</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="identifier">a</span><span> :: </span><span class="identifier">as</span><span> =&gt; </span><span class="identifier">f</span><span>(</span><span class="identifier">a</span><span>) :: </span><span class="identifier">map</span><span>(</span><span class="identifier">as</span><span>)(</span><span class="identifier">f</span><span>)
+    }
+  }
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">readFunctor</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">Read</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">Read</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Read</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">Read</span><span>[</span><span class="type-name">B</span><span>] =
+      </span><span class="keyword">new</span><span> </span><span class="type-name">Read</span><span>[</span><span class="type-name">B</span><span>] {
+        </span><span class="keyword">def</span><span> </span><span class="declaration-name">read</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">B</span><span>] =
+          </span><span class="identifier">fa</span><span>.</span><span class="identifier">read</span><span>(</span><span class="identifier">s</span><span>) </span><span class="keyword">match</span><span> {
+            </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="type-name">None</span><span>
+            </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">a</span><span>) =&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">f</span><span>(</span><span class="identifier">a</span><span>))
+          }
+      }
+  }</span></code></pre>
+    <p>With that we can do useful things like</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">circles</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Circle</span><span>] = </span><span class="type-name">List</span><span>(</span><span class="type-name">Circle</span><span>(..), </span><span class="type-name">Circle</span><span>(..))
+</span><span class="keyword">val</span><span> </span><span class="identifier">shapes</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Shape</span><span>] = </span><span class="identifier">listFunctor</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">circles</span><span>)(</span><span class="identifier">circle</span><span> =&gt; </span><span class="identifier">circle</span><span>: </span><span class="type-name">Shape</span><span>) </span><span class="comment">// upcast
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">parseCircle</span><span>: </span><span class="type-name">Read</span><span>[</span><span class="type-name">Circle</span><span>] = ...
+</span><span class="keyword">val</span><span> </span><span class="identifier">parseShape</span><span>: </span><span class="type-name">Read</span><span>[</span><span class="type-name">Shape</span><span>] = </span><span class="identifier">readFunctor</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">parseCircle</span><span>)(</span><span class="identifier">circle</span><span> =&gt; </span><span class="identifier">circle</span><span>: </span><span class="type-name">Shape</span><span>) </span><span class="comment">// upcast</span></code></pre>
+    <p>or more generally:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">upcast</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span> &lt;: </span><span class="type-name">A</span><span>](</span><span class="identifier">functor</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="identifier">functor</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">fb</span><span>)(</span><span class="identifier">b</span><span> =&gt; </span><span class="identifier">b</span><span>: </span><span class="type-name">A</span><span>)</span></code></pre>
+    <p><code>upcast</code>&#39;s behavior does exactly what covariance does – given some supertype <code>A</code> (<code>Shape</code>) and a subtype <code>B</code> (<code>Circle</code>),
+    we can mechanically (and safely) turn an <code>F[B]</code> into an <code>F[A]</code>. Put differently, anywhere we expect an <code>F[A]</code> we can provide
+    an <code>F[B]</code>, i.e. covariance. For this reason, <code>Functor</code> is sometimes referred to in full as covariant functor.</p>
+    
+    <h1 id="contravariance" class="section"><a class="anchor-link" href="#contravariance"><code class="fas fa-link fa-sm"></code></a>Contravariance</h1>
+    <p>Contravariance flips the direction of the relationship in covariance – an <code>F[Shape]</code> is considered a
+    subtype of <code>F[Circle]</code>. This seems strange – when I was first learning about variance I couldn&#39;t
+    come up with a situation where this would make sense.</p>
+    <p>If we have a <code>List[Shape]</code> we cannot safely treat it as a <code>List[Circle]</code> – doing so comes with all the usual
+    warnings about downcasting. Similarly if we have a <code>Read[Shape]</code>, we cannot treat it as a <code>Read[Circle]</code> –
+    we know how to parse a <code>Shape</code>, but we don&#39;t know how to parse any additional information <code>Circle</code> may need.</p>
+    
+    <h2 id="show" class="section"><a class="anchor-link" href="#show"><code class="fas fa-link fa-sm"></code></a>Show</h2>
+    <p>It appears fundamentally read-only types cannot be treated as contravariant. However, given that contravariance
+    is covariance with the direction reversed, can we also reverse the idea of a read-only type? Instead of reading
+    a value <em>from</em> a <code>String</code>, we can write a value <em>to</em> a <code>String</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Show</span><span>[-</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">show</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">String</span><span>
+}</span></code></pre>
+    <p><code>Show</code> is the other side of <code>Read</code> – instead of going from a <code>String</code> to an <code>A</code>, we go from an <code>A</code> into
+    a <code>String</code>. This reversal allows us to define contravariant behavior – if we are asked to provide a way
+    to show a <code>Circle</code> (<code>Show[Circle]</code>), we can give instead a way to show just a <code>Shape</code>. This is a valid
+    substitution because we can show a <code>Circle</code> by throwing away <code>Circle</code>-specific information and showing just
+    the <code>Shape</code> bits. This means that <code>Show[Shape]</code> is a subtype of <code>Show[Circle]</code>, despite <code>Circle</code> being a
+    subtype of <code>Shape</code>.</p>
+    <p>In general, we can show (or write) a subtype if we know how to show a supertype by tossing away subtype-specific
+    information (an upcast) and showing the remainder. Again, this means <code>Show[Supertype]</code> is substitutable, or a
+    subtype of, <code>Show[Subtype]</code>.</p>
+    <p>For similar reasons that read-only types can be made covariant, write-only types can be made contravariant.</p>
+    
+    <h2 id="array-again" class="section"><a class="anchor-link" href="#array-again"><code class="fas fa-link fa-sm"></code></a>Array, again</h2>
+    <p><code>Array</code>s cannot be made contravariant either. If they were, we could do unsafe reads:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">shapes</span><span>: </span><span class="type-name">Array</span><span>[</span><span class="type-name">Shape</span><span>] = </span><span class="type-name">Array</span><span>.</span><span class="identifier">fill</span><span>(</span><span class="number-literal">10</span><span>)(</span><span class="type-name">Shape</span><span>(..), </span><span class="type-name">Shape</span><span>(..))
+</span><span class="keyword">val</span><span> </span><span class="identifier">circles</span><span>: </span><span class="type-name">Array</span><span>[</span><span class="type-name">Circle</span><span>] = </span><span class="identifier">shapes</span><span> </span><span class="comment">// Works only if Array is contravariant
+</span><span class="keyword">val</span><span> </span><span class="identifier">circle</span><span>: </span><span class="type-name">Circle</span><span> = </span><span class="identifier">circles</span><span>(</span><span class="number-literal">0</span><span>)</span></code></pre>
+    <p><code>circle</code>, having been read from an <code>Array[Circle]</code> has type <code>Circle</code>. To the compiler this would be fine, but
+    at runtime, the underlying <code>Array[Shape]</code> may give us a <code>Shape</code> that is not a <code>Circle</code> and crash the program.</p>
+    
+    <h2 id="contravariant" class="section"><a class="anchor-link" href="#contravariant"><code class="fas fa-link fa-sm"></code></a>Contravariant</h2>
+    <p>Our <code>Functor</code> interface made explicit the behavior of covariance - we can define a similar interface that
+    captures contravariant behavior. If <code>B</code> can be used where <code>A</code> is expected, then <code>F[A]</code> can be used where an
+    <code>F[B]</code> is expected. To encode this explicitly:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Contravariant</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="comment">// Alternative encoding:
+</span><span>  </span><span class="comment">// def contramap[A, B](f: B =&gt; A): F[A] =&gt; F[B]
+</span><span>
+  </span><span class="comment">// More typical encoding
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">contramap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+}</span></code></pre>
+    <p>We can implement an instance for <code>Show</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">showContravariant</span><span>: </span><span class="type-name">Contravariant</span><span>[</span><span class="type-name">Show</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Contravariant</span><span>[</span><span class="type-name">Show</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">contramap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Show</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">Show</span><span>[</span><span class="type-name">B</span><span>] =
+      </span><span class="keyword">new</span><span> </span><span class="type-name">Show</span><span>[</span><span class="type-name">B</span><span>] {
+        </span><span class="keyword">def</span><span> </span><span class="declaration-name">show</span><span>(</span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>): </span><span class="type-name">String</span><span> = {
+          </span><span class="keyword">val</span><span> </span><span class="identifier">a</span><span> = </span><span class="identifier">f</span><span>(</span><span class="identifier">b</span><span>)
+          </span><span class="identifier">fa</span><span>.</span><span class="identifier">show</span><span>(</span><span class="identifier">a</span><span>)
+        }
+      }
+  }</span></code></pre>
+    <p>Here we are saying if we can show an <code>A</code>, we can show a <code>B</code> by turning a <code>B</code> into an <code>A</code> before showing it.
+    Upcasting is a specific case of this, when <code>B</code> is a subtype of <code>A</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">contraUpcast</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span> &gt;: </span><span class="type-name">A</span><span>](</span><span class="identifier">contra</span><span>: </span><span class="type-name">Contravariant</span><span>[</span><span class="type-name">F</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="identifier">contra</span><span>.</span><span class="identifier">contramap</span><span>(</span><span class="identifier">fb</span><span>)((</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>) =&gt; </span><span class="identifier">a</span><span>: </span><span class="type-name">B</span><span>)</span></code></pre>
+    <p>Going back to <code>Shape</code>s and <code>Circle</code>s, we can show a <code>Circle</code> by upcasting it into a <code>Shape</code> and showing that.</p>
+    
+    <h1 id="function-variance" class="section"><a class="anchor-link" href="#function-variance"><code class="fas fa-link fa-sm"></code></a>Function variance</h1>
+    <p>We observed that read-only types are covariant and write-only types are contravariant. This can be
+    seen in the context of functions and what function types are subtypes of others.</p>
+    
+    <h2 id="parameters" class="section"><a class="anchor-link" href="#parameters"><code class="fas fa-link fa-sm"></code></a>Parameters</h2>
+    <p>An example function:</p>
+    <pre><code class="nohighlight"><span class="comment">// Right now we only care about the input
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">squiggle</span><span>(</span><span class="identifier">circle</span><span>: </span><span class="type-name">Circle</span><span>): </span><span class="type-name">Unit</span><span> = ???
+
+</span><span class="comment">// or
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">squiggle</span><span>: </span><span class="type-name">Circle</span><span> =&gt; </span><span class="type-name">Unit</span><span> = ???</span></code></pre>
+    <p>What type is a valid subtype of <code>Circle =&gt; Unit</code>? An important note is we&#39;re not
+    looking for what subtypes we can <em>pass in</em> to the function, we are looking for a value with a type
+    that satisfies the entirety of the function type <code>Circle =&gt; Unit</code>.</p>
+    <p>A first guess may involve some subtype of <code>Circle</code> like <code>Dot</code> (a circle with a radius of 0), such
+    as <code>Dot =&gt; Unit</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">squiggle</span><span>: </span><span class="type-name">Circle</span><span> =&gt; </span><span class="type-name">Unit</span><span> =
+  (</span><span class="identifier">d</span><span>: </span><span class="type-name">Dot</span><span>) =&gt; </span><span class="identifier">d</span><span>.</span><span class="identifier">someDotSpecificMethod</span><span>()</span></code></pre>
+    <p>This doesn&#39;t work – we are asserting with the moral equivalent of a downcast that any
+    <code>Circle</code> input to the function is a <code>Dot</code>, which is not safe to assume.</p>
+    <p>What if we used a supertype of <code>Circle</code>?</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">squiggle</span><span>: </span><span class="type-name">Circle</span><span> =&gt; </span><span class="type-name">Unit</span><span> =
+  (</span><span class="identifier">s</span><span>: </span><span class="type-name">Shape</span><span>) =&gt; </span><span class="identifier">s</span><span>.</span><span class="identifier">shapeshift</span><span>()</span></code></pre>
+    <p>This is valid – from the outside looking in we have a function that takes a <code>Circle</code> and
+    returns <code>Unit</code>. Internally, we can take any <code>Circle</code>, upcast it into a <code>Shape</code>, and go from there.
+    Showing things a bit differently reveals better the relationship:</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">Input</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">Unit</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">inputSubtype</span><span>: </span><span class="type-name">Input</span><span>[</span><span class="type-name">Shape</span><span>] = (</span><span class="identifier">s</span><span>: </span><span class="type-name">Shape</span><span>) =&gt; </span><span class="identifier">s</span><span>.</span><span class="identifier">shapeshift</span><span>()
+</span><span class="keyword">val</span><span> </span><span class="identifier">input</span><span>: </span><span class="type-name">Input</span><span>[</span><span class="type-name">Circle</span><span>] = </span><span class="identifier">inputSubtype</span></code></pre>
+    <p>We have <code>Input[Shape] &lt;: Input[Circle]</code>, with <code>Circle &lt;: Shape</code>, so function parameters are contravariant.</p>
+    <p>The type checker enforces this when we try to use covariant type parameters in contravariant positions.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">trait</span><span> </span><span class="type-name">Foo</span><span>[+</span><span class="type-name">A</span><span>] { </span><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="number-literal">42</span><span> }
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">15</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">covariant</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">A</span><span> </span><span class="identifier">occurs</span><span> </span><span class="identifier">in</span><span> </span><span class="identifier">contravariant</span><span> </span><span class="identifier">position</span><span> </span><span class="identifier">in</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">A</span><span> </span><span class="identifier">of</span><span> </span><span class="identifier">value</span><span> </span><span class="identifier">a</span><span>
+       </span><span class="keyword">trait</span><span> </span><span class="type-name">Foo</span><span>[+</span><span class="type-name">A</span><span>] { </span><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="number-literal">42</span><span> }
+                               ^</span></code></pre>
+    <p>Since type parameters are contravariant, a type in that position cannot also be covariant. To solve this
+    we &quot;reverse&quot; the constraint imposed by the covariant annotation by parameterizing with a supertype <code>B</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">trait</span><span> </span><span class="type-name">Foo</span><span>[+</span><span class="type-name">A</span><span>] { </span><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">B</span><span> &gt;: </span><span class="type-name">A</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">B</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="number-literal">42</span><span> }
+</span><span class="identifier">defined</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Foo</span></code></pre>
+    
+    <h2 id="return" class="section"><a class="anchor-link" href="#return"><code class="fas fa-link fa-sm"></code></a>Return</h2>
+    <p>Let&#39;s do the same exercise with function return types.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">squaggle</span><span>: </span><span class="type-name">Unit</span><span> =&gt; </span><span class="type-name">Shape</span><span> = ???</span></code></pre>
+    <p>Since using the supertype seemed to work with parameters, let&#39;s pick a supertype here, <code>Object</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">squaggle</span><span>: </span><span class="type-name">Unit</span><span> =&gt; </span><span class="type-name">Shape</span><span> =
+  (</span><span class="identifier">_</span><span>: </span><span class="type-name">Unit</span><span>) =&gt; </span><span class="identifier">somethingThatReturnsObject</span><span>()</span></code></pre>
+    <p>For similar issues with using a subtype for the input parameter, we cannot use
+    a supertype for the output. The function type states the return type is <code>Shape</code>, but we&#39;re
+    returning an <code>Object</code> which may or may not be a valid <code>Shape</code>. As far as the type checker is concerned,
+    this is invalid and the checker rejects the program.</p>
+    <p>Trying instead with a subtype:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">squaggle</span><span>: </span><span class="type-name">Unit</span><span> =&gt; </span><span class="type-name">Shape</span><span> =
+  (</span><span class="identifier">_</span><span>: </span><span class="type-name">Unit</span><span>) =&gt; </span><span class="type-name">Circle</span><span>(..)</span></code></pre>
+    <p>This makes sense – the function type says it returns a <code>Shape</code> and inside we return a <code>Circle</code> which is
+    a perfectly valid <code>Shape</code>.</p>
+    <p>As before, rephrasing the type signatures leads to some insights.</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">Output</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">Unit</span><span> =&gt; </span><span class="type-name">A</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">outputSubtype</span><span>: </span><span class="type-name">Output</span><span>[</span><span class="type-name">Circle</span><span>] = (</span><span class="identifier">_</span><span>: </span><span class="type-name">Unit</span><span>) =&gt; </span><span class="type-name">Circle</span><span>(..)
+</span><span class="keyword">val</span><span> </span><span class="identifier">output</span><span>: </span><span class="type-name">Output</span><span>[</span><span class="type-name">Shape</span><span>] = </span><span class="identifier">outputSubtype</span></code></pre>
+    <p>That is <code>Output[Circle] &lt;: Output[Shape]</code> with <code>Circle &lt;: Shape</code> – function return types are covariant.</p>
+    <p>Again the type checker will enforce this:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">trait</span><span> </span><span class="type-name">Bar</span><span>[-</span><span class="type-name">A</span><span>] { </span><span class="keyword">def</span><span> </span><span class="declaration-name">bar</span><span>(): </span><span class="type-name">A</span><span> = ??? }
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">15</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">contravariant</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">A</span><span> </span><span class="identifier">occurs</span><span> </span><span class="identifier">in</span><span> </span><span class="identifier">covariant</span><span> </span><span class="identifier">position</span><span> </span><span class="identifier">in</span><span> </span><span class="keyword">type</span><span> ()</span><span class="type-name">A</span><span> </span><span class="identifier">of</span><span> </span><span class="identifier">method</span><span> </span><span class="identifier">bar</span><span>
+       </span><span class="keyword">trait</span><span> </span><span class="type-name">Bar</span><span>[-</span><span class="type-name">A</span><span>] { </span><span class="keyword">def</span><span> </span><span class="declaration-name">bar</span><span>(): </span><span class="type-name">A</span><span> = ??? }
+                           ^</span></code></pre>
+    <p>As before, we solve this by &quot;reversing&quot; the contraint imposed by the variance annotation.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">trait</span><span> </span><span class="type-name">Bar</span><span>[-</span><span class="type-name">A</span><span>] { </span><span class="keyword">def</span><span> </span><span class="declaration-name">bar</span><span>[</span><span class="type-name">B</span><span> &lt;: </span><span class="type-name">A</span><span>](): </span><span class="type-name">B</span><span> = ??? }
+</span><span class="identifier">defined</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Bar</span></code></pre>
+    
+    <h2 id="all-together-now" class="section"><a class="anchor-link" href="#all-together-now"><code class="fas fa-link fa-sm"></code></a>All together now</h2>
+    <p>Function inputs are contravariant and function outputs are covariant. Taking the previous examples together,
+    a function type <code>Shape =&gt; Circle</code> can be put in a place expecting a function type <code>Circle =&gt; Shape</code>.</p>
+    <p>We arrived at this conclusion by observing the behavior of subtype variance and the corresponding functors. Taken
+    in the context of functional programming where the only primitive is a function, we can draw a conclusion in
+    the other direction. Where function inputs are contravariant, types in positions where computations are
+    done (e.g. input or read-only positions) are also contravariant (similarly for covariance).</p>
+    
+    <h1 id="invariance" class="section"><a class="anchor-link" href="#invariance"><code class="fas fa-link fa-sm"></code></a>Invariance</h1>
+    <p>Unannotated type parameters are considered invariant – the only relationship that holds is if a type <code>A</code>
+    is equal to a type <code>B</code>, then <code>F[A]</code> is equal to <code>F[B]</code>. Otherwise different instantiations of a
+    type constructor have no relationship with one another. Given invariant
+    <code>F[_]</code>, an <code>F[Circle]</code> is not a subtype of <code>F[Shape]</code> – you need to explicitly provide the conversion.</p>
+    
+    <h2 id="array-once-more" class="section"><a class="anchor-link" href="#array-once-more"><code class="fas fa-link fa-sm"></code></a>Array once more</h2>
+    <p><code>Array</code>s are invariant in Scala because they can be neither covariant nor contravariant. If we make it
+    covariant, we can get unsafe writes. If we make it contravariant, we can get unsafe reads. Since
+    read-only types can only be covariant and write-only types contravariant, our compromise is to make
+    types that support both invariant.</p>
+    <p>In order to treat an <code>Array</code> of one type as an <code>Array</code> of another, we need to have conversions
+    in both directions. This must be provided manually as the type checker has no way of knowing what the
+    conversion would be.</p>
+    
+    <h2 id="invariant" class="section"><a class="anchor-link" href="#invariant"><code class="fas fa-link fa-sm"></code></a>Invariant</h2>
+    <p>Similar to (covariant) <code>Functor</code> and <code>Contravariant</code>, we can write <code>Invariant</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Invariant</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">imap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>)(</span><span class="identifier">g</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+}</span></code></pre>
+    <p>For demonstration purposes we write our own <code>Array</code> type</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">Array</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">private</span><span> </span><span class="keyword">var</span><span> </span><span class="identifier">repr</span><span> = </span><span class="type-name">ListBuffer</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">A</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">read</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">A</span><span> =
+    </span><span class="identifier">repr</span><span>(</span><span class="identifier">i</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">write</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">repr</span><span>(</span><span class="identifier">i</span><span>) = </span><span class="identifier">a</span><span>
+}</span></code></pre>
+    <p>and define <code>Invariant[Array]</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">arrayInvariant</span><span>: </span><span class="type-name">Invariant</span><span>[</span><span class="type-name">Array</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Invariant</span><span>[</span><span class="type-name">Array</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">imap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Array</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>)(</span><span class="identifier">g</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">Array</span><span>[</span><span class="type-name">B</span><span>] =
+      </span><span class="keyword">new</span><span> </span><span class="type-name">Array</span><span>[</span><span class="type-name">B</span><span>] {
+        </span><span class="comment">// Convert read A to B before returning – covariance
+</span><span>        </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">read</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">B</span><span> =
+          </span><span class="identifier">f</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">read</span><span>(</span><span class="identifier">i</span><span>))
+
+        </span><span class="comment">// Convert B to A before writing – contravariance
+</span><span>        </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">write</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>): </span><span class="type-name">Unit</span><span> =
+          </span><span class="identifier">fa</span><span>.</span><span class="identifier">write</span><span>(</span><span class="identifier">i</span><span>, </span><span class="identifier">g</span><span>(</span><span class="identifier">a</span><span>))
+      }
+  }</span></code></pre>
+    
+    <h2 id="serialization" class="section"><a class="anchor-link" href="#serialization"><code class="fas fa-link fa-sm"></code></a>Serialization</h2>
+    <p>Another example of a read-write type that doesn&#39;t involve <code>Array</code>s (or mutation) can be
+    found by just combining the <code>Read</code> and <code>Show</code> interfaces:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Serializer</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">Read</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">with</span><span> </span><span class="type-name">Show</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">read</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">A</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">show</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">String</span><span>
+}</span></code></pre>
+    <p><code>Serializer</code> both reads (from a <code>String</code>) and writes (to a <code>String</code>). We can&#39;t make it
+    covariant because that would cause issues with <code>show</code>, and we can&#39;t make it contravariant
+    because that would cause issues with <code>read</code>. Therefore our only choice is to keep it
+    invariant.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">serializerInvariant</span><span>: </span><span class="type-name">Invariant</span><span>[</span><span class="type-name">Serializer</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Invariant</span><span>[</span><span class="type-name">Serializer</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">imap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Serializer</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>)(</span><span class="identifier">g</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">Serializer</span><span>[</span><span class="type-name">B</span><span>] =
+      </span><span class="keyword">new</span><span> </span><span class="type-name">Serializer</span><span>[</span><span class="type-name">B</span><span>] {
+        </span><span class="keyword">def</span><span> </span><span class="declaration-name">read</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="identifier">fa</span><span>.</span><span class="identifier">read</span><span>(</span><span class="identifier">s</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">f</span><span>)
+        </span><span class="keyword">def</span><span> </span><span class="declaration-name">show</span><span>(</span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>): </span><span class="type-name">String</span><span> = </span><span class="identifier">fa</span><span>.</span><span class="identifier">show</span><span>(</span><span class="identifier">g</span><span>(</span><span class="identifier">b</span><span>))
+      }
+  }</span></code></pre>
+    
+    <h1 id="bringing-everything-together" class="section"><a class="anchor-link" href="#bringing-everything-together"><code class="fas fa-link fa-sm"></code></a>Bringing everything together</h1>
+    <p>We can see the <code>Invariant</code> interface is more general than both <code>Functor</code> and <code>Contravariant</code> –
+    where <code>Invariant</code> requires functions going in both directions, <code>Functor</code> and <code>Contravariant</code> only
+    require one. We can make <code>Functor</code> and <code>Contravariant</code> subtypes of <code>Invariant</code> by ignoring
+    the direction we don&#39;t care about.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">Invariant</span><span>[</span><span class="type-name">F</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">imap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>)(</span><span class="identifier">g</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>] =
+    </span><span class="identifier">map</span><span>(</span><span class="identifier">fa</span><span>)(</span><span class="identifier">f</span><span>)
+}
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Contravariant</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">Invariant</span><span>[</span><span class="type-name">F</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">contramap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">imap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>)(</span><span class="identifier">g</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>] =
+    </span><span class="identifier">contramap</span><span>(</span><span class="identifier">fa</span><span>)(</span><span class="identifier">g</span><span>)
+}</span></code></pre>
+    <p>Going back to treating <code>Array</code> and <code>Serializer</code> as a read/write store, if we make it read-only (like a read-only
+    handle on a resource) we can safely treat it as if it were covariant. If we are asked to read
+    <code>Shape</code>s and we know how to read <code>Circle</code>s, we can read a <code>Circle</code> and upcast it into a <code>Shape</code>
+    before handing it over.</p>
+    <p>Similarly if we make it write-only (like a write-only handle on a resource) we can safely treat
+    it as contravariant. If we are asked to store <code>Circle</code>s and we know how to store <code>Shape</code>s,
+    we can upcast each <code>Circle</code> into a <code>Shape</code> before storing it.</p>
+    <p>Variance manifests in two levels: one at the type level where subtyping relationships are defined, and
+    the other at the value level where it is encoded as an interface which certain types can conform to.</p>
+    
+    <h2 id="one-more-thing" class="section"><a class="anchor-link" href="#one-more-thing"><code class="fas fa-link fa-sm"></code></a>One more thing</h2>
+    <p>Thus far we have seen the three kinds of variances Scala supports:</p>
+    <pre><code class="nohighlight"><span class="number-literal">1.</span><span> </span><span class="identifier">invariance</span><span>: </span><span class="type-name">A</span><span> = </span><span class="type-name">B</span><span> → </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+</span><span class="number-literal">2.</span><span> </span><span class="identifier">covariance</span><span>: </span><span class="type-name">A</span><span> &lt;: </span><span class="type-name">B</span><span> → </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] &lt;: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+</span><span class="number-literal">3.</span><span> </span><span class="identifier">contravariance</span><span>: </span><span class="type-name">A</span><span> &gt;: </span><span class="type-name">B</span><span> → </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] &lt;: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]</span></code></pre>
+    <p>This gives us the following graph:</p>
+    <pre><code>   invariance
+     ↑   ↑
+    /      \
+   -        +</code></pre>
+    <p>Completing the diamond implies a fourth kind of variance, one that takes contravariance and
+    covariance together. This is known as phantom variance or anyvariance, a variance with no constraints on the
+    type parameters: <code>F[A] = F[B]</code> regardless of what <code>A</code> and <code>B</code> are. Unfortunately Scala&#39;s type system is
+    missing this kind of variance which leaves us just short of a nice diamond, but we can still encode it
+    in an interface.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Phantom</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">pmap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+}</span></code></pre>
+    <p>Given any <code>F[A]</code>, we can turn that into an <code>F[B]</code>, for all choices of <code>A</code> and <code>B</code>. With this power we can
+    implement covariant and contravariant functors.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Phantom</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] </span><span class="keyword">with</span><span> </span><span class="type-name">Contravariant</span><span>[</span><span class="type-name">F</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">pmap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="identifier">pmap</span><span>(</span><span class="identifier">fa</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">contramap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">B</span><span> =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="identifier">pmap</span><span>(</span><span class="identifier">fa</span><span>)
+}</span></code></pre>
+    <p>This completes our diamond of variance.</p>
+    <pre><code>   invariance
+     ↑   ↑
+    /      \
+   -        +
+   ↑        ↑
+    \      /
+    phantom</code></pre>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/adelbertc.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Adelbert Chang</strong>
+              
+              <br />
+              Adelbert is an engineer at Box where he attempts to reliably copy bytes from one machine to another. He enjoys writing pure functional programs, teaching functional programming, and learning more about computing.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/adelbertc">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

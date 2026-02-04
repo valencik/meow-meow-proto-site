@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Refactoring with Monads</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Refactoring with Monads</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Mark Tomko<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on August 7, 2018
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="refactoring-with-monads-1" class="title">Refactoring with Monads</h1>
+    <p>I was recently cleaning up some Scala code I&#39;d written a few months
+    ago when I realized I had been structuring code in a very confusing
+    way for a very long time. At work, we&#39;ve been trying to untangle the
+    knots of code that get written by different authors at different
+    times, as requirements inevitably evolve. We all know that code should
+    be made up of short, easily digestible functions but we don&#39;t always
+    get guidance on how to achieve that. In the presence of error handling
+    and nested data structures, the problem gets even harder.</p>
+    <p>The goal of this blog post is to describe a concrete strategy for
+    structuring code so that the overall flow of control is clear to the
+    reader, even months later; and so the smaller pieces are both
+    digestible and testable. I&#39;ll start by giving an example function,
+    operating on some nested data types. Then I&#39;ll explore some ways to
+    break it into smaller pieces. The key insight is that we can use
+    computational effects in the form of
+    <a href="https://typelevel.org/cats/typeclasses/monad.html">monads</a> (more
+    specifically,
+    <a href="https://typelevel.org/cats/api/cats/MonadError.html">MonadError</a>) to
+    wrap smaller pieces and ultimately, compose them into an
+    understandable sequence of computations.</p>
+    
+    <h3 id="example-domain-reading-a-catalog" class="section"><a class="anchor-link" href="#example-domain-reading-a-catalog"><code class="fas fa-link fa-sm"></code></a>Example domain: reading a catalog</h3>
+    <p>Let&#39;s not worry about <code>MonadError</code> yet, but instead look at some
+    example code. Consider a situation where you need to translate data
+    from one domain model to another one with different restrictions, and
+    controlled vocabularies. This can happen in a number of places in a
+    program, for instance reading a database or an HTTP request to
+    construct a domain object.</p>
+    <p>Suppose we need to read an object from a relational database.
+    Unfortunately, rows in the table may represent objects of a variety of
+    types so we have to read the row and build up the object graph
+    accordingly. This is the boundary between the weakly typed wilderness
+    and the strongly typed world within our program.</p>
+    <p>Say our database table represents a library catalog, which might have
+    print books and ebooks. We&#39;d like to look up a book by ID and get back
+    a nicely typed record.</p>
+    <p>Here&#39;s a simple table</p>
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>title</th>
+          <th>author</th>
+          <th>format</th>
+          <th>download_type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>45</td>
+          <td>Programming In Haskell</td>
+          <td>Hutton, Graham</td>
+          <td>print</td>
+          <td>null</td>
+        </tr>
+        <tr>
+          <td>46</td>
+          <td>Programming In Haskell</td>
+          <td>Hutton, Graham</td>
+          <td>ebook</td>
+          <td>epub</td>
+        </tr>
+        <tr>
+          <td>49</td>
+          <td>Programming In Haskell</td>
+          <td>Hutton, Graham</td>
+          <td>ebook</td>
+          <td>pdf</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>We can define a simple domain model:</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Format</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">Print</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Format</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">Digital</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Format</span><span>
+</span><span class="keyword">object</span><span> </span><span class="type-name">Format</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">fromString</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Try</span><span>[</span><span class="type-name">Format</span><span>] = ???
+}
+
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">DownloadType</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">Epub</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">DownloadType</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">Pdf</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">DownloadType</span><span>
+</span><span class="keyword">object</span><span> </span><span class="type-name">DownloadType</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">fromString</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Try</span><span>[</span><span class="type-name">DownloadType</span><span>] = ???
+}
+
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Book</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Product</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">Serializable</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">id</span><span>: </span><span class="type-name">Int</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">title</span><span>: </span><span class="type-name">String</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">author</span><span>: </span><span class="type-name">String</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">format</span><span>: </span><span class="type-name">Format</span><span>
+}
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PrintBook</span><span>(
+    </span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">title</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">author</span><span>: </span><span class="type-name">String</span><span>,
+) </span><span class="keyword">extends</span><span> </span><span class="type-name">Book</span><span> {
+  </span><span class="keyword">override</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">format</span><span>: </span><span class="type-name">Format</span><span> = </span><span class="type-name">Print</span><span>
+}
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">EBook</span><span>(
+    </span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">title</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">author</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">downloadType</span><span>: </span><span class="type-name">DownloadType</span><span>
+) </span><span class="keyword">extends</span><span> </span><span class="type-name">Book</span><span> {
+  </span><span class="keyword">override</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">format</span><span>: </span><span class="type-name">Format</span><span> = </span><span class="type-name">Digital</span><span>
+}</span></code></pre>
+    <p>We want to be able to define a method such as:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">findBookById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Try</span><span>[</span><span class="type-name">Book</span><span>] = ???</span></code></pre>
+    
+    <h3 id="monolithic-function" class="section"><a class="anchor-link" href="#monolithic-function"><code class="fas fa-link fa-sm"></code></a>Monolithic function</h3>
+    <p>One trivial definition of <code>findBookById</code> might be:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">util</span><span>.{</span><span class="type-name">Failure</span><span>, </span><span class="type-name">Success</span><span>, </span><span class="type-name">Try</span><span>}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">findBookById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Try</span><span>[</span><span class="type-name">Book</span><span>] = {
+  </span><span class="comment">// unsafeQueryUnique returns a `Try[Row]`
+</span><span>  </span><span class="type-name">DB</span><span>.</span><span class="identifier">unsafeQueryUnique</span><span>(</span><span class="string-literal">sql&quot;&quot;&quot;select * from catalog where id = </span><span class="substitution">$id</span><span class="string-literal">&quot;&quot;&quot;</span><span>).</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">row</span><span> =&gt;
+    </span><span class="comment">// pick out the properties every book possesses
+</span><span>    </span><span class="keyword">val</span><span> </span><span class="identifier">id</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="string-literal">&quot;id&quot;</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">title</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;title&quot;</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">author</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;author&quot;</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">formatStr</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;format&quot;</span><span>)
+
+    </span><span class="comment">// now start to determine the types - get the format first
+</span><span>    </span><span class="type-name">Format</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="identifier">formatStr</span><span>).</span><span class="identifier">flatMap</span><span> {
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Print</span><span> =&gt;
+        </span><span class="comment">// for print books, we can construct the book and return immediately
+</span><span>        </span><span class="type-name">Success</span><span>(</span><span class="type-name">PrintBook</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">title</span><span>, </span><span class="identifier">author</span><span>))
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Digital</span><span> =&gt;
+        </span><span class="comment">// for digital books we need to handle the download type
+</span><span>        </span><span class="identifier">row</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]](</span><span class="string-literal">&quot;download_type&quot;</span><span>) </span><span class="keyword">match</span><span> {
+          </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt;
+            </span><span class="type-name">Failure</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">AssertionError</span><span>(</span><span class="string-literal">s&quot;download type not provided for digital book </span><span class="substitution">$id</span><span class="string-literal">&quot;</span><span>))
+          </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">downloadStr</span><span>) =&gt;
+            </span><span class="type-name">DownloadType</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="identifier">downloadStr</span><span>).</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">dt</span><span> =&gt;
+              </span><span class="type-name">Success</span><span>(</span><span class="type-name">EBook</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">title</span><span>, </span><span class="identifier">author</span><span>, </span><span class="identifier">dt</span><span>))
+            }
+        }
+    }
+  }
+}</span></code></pre>
+    <p>Depending on your perspective, that is arguably a long function. If
+    you think it is not so long, pretend that the table has a number of
+    other fields that must also be conditionally parsed to construct a
+    <code>Book</code>.</p>
+    
+    <h3 id="tail-refactoring" class="section"><a class="anchor-link" href="#tail-refactoring"><code class="fas fa-link fa-sm"></code></a>Tail refactoring</h3>
+    <p>One possible approach is a a strategy I&#39;m going to call
+    &quot;tail-refactoring&quot;, for lack of a better description. Basically, each
+    function does a little work or some error checking, and then calls the
+    next appropriate function in the chain.</p>
+    <p>You can imagine what kind of code will result. The functions are
+    smaller, but it&#39;s hard to describe what each function does, and
+    functions occasionally have to carry along additional parameters that
+    they will ignore except to pass deeper into the call chain. Let&#39;s take
+    a look at an example refactoring:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">util</span><span>.{</span><span class="type-name">Failure</span><span>, </span><span class="type-name">Success</span><span>, </span><span class="type-name">Try</span><span>}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">extractEBook</span><span>(
+    </span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">title</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">author</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">downloadTypeStrOpt</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">Try</span><span>[</span><span class="type-name">EBook</span><span>] =
+  </span><span class="identifier">downloadTypeStrOpt</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="type-name">Failure</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">AssertionError</span><span>())
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">downloadTypeStr</span><span>) =&gt;
+      </span><span class="type-name">DownloadType</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="identifier">downloadTypeStr</span><span>).</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">dt</span><span> =&gt;
+        </span><span class="type-name">Success</span><span>(</span><span class="type-name">EBook</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">title</span><span>, </span><span class="identifier">author</span><span>, </span><span class="identifier">dt</span><span>))
+      }
+  }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">extractBook</span><span>(
+    </span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>,
+    </span><span class="identifier">title</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">author</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">formatStr</span><span>: </span><span class="type-name">String</span><span>,
+    </span><span class="identifier">downloadTypeStrOpt</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">Try</span><span>[</span><span class="type-name">Book</span><span>] =
+  </span><span class="type-name">Format</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="identifier">formatStr</span><span>).</span><span class="identifier">flatMap</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Print</span><span> =&gt;
+      </span><span class="type-name">Success</span><span>(</span><span class="type-name">PrintBook</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">title</span><span>, </span><span class="identifier">author</span><span>))
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Digital</span><span> =&gt;
+      </span><span class="identifier">extractEBook</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">title</span><span>, </span><span class="identifier">author</span><span>, </span><span class="identifier">downloadTypeStrOpt</span><span>)
+  }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">findBookById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Try</span><span>[</span><span class="type-name">Book</span><span>] =
+  </span><span class="type-name">DB</span><span>.</span><span class="identifier">unsafeQueryUnique</span><span>(</span><span class="string-literal">sql&quot;&quot;&quot;select * from catalog where id = </span><span class="substitution">$id</span><span class="string-literal">&quot;&quot;&quot;</span><span>).</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">row</span><span> =&gt;
+    </span><span class="keyword">val</span><span> </span><span class="identifier">id</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="string-literal">&quot;id&quot;</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">title</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;title&quot;</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">author</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;author&quot;</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">formatStr</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;format&quot;</span><span>)
+    </span><span class="keyword">val</span><span> </span><span class="identifier">downloadTypeStr</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]](</span><span class="string-literal">&quot;download_type&quot;</span><span>)
+    </span><span class="identifier">extractBook</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">title</span><span>, </span><span class="identifier">author</span><span>, </span><span class="identifier">formatStr</span><span>, </span><span class="identifier">downloadTypeStr</span><span>)
+  }</span></code></pre>
+    <p>As you can see, this form has more manageably-sized functions,
+    although they are still a little long. You can also see that the flow
+    of control is distributed through all three functions, which means
+    understanding the logic enough to modify or test it requires
+    understanding all three functions both individually and as a whole. To
+    follow the logic, we must trace the functions like a recursive descent
+    parser.</p>
+    
+    <h3 id="refactoring-with-monads-2" class="section"><a class="anchor-link" href="#refactoring-with-monads-2"><code class="fas fa-link fa-sm"></code></a>Refactoring with Monads</h3>
+    <p>Without throwing exceptions and catching them at the top, it&#39;s going
+    to be hard to do substantially better than the &quot;tail-refactoring&quot;
+    approach, unless we start to make use of the fact that we&#39;re working
+    with <code>Try</code>, a data type that supports <code>flatMap</code>. More precisely, <code>Try</code>
+    has a monad instance - recall that monads let us model computational
+    effects that take place in sequence.</p>
+    <p>Let&#39;s try to factor out smaller functions, each returning <code>Try</code>, and
+    then use a for-comprehension to specify the sequence of operations:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">util</span><span>.{</span><span class="type-name">Failure</span><span>, </span><span class="type-name">Success</span><span>, </span><span class="type-name">Try</span><span>}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">parseDownloadType</span><span>(</span><span class="identifier">o</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>], </span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Try</span><span>[</span><span class="type-name">DownloadType</span><span>] = {
+  </span><span class="identifier">o</span><span>.</span><span class="identifier">map</span><span>(</span><span class="type-name">DownloadType</span><span>.</span><span class="identifier">fromString</span><span>)
+    .</span><span class="identifier">getOrElse</span><span>(</span><span class="type-name">Failure</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">AssertionError</span><span>(</span><span class="string-literal">s&quot;download type not provided for digital book </span><span class="substitution">$id</span><span class="string-literal">&quot;</span><span>)))
+}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">findBookById</span><span>(</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Try</span><span>[</span><span class="type-name">Book</span><span>] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">row</span><span> &lt;- </span><span class="type-name">DB</span><span>.</span><span class="identifier">unsafeQueryUnique</span><span>(</span><span class="string-literal">sql&quot;&quot;&quot;select * from catalog where id = </span><span class="substitution">$id</span><span class="string-literal">&quot;&quot;&quot;</span><span>)
+    </span><span class="identifier">format</span><span> &lt;- </span><span class="type-name">Format</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;format&quot;</span><span>))
+    </span><span class="identifier">id</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="string-literal">&quot;id&quot;</span><span>)
+    </span><span class="identifier">title</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;title&quot;</span><span>)
+    </span><span class="identifier">author</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;author&quot;</span><span>)
+    </span><span class="identifier">book</span><span> &lt;- </span><span class="identifier">format</span><span> </span><span class="keyword">match</span><span> {
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Print</span><span> =&gt;
+        </span><span class="type-name">Success</span><span>(</span><span class="type-name">PrintBook</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">title</span><span>, </span><span class="identifier">author</span><span>))
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Digital</span><span> =&gt;
+        </span><span class="identifier">parseDownloadType</span><span>(</span><span class="identifier">row</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]](</span><span class="string-literal">&quot;download_type&quot;</span><span>), </span><span class="identifier">id</span><span>)
+          .</span><span class="identifier">map</span><span>(</span><span class="type-name">EBook</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">title</span><span>, </span><span class="identifier">author</span><span>, </span><span class="identifier">_</span><span>))
+    }
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">book</span></code></pre>
+    <p>It&#39;s less code, the functions are smaller, and the top-level function
+    dictates the entire flow of control. No function takes more than 2
+    arguments. These are testable, understandable functions. This version
+    really shows the power of using monads to sequence computation.</p>
+    <p>Now we are truly making use of the fact that <code>Try</code> has a monad instance
+    and not just another container class. We can simply describe the &quot;happy
+    path&quot; and trust <code>Try</code> to short-circuit computation if something erroneous
+    or unexpected occurs. In that case, <code>Try</code> captures the error and stops
+    computation there. The code does this without the need for explicit
+    branching logic.</p>
+    
+    <h3 id="abstracting-effect-type" class="section"><a class="anchor-link" href="#abstracting-effect-type"><code class="fas fa-link fa-sm"></code></a>Abstracting effect type</h3>
+    <p>Now, let&#39;s take this one step further - here&#39;s where we achieve
+    buzzword compliance. Let&#39;s abstract away from the effect, <code>Try</code>, and
+    instead make use of
+    <a href="https://typelevel.org/cats/api/cats/MonadError.html">MonadError</a>.
+    This lets us use a more diverse set of effect types, from
+    <a href="https://typelevel.org/cats-effect/datatypes/io.html">IO</a> to
+    <a href="https://monix.io/docs/3x/eval/task.html">Task</a>, so we can execute our
+    function in whatever asynchronous context we wish. This has the feel
+    of a tagless final strategy (although we aren&#39;t worrying about
+    describing interpreters here).</p>
+    <p>Here we go:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">MonadError</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">parseDownloadType</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">o</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>], </span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>)(
+    </span><span class="keyword">implicit</span><span> </span><span class="identifier">me</span><span>: </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Throwable</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">DownloadType</span><span>] = {
+  </span><span class="identifier">me</span><span>.</span><span class="identifier">fromOption</span><span>(</span><span class="identifier">o</span><span>, </span><span class="keyword">new</span><span> </span><span class="type-name">AssertionError</span><span>(</span><span class="string-literal">s&quot;download type not provided for digital book </span><span class="substitution">$id</span><span class="string-literal">&quot;</span><span>))
+    .</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">s</span><span> =&gt; </span><span class="identifier">me</span><span>.</span><span class="identifier">fromTry</span><span>(</span><span class="type-name">DownloadType</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="identifier">s</span><span>)))
+}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">findBookById</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">id</span><span>: </span><span class="type-name">Int</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">me</span><span>: </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Throwable</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Book</span><span>] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">row</span><span> &lt;- </span><span class="type-name">DB</span><span>.</span><span class="identifier">queryUnique</span><span>[</span><span class="type-name">F</span><span>](</span><span class="string-literal">sql&quot;&quot;&quot;select * from catalog where id = </span><span class="substitution">$id</span><span class="string-literal">&quot;&quot;&quot;</span><span>)
+    </span><span class="identifier">format</span><span> &lt;- </span><span class="identifier">me</span><span>.</span><span class="identifier">fromTry</span><span>(</span><span class="type-name">Format</span><span>.</span><span class="identifier">fromString</span><span>(</span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;format&quot;</span><span>)))
+    </span><span class="identifier">id</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="string-literal">&quot;id&quot;</span><span>)
+    </span><span class="identifier">title</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;title&quot;</span><span>)
+    </span><span class="identifier">author</span><span> = </span><span class="identifier">row</span><span>[</span><span class="type-name">String</span><span>](</span><span class="string-literal">&quot;author&quot;</span><span>)
+    </span><span class="identifier">book</span><span> &lt;- </span><span class="identifier">format</span><span> </span><span class="keyword">match</span><span> {
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Print</span><span> =&gt;
+        </span><span class="identifier">me</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="type-name">PrintBook</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">title</span><span>, </span><span class="identifier">author</span><span>))
+      </span><span class="keyword">case</span><span> </span><span class="type-name">Digital</span><span> =&gt;
+        </span><span class="identifier">parseDownloadType</span><span>[</span><span class="type-name">F</span><span>](</span><span class="identifier">row</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]](</span><span class="string-literal">&quot;downloadType&quot;</span><span>), </span><span class="identifier">id</span><span>)
+          .</span><span class="identifier">map</span><span>(</span><span class="type-name">EBook</span><span>(</span><span class="identifier">id</span><span>, </span><span class="identifier">title</span><span>, </span><span class="identifier">author</span><span>, </span><span class="identifier">_</span><span>))
+    }
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">book</span></code></pre>
+    <p>The code isn&#39;t much more complicated than the version using <code>Try</code> but
+    it adds a lot of flexibility. In a synchronous context, we could still
+    use <code>Try</code>. In that case, however, the database call is executed
+    eagerly, which means the function isn&#39;t referentially transparent. We
+    can make the function referentially transparent by using a monad such
+    as <code>IO</code> or <code>Task</code> as the effect type and delaying the evaluation of
+    the database call until &quot;the end of the universe&quot;.</p>
+    <p>In this example, pay attention to the use of
+    <a href="https://typelevel.github.io/cats/api/cats/syntax/ApplicativeErrorExtensionOps.html#fromOption[A](oa:Option[A],ifEmpty:=%3EE):F[A]">fromOption</a>
+    and
+    <a href="https://typelevel.github.io/cats/api/cats/ApplicativeError.html#fromTry[A](t:scala.util.Try[A])(implicitev:Throwable%3C:%3CE):F[A]">fromTry</a>,
+    which adapt <code>Option</code> and <code>Try</code> to <code>F</code>. If you are using existing APIs
+    that aren&#39;t already generalized to <code>MonadError</code> these methods adapt
+    common error types, but require very little ceremony to use.</p>
+    
+    <h3 id="refactoring-strategy" class="section"><a class="anchor-link" href="#refactoring-strategy"><code class="fas fa-link fa-sm"></code></a>Refactoring strategy</h3>
+    <p>When faced with a similar refactoring problem, consider whether you
+    can break the problem into a sequence of independently executable
+    steps, each of which can be wrapped in a monad. If so, begin by
+    describing the control flow in your refactored function with a monadic
+    for-comprehension. Don&#39;t define the individual functions that comprise
+    the steps of the for-comprehension until you have filled in the
+    <code>yield</code> at the end. You can use pseudocode or stubs to minimize the
+    amount of code churn at the beginning. This is a great time to shuffle
+    steps around and work out exactly what arguments are needed and when,
+    as well as where they are coming from.</p>
+    <p>Once the top level function looks plausible, begin implenting the
+    steps of the for-comprehension. You can replace the stubs or
+    pseudocode you wrote by refactoring code from your original function.
+    If the original code did not operate in a monadic context, recall that
+    you can convert a simple function <code>A =&gt; B</code> to <code>F[A] =&gt; F[B]</code> using
+    <a href="https://typelevel.org/cats/api/cats/Monad.html#lift[A,B](f:A=%3EB):F[A]=%3EF[B]">lift</a>
+    (thanks,
+    <a href="https://typelevel.org/cats/typeclasses/functor.html">Functor</a>!). This
+    makes converting your existing code even easier.</p>
+    
+    <h3 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h3>
+    <p>In this post, we have seen how we can use monads as an aid in
+    refactoring code to improve both readability and testability. We have
+    also demonstrated that we can do this in many cases without needing to
+    specify the monad in use <em>a priori</em>. As a result, we gain the
+    flexibility to choose the appropriate monad for our application,
+    independently of the program logic.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/mtomko.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Mark Tomko</strong>
+              
+              <br />
+              Mark is a senior software engineer at the Broad Institute of MIT and Harvard. He lives in Bellingham, Washington.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/mtomko">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

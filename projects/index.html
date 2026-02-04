@@ -1,0 +1,2554 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title></title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="../blog/">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <h1 class="bulma-title bulma-is-1 bulma-has-text-centered bulma-mb-5">Project Index</h1>
+  <div class="bulma-grid bulma-is-col-min-10">
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            argonaut-shapeless
+          </p>
+          <a href="https://github.com/alexarchambault/argonaut-shapeless" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Automatic derivation for argonaut</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            banana-rdf
+          </p>
+          <a href="https://github.com/banana-rdf/banana-rdf" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">RDF, SPARQL and Linked Data technologies</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            calico
+          </p>
+          <a href="https://github.com/armanbilge/calico" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+          <a href="https://armanbilge.github.io/calico" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fas fa-book"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Pure, reactive UI library for building web applications with Cats Effect + FS2</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            cats-actors
+          </p>
+          <a href="https://github.com/suprnation/cats-actors" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">An Actor Model implementation built on top of Cats-Effect, providing a higher-level abstraction for managing concurrency.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            case-insensitive
+          </p>
+          <a href="https://github.com/typelevel/case-insensitive" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A case-insensitive string for Scala</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            catapult
+          </p>
+          <a href="https://github.com/typelevel/catapult" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A thin wrapper for the Launch Darkly Java server SDK using cats-effect and fs2</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            catbird
+          </p>
+          <a href="https://github.com/typelevel/catbird" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Cats instances for various Twitter Open Source Scala projects</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Cats
+          </p>
+          <a href="https://github.com/typelevel/cats" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+          <a href="https://typelevel.org/cats/" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fas fa-book"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A library intended to provide abstractions for functional programming in Scala, leveraging its unique features. Design goals are approachability, modularity, documentation and efficiency.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Cats Collections
+          </p>
+          <a href="https://github.com/typelevel/cats-collections" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Data structures that facilitate pure functional programming with cats</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Cats-Effect
+          </p>
+          <a href="https://github.com/typelevel/cats-effect/" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">The IO Monad for Scala, plus type classes for general effect types.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Cats MTL
+          </p>
+          <a href="https://github.com/typelevel/cats-mtl/" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Monad transformers made easy</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            cats-parse
+          </p>
+          <a href="https://github.com/typelevel/cats-parse" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A parsing library for the cats ecosystem</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            cats-scalatest
+          </p>
+          <a href="https://github.com/IronCoreLabs/cats-scalatest" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Scalatest bindings for Cats.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            cats-stm
+          </p>
+          <a href="https://github.com/TimWSpence/cats-stm" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A STM implementation for Cats Effect</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Cats Tagless
+          </p>
+          <a href="https://github.com/typelevel/cats-tagless/" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A library of utilities for tagless final algebras</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Cats-Time
+          </p>
+          <a href="https://github.com/typelevel/cats-time/" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Instances for Cats Typeclasses for Java 8 Time</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Circe
+          </p>
+          <a href="https://github.com/circe/circe" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Yet another JSON library for Scala</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Ciris
+          </p>
+          <a href="https://github.com/vlovgr/ciris" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Functional Configurations for Scala</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            coulomb
+          </p>
+          <a href="https://github.com/erikerlandson/coulomb" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A statically typed unit analysis library for Scala</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            cron4s
+          </p>
+          <a href="https://github.com/alonsodomin/cron4s" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Cross-platform CRON expression parsing for Scala</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            decline
+          </p>
+          <a href="https://github.com/bkirwi/decline" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A composable command-line parser for Scala.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            discipline
+          </p>
+          <a href="https://github.com/typelevel/discipline" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Originally intended for internal use in spire, this library helps libraries declaring type classes to precisely state the laws which instances need to satisfy, and takes care of not checking derived laws multiple times.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            doobie
+          </p>
+          <a href="https://github.com/typelevel/doobie" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A pure functional JDBC layer for Scala. It is not an ORM, nor is it a relational algebra; it just provides a principled way to construct programs (and higher-level libraries) that use JDBC.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            edomata
+          </p>
+          <a href="https://github.com/hnaderi/edomata" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+          <a href="https://edomata.ir/" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fas fa-book"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Event-driven automata for Scala, Scala.js and scala native. This library provides purely functional state machines that can be used to create event sourced and/or CQRS style applications. It also includes production ready backends.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            eff
+          </p>
+          <a href="https://github.com/atnos-org/eff" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+          <a href="http://atnos-org.github.io/eff" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fas fa-book"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Extensible effects are an alternative to monad transformers for computing with effects in a functional way. This library is based on the “free-er” monad and an “open union” of effects described by Oleg Kiselyov in “Freer monads, more extensible effects”</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            endless4s
+          </p>
+          <a href="https://github.com/endless4s/endless" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+          <a href="https://endless4s.github.io/" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fas fa-book"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Sharded and event-sourced entities using tagless-final algebras</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Extruder
+          </p>
+          <a href="https://github.com/janstenpickle/extruder" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Populate case classes from any configuration source</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            fabric
+          </p>
+          <a href="https://github.com/typelevel/fabric" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Object-Notation Abstraction for JSON, binary, HOCON, etc.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Feral
+          </p>
+          <a href="https://github.com/typelevel/feral" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Feral cats are homeless, feral functions are serverless</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            ff4s
+          </p>
+          <a href="https://github.com/buntec/ff4s" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A purely functional web frontend framework for Scala.js.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Fetch
+          </p>
+          <a href="https://github.com/47deg/fetch" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Library built on top of Cats that provides efficient data access from heterogeneous dataurces</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Finch
+          </p>
+          <a href="https://github.com/finagle/finch" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Purely functional basic blocks atop of Finagle for building composable HTTP APIs</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Frameless
+          </p>
+          <a href="https://github.com/typelevel/frameless" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Frameless is a library for working with Spark using more expressive types.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            fs2-aes
+          </p>
+          <a href="https://github.com/jwojnowski/fs2-aes" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Micro library providing AES encryption/decryption of fs2.Stream[F, Byte].</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            fs2-compress
+          </p>
+          <a href="https://github.com/lhns/fs2-compress" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Compression Algorithms for Fs2 </p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            fs2-data
+          </p>
+          <a href="https://github.com/gnieh/fs2-data" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Parse and transform data (CBOR, CSV, JSON, XML) in a streaming manner</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            fs2-dom
+          </p>
+          <a href="https://github.com/armanbilge/fs2-dom" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Idiomatic Cats Effect + FS2 integrations for Web APIs</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            fs2-grpc
+          </p>
+          <a href="https://github.com/typelevel/fs2-grpc" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">gRPC implementation for FS2/cats-effect</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            fs2
+          </p>
+          <a href="https://github.com/typelevel/fs2" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">FS2 is a library for purely functional, effectful, and polymorphic stream processing library in the Scala programming language. Its design goals are compositionality, expressiveness, resource safety, and speed. The name is a modified acronym for Functional Streams for Scala (FSS, or FS2).</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Grackle
+          </p>
+          <a href="https://github.com/typelevel/grackle" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Functional GraphQL server for the Typelevel stack</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Hammock
+          </p>
+          <a href="https://github.com/pepegar/hammock" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Purely functional HTTP client</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            http4s
+          </p>
+          <a href="https://github.com/http4s/http4s" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A typeful, purely functional HTTP library for client and server applications</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            imp
+          </p>
+          <a href="https://github.com/non/imp" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Summoning implicit values</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            jawn-fs2
+          </p>
+          <a href="https://github.com/typelevel/jawn-fs2" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Integration of jawn and fs2 for streaming, incremental JSON parsing</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            keypool
+          </p>
+          <a href="https://github.com/typelevel/keypool" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A Keyed Pool Implementation for Scala</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            kind-projector
+          </p>
+          <a href="https://github.com/typelevel/kind-projector" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Plugin for nicer type-lambda syntax</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Kittens
+          </p>
+          <a href="https://github.com/typelevel/kittens" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Automatic type class derivation</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Laika
+          </p>
+          <a href="https://github.com/typelevel/Laika" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Site and e-book generator and customizable text markup transformer for sbt, Scala and Scala.js</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            LDBC
+          </p>
+          <a href="https://github.com/takapi327/ldbc" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Pure functional JDBC layer with Cats Effect 3 and Scala 3</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Lepus
+          </p>
+          <a href="https://github.com/hnaderi/lepus" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+          <a href="https://lepus.hnaderi.dev/" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fas fa-book"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Purely functional, non-blocking RabbitMQ client for scala, scala js and scala native built on top of fs2.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Libra
+          </p>
+          <a href="https://github.com/to-ithaca/libra" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Compile time dimensional analysis for any problem domain</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            literally
+          </p>
+          <a href="https://github.com/typelevel/literally" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Compile time validation of literal values built from strings</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            log4cats
+          </p>
+          <a href="https://github.com/typelevel/log4cats" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Logging Tools For Interaction with cats-effect</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Monix
+          </p>
+          <a href="https://github.com/monix/monix" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+          <a href="https://monix.io" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fas fa-book"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">High-performance library for composing asynchronous, event-based programs, exposing a Reactive Streams implementation along with primitives for dealing with concurrency and side-effects.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Monocle
+          </p>
+          <a href="https://github.com/optics-dev/Monocle" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Optics library offering a simple yet powerful API to access and transform immutable data</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Mouse
+          </p>
+          <a href="https://github.com/typelevel/mouse/" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Enrichments to standard library classes to ease functional programming</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Natchez
+          </p>
+          <a href="https://github.com/typelevel/natchez" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">functional tracing for cats </p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            otel4s
+          </p>
+          <a href="https://github.com/typelevel/otel4s" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">An OpenTelemetry library based on cats-effect</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Outwatch
+          </p>
+          <a href="https://github.com/outwatch/outwatch" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">The Functional and Reactive Web-Frontend Library for Scala.js</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            parsley-cats
+          </p>
+          <a href="https://github.com/j-mie6/parsley-cats" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">The parsley-cats library exposes Cats instances for Parsley parsing library.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Peloton
+          </p>
+          <a href="https://github.com/killaitis/peloton" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">An actor library for Cats Effect</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            perspective
+          </p>
+          <a href="https://github.com/Katrix/perspective" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Provides tools for generic programming, and typeclasses for monad transformers and higher kinded data.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            PureConfig
+          </p>
+          <a href="https://github.com/pureconfig/pureconfig" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A boilerplate-free library for loading configuration files</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            refined
+          </p>
+          <a href="https://github.com/fthomas/refined" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Tools for refining types with type-level predicates which constrain the set of values described by the refined type, for example restricting to positive or negative numbers.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            ScalaCheck
+          </p>
+          <a href="https://github.com/typelevel/scalacheck" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+          <a href="http://scalacheck.org/" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fas fa-book"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">ScalaCheck is a library for automated property-based testing. It contains generators for randomized test data and combinators for properties.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            scalacheck-shapeless
+          </p>
+          <a href="https://github.com/alexarchambault/scalacheck-shapeless" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Automatic derivation for ScalaCheck</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Scala Exercises
+          </p>
+          <a href="https://github.com/scala-exercises/scala-exercises" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Platform and framework for Scala devs to learn about Scala libraries</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            scala-steward
+          </p>
+          <a href="https://github.com/fthomas/scala-steward" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A robot that helps keeping Scala projects up-to-date</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            scodec
+          </p>
+          <a href="https://github.com/scodec/scodec" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">scodec is a combinator library for working with binary data. It focuses on contract-first and pure functional encoding and decoding of binary data and provides integration with shapeless.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Scoverage
+          </p>
+          <a href="https://github.com/scoverage/scalac-scoverage-plugin" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Code coverage tool for Scala</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Shapeless
+          </p>
+          <a href="https://github.com/milessabin/shapeless" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Shapeless is a generic programming library. Starting with implementations of Scrap your boilerplate and higher rank polymorphism in Scala, it quickly grew to provide advanced abstract tools like heterogenous lists and automatic instance derivation for type classes.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            simulacrum
+          </p>
+          <a href="https://github.com/typelevel/simulacrum" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">First-class syntax for type classes</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Simulacrum Scalafix
+          </p>
+          <a href="https://github.com/typelevel/simulacrum-scalafix" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Simulacrum as Scalafix rules</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            singleton-ops
+          </p>
+          <a href="https://github.com/fthomas/singleton-ops" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Operations for primitive and String singleton types</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Skunk
+          </p>
+          <a href="https://github.com/typelevel/skunk" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A data access library for Scala + Postgres</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            sonic
+          </p>
+          <a href="https://github.com/melrief/sonic" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Property-based testing with integrated shrinking</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            specs2
+          </p>
+          <a href="https://github.com/etorreborre/specs2" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+          <a href="http://specs2.org/" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fas fa-book"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">specs2 is a library for writing executable software specifications, aiming for conciseness, readability and extensibility.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            spire
+          </p>
+          <a href="https://github.com/typelevel/spire" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Spire is a numeric library for Scala which is intended to be generic, fast, and precise. Using features such as specialization, macros, type classes, and implicits, Spire works hard to defy conventional wisdom around performance and precision trade-offs.</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Squants
+          </p>
+          <a href="https://github.com/typelevel/squants" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">The Scala API for Quantities, Units of Measure and Dimensional Analysis</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            Twiddles
+          </p>
+          <a href="https://github.com/typelevel/twiddles" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Micro-library for building effectful protocols</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            TwoTails
+          </p>
+          <a href="https://github.com/wheaties/TwoTails" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A compiler plugin adding support for mutual tail recursion</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            typelevel.g8
+          </p>
+          <a href="https://github.com/typelevel/typelevel.g8" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A Giter8 template for sbt-typelevel</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            typelevel-nix
+          </p>
+          <a href="https://github.com/typelevel/typelevel-nix" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Development tools for Typelevel projects</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            uniform-scala
+          </p>
+          <a href="https://github.com/ltbs/uniform-scala" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Functional user journeys</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            upperbound
+          </p>
+          <a href="https://github.com/SystemFw/upperbound" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">A purely functional, interval based rate limiter</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-primary bulma-is-light">Affiliate Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <header class="bulma-card-header">
+          <p class="bulma-card-header-title">
+            vault
+          </p>
+          <a href="https://github.com/typelevel/vault" class="bulma-card-header-icon">
+            <span class="bulma-icon"><i class="fab fa-github"></i></span>
+          </a>
+          
+        </header>
+        <div class="bulma-card-content">
+          <p class="bulma-content">Type-safe, persistent storage for values of arbitrary types</p>
+          <div class="bulma-tags">
+            
+            <span class="bulma-tag bulma-is-info bulma-is-light">Organization Project</span>
+            
+            
+            <span class="bulma-tag">js</span>
+            
+            <span class="bulma-tag">jvm</span>
+            
+            <span class="bulma-tag">native</span>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="#">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

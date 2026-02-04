@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Validated Configurations with Ciris</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Validated Configurations with Ciris</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Viktor Lövgren<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on June 21, 2017
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="validated-configurations-with-ciris" class="title">Validated Configurations with Ciris</h1>
+    <p>The need for configuration arises in almost every application, as we want to be able to run in different environments -- for example, local, testing, and production environments. Configurations are also used as a way to keep secrets, like passwords and keys, out of source code and version control. By having configurations as untyped structured data in files, we can change and override settings without having to recompile our software.</p>
+    <p>In this blog post, we&#39;ll take a look at configurations with configuration files, to see how we can make the loading process less error-prone, while overcoming obstacles with boilerplate, testing, and validation. We&#39;ll also identify when it&#39;s suitable to use Scala as a configuration language for improved compile-time safety, convenience, and flexibility; and more specifically, how <a href="https://cir.is">Ciris</a> helps out.</p>
+    
+    <h3 id="configuration-files" class="section"><a class="anchor-link" href="#configuration-files"><code class="fas fa-link fa-sm"></code></a>Configuration Files</h3>
+    <p>Traditionally, configuration files, and libraries like <a href="https://github.com/typesafehub/config">Typesafe Config</a>, have been used to load configurations. This involves writing your configuration file, declaring values and how they&#39;re loaded, and then writing very similar Scala code for loading that configuration. That kind of boilerplate code typically looks something along the lines of the following example.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">com</span><span>.</span><span class="identifier">typesafe</span><span>.</span><span class="identifier">config</span><span>.{</span><span class="type-name">Config</span><span>, </span><span class="type-name">ConfigFactory</span><span>}
+
+</span><span class="comment">// The settings class, wrapping Typesafe Config
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Settings</span><span>(</span><span class="identifier">config</span><span>: </span><span class="type-name">Config</span><span>) {
+  </span><span class="keyword">object</span><span> </span><span class="identifier">http</span><span> {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">apiKey</span><span> = </span><span class="identifier">config</span><span>.</span><span class="identifier">getString</span><span>(</span><span class="string-literal">&quot;http.api-key&quot;</span><span>)
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">timeoutSeconds</span><span> = </span><span class="identifier">config</span><span>.</span><span class="identifier">getInt</span><span>(</span><span class="string-literal">&quot;http.timeout-seconds&quot;</span><span>)
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">port</span><span> = </span><span class="identifier">config</span><span>.</span><span class="identifier">getInt</span><span>(</span><span class="string-literal">&quot;http.port&quot;</span><span>)
+  }
+}
+
+</span><span class="comment">// The configuration file, here represented in code
+</span><span class="keyword">val</span><span> </span><span class="identifier">config</span><span> =
+  </span><span class="type-name">ConfigFactory</span><span>.</span><span class="identifier">parseString</span><span>(
+    </span><span class="string-literal">&quot;&quot;&quot;
+      |http {
+      |  api-key = ${?API_KEY}
+      |  timeout-seconds = 10
+      |  port = 989
+      |}
+    &quot;&quot;&quot;</span><span>.</span><span class="identifier">stripMargin</span><span>
+  ).</span><span class="identifier">resolve</span><span>()
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">settings</span><span> = </span><span class="type-name">Settings</span><span>(</span><span class="identifier">config</span><span>)</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">show</span><span>(</span><span class="identifier">settings</span><span>)
+</span><span class="comment">// Settings(Config(SimpleConfigObject({&quot;http&quot;:{&quot;port&quot;:989,&quot;timeout-seconds&quot;:10}})))</span></code></pre>
+    <p>This is a tedious, error-prone process that rarely sees any testing efforts. <a href="https://github.com/pureconfig/pureconfig">PureConfig</a> (and other libraries, like <a href="https://github.com/47deg/case-classy">Case Classy</a>) were created to remove that boilerplate. Using macros and conventions, they inspect your configuration model (nested case classes) and generate the necessary configuration loading code. This eliminates a lot of errors typically associated with configuration loading. Following is an example of how you can load that very same configuration with PureConfig.</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">HttpSettings</span><span>(
+  </span><span class="identifier">apiKey</span><span>: </span><span class="type-name">String</span><span>,
+  </span><span class="identifier">timeoutSeconds</span><span>: </span><span class="type-name">Int</span><span>,
+  </span><span class="identifier">port</span><span>: </span><span class="type-name">Int</span><span>
+)
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Settings</span><span>(</span><span class="identifier">http</span><span>: </span><span class="type-name">HttpSettings</span><span>)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">settings</span><span> = </span><span class="identifier">pureconfig</span><span>.</span><span class="identifier">loadConfig</span><span>[</span><span class="type-name">Settings</span><span>](</span><span class="identifier">config</span><span>)</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">show</span><span>(</span><span class="identifier">settings</span><span>)
+</span><span class="comment">// Left(ConfigReaderFailures(KeyNotFound(&quot;http.api-key&quot;, None, Set()), List()))</span></code></pre>
+    
+    <h3 id="encoding-validation" class="section"><a class="anchor-link" href="#encoding-validation"><code class="fas fa-link fa-sm"></code></a>Encoding Validation</h3>
+    <p>In both previous examples, we do not check whether our configurations are valid to use with our application. In the case of Typesafe Config, we hit a runtime exception if the key is missing or if the type conversion fails, and in PureConfig&#39;s case, we will instead get a <code>ConfigReaderFailures</code>. But in neither case do we care what values are being loaded, as long as they can be converted to the appropriate types. For example, we might require a key of certain length and that it only contains certain characters, the timeout needs to be positive, and the port must be a non-system port number (value in the inclusive range between 1024 and 65535).</p>
+    <p>You could write an additional validation step to ensure the configuration is valid after it has been loaded -- which can be tedious to write and requires testing. One could also argue that the types of the configuration values are too permissive: why use <code>String</code> for the key if you do not accept all <code>String</code> values? And why use an <code>Int</code> for timeout and port, if you only allow a limited subset of values?</p>
+    <p>We could write these custom types ourselves, including the validation logic, and tell PureConfig how to load them -- which would be tedious to write for many types and would require testing. Another alternative is to use <a href="https://github.com/fthomas/refined">refined</a>, which allows you to do type-level refinements (apply predicates) to types. I found this approach so useful that I wrote a small integration between PureConfig and refined at the end of last year (see <a href="https://blog.vlovgr.se/posts/2016-12-24-refined-configuration.html">blog post</a>), so that PureConfig can now load refined&#39;s types.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">eu</span><span>.</span><span class="identifier">timepit</span><span>.</span><span class="identifier">refined</span><span>.</span><span class="identifier">api</span><span>.</span><span class="type-name">Refined</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">eu</span><span>.</span><span class="identifier">timepit</span><span>.</span><span class="identifier">refined</span><span>.</span><span class="identifier">numeric</span><span>.</span><span class="type-name">Interval</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">eu</span><span>.</span><span class="identifier">timepit</span><span>.</span><span class="identifier">refined</span><span>.</span><span class="identifier">pureconfig</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">eu</span><span>.</span><span class="identifier">timepit</span><span>.</span><span class="identifier">refined</span><span>.</span><span class="identifier">string</span><span>.</span><span class="type-name">MatchesRegex</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">eu</span><span>.</span><span class="identifier">timepit</span><span>.</span><span class="identifier">refined</span><span>.</span><span class="identifier">types</span><span>.</span><span class="identifier">numeric</span><span>.</span><span class="type-name">PosInt</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">eu</span><span>.</span><span class="identifier">timepit</span><span>.</span><span class="identifier">refined</span><span>.</span><span class="type-name">W</span><span>
+
+</span><span class="keyword">type</span><span> </span><span class="type-name">ApiKey</span><span> = </span><span class="type-name">String</span><span> </span><span class="type-name">Refined</span><span> </span><span class="type-name">MatchesRegex</span><span>[</span><span class="type-name">W</span><span>.</span><span class="identifier">`&quot;[a-zA-Z0-9]{25,40}&quot;`</span><span>.</span><span class="type-name">T</span><span>]
+
+</span><span class="keyword">type</span><span> </span><span class="type-name">NonSystemPort</span><span> = </span><span class="type-name">Int</span><span> </span><span class="type-name">Refined</span><span> </span><span class="type-name">Interval</span><span>.</span><span class="type-name">Closed</span><span>[</span><span class="type-name">W</span><span>.</span><span class="identifier">`1024`</span><span>.</span><span class="type-name">T</span><span>, </span><span class="type-name">W</span><span>.</span><span class="identifier">`65535`</span><span>.</span><span class="type-name">T</span><span>]
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">HttpSettings</span><span>(
+  </span><span class="identifier">apiKey</span><span>: </span><span class="type-name">ApiKey</span><span>,
+  </span><span class="identifier">timeoutSeconds</span><span>: </span><span class="type-name">PosInt</span><span>,
+  </span><span class="identifier">port</span><span>: </span><span class="type-name">NonSystemPort</span><span>
+)
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Settings</span><span>(</span><span class="identifier">http</span><span>: </span><span class="type-name">HttpSettings</span><span>)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">settings</span><span> = </span><span class="identifier">pureconfig</span><span>.</span><span class="identifier">loadConfig</span><span>[</span><span class="type-name">Settings</span><span>](</span><span class="identifier">config</span><span>)</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">show</span><span>(</span><span class="identifier">settings</span><span>)
+</span><span class="comment">// Left(
+//   ConfigReaderFailures(
+//     KeyNotFound(&quot;http.api-key&quot;, None, Set()),
+//     List(
+//       CannotConvert(
+//         &quot;989&quot;,
+//         &quot;eu.timepit.refined.api.Refined[Int,eu.timepit.refined.boolean.And[eu.timepit.refined.boolean.Not[eu.timepit.refined.numeric.Less[Int(1024)]],eu.timepit.refined.boolean.Not[eu.timepit.refined.numeric.Greater[Int(65535)]]]]&quot;,
+//         &quot;Left predicate of (!(989 &lt; 1024) &amp;&amp; !(989 &gt; 65535)) failed: Predicate (989 &lt; 1024) did not fail.&quot;,
+//         None,
+//         &quot;http.port&quot;
+//       )
+//     )
+//   )
+// )</span></code></pre>
+    <p>As you can see in the example above, refined already contains type aliases for many common refinement types, like <code>PosInt</code> (for <code>Int</code> values greater than zero). You can also easily define your own predicates, like the one for the key and port. The <code>W</code> here is a shorthand for <a href="https://github.com/milessabin/shapeless">shapeless</a>&#39; <code>Witness</code>: a way to encode literal-based singleton types (essentially, values on the type-level). If you&#39;re using <a href="https://typelevel.org/scala/">Typelevel Scala</a> with the <code>-Yliteral-types</code> flag, you can write values directly in the type declaration, without having to use <code>Witness</code>.</p>
+    <p>If you&#39;re not convinced configurations need to be validated, I can recommend reading the paper <a href="https://www.usenix.org/system/files/conference/osdi16/osdi16-xu.pdf">Early Detection of Configuration Errors to Reduce Failure Damage</a>, and to read through the slides of Leif Wickland&#39;s (one of the authors behind PureConfig) recent presentation <a href="http://leifwickland.github.io/presentations/configBomb/">Defusing the Configuration Time Bomb</a> on the subject.</p>
+    <p>In many ways, think of configurations as user input -- would you happily accept any values provided to your application from its users? Probably not: you would validate the input, and sanitize it if possible. Think about configurations in the same way, except that the user here might happen to be a developer of the application. The key here, as discussed in the paper linked above, is to check that your configuration is valid as soon as possible, ideally at compile-time, or as soon as the application starts. We want to avoid situations where we&#39;re running the application and suddenly discover that configuration values are invalid or cannot be loaded -- or worse, continue running with an invalid configuration, not to discover issues until much later on.</p>
+    
+    <h3 id="improving-compile-time-safety" class="section"><a class="anchor-link" href="#improving-compile-time-safety"><code class="fas fa-link fa-sm"></code></a>Improving Compile-time Safety</h3>
+    <p>We&#39;ve now got a way to encode validation in the types of our configurations, and a boilerplate-free way of loading values of those types from configuration files -- is there still room for improvement? To answer that question, we first need to ask why we are using configuration files in the first place.</p>
+    <p>Whether you thought about it or not, the main reason for using configuration files is so that we can change settings without having to recompile the software. In my experience, most developers default to using configuration files, and almost always change values by pushing commits to a version control repository. This is followed by a new release of the software, either manually or via a <a href="https://www.agilealliance.org/glossary/continuous-integration">continuous integration</a> system. In scenarios like this, and in general when it&#39;s easy to change and release software (particularly when employing <a href="https://www.agilealliance.org/glossary/continuous-deployment/">continuous deployment</a> practices), configuration files are not used for the benefit of being able to change values without recompile.</p>
+    <p>In such cases, why are we not writing the configurations directly in source code? Christopher Vogt has written an excellent <a href="https://medium.com/@cvogt/scala-as-a-configuration-language-f075b058a660">blog post</a> (and given a <a href="https://www.youtube.com/watch?v=ox4IhIL6ojg">presentation</a>) on the subject. The tricky part here is managing values which need to be dynamic in the environment (like the port to bind) and are secret (like passwords and keys). Depending on your requirements and preferences, you more or less have two alternatives.</p>
+    <ul>
+      <li>
+        <p>If you know which environments your application will run in, and what the configuration values will be in those environments, you can just include the configurations in your application code (if it has no secrets), or store, compile, and bundle the configuration separately. If you have a requirement that secrets shouldn&#39;t touch persistent storage, this might not be a feasible alternative. You might also appreciate the fact that all code relating to your application is in the same version control repository and gets compiled together, in which case this approach might not be suitable.</p>
+      </li>
+      <li>
+        <p>Alternatively, you can include the configuration in your application, but load secrets and values which need to be dynamic from the environment during runtime. This is necessary when configuration values cannot be determined beforehand -- because you do not know what environment your application will run in, or if you use a vault (like <a href="https://github.com/fugue/credstash">credstash</a>, for example) or a configuration service (like <a href="https://zookeeper.apache.org">ZooKeeper</a>, for example) -- or if you prefer having your configuration together with your application code and in the same version control repository.</p>
+      </li>
+    </ul>
+    <p>In this post, we&#39;ll only focus on the latter case. While it’s possible to not use any libraries in the latter case, loading values from the environment typically means dealing with: different environments and configuration sources, type conversions, error handling, and validation. This is where <a href="https://cir.is">Ciris</a> comes in: a small library, dependency-free at its core, helping you to deal with all of that more easily.</p>
+    
+    <h3 id="introducing-ciris" class="section"><a class="anchor-link" href="#introducing-ciris"><code class="fas fa-link fa-sm"></code></a>Introducing Ciris</h3>
+    <p>Imagine for the moment that no part of your configuration is secret and that your application only ever runs in one environment. You can then just write your configuration in code.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">eu</span><span>.</span><span class="identifier">timepit</span><span>.</span><span class="identifier">refined</span><span>.</span><span class="identifier">auto</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Config</span><span>(
+  </span><span class="identifier">apiKey</span><span>: </span><span class="type-name">ApiKey</span><span>,
+  </span><span class="identifier">timeoutSeconds</span><span>: </span><span class="type-name">PosInt</span><span>,
+  </span><span class="identifier">port</span><span>: </span><span class="type-name">NonSystemPort</span><span>
+)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">config</span><span> =
+  </span><span class="type-name">Config</span><span>(
+    </span><span class="identifier">apiKey</span><span> = </span><span class="string-literal">&quot;RacrqvWjuu4KVmnTG9b6xyZMTP7jnX&quot;</span><span>,
+    </span><span class="identifier">timeoutSeconds</span><span> = </span><span class="number-literal">10</span><span>,
+    </span><span class="identifier">port</span><span> = </span><span class="number-literal">4000</span><span>
+  )</span></code></pre>
+    <p>You then realize that it&#39;s a bad idea to put the key in the source code, because source code can easily get into the wrong hands. You decide that you&#39;ll instead read an environment variable for the key. Since you want to make sure that your configuration is valid, you have used refinement types, so you&#39;ll have to make sure to check that the key conforms to the predicate. You would also welcome a helpful error message if the key is missing or invalid. This sounds like more work than it should be, so let&#39;s see how <a href="https://cir.is">Ciris</a> can help us.</p>
+    <p>Ciris method for loading configurations is <code>loadConfig</code> and it works in two steps: first define what to load, and then how to load the configuration. For reading a key from an environment variable, you can use <code>env[ApiKey](&quot;API_KEY&quot;)</code> which reads the environment variable <code>API_KEY</code> as an <code>ApiKey</code>. Ciris has a refined integration in a separate module, so you just need to add an appropriate import. Loading the configuration is then just a function accepting the loaded values as arguments.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">ciris</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">ciris</span><span>.</span><span class="identifier">refined</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">config</span><span> =
+  </span><span class="identifier">loadConfig</span><span>(
+    </span><span class="identifier">env</span><span>[</span><span class="type-name">ApiKey</span><span>](</span><span class="string-literal">&quot;API_KEY&quot;</span><span>)
+  ) { </span><span class="identifier">apiKey</span><span> =&gt;
+    </span><span class="type-name">Config</span><span>(
+      </span><span class="identifier">apiKey</span><span> = </span><span class="identifier">apiKey</span><span>,
+      </span><span class="identifier">timeoutSeconds</span><span> = </span><span class="number-literal">10</span><span>,
+      </span><span class="identifier">port</span><span> = </span><span class="number-literal">4000</span><span>
+    )
+  }</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">show</span><span>(</span><span class="identifier">config</span><span>)
+</span><span class="comment">// Left(ConfigErrors(MissingKey(API_KEY, Environment)))</span></code></pre>
+    <p>Ciris deals with type conversions, error handling, and error accumulation, so you can focus on your configuration. The <code>loadConfig</code> method returns an <code>Either[ConfigErrors, T]</code> instance back, where <code>T</code> is the result of your configuration loading function. You can retrieve the accumulated error messages by using <code>messages</code> on <code>ConfigErrors</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">show</span><span> { </span><span class="identifier">config</span><span>.</span><span class="identifier">left</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">messages</span><span>) }
+</span><span class="comment">// Left(Vector(&quot;Missing environment variable [API_KEY]&quot;))</span></code></pre>
+    <p>If we decided that the port needs to be dynamic as well, we can simply make that change. In the example below, we are using <code>prop</code> to read the <code>http.port</code> system property for the port to use. As you can see, you are free to mix configuration sources as you please. While we are reading environment variables and system properties in these examples, you could just as well use sources for some configuration services or vaults.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">config</span><span> =
+  </span><span class="identifier">loadConfig</span><span>(
+    </span><span class="identifier">env</span><span>[</span><span class="type-name">ApiKey</span><span>](</span><span class="string-literal">&quot;API_KEY&quot;</span><span>),
+    </span><span class="identifier">prop</span><span>[</span><span class="type-name">NonSystemPort</span><span>](</span><span class="string-literal">&quot;http.port&quot;</span><span>)
+  ) { (</span><span class="identifier">apiKey</span><span>, </span><span class="identifier">port</span><span>) =&gt;
+    </span><span class="type-name">Config</span><span>(
+      </span><span class="identifier">apiKey</span><span> = </span><span class="identifier">apiKey</span><span>,
+      </span><span class="identifier">timeoutSeconds</span><span> = </span><span class="number-literal">10</span><span>,
+      </span><span class="identifier">port</span><span> = </span><span class="identifier">port</span><span>
+    )
+  }</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">show</span><span> { </span><span class="identifier">config</span><span>.</span><span class="identifier">left</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">messages</span><span>) }
+</span><span class="comment">// Left(
+//   Vector(
+//     &quot;Missing environment variable [API_KEY]&quot;,
+//     &quot;Missing system property [http.port]&quot;
+//   )
+// )</span></code></pre>
+    <p>You might recognize the similarities between <code>loadConfig</code> and <code>ValidatedNel</code> with an <code>Apply</code> instance from <a href="https://typelevel.org/cats/">Cats</a>. That&#39;s because it&#39;s more or less how <code>loadConfig</code> works behind the scenes, except Ciris has its own custom implementation in order to be dependency-free in the core module.</p>
+    
+    <h4 id="multiple-environments" class="section"><a class="anchor-link" href="#multiple-environments"><code class="fas fa-link fa-sm"></code></a>Multiple Environments</h4>
+    <p>We still have to deal with multiple environments in our configuration, assuming there are differences between configurations, or how they are loaded, in the different environments. There are several ways you can do this with Ciris -- one way is to define an enumeration with <a href="https://github.com/lloydmeta/enumeratum">enumeratum</a> and load values of that enumeration. Let&#39;s say we want to use a default configuration when running the application locally, but want to keep the key and port dynamic in the other environments (testing and production). We start by defining an enumeration of the different environments.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">_root_</span><span>.</span><span class="identifier">enumeratum</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="identifier">environments</span><span> {
+  </span><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">AppEnvironment</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">EnumEntry</span><span>
+  </span><span class="keyword">object</span><span> </span><span class="type-name">AppEnvironment</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Enum</span><span>[</span><span class="type-name">AppEnvironment</span><span>] {
+    </span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">Local</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">AppEnvironment</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">Testing</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">AppEnvironment</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">Production</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">AppEnvironment</span><span>
+
+    </span><span class="keyword">val</span><span> </span><span class="identifier">values</span><span> = </span><span class="identifier">findValues</span><span>
+  }
+}</span></code></pre>
+    <p>We can use the <code>withValue</code> method to define a requirement on a configuration value in order to be able to load our configuration. It works just like <code>loadConfig</code>, except it wraps your <code>loadConfig</code> statements (think of it as <code>flatMap</code>, while <code>loadConfig</code> is <code>map</code>). If no environment was specified in the environment variable <code>APP_ENV</code> or if it was set to <code>Local</code>, we will use a default configuration. We&#39;ll load the configuration just like before for any other valid environments (testing and production).</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">environments</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">ciris</span><span>.</span><span class="identifier">enumeratum</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">config</span><span> =
+  </span><span class="identifier">withValue</span><span>(</span><span class="identifier">env</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">AppEnvironment</span><span>]](</span><span class="string-literal">&quot;APP_ENV&quot;</span><span>)) {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="type-name">AppEnvironment</span><span>.</span><span class="type-name">Local</span><span>) | </span><span class="type-name">None</span><span> =&gt;
+      </span><span class="identifier">loadConfig</span><span> {
+        </span><span class="type-name">Config</span><span>(
+          </span><span class="identifier">apiKey</span><span> = </span><span class="string-literal">&quot;RacrqvWjuu4KVmnTG9b6xyZMTP7jnX&quot;</span><span>,
+          </span><span class="identifier">timeoutSeconds</span><span> = </span><span class="number-literal">10</span><span>,
+          </span><span class="identifier">port</span><span> = </span><span class="number-literal">4000</span><span>
+        )
+      }
+
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt;
+      </span><span class="identifier">loadConfig</span><span>(
+        </span><span class="identifier">env</span><span>[</span><span class="type-name">ApiKey</span><span>](</span><span class="string-literal">&quot;API_KEY&quot;</span><span>),
+        </span><span class="identifier">prop</span><span>[</span><span class="type-name">NonSystemPort</span><span>](</span><span class="string-literal">&quot;http.port&quot;</span><span>)
+      ) { (</span><span class="identifier">apiKey</span><span>, </span><span class="identifier">port</span><span>) =&gt;
+        </span><span class="type-name">Config</span><span>(
+          </span><span class="identifier">apiKey</span><span> = </span><span class="identifier">apiKey</span><span>,
+          </span><span class="identifier">timeoutSeconds</span><span> = </span><span class="number-literal">10</span><span>,
+          </span><span class="identifier">port</span><span> = </span><span class="identifier">port</span><span>
+        )
+      }
+  }</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">show</span><span>(</span><span class="identifier">config</span><span>)
+</span><span class="comment">// Right(Config(RacrqvWjuu4KVmnTG9b6xyZMTP7jnX, 10, 4000))</span></code></pre>
+    <p>An alternative to the above is to have multiple entrypoints (<code>main</code> methods) in your application, each running the application with different configuration loading code (or using a default configuration) for the respective environment. Depending on how packaging and running of your application looks like across different environments, this may or may not be a suitable solution. Note that it&#39;s very much possible to mix these approaches, and you should strive to find what works best in your case.</p>
+    <pre><code class="nohighlight"><span class="comment">// Runs the application with the provided configuration
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">runApplication</span><span>(</span><span class="identifier">config</span><span>: </span><span class="type-name">Config</span><span>): </span><span class="type-name">Unit</span><span> = { </span><span class="comment">/* omitted */</span><span> }
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Local</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">main</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">Array</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">runApplication</span><span> {
+      </span><span class="type-name">Config</span><span>(
+        </span><span class="identifier">apiKey</span><span> = </span><span class="string-literal">&quot;RacrqvWjuu4KVmnTG9b6xyZMTP7jnX&quot;</span><span>,
+        </span><span class="identifier">timeoutSeconds</span><span> = </span><span class="number-literal">10</span><span>,
+        </span><span class="identifier">port</span><span> = </span><span class="number-literal">4000</span><span>
+      )
+    }
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">TestingOrProduction</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">main</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">Array</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">Unit</span><span> =
+    </span><span class="identifier">runApplication</span><span> {
+      </span><span class="keyword">val</span><span> </span><span class="identifier">config</span><span> =
+        </span><span class="identifier">loadConfig</span><span>(
+          </span><span class="identifier">env</span><span>[</span><span class="type-name">ApiKey</span><span>](</span><span class="string-literal">&quot;API_KEY&quot;</span><span>),
+          </span><span class="identifier">prop</span><span>[</span><span class="type-name">NonSystemPort</span><span>](</span><span class="string-literal">&quot;http.port&quot;</span><span>)
+        ) { (</span><span class="identifier">apiKey</span><span>, </span><span class="identifier">port</span><span>) =&gt;
+          </span><span class="type-name">Config</span><span>(
+            </span><span class="identifier">apiKey</span><span> = </span><span class="identifier">apiKey</span><span>,
+            </span><span class="identifier">timeoutSeconds</span><span> = </span><span class="number-literal">10</span><span>,
+            </span><span class="identifier">port</span><span> = </span><span class="identifier">port</span><span>
+          )
+        }
+
+      </span><span class="identifier">config</span><span>.</span><span class="identifier">fold</span><span>(
+        </span><span class="identifier">errors</span><span> =&gt; </span><span class="keyword">throw</span><span> </span><span class="keyword">new</span><span> </span><span class="type-name">IllegalArgumentException</span><span>(</span><span class="string-literal">s&quot;Unable to load configuration: </span><span class="substitution">${errors.messages}</span><span class="string-literal">&quot;</span><span>),
+        </span><span class="identifier">identity</span><span>
+      )
+    }
+}</span></code></pre>
+    
+    <h4 id="testing-configurations" class="section"><a class="anchor-link" href="#testing-configurations"><code class="fas fa-link fa-sm"></code></a>Testing Configurations</h4>
+    <p>Writing your configurations in Scala means you have the flexibility to work with them as you want. You&#39;re no longer limited to what can be done with configuration files. Sharing configurations between your application and tests is also very straightforward -- simply make the configuration loading function (and the default configuration) available for the tests.</p>
+    <pre><code class="nohighlight"><span class="comment">// This can now be accessed from the tests
+</span><span class="keyword">val</span><span> </span><span class="identifier">defaultConfig</span><span> =
+  </span><span class="type-name">Config</span><span>(
+    </span><span class="identifier">apiKey</span><span> = </span><span class="string-literal">&quot;RacrqvWjuu4KVmnTG9b6xyZMTP7jnX&quot;</span><span>,
+    </span><span class="identifier">timeoutSeconds</span><span> = </span><span class="number-literal">10</span><span>,
+    </span><span class="identifier">port</span><span> = </span><span class="number-literal">4000</span><span>
+  )
+
+</span><span class="comment">// This can now be accessed from the tests
+</span><span class="keyword">val</span><span> </span><span class="identifier">configWith</span><span> =
+  (</span><span class="identifier">apiKey</span><span>: </span><span class="type-name">ApiKey</span><span>, </span><span class="identifier">port</span><span>: </span><span class="type-name">NonSystemPort</span><span>) =&gt;
+    </span><span class="type-name">Config</span><span>(
+      </span><span class="identifier">apiKey</span><span> = </span><span class="identifier">apiKey</span><span>,
+      </span><span class="identifier">timeoutSeconds</span><span> = </span><span class="number-literal">10</span><span>,
+      </span><span class="identifier">port</span><span> = </span><span class="identifier">port</span><span>
+    )
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">config</span><span> =
+  </span><span class="identifier">withValue</span><span>(</span><span class="identifier">env</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">AppEnvironment</span><span>]](</span><span class="string-literal">&quot;APP_ENV&quot;</span><span>)) {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="type-name">AppEnvironment</span><span>.</span><span class="type-name">Local</span><span>) | </span><span class="type-name">None</span><span> =&gt;
+      </span><span class="identifier">loadConfig</span><span>(</span><span class="identifier">defaultConfig</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt;
+      </span><span class="identifier">loadConfig</span><span>(
+        </span><span class="identifier">env</span><span>[</span><span class="type-name">ApiKey</span><span>](</span><span class="string-literal">&quot;API_KEY&quot;</span><span>),
+        </span><span class="identifier">prop</span><span>[</span><span class="type-name">NonSystemPort</span><span>](</span><span class="string-literal">&quot;http.port&quot;</span><span>)
+      )(</span><span class="identifier">configWith</span><span>)
+  }</span></code></pre>
+    <p>If you really want to unit test the configuration loading as well, you can do so with minor rewrites. Currently, we depend on some fixed configuration sources for environment variables and system properties (technically, system properties are mutable), but if we instead pass sources (<code>ConfigSource</code>s) as arguments, we can read values from those sources using the <code>read</code> method.</p>
+    <p>The <code>read</code> method normally looks for an implicit <code>ConfigSource</code> to read from, which would have been perfect if we only used a single source. But since we have multiple sources here, we instead use <code>read</code> to redefine <code>env</code> and <code>prop</code> to read from the provided sources. <code>ConfigReader[T]</code> captures the ability to convert from <code>String</code> to <code>T</code>, where the <code>String</code> value has been read from a <code>ConfigSource</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">config</span><span>(
+  </span><span class="identifier">envs</span><span>: </span><span class="type-name">ConfigSource</span><span>[</span><span class="type-name">String</span><span>],
+  </span><span class="identifier">props</span><span>: </span><span class="type-name">ConfigSource</span><span>[</span><span class="type-name">String</span><span>]
+): </span><span class="type-name">Either</span><span>[</span><span class="type-name">ConfigErrors</span><span>, </span><span class="type-name">Config</span><span>] = {
+  </span><span class="comment">// Custom env which reads from envs
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">env</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">ConfigReader</span><span>](</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>) =
+    </span><span class="identifier">read</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">key</span><span>)(</span><span class="identifier">envs</span><span>, </span><span class="type-name">ConfigReader</span><span>[</span><span class="type-name">T</span><span>])
+
+  </span><span class="comment">// Custom prop which reads from props
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">prop</span><span>[</span><span class="type-name">T</span><span>: </span><span class="type-name">ConfigReader</span><span>](</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>) =
+    </span><span class="identifier">read</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">key</span><span>)(</span><span class="identifier">props</span><span>, </span><span class="type-name">ConfigReader</span><span>[</span><span class="type-name">T</span><span>])
+
+  </span><span class="identifier">withValue</span><span>(</span><span class="identifier">env</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">AppEnvironment</span><span>]](</span><span class="string-literal">&quot;APP_ENV&quot;</span><span>)) {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="type-name">AppEnvironment</span><span>.</span><span class="type-name">Local</span><span>) | </span><span class="type-name">None</span><span> =&gt;
+      </span><span class="identifier">loadConfig</span><span>(</span><span class="identifier">defaultConfig</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt;
+      </span><span class="identifier">loadConfig</span><span>(
+        </span><span class="identifier">env</span><span>[</span><span class="type-name">ApiKey</span><span>](</span><span class="string-literal">&quot;API_KEY&quot;</span><span>),
+        </span><span class="identifier">prop</span><span>[</span><span class="type-name">NonSystemPort</span><span>](</span><span class="string-literal">&quot;http.port&quot;</span><span>)
+      )(</span><span class="identifier">configWith</span><span>)
+  }
+}</span></code></pre>
+    <p>We&#39;ll then define a couple of helper methods for creating <code>ConfigSource</code>s from key-value pairs. The <code>ConfigSource</code> type parameter is the type of keys the source can read, which is <code>String</code> for both environment variables and system properties. The <code>ConfigKeyType</code> is basically the name of the key that can be read, for example <code>environment variable</code>. Below we&#39;re using predefined instances in the <code>ConfigKeyType</code> companion object.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">envs</span><span>(</span><span class="identifier">entries</span><span>: (</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>)*): </span><span class="type-name">ConfigSource</span><span>[</span><span class="type-name">String</span><span>] =
+  </span><span class="type-name">ConfigSource</span><span>.</span><span class="identifier">fromMap</span><span>(</span><span class="type-name">ConfigKeyType</span><span>.</span><span class="type-name">Environment</span><span>)(</span><span class="identifier">entries</span><span>.</span><span class="identifier">toMap</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">props</span><span>(</span><span class="identifier">entries</span><span>: (</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>)*): </span><span class="type-name">ConfigSource</span><span>[</span><span class="type-name">String</span><span>] =
+  </span><span class="type-name">ConfigSource</span><span>.</span><span class="identifier">fromMap</span><span>(</span><span class="type-name">ConfigKeyType</span><span>.</span><span class="type-name">Property</span><span>)(</span><span class="identifier">entries</span><span>.</span><span class="identifier">toMap</span><span>)</span></code></pre>
+    <p>We can test our <code>config</code> method using different combinations of environment variables and system properties. Note that <code>envs</code> and <code>props</code> have the same type, so if you want to avoid using them interchangeably, you can define custom wrapper types for them. We&#39;ll leave that out here for sake of simplicity. I&#39;ve found that it&#39;s not very common to read values from more than one <code>ConfigSource</code>, but as it&#39;s definitely possible, it can be worth making sure you do not mix them up.</p>
+    <pre><code class="nohighlight"><span class="identifier">show</span><span> { </span><span class="identifier">config</span><span>(</span><span class="identifier">envs</span><span>(), </span><span class="identifier">props</span><span>()) }
+</span><span class="comment">// Right(Config(RacrqvWjuu4KVmnTG9b6xyZMTP7jnX, 10, 4000))
+</span><span>
+</span><span class="identifier">show</span><span> {
+  </span><span class="identifier">config</span><span>(
+    </span><span class="identifier">envs</span><span>(</span><span class="string-literal">&quot;APP_ENV&quot;</span><span> -&gt; </span><span class="string-literal">&quot;Local&quot;</span><span>),
+    </span><span class="identifier">props</span><span>()
+  )
+}
+</span><span class="comment">// Right(Config(RacrqvWjuu4KVmnTG9b6xyZMTP7jnX, 10, 4000))
+</span><span>
+</span><span class="identifier">show</span><span> {
+  </span><span class="identifier">config</span><span>(
+    </span><span class="identifier">envs</span><span>(</span><span class="string-literal">&quot;APP_ENV&quot;</span><span> -&gt; </span><span class="string-literal">&quot;QA&quot;</span><span>),
+    </span><span class="identifier">props</span><span>()
+  ).</span><span class="identifier">left</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">messages</span><span>)
+}
+</span><span class="comment">// Left(
+//   Vector(
+//     &quot;Environment variable [APP_ENV] with value [QA] cannot be converted to type [$line34.$read$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$$iw$environments$AppEnvironment]&quot;
+//   )
+// )
+</span><span>
+</span><span class="identifier">show</span><span> {
+  </span><span class="identifier">config</span><span>(
+    </span><span class="identifier">envs</span><span>(</span><span class="string-literal">&quot;APP_ENV&quot;</span><span> -&gt; </span><span class="string-literal">&quot;Production&quot;</span><span>),
+    </span><span class="identifier">props</span><span>()
+  ).</span><span class="identifier">left</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">messages</span><span>)
+}
+</span><span class="comment">// Left(
+//   Vector(
+//     &quot;Missing environment variable [API_KEY]&quot;,
+//     &quot;Missing system property [http.port]&quot;
+//   )
+// )
+</span><span>
+</span><span class="identifier">show</span><span> {
+  </span><span class="identifier">config</span><span>(
+    </span><span class="identifier">envs</span><span>(
+      </span><span class="string-literal">&quot;APP_ENV&quot;</span><span> -&gt; </span><span class="string-literal">&quot;Production&quot;</span><span>,
+      </span><span class="string-literal">&quot;API_KEY&quot;</span><span> -&gt; </span><span class="string-literal">&quot;changeme&quot;</span><span>
+    ),
+    </span><span class="identifier">props</span><span>()
+  ).</span><span class="identifier">left</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">messages</span><span>)
+}
+</span><span class="comment">// Left(
+//   Vector(
+//     &quot;Environment variable [API_KEY] with value [changeme] cannot be converted to type [eu.timepit.refined.api.Refined[String,eu.timepit.refined.string.MatchesRegex[java.lang.String(\&quot;[a-zA-Z0-9]{25,40}\&quot;)]]]: Predicate failed: \&quot;changeme\&quot;.matches(\&quot;[a-zA-Z0-9]{25,40}\&quot;).&quot;,
+//     &quot;Missing system property [http.port]&quot;
+//   )
+// )
+</span><span>
+</span><span class="identifier">show</span><span> {
+  </span><span class="identifier">config</span><span>(
+    </span><span class="identifier">envs</span><span>(
+      </span><span class="string-literal">&quot;APP_ENV&quot;</span><span> -&gt; </span><span class="string-literal">&quot;Production&quot;</span><span>,
+      </span><span class="string-literal">&quot;API_KEY&quot;</span><span> -&gt; </span><span class="string-literal">&quot;X9aKACPtircCrrFKYhwPr7fXx8srow&quot;</span><span>
+    ),
+    </span><span class="identifier">props</span><span>()
+  ).</span><span class="identifier">left</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">messages</span><span>)
+}
+</span><span class="comment">// Left(Vector(&quot;Missing system property [http.port]&quot;))
+</span><span>
+</span><span class="identifier">show</span><span> {
+  </span><span class="identifier">config</span><span>(
+    </span><span class="identifier">envs</span><span>(
+      </span><span class="string-literal">&quot;APP_ENV&quot;</span><span> -&gt; </span><span class="string-literal">&quot;Production&quot;</span><span>,
+      </span><span class="string-literal">&quot;API_KEY&quot;</span><span> -&gt; </span><span class="string-literal">&quot;X9aKACPtircCrrFKYhwPr7fXx8srow&quot;</span><span>
+    ),
+    </span><span class="identifier">props</span><span>(</span><span class="string-literal">&quot;http.port&quot;</span><span> -&gt; </span><span class="string-literal">&quot;900&quot;</span><span>)
+  ).</span><span class="identifier">left</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">messages</span><span>)
+}
+</span><span class="comment">// Left(
+//   Vector(
+//     &quot;System property [http.port] with value [900] cannot be converted to type [eu.timepit.refined.api.Refined[Int,eu.timepit.refined.numeric.Interval.Closed[Int(1024),Int(65535)]]]: Left predicate of (!(900 &lt; 1024) &amp;&amp; !(900 &gt; 65535)) failed: Predicate (900 &lt; 1024) did not fail.&quot;
+//   )
+// )
+</span><span>
+</span><span class="identifier">show</span><span> {
+  </span><span class="identifier">config</span><span>(
+    </span><span class="identifier">envs</span><span>(
+      </span><span class="string-literal">&quot;APP_ENV&quot;</span><span> -&gt; </span><span class="string-literal">&quot;Production&quot;</span><span>,
+      </span><span class="string-literal">&quot;API_KEY&quot;</span><span> -&gt; </span><span class="string-literal">&quot;X9aKACPtircCrrFKYhwPr7fXx8srow&quot;</span><span>
+    ),
+    </span><span class="identifier">props</span><span>(</span><span class="string-literal">&quot;http.port&quot;</span><span> -&gt; </span><span class="string-literal">&quot;4000&quot;</span><span>)
+  )
+}
+</span><span class="comment">// Right(Config(X9aKACPtircCrrFKYhwPr7fXx8srow, 10, 4000))</span></code></pre>
+    <p>Finally, when running the application, simply provide the actual <code>ConfigSource</code>s for environment variables and system properties.</p>
+    <pre><code class="nohighlight"><span class="identifier">show</span><span> { </span><span class="identifier">config</span><span>(</span><span class="type-name">ConfigSource</span><span>.</span><span class="type-name">Environment</span><span>, </span><span class="type-name">ConfigSource</span><span>.</span><span class="type-name">Properties</span><span>) }
+</span><span class="comment">// Right(Config(RacrqvWjuu4KVmnTG9b6xyZMTP7jnX, 10, 4000))</span></code></pre>
+    
+    <h3 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h3>
+    <p>In this blog post, we&#39;ve seen how we can make the configuration loading process, with configuration files, less error-prone, by eliminating the boilerplate code with <a href="https://github.com/pureconfig/pureconfig">PureConfig</a>, and encoding validation with <a href="https://github.com/fthomas/refined">refined</a> -- seeing how the two libraries can work together seamlessly.</p>
+    <p>We&#39;ve also identified cases where we can use Scala as a configuration language, seeing that it&#39;s particularly suitable in cases where it&#39;s easy to change and deploy software. We&#39;ve introduced the challenge of loading configuration values from the environment and seen how <a href="https://cir.is">Ciris</a> can help you with that, letting you focus on the configuration. We&#39;ve seen that Scala configurations can provide more compile-time safety and flexibility than traditional configurations with configuration files.</p>
+    <p>If you&#39;re looking for more information on Ciris, the project&#39;s website (<a href="https://cir.is"><a href="https://cir.is">https://cir.is</a></a>) is a good start.<br>
+    There&#39;s also a <a href="https://cir.is/docs/basics">usage guide</a> and <a href="https://cir.is/api">API documentation</a> which expands on what&#39;s been discussed here.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/vlovgr.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Viktor Lövgren</strong>
+              
+              <br />
+              Viktor is a Software engineer at Ovo Energy in London, working on the platform powering energy meter readings and consumption data. He’s an advocate of strongly typed functional programming, and Scala in particular, which has been his professional focus the past three years.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/vlovgr">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

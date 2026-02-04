@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Product with Serializable</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Product with Serializable</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Cody Allen<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on May 9, 2018
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="product-with-serializable" class="title">Product with Serializable</h1>
+    <p>A somewhat common Scala idiom is to make an <code>abstract</code> type extend <code>Product with Serializable</code>. There isn&#39;t an obvious reason to do this, and people have asked me a number of times why I&#39;ve done this. While I don&#39;t think that <code>Product</code> or <code>Serializable</code> are particularly good abstractions, there&#39;s a reason that I extend them.</p>
+    <p>Let&#39;s say that I&#39;m writing a simple enum-like <code>Status</code> type:</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">EnumExample1</span><span> {
+  </span><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Status</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">Pending</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Status</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">InProgress</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Status</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">Finished</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Status</span><span>
+}</span></code></pre>
+    <p>Now let&#39;s create a <code>Set</code> of statuses that represent incomplete items:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="type-name">EnumExample1</span><span>.</span><span class="identifier">_</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">incomplete</span><span> = </span><span class="type-name">Set</span><span>(</span><span class="type-name">Pending</span><span>, </span><span class="type-name">InProgress</span><span>)
+</span><span class="comment">// incomplete: scala.collection.immutable.Set[Product with Serializable with EnumExample1.Status] = Set(Pending, InProgress)</span></code></pre>
+    <p>Here, I didn&#39;t give in explicit return type to <code>incomplete</code> and you may have noticed that the compiler inferred a somewhat bizarre one: <code>Set[Product with Serializable with Status]</code>. Why is that?</p>
+    <p>The compiler generally tries to infer the most specific type possible. Usually this makes sense. If you write <code>val x = 3</code> you probably don&#39;t want it to infer <code>val x: Any = 3</code>. And in the example above, I didn&#39;t want the return type for <code>incomplete</code> to be inferred as <code>Any</code> or even <code>Set[Any]</code>. However, the compiler was a bit <em>too</em> clever and realized that not only is every item in the set an instance of <code>Status</code>, they are also instances of <code>Product</code> and <code>Serializable</code> since every <code>case object</code> (and <code>case class</code>) automatically extends <code>Product</code> and <code>Serializable</code>. Therefore, when it calculates the least upper bound (LUB) of the types in the set, it comes up with <code>Product with Serializable with Status</code>.</p>
+    <p>While there&#39;s nothing inherently wrong with the return type of <code>Product with Serializable with Status</code>, it is verbose, it wasn&#39;t what I intended, and in certain situations it might cause inference issues. Luckily there&#39;s a simple workaround to get the inferred type that I want:</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">EnumExample2</span><span> {
+  </span><span class="comment">// note the `extends` addition here
+</span><span>  </span><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Status</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Product</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">Serializable</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">Pending</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Status</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">InProgress</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Status</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">Finished</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Status</span><span>
+}</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="type-name">EnumExample2</span><span>.</span><span class="identifier">_</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">incomplete</span><span> = </span><span class="type-name">Set</span><span>(</span><span class="type-name">Pending</span><span>, </span><span class="type-name">InProgress</span><span>)
+</span><span class="comment">// incomplete: scala.collection.immutable.Set[EnumExample2.Status] = Set(Pending, InProgress)</span></code></pre>
+    <p>Now since <code>Status</code> itself already includes <code>Product</code> and <code>Serializable</code>, <code>Status</code> is the LUB type of <code>Pending</code>, <code>InProgress</code>, and <code>Finished</code>.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/ceedubs.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Cody Allen</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/ceedubs">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

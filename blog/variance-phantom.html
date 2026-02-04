@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Choosing variance for a phantom type</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Choosing variance for a phantom type</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on September 19, 2016
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="choosing-variance-for-a-phantom-type" class="title">Choosing variance for a phantom type</h1>
+    <p>When you use a type parameter to abstract over actual data in your
+    ADT, there is typically only one
+    <a href="variance-and-functors.html">variance</a> that makes
+    sense, if you choose to incorporate subtyping into your designs at
+    all. This is
+    <a href="liskov_lifting.html#parametrically-sound-covariance">the natural, “parametrically sound” variance</a>.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyModel</span><span>[</span><span class="type-name">P</span><span>, </span><span class="type-name">I</span><span>, -</span><span class="type-name">T</span><span>, +</span><span class="type-name">V</span><span>]
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Running</span><span>[</span><span class="type-name">I</span><span>, </span><span class="type-name">T</span><span>, </span><span class="type-name">V</span><span>](
+  </span><span class="identifier">run</span><span>: (</span><span class="type-name">I</span><span>, </span><span class="type-name">T</span><span>) =&gt; </span><span class="type-name">V</span><span>
+) </span><span class="keyword">extends</span><span> </span><span class="type-name">MyModel</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">I</span><span>, </span><span class="type-name">T</span><span>, </span><span class="type-name">V</span><span>]
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Inject</span><span>[</span><span class="type-name">I</span><span>](
+  </span><span class="identifier">config</span><span>: </span><span class="type-name">I</span><span>
+) </span><span class="keyword">extends</span><span> </span><span class="type-name">MyModel</span><span>[</span><span class="type-name">Int</span><span>, </span><span class="type-name">I</span><span>, </span><span class="type-name">Any</span><span>, </span><span class="type-name">Nothing</span><span>]</span></code></pre>
+    <p>There are only four interesting possibilities, each of which is
+    illustrated above.</p>
+    <ol class="arabic">
+      <li><code>V</code> occurs in only covariant positions, so can be marked covariant.</li>
+      <li><code>T</code> occurs in only contravariant positions, so can be marked
+      contravariant.</li>
+      <li><code>I</code> occurs in a pattern that meets neither of standards 1 and 2, so
+      may only be marked invariant, while still making sense.</li>
+      <li><code>P</code> meets <em>both</em> standards 1 and 2, so…now what?</li>
+    </ol>
+    <p>The fourth case is interesting to me, firstly, because the design of
+    variance in Scala has not accounted for it; it is “phantom”,
+    <a href="variance-and-functors.html#one-more-thing">the missing fourth variance</a>.
+    I like to write it as I did in
+    <a href="https://failex.blogspot.com/2016/09/the-missing-diamond-of-scala-variance.html">“The missing diamond of Scala variance”</a>:</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyModel</span><span>[👻</span><span class="type-name">P</span><span>, </span><span class="type-name">I</span><span>, -</span><span class="type-name">T</span><span>, +</span><span class="type-name">V</span><span>]</span></code></pre>
+    <p>Second, and more practically, it illuminates the role of variance in
+    pattern matching in a way that can be difficult to see with that
+    confusing data in the way.</p>
+    
+    <h2 id="it-can-be-covariant" class="section"><a class="anchor-link" href="#it-can-be-covariant"><code class="fas fa-link fa-sm"></code></a>It can be covariant</h2>
+    <p>The rule for a type parameter being parametrically&nbsp;covariant says we
+    have to look at all the positions in the data where the type parameter
+    occurs; if every one of them is a covariant position, then the type
+    parameter may be marked covariant. Consider a simplified version of
+    <code>MyModel</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Gimme</span><span>[</span><span class="type-name">P</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">AStr</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Gimme</span><span>[</span><span class="type-name">String</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">AnInt</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Gimme</span><span>[</span><span class="type-name">Int</span><span>]</span></code></pre>
+    <p>The type parameter <code>P</code> appears in no positions, so it vacuously
+    satisfies the requirement “every occurrence is in covariant position”.</p>
+    <p>So let us mark <code>P</code> covariant.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Gimme</span><span>[+</span><span class="type-name">P</span><span>]
+</span><span class="comment">// otherwise the same</span></code></pre>
+    
+    <h2 id="it-can-be-contravariant" class="section"><a class="anchor-link" href="#it-can-be-contravariant"><code class="fas fa-link fa-sm"></code></a>It can be contravariant</h2>
+    <p>The rule for contravariance is also based on the occurrences of the
+    type parameter: if every occurrence is in contravariant position, then
+    the type parameter may be contravariant.</p>
+    <p>This rule seems to be contradict the rule for covariance, except that
+    all “every” statements are always true when the set under
+    consideration is empty.</p>
+    <ol class="arabic">
+      <li>Set <strong>S</strong> is empty.</li>
+      <li>Every element of set <strong>S</strong> is a dog.</li>
+      <li>No element of set <strong>S</strong> is a dog.</li>
+    </ol>
+    <p>2 and 3 can be true at the same time, but only if&nbsp;1&nbsp;is true, too. So
+    let us mark <code>P</code> contravariant, in a renamed ADT.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Gotme</span><span>[-</span><span class="type-name">P</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">UnStr</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Gotme</span><span>[</span><span class="type-name">String</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">UnInt</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Gotme</span><span>[</span><span class="type-name">Int</span><span>]</span></code></pre>
+    
+    <h2 id="the-usual-relationships" class="section"><a class="anchor-link" href="#the-usual-relationships"><code class="fas fa-link fa-sm"></code></a>The usual relationships</h2>
+    <p>Since you can choose any variance for phantom parameters, the
+    important question is: what kind of type relationships should
+    exist&nbsp;within my ADT?</p>
+    <p>At first, this seems to be merely a question of how values of <code>Gimme</code>
+    and <code>Gotme</code> types ought to widen.</p>
+    <ol class="arabic">
+      <li>Every <code>Gimme[Cat]</code> is a <code>Gimme[Animal]</code>, and</li>
+      <li>every <code>Gotme[Animal]</code> is a <code>Gotme[Cat]</code>. Moreover,</li>
+      <li>every <code>Gimme[Nothing]</code> is a <code>Gimme[T]</code> no matter what <code>T</code> is, and</li>
+      <li>every <code>Gotme[Any]</code> is a <code>Gotme[T]</code> no matter what <code>T</code> is.</li>
+    </ol>
+    <p>Obviously, if neither of these behaviors—the 1/3 nor the 2/4—is
+    desirable, you shouldn’t use variance. In my experience, this is the
+    case for most phantom&nbsp;types. If one is desirable, then it may be fine,
+    but there’s more to consider.</p>
+    
+    <h2 id="extracting-the-covariant" class="section"><a class="anchor-link" href="#extracting-the-covariant"><code class="fas fa-link fa-sm"></code></a>Extracting the covariant</h2>
+    <p>Pattern-matching on the covariant <code>Gimme</code> reveals fully safe type
+    information. Unlike <code>ClassTag</code>&nbsp;and&nbsp;<code>TypeTag</code>, which are egregiously
+    broken for this use case, this method of carrying type information
+    forward into runtime is closed and
+    <a href="https://imgur.com/a04WoHn">Scalazzi</a>-safe.</p>
+    <p>What type information is revealed?</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">gimme</span><span>[</span><span class="type-name">P</span><span>](</span><span class="identifier">g</span><span>: </span><span class="type-name">Gimme</span><span>[</span><span class="type-name">P</span><span>]): (</span><span class="type-name">P</span><span>, </span><span class="type-name">P</span><span>) = </span><span class="identifier">g</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">AStr</span><span> =&gt;
+    </span><span class="comment">// implicitly[P =:= String]   will fail
+</span><span>    </span><span class="comment">// implicitly[P &lt;:&lt; String]   will fail
+</span><span>    </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">String</span><span> &lt;:&lt; </span><span class="type-name">P</span><span>]
+    (</span><span class="string-literal">&quot;hi&quot;</span><span>, </span><span class="string-literal">&quot;there&quot;</span><span>)
+  </span><span class="keyword">case</span><span> </span><span class="type-name">AnInt</span><span> =&gt; (</span><span class="number-literal">42</span><span>, </span><span class="number-literal">84</span><span>)
+}</span></code></pre>
+    <p>If we left <code>Gimme</code>’s type parameter invariant, all three tests above
+    would succeed. In the case of this code, on the other hand,</p>
+    <ol class="arabic">
+      <li><code>AStr.type</code> (the type of <code>AStr</code>) widens to <code>Gimme[String]</code>,</li>
+      <li><code>Gimme[String]</code> can widen to <code>Gimme[P]</code> as long as <code>P</code> is a
+      <em>supertype</em> of <code>String</code>.</li>
+    </ol>
+    <p>Because we’re reversing this process, we have to assume that #2 could
+    have happened.</p>
+    <p>The expression <code>(&quot;hi&quot;, &quot;there&quot;)</code> still compiles because <code>P</code>, while
+    otherwise mysterious, <em>surely is</em> a supertype of <code>String</code>. So the two
+    <code>String</code>s can widen to <code>P</code>.</p>
+    <p>Things do not work out so well for all such functions.</p>
+    
+    <h2 id="extracting-the-contravariant" class="section"><a class="anchor-link" href="#extracting-the-contravariant"><code class="fas fa-link fa-sm"></code></a>Extracting the contravariant</h2>
+    <p>Matching on the contravariant <code>Gotme</code> likewise reveals fully safe
+    type&nbsp;information.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">mklength</span><span>[</span><span class="type-name">P</span><span>](</span><span class="identifier">g</span><span>: </span><span class="type-name">Gotme</span><span>[</span><span class="type-name">P</span><span>]): </span><span class="type-name">P</span><span> =&gt; </span><span class="type-name">Int</span><span> = </span><span class="identifier">g</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">UnStr</span><span> =&gt;
+    </span><span class="comment">// implicitly[P =:= String]   will fail
+</span><span>    </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">P</span><span> &lt;:&lt; </span><span class="type-name">String</span><span>]
+    </span><span class="comment">// implicitly[String &lt;:&lt; P]   will fail
+</span><span>    (</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>) =&gt; </span><span class="identifier">s</span><span>.</span><span class="identifier">length</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">UnInt</span><span> =&gt; </span><span class="identifier">identity</span><span>[</span><span class="type-name">Int</span><span>]
+}</span></code></pre>
+    <p>Now <code>P &lt;:&lt; String</code>, which failed for the covariant form but succeeds
+    for the contravariant. On the other hand, we lost <code>String &lt;:&lt; P</code>,
+    which only works for the covariant form. That’s because</p>
+    <ol class="arabic">
+      <li><code>UnStr.type</code> widens to <code>Gotme[String]</code>;</li>
+      <li><code>Gotme[String]</code> can widen to <code>Gotme[P]</code> as long as <code>P</code> is a
+      <em>subtype</em> of <code>String</code>.</li>
+    </ol>
+    <p>In the covariant form, we knew that every <code>String</code> was a <code>P</code>. In this
+    code, we know instead that every <code>P</code> is a <code>String</code>. Functions that can
+    handle any <code>String</code> are thus able to handle any <code>P</code>, logically, so the
+    type&nbsp;<code>String&nbsp;=&gt;&nbsp;Int</code> widens to <code>P&nbsp;=&gt;&nbsp;Int</code>.</p>
+    
+    <h2 id="extracting-the-invariant" class="section"><a class="anchor-link" href="#extracting-the-invariant"><code class="fas fa-link fa-sm"></code></a>Extracting the invariant</h2>
+    <p><code>gimme</code> would not work with the contravariant&nbsp;GADT; likewise,
+    <code>mklength</code> would not work with the covariant&nbsp;GADT.</p>
+    <p>An invariant GADT supports both, as well as some supported by
+    neither. For example, we could produce a <code>(P,&nbsp;P)&nbsp;=&gt;&nbsp;P</code> from a pattern
+    match. We can do this because the equivalent of <code>AStr</code> for invariant
+    <code>Gimme</code> tells us <code>P&nbsp;=&nbsp;String</code>, so all three <code>implicitly</code> checks
+    succeed.</p>
+    <p>From the behavior of pattern matching over these three sorts of GADTs,
+    I take away two lessons about variance in Scala.</p>
+    <ol class="arabic">
+      <li>It is impractical to infer variance in Scala, because you cannot
+      mechanically infer what sort of GADT pattern matching functions
+      ought to be possible to write.</li>
+      <li>The type flexibility of a generic type with variance comes at the
+      cost of decreased flexibility in pattern-matching
+      code. <a href="https://en.wikipedia.org/wiki/TANSTAAFL">There ain’t no such thing as a free lunch.</a></li>
+    </ol>
+    
+    <h2 id="a-gadt-skolem" class="section"><a class="anchor-link" href="#a-gadt-skolem"><code class="fas fa-link fa-sm"></code></a>A GADT skolem</h2>
+    <p>The “reverse widening” of pattern matching lifts&nbsp;the&nbsp;veil on one of
+    the more confusing references in type errors, a “GADT&nbsp;skolem”.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">uncons</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">as</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Option</span><span>[::[</span><span class="type-name">A</span><span>]] = </span><span class="keyword">as</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="identifier">c</span><span>@(</span><span class="identifier">_</span><span> :: </span><span class="identifier">_</span><span>) =&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">c</span><span>)
+  </span><span class="comment">//                      ↑
+</span><span>  </span><span class="comment">// [error] type mismatch;
+</span><span>  </span><span class="comment">//  found   : ::[?A1] where type ?A1 &lt;: A
+</span><span>  </span><span class="comment">//            (this is a GADT skolem)
+</span><span>  </span><span class="comment">//  required: ::[A]
+</span><span>  </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span><span>
+}</span></code></pre>
+    <p>These “GADT skolems” appear all the time in sensible, compiling
+    code. Take a <code>List</code> with some variance carelessly tossed in.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyList</span><span>[+</span><span class="type-name">A</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyCons</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">head</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">tail</span><span>: </span><span class="type-name">MyList</span><span>[</span><span class="type-name">A</span><span>])
+  </span><span class="keyword">extends</span><span> </span><span class="type-name">MyList</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">MyNil</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">MyList</span><span>[</span><span class="type-name">Nothing</span><span>]</span></code></pre>
+    <p>Constructing <code>MyCons[String]</code>, here’s what can happen.</p>
+    <ol class="arabic">
+      <li><code>MyCons[String]</code> widens to <code>MyList[String]</code>.</li>
+      <li><code>MyList[String]</code> can widen to <code>MyList[U]</code> for any supertype <code>U</code> of
+      <code>String</code>.</li>
+    </ol>
+    <p>So in this code, we cannot reverse <code>MyList[A]</code> down to
+    <code>MyCons[A]</code>. But we <em>can</em> get <code>MyList[L]</code>, where <code>L</code> is an otherwise
+    mysterious subtype of <code>A</code>. <code>L</code> is the GADT&nbsp;skolem, similar to <code>?A1</code> in
+    the above compiler error. The difference is that this code compiles.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">drop1</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">as</span><span>: </span><span class="type-name">MyList</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">MyList</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="keyword">as</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">MyNil</span><span> =&gt; </span><span class="type-name">MyNil</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">MyCons</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">tl</span><span>) =&gt; </span><span class="identifier">tl</span><span>
+    </span><span class="comment">// tl: MyList[L]  (L is a GADT skolem)
+</span><span>    </span><span class="comment">// L &lt;: A, therefore
+</span><span>    </span><span class="comment">// MyList[L] &lt;: MyList[A] by covariance
+</span><span>  }</span></code></pre>
+    
+    <h2 id="mylist-s-type-parameter-is-a-phantom" class="section"><a class="anchor-link" href="#mylist-s-type-parameter-is-a-phantom"><code class="fas fa-link fa-sm"></code></a><code>MyList</code>’s type parameter is a phantom</h2>
+    <p>We saw earlier that variance has a strong influence on the usability
+    of pattern matching. <code>MyList</code> has something important&nbsp;in common with
+    <code>Gimme</code>: the class definition does not use <code>A</code>, it only <em>defines</em>
+    it. So the scalac-enforced variance rules do not apply, and we can
+    make&nbsp;<code>MyList</code>&nbsp;contravariant instead.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">BadList</span><span>[-</span><span class="type-name">A</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">BadCons</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">head</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">tail</span><span>: </span><span class="type-name">BadList</span><span>[</span><span class="type-name">A</span><span>])
+  </span><span class="keyword">extends</span><span> </span><span class="type-name">BadList</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">BadNil</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">BadList</span><span>[</span><span class="type-name">Any</span><span>]</span></code></pre>
+    <p>Curiously, <code>drop1</code> still works.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">baddrop1</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">as</span><span>: </span><span class="type-name">BadList</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">BadList</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="keyword">as</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">BadNil</span><span> =&gt; </span><span class="type-name">BadNil</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">BadCons</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">tl</span><span>) =&gt; </span><span class="identifier">tl</span><span>
+    </span><span class="comment">// tl: BadList[U]  (U is a GADT skolem)
+</span><span>    </span><span class="comment">// A &lt;: U, therefore
+</span><span>    </span><span class="comment">// BadList[U] &lt;: BadList[A] by contravariance
+</span><span>  }</span></code></pre>
+    <p>Other obvious functions will not work for non-obvious reasons.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">badHeadOption</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">as</span><span>: </span><span class="type-name">BadList</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Option</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="keyword">as</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">BadNil</span><span> =&gt; </span><span class="type-name">None</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">BadCons</span><span>(</span><span class="identifier">hd</span><span>, </span><span class="identifier">_</span><span>) =&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">hd</span><span>)
+    </span><span class="comment">// [error] type mismatch;   ↑
+</span><span>    </span><span class="comment">//  found   : hd.type (with underlying type Any)
+</span><span>    </span><span class="comment">//  required: A
+</span><span>  }</span></code></pre>
+    <p>This fails because the skolem from a contravariant parameter is a
+    supertype instead of subtype. So</p>
+    <ol class="arabic">
+      <li><code>hd: U</code> (<code>U</code> is a GADT skolem),</li>
+      <li><code>A &lt;: U</code>,</li>
+      <li>we’re stuck; there is no <code>A</code> value.</li>
+    </ol>
+    <p>This is not to imply something as silly as “covariance&nbsp;good,
+    contravariance&nbsp;bad”; you can just as well get these errors by marking
+    a parameter covariant that can only meaningfully be marked
+    contravariant. If anything, contravariance is more important than
+    covariance. The problem you must face is that the compiler is less
+    helpful in determining what “meaningful” marking, if any, should be
+    applied.</p>
+    <p><code>MyModel</code>, from the beginning of this article, demonstrates three
+    situations in which each supported variance is natural. You may use it
+    as a guide, but its sanity is not compiler-checked. Your variances’
+    sanity, or lack thereof, only becomes apparent when implementing
+    practical functions over a datatype.</p>
+    
+    <h2 id="extracting-the-phantom" class="section"><a class="anchor-link" href="#extracting-the-phantom"><code class="fas fa-link fa-sm"></code></a>Extracting the phantom</h2>
+    <p>Suppose the phantom variance was defined, and we revisit the
+    <code>String</code>-and-<code>Int</code> GADT one more time.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">BooGimme</span><span>[👻</span><span class="type-name">P</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">BooStr</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">BooGimme</span><span>[</span><span class="type-name">String</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">BooInt</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">BooGimme</span><span>[</span><span class="type-name">Int</span><span>]</span></code></pre>
+    <p>The trouble with letting the compiler&nbsp;infer&nbsp;covariance or
+    contravariance is that, on the face of it, either is as good as the
+    other. With phantom, we choose both.</p>
+    <p>But this variance makes the GADT utterly useless. Consider how
+    <code>BooStr</code> becomes <code>BooGimme[P]</code>.</p>
+    <ol class="arabic">
+      <li><code>BooStr</code> widens to <code>BooGimme[String]</code>.</li>
+      <li><code>BooGimme[String]</code> can widen to <code>BooGimme[P]</code> where <code>P</code> is…oops,
+      there are no conditions this time! <code>P</code> can be anything at all and
+      the widen will still work.</li>
+    </ol>
+    <p>The match tells us nothing about the type&nbsp;parameter; all three of the
+    type relationship checks via <code>implicitly</code> from the examples above
+    fail. We maximize the flexibility of the type parameter at the cost of
+    making GADT pattern matching impossible.</p>
+    <p>Likewise, if you mark <code>MyList[A]</code>’s type parameter phantom, there are
+    no bounds on the GADT&nbsp;skolem, so there’s little you can do with the
+    elements of the list.</p>
+    
+    <h2 id="the-case-for-choosing-no-variance" class="section"><a class="anchor-link" href="#the-case-for-choosing-no-variance"><code class="fas fa-link fa-sm"></code></a>The case for choosing no variance</h2>
+    <p>My <code>scalac</code> error message pet peeve is the one suggesting that you
+    should add a variance annotation. This message treats the addition of
+    variance like a mechanical change: “if it compiles, it works”. On the
+    contrary, we have seen that</p>
+    <ol class="arabic">
+      <li>The flexibility of variance costs flexibility elsewhere;</li>
+      <li>the compiler cannot predict how this might harm your APIs’
+      practicality;</li>
+      <li>the semantics of pattern matching are more complex in the face of
+      variance.</li>
+    </ol>
+    <p>Even if variance is applicable to your datatype, these costs, and the
+    cost of the additional complexity burden, should give you pause. Yet,
+    I stand by the claim I made in “The missing&nbsp;diamond
+    of&nbsp;Scala&nbsp;variance”: subtyping is incomplete&nbsp;without variance, so if
+    variance is too complicated, so is subtyping.</p>
+    <p>I don’t think subtyping—and its necessary component, variance—are too
+    complex for the working programmer to understand. Indeed, it can be a
+    fascinating exercise, with plenty of practical implications.</p>
+    <p>But, to me, the consequence of working out such exercises is that
+    neither variance nor subtyping ought to be used in the design of
+    practical programs, especially when higher-kinded type parameters and
+    members are available, offering far more flexibility at a better
+    price. There is no need to struggle in the face of all-too-often
+    missing features.</p>
+    <p><em>This article was tested with Scala 2.11.8.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

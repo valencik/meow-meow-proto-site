@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Shared State in Functional Programming</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Shared State in Functional Programming</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Gabriel Volpe<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on June 7, 2018
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="shared-state-in-functional-programming" class="title">Shared State in Functional Programming</h1>
+    <p>Newcomers to functional programming (FP) are often very confused about the proper way to share state without breaking purity and end up having a mix of pure and impure code that <a href="https://queue.acm.org/detail.cfm?id=2611829">defeats the purpose</a> of having pure FP code in the first place.</p>
+    <p>This is the reason that has motivated me to write a beginner friendly guide :)</p>
+    
+    <h2 id="use-case" class="section"><a class="anchor-link" href="#use-case"><code class="fas fa-link fa-sm"></code></a>Use Case</h2>
+    <p>We have a program that runs three computations at the same time and updates the internal state to keep track of the
+    tasks that have been completed. When all the tasks are completed we request the final state and print it out.</p>
+    <p>You should get an output similar to the following one:</p>
+    <pre><code>Starting process #1
+Starting process #2
+Starting process #3
+  ... 3 seconds
+Done #2
+  ... 5 seconds
+Done #1
+  ... 10 seconds
+Done #3
+List(#2, #1, #3)</code></pre>
+    <p>We&#39;ll use the concurrency primitive [`Ref[IO, List<a href="../todo/">String</a>]`](<a href="https://typelevel.org/cats-effect/concurrency/ref.html">https://typelevel.org/cats-effect/concurrency/ref.html</a>) to represent our internal state because it&#39;s a great fit.</p>
+    
+    <h3 id="getting-started" class="section"><a class="anchor-link" href="#getting-started"><code class="fas fa-link fa-sm"></code></a>Getting started</h3>
+    <p>So this is how we might decide to start writing our code having some knowledge about <a href="https://typelevel.org/cats-effect/datatypes/io.html"><code>cats.effect.IO</code></a>:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="type-name">Ref</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">instances</span><span>.</span><span class="identifier">list</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="identifier">duration</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="identifier">sharedstate</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">IOApp</span><span> {
+
+  </span><span class="keyword">var</span><span> </span><span class="identifier">myState</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] = </span><span class="identifier">_</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">putStrLn</span><span>(</span><span class="identifier">str</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="type-name">IO</span><span>(</span><span class="identifier">println</span><span>(</span><span class="identifier">str</span><span>))
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">process1</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Starting process #1&quot;</span><span>) *&gt;
+      </span><span class="type-name">IO</span><span>.</span><span class="identifier">sleep</span><span>(</span><span class="number-literal">5</span><span>.</span><span class="identifier">seconds</span><span>) *&gt;
+      </span><span class="identifier">myState</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">_</span><span> ++ </span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;#1&quot;</span><span>)) *&gt;
+      </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Done #1&quot;</span><span>)
+  }
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">process2</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Starting process #2&quot;</span><span>) *&gt;
+      </span><span class="type-name">IO</span><span>.</span><span class="identifier">sleep</span><span>(</span><span class="number-literal">3</span><span>.</span><span class="identifier">seconds</span><span>) *&gt;
+      </span><span class="identifier">myState</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">_</span><span> ++ </span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;#2&quot;</span><span>)) *&gt;
+      </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Done #2&quot;</span><span>)
+  }
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">process3</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Starting process #3&quot;</span><span>) *&gt;
+      </span><span class="type-name">IO</span><span>.</span><span class="identifier">sleep</span><span>(</span><span class="number-literal">10</span><span>.</span><span class="identifier">seconds</span><span>) *&gt;
+      </span><span class="identifier">myState</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">_</span><span> ++ </span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;#3&quot;</span><span>)) *&gt;
+      </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Done #3&quot;</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">masterProcess</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="identifier">myState</span><span> = </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]](</span><span class="type-name">List</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">String</span><span>]).</span><span class="identifier">unsafeRunSync</span><span>()
+    </span><span class="keyword">val</span><span> </span><span class="identifier">ioa</span><span> = </span><span class="type-name">List</span><span>(</span><span class="identifier">process1</span><span>, </span><span class="identifier">process2</span><span>, </span><span class="identifier">process3</span><span>).</span><span class="identifier">parSequence</span><span>.</span><span class="identifier">void</span><span>
+    </span><span class="identifier">ioa</span><span> *&gt; </span><span class="identifier">myState</span><span>.</span><span class="identifier">get</span><span>.</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">rs</span><span> =&gt; </span><span class="identifier">putStrLn</span><span>(</span><span class="identifier">rs</span><span>.</span><span class="identifier">toString</span><span>))
+  }
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">ExitCode</span><span>] =
+    </span><span class="identifier">masterProcess</span><span>.</span><span class="identifier">as</span><span>(</span><span class="type-name">ExitCode</span><span>.</span><span class="type-name">Success</span><span>)
+
+}</span></code></pre>
+    <p>We defined a <code>var myState: Ref[IO, List[String]]</code> initialized as <code>null</code> so we can create it on startup and all the child processes can have access to it. A so called <code>global state</code>.</p>
+    <p>But now we try to run our application and we encounter our first ugly problem: <code>NullPointerException</code> on line 19. All the processes are defined by using <code>myState</code> which has not yet been initialized. So an easy way to fix it is to define all our processes as <code>lazy val</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">process1</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = ???
+</span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">process2</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = ???
+</span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">process3</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = ???</span></code></pre>
+    <p>That worked, brilliant! We have an application that meets the business criteria and most importantly it works!</p>
+    
+    <h3 id="rethinking-our-application" class="section"><a class="anchor-link" href="#rethinking-our-application"><code class="fas fa-link fa-sm"></code></a>Rethinking our application</h3>
+    <p>But let&#39;s take a step back and review our code once again, there are at least two pieces of code that should have caught your attention:</p>
+    <pre><code class="nohighlight"><span class="keyword">var</span><span> </span><span class="identifier">myState</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] = </span><span class="identifier">_</span></code></pre>
+    <p>We are using <code>var</code> and initializing our state to <code>null</code>, OMG! Also the workaround of <code>lazy val</code> should get you thinking...</p>
+    <p>And here&#39;s the second obvious one:</p>
+    <pre><code class="nohighlight"><span class="identifier">myState</span><span> = </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]](</span><span class="type-name">List</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">String</span><span>]).</span><span class="identifier">unsafeRunSync</span><span>()</span></code></pre>
+    <p>We require our <code>myState</code> to be of type <code>Ref[IO, List[String]</code> but the smart constructor gives us an <code>IO[Ref[IO, List[String]]]</code> so we are &quot;forced&quot; to call <code>unsafeRunSync()</code> to get our desired type. And there&#39;s a reason for that, the creation of a <code>Ref[F, A]</code> is side-effectful, therefore it needs to be wrapped in <code>IO</code> to keep the purity.</p>
+    <p>But wait a minute... that <code>unsafeRunSync()</code> is something that you should only see at the edge of your program, most commonly in the <code>main</code> method that is invoked by the <code>JVM</code> and that is impure by nature (of type <code>Unit</code>). But because we are using <code>IOApp</code> we shouldn&#39;t be calling any operations which names are prefixed with <code>unsafe</code>.</p>
+    <p>You say to yourself, yes, I know this is bad and ugly but I don&#39;t know a better way to share the state between different computations and this works. But we know you have heard that funcional programming is beautiful so why doing this?</p>
+    
+    <h3 id="functional-programming" class="section"><a class="anchor-link" href="#functional-programming"><code class="fas fa-link fa-sm"></code></a>Functional Programming</h3>
+    <p>Okay, can we do better? Of course we do and you wouldn&#39;t believe how simple it is!</p>
+    <p>Let&#39;s get started by getting rid of that ugly <code>var myState</code> initialized to <code>null</code> and pass it as parameter to the processes that need to access it:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="type-name">Ref</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">instances</span><span>.</span><span class="identifier">list</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="identifier">duration</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="identifier">sharedstate</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">IOApp</span><span> {
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">putStrLn</span><span>(</span><span class="identifier">str</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="type-name">IO</span><span>(</span><span class="identifier">println</span><span>(</span><span class="identifier">str</span><span>))
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">process1</span><span>(</span><span class="identifier">myState</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Starting process #1&quot;</span><span>) *&gt;
+      </span><span class="type-name">IO</span><span>.</span><span class="identifier">sleep</span><span>(</span><span class="number-literal">5</span><span>.</span><span class="identifier">seconds</span><span>) *&gt;
+      </span><span class="identifier">myState</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">_</span><span> ++ </span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;#1&quot;</span><span>)) *&gt;
+      </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Done #1&quot;</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">process2</span><span>(</span><span class="identifier">myState</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Starting process #2&quot;</span><span>) *&gt;
+      </span><span class="type-name">IO</span><span>.</span><span class="identifier">sleep</span><span>(</span><span class="number-literal">3</span><span>.</span><span class="identifier">seconds</span><span>) *&gt;
+      </span><span class="identifier">myState</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">_</span><span> ++ </span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;#2&quot;</span><span>)) *&gt;
+      </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Done #2&quot;</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">process3</span><span>(</span><span class="identifier">myState</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Starting process #3&quot;</span><span>) *&gt;
+      </span><span class="type-name">IO</span><span>.</span><span class="identifier">sleep</span><span>(</span><span class="number-literal">10</span><span>.</span><span class="identifier">seconds</span><span>) *&gt;
+      </span><span class="identifier">myState</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">_</span><span> ++ </span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;#3&quot;</span><span>)) *&gt;
+      </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Done #3&quot;</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">masterProcess</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="keyword">val</span><span> </span><span class="identifier">myState</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] = </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]](</span><span class="type-name">List</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">String</span><span>]).</span><span class="identifier">unsafeRunSync</span><span>()
+
+    </span><span class="keyword">val</span><span> </span><span class="identifier">ioa</span><span> = </span><span class="type-name">List</span><span>(</span><span class="identifier">process1</span><span>(</span><span class="identifier">myState</span><span>), </span><span class="identifier">process2</span><span>(</span><span class="identifier">myState</span><span>), </span><span class="identifier">process3</span><span>(</span><span class="identifier">myState</span><span>)).</span><span class="identifier">parSequence</span><span>.</span><span class="identifier">void</span><span>
+    </span><span class="identifier">ioa</span><span> *&gt; </span><span class="identifier">myState</span><span>.</span><span class="identifier">get</span><span>.</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">rs</span><span> =&gt; </span><span class="identifier">putStrLn</span><span>(</span><span class="identifier">rs</span><span>.</span><span class="identifier">toString</span><span>))
+  }
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">ExitCode</span><span>] =
+    </span><span class="identifier">masterProcess</span><span>.</span><span class="identifier">as</span><span>(</span><span class="type-name">ExitCode</span><span>.</span><span class="type-name">Success</span><span>)
+
+}</span></code></pre>
+    <p>Great! We got rid of that <code>global state</code> and we are now passing our <code>Ref</code>as a parameter. Remember that it is a concurrency primitive meant to be accesed and modified in concurrent scenarios, so we are safe here.</p>
+    <p>Notice how all our processes are now defined as <code>def processN(myState: Ref[IO, List[String]])</code>.</p>
+    
+    <h3 id="a-well-known-method-flatmap" class="section"><a class="anchor-link" href="#a-well-known-method-flatmap"><code class="fas fa-link fa-sm"></code></a>A well known method: flatMap!</h3>
+    <p>Now, we still have that <code>unsafeRunSync()</code> hanging around our code, how can we get rid of it? The answer is <code>flatMap</code>!!!</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">masterProcess</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]](</span><span class="type-name">List</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">String</span><span>]).</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">myState</span><span> =&gt;
+    </span><span class="keyword">val</span><span> </span><span class="identifier">ioa</span><span> = </span><span class="type-name">List</span><span>(</span><span class="identifier">process1</span><span>(</span><span class="identifier">myState</span><span>), </span><span class="identifier">process2</span><span>(</span><span class="identifier">myState</span><span>), </span><span class="identifier">process3</span><span>(</span><span class="identifier">myState</span><span>)).</span><span class="identifier">parSequence</span><span>.</span><span class="identifier">void</span><span>
+    </span><span class="identifier">ioa</span><span> *&gt; </span><span class="identifier">myState</span><span>.</span><span class="identifier">get</span><span>.</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">rs</span><span> =&gt; </span><span class="identifier">putStrLn</span><span>(</span><span class="identifier">rs</span><span>.</span><span class="identifier">toString</span><span>))
+  }</span></code></pre>
+    <p>You only need to call <code>flatMap</code> once up in the call chain where you call the processes to make sure they all share the same state. If you don&#39;t do this, a new <code>Ref</code> will be created every time you <code>flatMap</code> (remember creating a <code>Ref</code> is side effectful!) and thus your processes will not be sharing the same state changing the behavior of your program.</p>
+    <p>We now have a purely functional code that shares state in a simple and pure fashion. Here&#39;s the entire FP program:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="type-name">Ref</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">instances</span><span>.</span><span class="identifier">list</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="identifier">duration</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="identifier">sharedstate</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">IOApp</span><span> {
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">putStrLn</span><span>(</span><span class="identifier">str</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="type-name">IO</span><span>(</span><span class="identifier">println</span><span>(</span><span class="identifier">str</span><span>))
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">process1</span><span>(</span><span class="identifier">myState</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Starting process #1&quot;</span><span>) *&gt;
+      </span><span class="type-name">IO</span><span>.</span><span class="identifier">sleep</span><span>(</span><span class="number-literal">5</span><span>.</span><span class="identifier">seconds</span><span>) *&gt;
+      </span><span class="identifier">myState</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">_</span><span> ++ </span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;#1&quot;</span><span>)) *&gt;
+      </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Done #1&quot;</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">process2</span><span>(</span><span class="identifier">myState</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Starting process #2&quot;</span><span>) *&gt;
+      </span><span class="type-name">IO</span><span>.</span><span class="identifier">sleep</span><span>(</span><span class="number-literal">3</span><span>.</span><span class="identifier">seconds</span><span>) *&gt;
+      </span><span class="identifier">myState</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">_</span><span> ++ </span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;#2&quot;</span><span>)) *&gt;
+      </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Done #2&quot;</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">process3</span><span>(</span><span class="identifier">myState</span><span>: </span><span class="type-name">Ref</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Starting process #3&quot;</span><span>) *&gt;
+      </span><span class="type-name">IO</span><span>.</span><span class="identifier">sleep</span><span>(</span><span class="number-literal">10</span><span>.</span><span class="identifier">seconds</span><span>) *&gt;
+      </span><span class="identifier">myState</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">_</span><span> ++ </span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;#3&quot;</span><span>)) *&gt;
+      </span><span class="identifier">putStrLn</span><span>(</span><span class="string-literal">&quot;Done #3&quot;</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">masterProcess</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] =
+    </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]](</span><span class="type-name">List</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">String</span><span>]).</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">myState</span><span> =&gt;
+      </span><span class="keyword">val</span><span> </span><span class="identifier">ioa</span><span> = </span><span class="type-name">List</span><span>(</span><span class="identifier">process1</span><span>(</span><span class="identifier">myState</span><span>), </span><span class="identifier">process2</span><span>(</span><span class="identifier">myState</span><span>), </span><span class="identifier">process3</span><span>(</span><span class="identifier">myState</span><span>)).</span><span class="identifier">parSequence</span><span>.</span><span class="identifier">void</span><span>
+      </span><span class="identifier">ioa</span><span> *&gt; </span><span class="identifier">myState</span><span>.</span><span class="identifier">get</span><span>.</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">rs</span><span> =&gt; </span><span class="identifier">putStrLn</span><span>(</span><span class="identifier">rs</span><span>.</span><span class="identifier">toString</span><span>))
+    }
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">ExitCode</span><span>] =
+    </span><span class="identifier">masterProcess</span><span>.</span><span class="identifier">as</span><span>(</span><span class="type-name">ExitCode</span><span>.</span><span class="type-name">Success</span><span>)
+
+}</span></code></pre>
+    
+    <h2 id="mutable-reference" class="section"><a class="anchor-link" href="#mutable-reference"><code class="fas fa-link fa-sm"></code></a>Mutable reference</h2>
+    <p>As I mentioned in one of the sections above, the creation of <code>Ref[F, A]</code> is side-effectful. So what does this mean? Does it write to disk? Does it perform HTTP Requests? Not exactly.</p>
+    <p>It all comes down to wanting to keep the property of <em>referential transparency</em> while sharing and mutating state. So let&#39;s again put up an example to follow up along with some explanation:</p>
+    <pre><code class="nohighlight"><span class="keyword">var</span><span> </span><span class="identifier">a</span><span> = </span><span class="number-literal">0</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">set</span><span>(</span><span class="identifier">n</span><span>: </span><span class="type-name">Int</span><span>) = </span><span class="identifier">a</span><span> = </span><span class="identifier">n</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="identifier">a</span></code></pre>
+    <p>Here we have imperative and impure code that mutates state. So we can try wrapping things in <code>IO</code> to keep side effects under control:</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">IORef</span><span> {
+  </span><span class="keyword">var</span><span> </span><span class="identifier">a</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">0</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">set</span><span>(</span><span class="identifier">n</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="type-name">IO</span><span>(</span><span class="identifier">a</span><span> = </span><span class="identifier">n</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">IO</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="identifier">a</span><span>)
+}</span></code></pre>
+    <p>This is way better since now the mutation is encapsulated within <code>IORef</code> but we are now pushing some responsibility to whoever creates an <code>IORef</code>. Consider this:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">ref</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">IORef</span><span>()</span></code></pre>
+    <p>If we have two or more references to <code>ref</code> in our code, they will be referring to the same mutable state and we don&#39;t really want that. We can make sure this doesn&#39;t happen and a way to achieve this is to wrap the creation of <code>IORef</code> in <code>IO</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">private</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">IORef</span><span> {
+  </span><span class="keyword">var</span><span> </span><span class="identifier">a</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">0</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">set</span><span>(</span><span class="identifier">n</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="type-name">IO</span><span>(</span><span class="identifier">a</span><span> = </span><span class="identifier">n</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">IO</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="identifier">a</span><span>)
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">IORef</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">IORef</span><span>] = </span><span class="type-name">IO</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">IORef</span><span>)
+}</span></code></pre>
+    <p>We have now regained purity. So whenever you create an <code>IORef</code> you&#39;ll get an <code>IO[IORef]</code> instead of a mutable reference to <code>IORef</code>. This means that when you invoke <code>flatMap</code> on it twice you&#39;ll get two different mutable states, and this is the power of <code>Referential Transparency</code>. It gives you way more control than having a <code>val ref</code> hanging around in your code and gives you <strong><em>local reasoning</em></strong>.</p>
+    <p><em>All these examples are written in terms of <code>IO</code> for the sake of simplicity but in practice they are polymorphic on the effect type.</em></p>
+    
+    <h2 id="applying-the-technique-in-other-libraries" class="section"><a class="anchor-link" href="#applying-the-technique-in-other-libraries"><code class="fas fa-link fa-sm"></code></a>Applying the technique in other libraries</h2>
+    <p>Although in the example above we only see how it&#39;s done with the <code>cats-effect</code> library, this principle expands to other FP libraries as well.</p>
+    <p>For example, when writing an <code>http4s</code> application you might need to create an <code>HttpClient</code> that needs to be used by more than one of your services. So again, create it at startup and <code>flatMap</code> it once:</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">HttpServer</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">StreamApp</span><span>[</span><span class="type-name">IO</span><span>] {
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">stream</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>], </span><span class="identifier">requestShutdown</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>]): </span><span class="type-name">Stream</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">ExitCode</span><span>] =
+    </span><span class="keyword">for</span><span> {
+      </span><span class="identifier">httpClient</span><span> &lt;- </span><span class="type-name">Http1Client</span><span>.</span><span class="identifier">stream</span><span>[</span><span class="type-name">IO</span><span>]()
+      </span><span class="identifier">endpoint1</span><span>  = </span><span class="keyword">new</span><span> </span><span class="type-name">HttpEndpointOne</span><span>[</span><span class="type-name">IO</span><span>](</span><span class="identifier">httpClient</span><span>)
+      </span><span class="identifier">endpoint2</span><span>  = </span><span class="keyword">new</span><span> </span><span class="type-name">HttpEndpointTwo</span><span>[</span><span class="type-name">IO</span><span>](</span><span class="identifier">httpClient</span><span>)
+      </span><span class="identifier">exitCode</span><span>   &lt;- </span><span class="type-name">BlazeBuilder</span><span>[</span><span class="type-name">F</span><span>]
+                      .</span><span class="identifier">bindHttp</span><span>(</span><span class="number-literal">8080</span><span>, </span><span class="string-literal">&quot;0.0.0.0&quot;</span><span>)
+                      .</span><span class="identifier">mountService</span><span>(</span><span class="identifier">endpoint1</span><span>)
+                      .</span><span class="identifier">mountService</span><span>(</span><span class="identifier">endpoint2</span><span>)
+                      .</span><span class="identifier">serve</span><span>
+    } </span><span class="keyword">yield</span><span> </span><span class="identifier">exitCode</span><span>
+
+}
+
+</span><span class="keyword">class</span><span> </span><span class="type-name">HttpEndpointOne</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">client</span><span>: </span><span class="type-name">Client</span><span>[</span><span class="type-name">F</span><span>]) { ... }
+</span><span class="keyword">class</span><span> </span><span class="type-name">HttpEndpointTwo</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">client</span><span>: </span><span class="type-name">Client</span><span>[</span><span class="type-name">F</span><span>]) { ... }</span></code></pre>
+    <p>When writing <code>fs2</code> applications you can apply the same technique, for example between processes that share a <code>Queue</code>, <code>Topic</code>, <code>Signal</code>, <code>Semaphore</code>, etc.</p>
+    <p>Remember that if you are forced to call <code>unsafeRunSync()</code> other than in your <code>main</code> method it might be a <em>code smell</em>.</p>
+    
+    <h2 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h2>
+    <p>To conclude this post I would like to give a big shout out to <a href="https://github.com/SystemFw">@SystemFW</a> who has been untiringly teaching this concept in the Gitter channels. And here&#39;s a quote from his response on <a href="https://www.reddit.com/r/scala/comments/8ofc8j/shared_state_in_pure_functional_programming_github/e050wy2/">Reddit</a>:</p>
+    <blockquote>
+      <p>At the end of the day all the benefits from <em>referential transparency</em> boil down to being able to understand and build code compositionally. That is, understanding code by understanding individual parts and putting them back together, and building code by building individual parts and combining them together. This is only possible if <em>local reasoning</em> is guaranteed, because otherwise there will be weird interactions when you put things back together, and referential transparency is <em>defined</em> as something that guarantees local reasoning.</p>
+      <p>In the specific case of state sharing, this gives rise to a really nice property: since the only way to share is passing things as an argument, <em>the regions of sharing are exactly the same of your call graph</em>, so you transform an important aspect of the behaviour (&quot;who shares this state?&quot;) into a straightforward syntactical property (&quot;what methods take this argument&quot;?). This makes shared state in pure FP a lot easier to reason about than its side-effectful counterpart imho.</p>
+    </blockquote>
+    <p>In simple terms, remind yourself about this: <strong>&quot;flatMap once and pass the reference as an argument!&quot;</strong></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/gvolpe.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Gabriel Volpe</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/gvolpe">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

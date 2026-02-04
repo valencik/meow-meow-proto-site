@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Typedapi or how to derive your clients and servers from types</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Typedapi or how to derive your clients and servers from types</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Paul Heymann<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on June 15, 2018
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="typedapi-or-how-to-derive-your-clients-and-servers-from-types" class="title">Typedapi or how to derive your clients and servers from types</h1>
+    <p>In this blog post, I will show you how to leverage Scala&#39;s type system to derive an HTTP client function from a single type. This will also be the story of how I started to work on <a href="https://github.com/pheymann/typedapi">Typedapi</a> which is basically the attempt to bring Haskell&#39;s <a href="https://github.com/haskell-servant/servant">Servant</a> to Scala.</p>
+    
+    <h2 id="servant-in-a-nutshell-and-how-it-began" class="section"><a class="anchor-link" href="#servant-in-a-nutshell-and-how-it-began"><code class="fas fa-link fa-sm"></code></a>Servant in a nutshell and how it began</h2>
+    <p>For everyone not knowing Servant, it is a library which lets you define your web apis as types and derives the client and server functions from it. When I saw it for the first time while working on a pet project I immediately loved the idea. Creating web server and clients this way reduces your code to a mere type, you get extra type safety and you can use the api types as contracts between your server and its clients. </p>
+    <p>I couldn&#39;t find any viable alternative in Scala at the time and decided to build it on my own. But I just wanted to start with a single feature to not overwhelm myself and abandon the project after a short time. Therefore, I set out to make Scala able to derive a client function from a single api type, as we will do in this post.</p>
+    
+    <h2 id="derive-a-client-function-from-a-type-how-hard-can-it-be" class="section"><a class="anchor-link" href="#derive-a-client-function-from-a-type-how-hard-can-it-be"><code class="fas fa-link fa-sm"></code></a>Derive a client function from a type. How hard can it be?</h2>
+    <p>Let&#39;s start with an example we will use later on to ease understanding. Consider the following api:</p>
+    <pre><code>GET /users/:name?minAge=:age -&gt; List[User]</code></pre>
+    <p>It only consists of a single endpoint which returns a list of <code>Users</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">User</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">age</span><span>: </span><span class="type-name">Int</span><span>)</span></code></pre>
+    <p>with a given <code>name: String</code>. Furthermore, you filter the resulting users by their <code>age: Int</code>. Our big goal is to end up with a function which is derived from a type-level representation of our endpoint:</p>
+    <pre><code class="nohighlight"><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">minAge</span><span>: </span><span class="type-name">Int</span><span>) =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">User</span><span>]]</span></code></pre>
+    
+    <h3 id="represent-the-api-as-a-type" class="section"><a class="anchor-link" href="#represent-the-api-as-a-type"><code class="fas fa-link fa-sm"></code></a>Represent the api as a type</h3>
+    <p>Question: how do you represent the above api as a type in Scala? I think the best way is to break it apart and try to find type-level representations for each element. After that, we &quot;just&quot; merge them together.</p>
+    <p>When we take a closer look at our endpoint we see that it consists of:
+      * a method <code>GET</code> to identify which kind of operation we want to do and which also describes the expected return type
+      * constant path elements identifying an endpoint: <code>/users</code>
+      * dynamic path elements called &quot;segments&quot; which represent input parameters with a name and type: <code>:name</code>
+      * queries which again represent input parameters with a name and type: <code>minAge=[age]</code></p>
+    <p>Or in other words, just a plain HTTP definition of a web endpoint. Now that we know what we are working with let&#39;s try and find a type-level representation.</p>
+    <p>But how do you transform a value-level information as a type? First of all, the value has to be known at compile time which leaves us with literals. If we would work with Dotty we could leverage a concept called literal type:</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">Path</span><span> = </span><span class="string-literal">&quot;users&quot;</span></code></pre>
+    <p>But since we want to stay in Vanilla Scala this will not work. We have to take another route by using a tool probably every developer has to use when it comes to working on the type-level called <a href="https://github.com/milessabin/shapeless">shapeless</a>. It has this nifty class <a href="https://github.com/milessabin/shapeless/blob/shapeless-2.3.3/core/src/main/scala/shapeless/singletons.scala#L32">Witness</a> which comes with an abstract type <code>T</code>. And <code>T</code> is exactly what we need here as it transforms our literals into types.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">shapeless</span><span>.</span><span class="type-name">Witness</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">usersW</span><span> = </span><span class="type-name">Witness</span><span>(</span><span class="string-literal">&quot;users&quot;</span><span>)</span></code></pre>
+    <p>But this isn&#39;t a pure type declaration, you will say. And you are right, but right now there is no other way in Scala. We have to go the ordinary value road first to create our types.</p>
+    <p>Now that we know how to get a type representation from a <code>String</code> which describes our path we should clearly mark it as a path element:</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Path</span><span>[</span><span class="type-name">P</span><span>]
+
+</span><span class="keyword">type</span><span> </span><span class="identifier">users</span><span> = </span><span class="type-name">Path</span><span>[</span><span class="identifier">usersW</span><span>.</span><span class="type-name">T</span><span>]</span></code></pre>
+    <p>That&#39;s it. That is the basic concept of how we can describe our apis as types. We just reuse this concept now for the remaining elements like the segment.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">nameW</span><span> = </span><span class="type-name">Witness</span><span>(</span><span class="symbol-literal">&#39;name</span><span>)
+
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Segment</span><span>[</span><span class="type-name">K</span><span>, </span><span class="type-name">V</span><span>]
+
+</span><span class="keyword">type</span><span> </span><span class="identifier">name</span><span> = </span><span class="type-name">Segment</span><span>[</span><span class="identifier">nameW</span><span>.</span><span class="type-name">T</span><span>, </span><span class="type-name">String</span><span>]</span></code></pre>
+    <p>Do you see how we included the segment&#39;s identifier in the type? This way we are not only gain information about the expected type but also what kind of value we want to see. By the way, I decided to use <code>Symbols</code> as identifiers, but you could also switch to <code>String</code> literals. The remaining definitions look pretty similar:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">minAgeW</span><span> = </span><span class="type-name">Witness</span><span>(</span><span class="symbol-literal">&#39;minAge</span><span>)
+
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Query</span><span>[</span><span class="type-name">K</span><span>, </span><span class="type-name">V</span><span>]
+
+</span><span class="keyword">type</span><span> </span><span class="identifier">minAge</span><span> = </span><span class="type-name">Query</span><span>[</span><span class="identifier">minAgeW</span><span>.</span><span class="type-name">T</span><span>, </span><span class="type-name">Int</span><span>]
+
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Method</span><span>
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Get</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">Method</span></code></pre>
+    <p>Here, <code>A</code> in <code>Get[A]</code> represents the expected result type of our api endpoint.</p>
+    <p>Now that we know how to obtain the types of our api elements we have to put them together into a single type representation. After looking through shapeless&#39;s features we will find <code>HLists</code>, a list structure which can store elements of different types.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">shapeless</span><span>.{::, </span><span class="type-name">HNil</span><span>}
+
+</span><span class="keyword">type</span><span> </span><span class="type-name">Api</span><span> = </span><span class="type-name">Get</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">User</span><span>]] :: </span><span class="identifier">users</span><span> :: </span><span class="identifier">name</span><span> :: </span><span class="identifier">minAge</span><span> :: </span><span class="type-name">HNil</span></code></pre>
+    <p>Here you go. <code>Api</code> is an exact representation of the endpoint we defined at the beginning. But you don&#39;t want to write <code>Witness</code> and <code>HLists</code> all the time so let&#39;s wrap it up into a convenient function call:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">api</span><span>[</span><span class="type-name">M</span><span> &lt;: </span><span class="type-name">Method</span><span>, </span><span class="type-name">P</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">Q</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">Api</span><span> &lt;: </span><span class="type-name">HList</span><span>]
+       (</span><span class="identifier">method</span><span>: </span><span class="type-name">M</span><span>, </span><span class="identifier">path</span><span>: </span><span class="type-name">PathList</span><span>[</span><span class="type-name">P</span><span>], </span><span class="identifier">queries</span><span>: </span><span class="type-name">QueryList</span><span>[</span><span class="type-name">Q</span><span>])
+       (</span><span class="keyword">implicit</span><span> </span><span class="identifier">prepQP</span><span>: </span><span class="type-name">Prepend</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">Q</span><span>, </span><span class="type-name">P</span><span>, </span><span class="type-name">Api</span><span>]): </span><span class="type-name">ApiTypeCarrier</span><span>[</span><span class="type-name">M</span><span> :: </span><span class="type-name">Api</span><span>] = </span><span class="type-name">ApiTypeCarrier</span><span>()
+      
+</span><span class="keyword">val</span><span> </span><span class="type-name">Api</span><span> = </span><span class="identifier">api</span><span>(</span><span class="type-name">Get</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">User</span><span>]], </span><span class="type-name">Root</span><span> / </span><span class="string-literal">&quot;users&quot;</span><span> / </span><span class="type-name">Segment</span><span>[</span><span class="type-name">String</span><span>](</span><span class="symbol-literal">&#39;name</span><span>), </span><span class="type-name">Queries</span><span>.</span><span class="identifier">add</span><span>(</span><span class="type-name">Query</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="symbol-literal">&#39;minAge</span><span>)))</span></code></pre>
+    <p>Not clear what is happening? Let&#39;s take a look at the different elements of <code>def api(...)</code>:
+      * <code>method</code> should be obvious. It takes some method type.
+      * <code>PathList</code> is a type carrier with a function <code>def /(...)</code> to concatenate path elements and segments. In the end, <code>PathList</code> only stores the type of an <code>HList</code> and nothing more.</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PathList</span><span>[</span><span class="type-name">P</span><span> &lt;: </span><span class="type-name">HList</span><span>]() {
+  
+  </span><span class="keyword">def</span><span> /[</span><span class="type-name">S</span><span>](</span><span class="identifier">path</span><span>: </span><span class="type-name">Witness</span><span>.</span><span class="type-name">Lt</span><span>[</span><span class="type-name">S</span><span>]): </span><span class="type-name">PathList</span><span>[</span><span class="type-name">S</span><span> :: </span><span class="type-name">P</span><span>] = </span><span class="type-name">PathList</span><span>()
+  ...
+}
+
+</span><span class="keyword">val</span><span> </span><span class="type-name">Root</span><span> = </span><span class="type-name">PathList</span><span>[</span><span class="type-name">HNil</span><span>]()</span></code></pre>
+    <ul>
+      <li>Same is true for <code>QueryList</code>.</li>
+    </ul>
+    <ul>
+      <li>The last step is to merge all these <code>HLists</code> types into a single one. Shapeless comes again with a handy type class called <code>Prepend</code> which provides us with the necessary functionality. Two <code>HList</code> types go in, a single type comes out. And again, we use a type carrier here to store the api type.</li>
+    </ul>
+    <p>Whoho, we did it. One thing we can mark as done on our todo list. Next step is to derive an actual client function from it.</p>
+    
+    <h3 id="clients-from-types" class="section"><a class="anchor-link" href="#clients-from-types"><code class="fas fa-link fa-sm"></code></a>Clients from types</h3>
+    <p>So far we have a type carrier describing our api as type:</p>
+    <pre><code class="nohighlight"><span class="type-name">ApiTypeCarrier</span><span>[</span><span class="type-name">Get</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">User</span><span>]] :: </span><span class="type-name">Query</span><span>[</span><span class="identifier">minAgeW</span><span>.</span><span class="type-name">T</span><span>, </span><span class="type-name">Int</span><span>] :: </span><span class="type-name">Segment</span><span>[</span><span class="identifier">nameW</span><span>.</span><span class="type-name">T</span><span>, </span><span class="type-name">String</span><span>] :: </span><span class="identifier">usersW</span><span>.</span><span class="type-name">T</span><span> :: </span><span class="type-name">HNil</span><span>]</span></code></pre>
+    <p>Now we want to transform that into a function call <code>(name: String, minAge: Int) =&gt; F[List[User]]</code>. So what we need is the following:
+      * the types of our expected input
+      * the output type
+      * the path to the endpoint we want to call</p>
+    <p>All information are available but mixed up and we need to separate them. Usually, when we work with collections and want to change their shape we do a <code>fold</code> and alas shapeless has type classes to fold left and right over an <code>HList</code>. But we only have a type. How do we fold that?</p>
+    
+    <h4 id="type-level-foldleft" class="section"><a class="anchor-link" href="#type-level-foldleft"><code class="fas fa-link fa-sm"></code></a>Type-level FoldLeft</h4>
+    <p>What we want is to go from <code>Api &lt;: HList</code> to <code>(El &lt;: HList, KIn &lt;: HList, VIn &lt;: HList, M, Out)</code> with:
+      * <code>El</code> al the elements in our api: <code>&quot;users&quot;.type :: SegmentInput :: QueryInput :: GetCall :: HNil</code>
+      * <code>KIn</code> the input key types: <code>nameW.T :: minAgeW.T :: HNil</code>
+      * <code>VIn</code> the input value types: <code>String :: Int :: HNil</code>
+      * the method type: <code>GetCall</code>
+      * and <code>Out</code>: <code>List[User]</code></p>
+    <p>Here, we introduced new types <code>SegmentInput</code> and <code>QueryInput</code> which act as placeholders and indicate that our api has the following inputs. This representation will come in handy when we construct our function.</p>
+    <p>Now, how to fold on the type-level? The first step, we have to define a function which describes how to aggregate two types:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">FoldLeftFunction</span><span>[</span><span class="type-name">In</span><span>, </span><span class="type-name">Agg</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> }</span></code></pre>
+    <p>That&#39;s it. We say what goes in and what comes out. You need some examples to get a better idea? Here you go:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">pathTransformer</span><span>[</span><span class="type-name">P</span><span>, </span><span class="type-name">El</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">KIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">VIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">Out</span><span>] = 
+  </span><span class="type-name">FoldLeftFunction</span><span>[</span><span class="type-name">Path</span><span>[</span><span class="type-name">P</span><span>], (</span><span class="type-name">El</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">Out</span><span>)] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = (</span><span class="type-name">P</span><span> :: </span><span class="type-name">El</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>, </span><span class="type-name">Out</span><span>) }</span></code></pre>
+    <p>We expect a <code>Path[P]</code> and intermediate aggregation state <code>(El, KIn, VIn, M, Out)</code>. We merge the two by adding <code>P</code> to our list of api elements. The same technique is also used for more involved aggregations:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">segmentTransformer</span><span>[</span><span class="type-name">K</span><span> &lt;: </span><span class="type-name">Symbol</span><span>, </span><span class="type-name">V</span><span>, </span><span class="type-name">El</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">KIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">VIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">Out</span><span>] = 
+  </span><span class="type-name">FoldLeftFunction</span><span>[</span><span class="type-name">Segment</span><span>[</span><span class="type-name">K</span><span>, </span><span class="type-name">V</span><span>], (</span><span class="type-name">El</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">Out</span><span>)] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = (</span><span class="type-name">SegmentInput</span><span> :: </span><span class="type-name">El</span><span>, </span><span class="type-name">K</span><span> :: </span><span class="type-name">KIn</span><span>, </span><span class="type-name">V</span><span> :: </span><span class="type-name">VIn</span><span>, </span><span class="type-name">Out</span><span>) }</span></code></pre>
+    <p>Here, we get some <code>Segment</code> with a name <code>K</code> and a type <code>V</code> and an intermediate aggregation state we will update by adding a placeholder to <code>El</code>, the name to <code>KIn</code> and the value type to <code>VIn</code>.</p>
+    <p>Now that we can aggregate types we need a vehicle to traverse our <code>HList</code> type and transform it on the fly by using our <code>FoldLeftFunction</code> instances. I think yet another type class can help us here.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">TypeLevelFoldLeft</span><span>[</span><span class="type-name">H</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">Agg</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> }
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">TypeLevelFoldLeft</span><span> {
+
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">returnCase</span><span>[</span><span class="type-name">Agg</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">TypeLevelFoldLeft</span><span>[</span><span class="type-name">HNil</span><span>, </span><span class="type-name">Agg</span><span>] {
+    </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">Agg</span><span>
+  }
+
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">foldCase</span><span>[</span><span class="type-name">H</span><span>, </span><span class="type-name">T</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">Agg</span><span>, </span><span class="type-name">FfOut</span><span>, </span><span class="type-name">FOut</span><span>](</span><span class="keyword">implicit</span><span> </span><span class="identifier">f</span><span>: </span><span class="type-name">FoldLeftFunction</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">H</span><span>, </span><span class="type-name">Agg</span><span>, </span><span class="type-name">FfOut</span><span>], 
+                                                                  </span><span class="identifier">next</span><span>: </span><span class="type-name">Lazy</span><span>[</span><span class="type-name">TypeLevelFoldLeft</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">T</span><span>, </span><span class="type-name">FfOut</span><span>, </span><span class="type-name">FOut</span><span>]]) = 
+    </span><span class="keyword">new</span><span> </span><span class="type-name">TypeLevelFoldLeft</span><span>[</span><span class="type-name">H</span><span> :: </span><span class="type-name">T</span><span>, </span><span class="type-name">Agg</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">FOut</span><span> }
+}</span></code></pre>
+    <p>The above definition describes a recursive function which will apply the <code>FoldLeftFunction</code> on <code>H</code> and the current aggregated type <code>Agg</code> and continues with the resulting <code>FfOut</code> and the remaining list. And before you bang your head against the wall for hours until the clock strikes 3 am, like I did, a small hint, make <code>next</code> lazy. Otherwise, Scala is not able to find <code>next</code>. My guess is that Scala is not able to infer <code>next</code>, because it depends on <code>FfOut</code> which is also unknown. So we have to defer <code>next</code>&#39;s inference to give the compiler some time to work.</p>
+    <p>And another hint, you can start with <code>Unit</code> as the initial type for your aggregate.</p>
+    
+    <h4 id="collect-all-the-request-data" class="section"><a class="anchor-link" href="#collect-all-the-request-data"><code class="fas fa-link fa-sm"></code></a>Collect all the request data</h4>
+    <p>We folded our api type into the new representation making it easier now to derive a function which collects all the data necessary to make a request.</p>
+    <pre><code class="nohighlight"><span class="comment">// path to our endpoint described by Path and Segment
+</span><span class="keyword">type</span><span> </span><span class="type-name">Uri</span><span> = </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]
+
+</span><span class="comment">// queries described by Query
+</span><span class="keyword">type</span><span> </span><span class="type-name">Queries</span><span> = </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]]
+
+</span><span class="type-name">VIn</span><span> =&gt; (</span><span class="type-name">Uri</span><span>, </span><span class="type-name">Queries</span><span>)</span></code></pre>
+    <p>This function will form the basis of our client function we try to build. It generates the <code>Uri</code> and a <code>Map</code> of <code>Queries</code> which will be used later on to do a request using some HTTP library.</p>
+    <p>By now, you should be already comfortable with type classes. Therefore, it shouldn&#39;t shock you that I will introduce yet another one to derive the above function.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">RequestDataBuilder</span><span>[</span><span class="type-name">El</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">KIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">VIn</span><span> &lt;: </span><span class="type-name">HList</span><span>] {
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">inputs</span><span>: </span><span class="type-name">VIn</span><span>, </span><span class="identifier">uri</span><span>: </span><span class="type-name">Uri</span><span>, </span><span class="identifier">queries</span><span>: </span><span class="type-name">Queries</span><span>): (</span><span class="type-name">Uri</span><span>, </span><span class="type-name">Queries</span><span>)
+}</span></code></pre>
+    <p>Instances of this type class update <code>uri</code> and <code>queries</code> depending on the types they see. For example, if the current head of <code>El</code> is a path element we prepend its <code>String</code> literal to <code>uri</code>. Just keep in mind to reverse the <code>List</code> before returning it.</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">pathBuilder</span><span>[</span><span class="type-name">P</span><span>, </span><span class="type-name">T</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">KIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">VIn</span><span> &lt;: </span><span class="type-name">HList</span><span>](</span><span class="keyword">implicit</span><span> </span><span class="identifier">wit</span><span>: </span><span class="type-name">Witness</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">P</span><span>], </span><span class="identifier">next</span><span>: </span><span class="type-name">RequestDataBuilder</span><span>[</span><span class="type-name">T</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>]) = 
+  </span><span class="keyword">new</span><span> </span><span class="type-name">RequestDataBuilder</span><span>[</span><span class="type-name">P</span><span> :: </span><span class="type-name">T</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">inputs</span><span>: </span><span class="type-name">VIn</span><span>, </span><span class="identifier">uri</span><span>: </span><span class="type-name">Uri</span><span>, </span><span class="identifier">queries</span><span>: </span><span class="type-name">Queries</span><span>): (</span><span class="type-name">Uri</span><span>, </span><span class="type-name">Queries</span><span>) =
+      </span><span class="identifier">next</span><span>(</span><span class="identifier">inputs</span><span>, </span><span class="identifier">wit</span><span>.</span><span class="identifier">value</span><span>.</span><span class="identifier">toString</span><span>() :: </span><span class="identifier">uri</span><span>, </span><span class="identifier">queries</span><span>, </span><span class="identifier">headers</span><span>)
+  }</span></code></pre>
+    <p>Or if we encounter a query input we derive the key&#39;s type-literal, pair it with the given input value and add both to <code>queries</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">queryBuilder</span><span>[</span><span class="type-name">K</span><span> &lt;: </span><span class="type-name">Symbol</span><span>, </span><span class="type-name">V</span><span>, </span><span class="type-name">T</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">KIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">VIn</span><span> &lt;: </span><span class="type-name">HList</span><span>](</span><span class="keyword">implicit</span><span> </span><span class="identifier">wit</span><span>: </span><span class="type-name">Witness</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">K</span><span>], </span><span class="identifier">next</span><span>: </span><span class="type-name">RequestDataBuilder</span><span>[</span><span class="type-name">T</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>]) = 
+  </span><span class="keyword">new</span><span> </span><span class="type-name">RequestDataBuilder</span><span>[</span><span class="type-name">QueryInput</span><span> :: </span><span class="type-name">T</span><span>, </span><span class="type-name">K</span><span> :: </span><span class="type-name">KIn</span><span>, </span><span class="type-name">V</span><span> :: </span><span class="type-name">VIn</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">inputs</span><span>: </span><span class="type-name">V</span><span> :: </span><span class="type-name">VIn</span><span>, </span><span class="identifier">uri</span><span>: </span><span class="type-name">Uri</span><span>, </span><span class="identifier">queries</span><span>: </span><span class="type-name">Queries</span><span>): (</span><span class="type-name">Uri</span><span>, </span><span class="type-name">Queries</span><span>) =
+      </span><span class="identifier">next</span><span>(</span><span class="identifier">inputs</span><span>.</span><span class="identifier">tail</span><span>, </span><span class="identifier">uri</span><span>, </span><span class="type-name">Map</span><span>(</span><span class="identifier">wit</span><span>.</span><span class="identifier">value</span><span>.</span><span class="identifier">name</span><span> -&gt; </span><span class="type-name">List</span><span>(</span><span class="identifier">inputs</span><span>.</span><span class="identifier">head</span><span>.</span><span class="identifier">toString</span><span>())) ++ </span><span class="identifier">queries</span><span>)
+  }</span></code></pre>
+    <p>The other cases are looking quite similar and it is up to the interested reader to find the implementations.</p>
+    <p>What we end up with is a nested function call structure which will take an <code>HList</code> and returns the <code>uri</code> and <code>queries</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">builder</span><span> = </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">RequestDataBuilder</span><span>[</span><span class="type-name">El</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>]]
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">f</span><span>: </span><span class="type-name">VIn</span><span> =&gt; (</span><span class="type-name">Uri</span><span>, </span><span class="type-name">Queries</span><span>) = </span><span class="identifier">input</span><span> =&gt; </span><span class="identifier">builder</span><span>(</span><span class="identifier">input</span><span>, </span><span class="type-name">Nil</span><span>, </span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>)
+
+</span><span class="string-literal">&quot;joe&quot;</span><span> :: </span><span class="number-literal">42</span><span> :: </span><span class="type-name">HNil</span><span> =&gt; (</span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;users&quot;</span><span>, </span><span class="string-literal">&quot;joe&quot;</span><span>), </span><span class="type-name">Map</span><span>(</span><span class="string-literal">&quot;minAge&quot;</span><span> -&gt; </span><span class="type-name">List</span><span>(</span><span class="string-literal">&quot;42&quot;</span><span>)))</span></code></pre>
+    <p>Here, <code>&quot;joe&quot;</code> and <code>42</code> are our expected inputs (<code>VIn</code>) which we derived from the segments and queries of our <code>Api</code>.</p>
+    
+    <h4 id="make-the-request" class="section"><a class="anchor-link" href="#make-the-request"><code class="fas fa-link fa-sm"></code></a>Make the request</h4>
+    <p>We have all the data we need to make an IO request but nothing to execute it. We change that now. By adding an HTTP backend. But we don&#39;t want to expose this implementation detail through our code. What we want is a generic description of a request action and that sounds again like a job for type classes.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">ApiRequest</span><span>[</span><span class="type-name">M</span><span>, </span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">C</span><span>, </span><span class="type-name">Out</span><span>] {
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">data</span><span>: (</span><span class="type-name">Uri</span><span>, </span><span class="type-name">Queries</span><span>), </span><span class="identifier">client</span><span>: </span><span class="type-name">C</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Out</span><span>]
+}</span></code></pre>
+    <p>We have to specialize that for the set of methods we have:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">GetRequest</span><span>[</span><span class="type-name">C</span><span>, </span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">Out</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">ApiRequest</span><span>[</span><span class="type-name">GetCall</span><span>, </span><span class="type-name">C</span><span>, </span><span class="type-name">F</span><span>, </span><span class="type-name">Out</span><span>]
+
+...
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">request</span><span> = </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">ApiRequest</span><span>[</span><span class="type-name">GetCall</span><span>, </span><span class="type-name">IO</span><span>, </span><span class="type-name">C</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">User</span><span>]]]
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">f</span><span>: </span><span class="type-name">VIn</span><span> =&gt; </span><span class="type-name">IO</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">User</span><span>]] = 
+  </span><span class="identifier">input</span><span> =&gt; </span><span class="identifier">request</span><span>(</span><span class="identifier">builder</span><span>(</span><span class="identifier">input</span><span>, </span><span class="type-name">Nil</span><span>, </span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>), </span><span class="identifier">c</span><span>)</span></code></pre>
+    <p>Let&#39;s say we want http4s as our backend. Then we just have to implement these <code>traits</code> using http4s functionality.</p>
+    
+    <h4 id="make-it-a-whole" class="section"><a class="anchor-link" href="#make-it-a-whole"><code class="fas fa-link fa-sm"></code></a>Make it a whole</h4>
+    <p>We have a bunch of type classes which in theory do a request, but so far they are completely useless. To make a working piece of code out of it we have to connect them.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">derive</span><span>[</span><span class="type-name">Api</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">El</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">KIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">VIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">Out</span><span>, </span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">C</span><span>]
+  (</span><span class="identifier">api</span><span>: </span><span class="type-name">ApiTypeCarrier</span><span>[</span><span class="type-name">Api</span><span>], </span><span class="identifier">client</span><span>: </span><span class="type-name">C</span><span>)
+  (</span><span class="keyword">implicit</span><span> </span><span class="identifier">fold</span><span>: </span><span class="type-name">Lazy</span><span>[</span><span class="type-name">TypeLevelFoldLeft</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">Api</span><span>, </span><span class="type-name">Fold</span><span>], (</span><span class="type-name">El</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">Out</span><span>)]
+            </span><span class="identifier">builder</span><span>: </span><span class="type-name">RequestBuilder</span><span>[</span><span class="type-name">El</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>],
+            </span><span class="identifier">request</span><span>: </span><span class="type-name">ApiRequest</span><span>[</span><span class="type-name">M</span><span>, </span><span class="type-name">F</span><span>, </span><span class="type-name">C</span><span>, </span><span class="type-name">Out</span><span>]): </span><span class="type-name">VIn</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">Out</span><span>] = </span><span class="identifier">vin</span><span> =&gt; </span><span class="identifier">request</span><span>(</span><span class="identifier">builder</span><span>.</span><span class="identifier">apply</span><span>(</span><span class="identifier">vin</span><span>, </span><span class="type-name">List</span><span>.</span><span class="identifier">newBuilder</span><span>, </span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>), </span><span class="identifier">client</span><span>)</span></code></pre>
+    <p>The first approach gives us the desired function. It transforms our api type into a <code>(El, KIn, VIn, Method, Out)</code> representation, derives a function to collect all data to do a request, and finds an IO backend to actually do the request. But it has a major drawback. You have to fix <code>F[_]</code> somehow and the only way is to set it explicitly. But by doing that you are forced to provide definitions for all the type parameters. Furthermore, this function isn&#39;t really convenient. To use it you have to create and pass an <code>HList</code> and as we said before, we don&#39;t want to expose something like that.</p>
+    <p>To fix the first problem we simply add a helper class which moves the step of defining the higher kind <code>F[_]</code> to a separate function call:</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ExecutableDerivation</span><span>[</span><span class="type-name">El</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">KIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">VIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">O</span><span>](</span><span class="identifier">builder</span><span>: </span><span class="type-name">RequestDataBuilder</span><span>[</span><span class="type-name">El</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>], </span><span class="identifier">input</span><span>: </span><span class="type-name">VIn</span><span>) {
+
+  </span><span class="keyword">final</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Derivation</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">C</span><span>](</span><span class="identifier">client</span><span>: </span><span class="type-name">C</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">req</span><span>: </span><span class="type-name">ApiRequest</span><span>[</span><span class="type-name">M</span><span>, </span><span class="type-name">C</span><span>, </span><span class="type-name">F</span><span>, </span><span class="type-name">O</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">O</span><span>] = {
+      </span><span class="keyword">val</span><span> </span><span class="identifier">data</span><span> = </span><span class="identifier">builder</span><span>(</span><span class="identifier">input</span><span>, </span><span class="type-name">List</span><span>.</span><span class="identifier">newBuilder</span><span>, </span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>, </span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>)
+
+      </span><span class="identifier">req</span><span>(</span><span class="identifier">data</span><span>, </span><span class="identifier">cm</span><span>)
+    }
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]]: </span><span class="type-name">Derivation</span><span>[</span><span class="type-name">F</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">Derivation</span><span>[</span><span class="type-name">F</span><span>]
+}</span></code></pre>
+    <p>Making a function of arity <code>Length[VIn]</code> out of <code>Vin =&gt; F[O]</code>is possible by using <code>shapeless.ops.function.FnFromProduct</code>.</p>
+    <p>When we apply both solutions we end up with:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">derive</span><span>[</span><span class="type-name">H</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">Fold</span><span>, </span><span class="type-name">El</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">KIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">VIn</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">Out</span><span>]
+  (</span><span class="identifier">apiList</span><span>: </span><span class="type-name">ApiTypeCarrier</span><span>[</span><span class="type-name">H</span><span>])
+  (</span><span class="keyword">implicit</span><span> </span><span class="identifier">fold</span><span>: </span><span class="type-name">Lazy</span><span>[</span><span class="type-name">TypeLevelFoldLeft</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">H</span><span>, </span><span class="type-name">Unit</span><span>, (</span><span class="type-name">El</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">Out</span><span>)]],
+            </span><span class="identifier">builder</span><span>: </span><span class="type-name">RequestDataBuilder</span><span>[</span><span class="type-name">El</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>],
+            </span><span class="identifier">vinToFn</span><span>: </span><span class="type-name">FnFromProduct</span><span>[</span><span class="type-name">VIn</span><span> =&gt; </span><span class="type-name">ExecutableDerivation</span><span>[</span><span class="type-name">El</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">Out</span><span>]]): </span><span class="identifier">vinToFn</span><span>.</span><span class="type-name">Out</span><span> = 
+  </span><span class="identifier">vinToFn</span><span>.</span><span class="identifier">apply</span><span>(</span><span class="identifier">input</span><span> =&gt; </span><span class="keyword">new</span><span> </span><span class="type-name">ExecutableDerivation</span><span>[</span><span class="type-name">El</span><span>, </span><span class="type-name">KIn</span><span>, </span><span class="type-name">VIn</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">Out</span><span>](</span><span class="identifier">builder</span><span>, </span><span class="identifier">input</span><span>))</span></code></pre>
+    <p>I already hear the &quot;your function signature is so big ...&quot; jokes incoming, but this is basically what we will (and want to) end up with when doing type-level programming. In the end, our types have to express the logic of our program and that needs some space.</p>
+    <p>But finally, we can say we did it! We convinced the Scala compiler to derive a client function from a type. Let&#39;s have a look at our example to see how it works.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">http4s</span><span>.</span><span class="identifier">client</span><span>.</span><span class="type-name">Client</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="type-name">Api</span><span> = </span><span class="identifier">api</span><span>(</span><span class="type-name">Get</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">User</span><span>]], </span><span class="type-name">Root</span><span> / </span><span class="string-literal">&quot;users&quot;</span><span> / </span><span class="type-name">Segment</span><span>[</span><span class="type-name">String</span><span>](</span><span class="symbol-literal">&#39;name</span><span>), </span><span class="type-name">Queries</span><span>.</span><span class="identifier">add</span><span>(</span><span class="type-name">Query</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="symbol-literal">&#39;minAge</span><span>)))
+</span><span class="keyword">val</span><span> </span><span class="identifier">get</span><span> = </span><span class="identifier">derive</span><span>(</span><span class="type-name">Api</span><span>)
+
+</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;joe&quot;</span><span>, </span><span class="number-literal">42</span><span>).</span><span class="identifier">run</span><span>[</span><span class="type-name">IO</span><span>](</span><span class="type-name">Client</span><span>[</span><span class="type-name">IO</span><span>]) </span><span class="comment">// IO[List[User]]</span></code></pre>
+    
+    <h2 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h2>
+    <p>When you take a closer look at the code above you will see that we were able to move most of the heavy lifting to the compiler or shapeless therefore reducing our code to a relatively small set of &quot;simple&quot; type classes. And when literal types are in thing in Scala we can also remove most of the boilerplate necessary to create our api types. </p>
+    <p>This, again, shows me how powerful Scalas type system is and how much you can gain when you embrace it.</p>
+    
+    <h2 id="next-step-typedapi" class="section"><a class="anchor-link" href="#next-step-typedapi"><code class="fas fa-link fa-sm"></code></a>Next Step - Typedapi</h2>
+    <p>Now that we are able to derive a single client function from a type we should also be able to do the same for a collection of api types. And if we are already on it, let&#39;s add server-side support. Or ... you just use <a href="https://github.com/pheymann/typedapi">Typedapi</a>. It already comes with the following features:
+     * client function derivation
+     * server function derivation
+     * single and multi api type handling
+     * support for htt4s
+     * support for akka-http in the making
+     * simple interface to add more HTTP frameworks/libraries</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/pheymann.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Paul Heymann</strong>
+              
+              <br />
+              Paul entered the realm of functional and type-level programming three years ago when he was caught by a Scala meetup. After that, he started doing Scala professionally as a Data Engineer for the social network XING. There he works on recommender systems and the ontology infrastructure which are serving requests of millions of users every day.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/pheymann">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

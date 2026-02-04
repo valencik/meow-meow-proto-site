@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Compile time dimensional analysis with Libra</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Compile time dimensional analysis with Libra</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Zainab Ali<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on June 13, 2017
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="compile-time-dimensional-analysis-with-libra" class="title">Compile time dimensional analysis with Libra</h1>
+    
+    <h2 id="dimensional-analysis" class="section"><a class="anchor-link" href="#dimensional-analysis"><code class="fas fa-link fa-sm"></code></a>Dimensional analysis</h2>
+    <p>When we code, we code in numbers - doubles, floats and ints.  Those numbers always represent real world quantities.</p>
+    <p>For example, the number of people in a room can be represented as an integer, as can the number of chairs.
+    Adding people and chairs together gives a nonsensical result, but dividing the number of people by the number of chairs gives a useful indicator of how full up the room is.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">numberOfPeople</span><span> = </span><span class="number-literal">9</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">numberOfChairs</span><span> = </span><span class="number-literal">10</span><span>
+</span><span class="identifier">numberOfPeople</span><span> + </span><span class="identifier">numberOfChairs</span><span> </span><span class="comment">// this is a bug
+</span><span class="identifier">numberOfPeople</span><span>.</span><span class="identifier">toDouble</span><span> / </span><span class="identifier">numberOfChairs</span><span>.</span><span class="identifier">toDouble</span><span> </span><span class="comment">// this is useful</span></code></pre>
+    <p>This is actually a form of dimensional analysis.  We&#39;re mentally assigning the dimension <code>Person</code> to the quantity of people, and <code>Chair</code> to the quantity of chairs.  Dimensional analysis can be summarized in two laws.</p>
+    <ol class="arabic">
+      <li>Quantities can only be added or subtracted to quantities of the same dimension</li>
+      <li>Quantities of different dimensions can be multiplied or divided</li>
+    </ol>
+    
+    <h3 id="why-is-it-important" class="section"><a class="anchor-link" href="#why-is-it-important"><code class="fas fa-link fa-sm"></code></a>Why is it important?</h3>
+    <p>Ignoring the laws can result in serious problems. 
+    Take the Mars Climate Orbiter, a $200 million space probe which successfully reached Mars after a year long voyage, but suddenly crashed into the Martian atmosphere on arrival.  Most components on the orbiter were using metric units, however a single component was sending instructions in Imperial units.  The other components did not detect this, and instead began a sudden descent causing the orbiter to burn up.  This was a simple unit conversion error!  It was a basic mistake that could have been easily avoided.  It should have been picked up during testing, or in the runtime validation layer.<br></p>
+    <p>In fact, it could even have been caught at compile time.</p>
+    
+    <h3 id="compile-time-dimensional-analysis" class="section"><a class="anchor-link" href="#compile-time-dimensional-analysis"><code class="fas fa-link fa-sm"></code></a>Compile time dimensional analysis</h3>
+    <p>We&#39;re going to use a similar problem to demonstrate compile time dimensional analysis.
+    To fit with the theme of rocket physics, we will tackle a rocket launch towards the distant constellation of Libra.
+    We&#39;ll begin by working through our calculation in doubles before adding compile time safety with dependent types and finally supporting compile time dimensional analysis with typeclass induction.</p>
+    
+    <h2 id="destination-alpha-librae" class="section"><a class="anchor-link" href="#destination-alpha-librae"><code class="fas fa-link fa-sm"></code></a>Destination: Alpha Librae</h2>
+    <p>The star that we&#39;re aiming for is Alpha Librae.  This is pretty far, so we can only send one very small person.  We have been given the following quantities to work with:</p>
+    <ul>
+      <li>rocket mass of a small person - 40kg</li>
+      <li>fuel mass of a lot of fuel - 10&lt;sup&gt;4&lt;/sup&gt;kg</li>
+      <li>exhaust speed of a decent fuel - 10&lt;sup&gt;6&lt;/sup&gt;ms&lt;sup&gt;-1&lt;/sup&gt;</li>
+      <li>distance to Alpha Librae - 77 ly</li>
+    </ul>
+    <p>We want to calculate when the rocket will arrive.</p>
+    <p>To do so, we&#39;re going to make use of a formula known as the <em>Ideal Rocket Equation</em>.
+    This calculates the speed of a rocket in ideal conditions.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">rocketSpeed</span><span> = </span><span class="identifier">exhaustSpeed</span><span> * </span><span class="identifier">log</span><span>((</span><span class="identifier">rocketMass</span><span> + </span><span class="identifier">fuelMass</span><span>) / </span><span class="identifier">rocketMass</span><span>)</span></code></pre>
+    <p>Once we have the speed, we can work out the travel time.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">time</span><span> = </span><span class="identifier">distance</span><span> / </span><span class="identifier">rocketSpeed</span></code></pre>
+    
+    <h3 id="plugging-the-numbers-in" class="section"><a class="anchor-link" href="#plugging-the-numbers-in"><code class="fas fa-link fa-sm"></code></a>Plugging the numbers in</h3>
+    <p>Let&#39;s do what we&#39;re used to doing and use doubles:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">rocketSpeed</span><span> = </span><span class="number-literal">1000000.0</span><span> * </span><span class="identifier">log</span><span>((</span><span class="number-literal">40.0</span><span> + </span><span class="number-literal">10000.0</span><span>) / </span><span class="number-literal">40.0</span><span>)
+</span><span class="comment">// rocketSpeed: Double = 5525452.939131783
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">time</span><span> = </span><span class="number-literal">77.0</span><span> / </span><span class="identifier">rocketSpeed</span><span>
+</span><span class="comment">// time: Double = 1.39355091515989E-5</span></code></pre>
+    <p>Fantastic! We can get to Libra in less than a day!</p>
+    <p>Unfortunately, this time estimate is too far off to be valid.  We can&#39;t get to Libra that quickly at light speed, let alone rocket speed.  We&#39;ve clearly made a mistake somewhere.  Instead of pouring over our code to find out where that is, let&#39;s try and use the compiler.</p>
+    
+    <h3 id="using-types" class="section"><a class="anchor-link" href="#using-types"><code class="fas fa-link fa-sm"></code></a>Using types</h3>
+    <p>We can add some type safety to this problem by using a case class to represent each quantity.</p>
+    <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">value</span><span>: </span><span class="type-name">Double</span><span>)</span></code></pre>
+    <p><code>A</code> represents the quantity dimension. So given the following dimensions:</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">Kilogram</span><span>
+</span><span class="keyword">type</span><span> </span><span class="type-name">Metre</span><span>
+</span><span class="keyword">type</span><span> </span><span class="type-name">Second</span><span>
+</span><span class="keyword">type</span><span> </span><span class="type-name">MetresPerSecond</span><span>
+</span><span class="keyword">type</span><span> </span><span class="type-name">C</span><span>
+</span><span class="keyword">type</span><span> </span><span class="type-name">LightYear</span><span>
+</span><span class="keyword">type</span><span> </span><span class="type-name">Year</span></code></pre>
+    <p>We can create quantities:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">rocketMass</span><span> = </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">Kilogram</span><span>](</span><span class="number-literal">40.0</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">fuelMass</span><span> = </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">Kilogram</span><span>](</span><span class="number-literal">10000.0</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">exhaust</span><span> = </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">MetresPerSecond</span><span>](</span><span class="number-literal">1000000.0</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">distance</span><span> = </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">LightYear</span><span>](</span><span class="number-literal">77.0</span><span>)</span></code></pre>
+    <p>It&#39;s important to note that these are <em>types</em>, not classes.  We never instantiate a <code>MetresPerSecond</code> - we&#39;re just using it to differentiate between <code>Quantity[MetresPerSecond]</code> and <code>Quantity[Year]</code> at the type level.</p>
+    <p>So how does this change the code?</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">rocketSpeed</span><span> = </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">MetresPerSecond</span><span>](</span><span class="identifier">exhaust</span><span>.</span><span class="identifier">value</span><span> * </span><span class="identifier">log</span><span>((</span><span class="identifier">rocketMass</span><span>.</span><span class="identifier">value</span><span> + </span><span class="identifier">fuelMass</span><span>.</span><span class="identifier">value</span><span>) / </span><span class="identifier">rocketMass</span><span>.</span><span class="identifier">value</span><span>))
+</span><span class="comment">// rocketSpeed: Quantity[Types.MetresPerSecond] = Quantity(5525452.939131783)
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">time</span><span> = </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">Year</span><span>](</span><span class="identifier">distance</span><span>.</span><span class="identifier">value</span><span> / </span><span class="identifier">rocketSpeed</span><span>.</span><span class="identifier">value</span><span>)
+</span><span class="comment">// time: Quantity[Types.Year] = Quantity(1.39355091515989E-5)</span></code></pre>
+    <p>In short, it doesn&#39;t. The code might be clearer, but we don&#39;t know what the bug is.  This is because the compiler isn&#39;t doing anything with the types we&#39;ve added.</p>
+    
+    <h3 id="operating-on-quantities" class="section"><a class="anchor-link" href="#operating-on-quantities"><code class="fas fa-link fa-sm"></code></a>Operating on quantities</h3>
+    <p>We can encode our first law of addition at compile time by creating a function to add quantities:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">q0</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">q1</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">Quantity</span><span>(</span><span class="identifier">q0</span><span>.</span><span class="identifier">value</span><span> + </span><span class="identifier">q1</span><span>.</span><span class="identifier">value</span><span>)</span></code></pre>
+    <p>This ensures that quantities can only be added to other quantities of the same type.  Trying to add quantities of different types will result in a compilation error.</p>
+    <p>A quantity can also be multiplied by a dimensionless scalar value to give a quantity of the same dimension.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">times</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">q</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">v</span><span>: </span><span class="type-name">Double</span><span>): </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">Quantity</span><span>(</span><span class="identifier">q</span><span>.</span><span class="identifier">value</span><span> * </span><span class="identifier">v</span><span>)</span></code></pre>
+    <p>It would be great if we could divide quantities too.  Writing a divide function is more difficult:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">divide</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">Magic</span><span>](</span><span class="identifier">q0</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">q1</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">Magic</span><span>] =
+  </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">Magic</span><span>](</span><span class="identifier">q0</span><span>.</span><span class="identifier">value</span><span> / </span><span class="identifier">q1</span><span>.</span><span class="identifier">value</span><span>)</span></code></pre>
+    <p>There&#39;s a clear problem with trying to do this.  When we divide a quantity by another, we don&#39;t know what the <code>Magic</code> output type should be.
+    The output type is dependent on what the input types are (for example, dividing <code>Metre</code> by <code>Second</code> should give <code>MetresPerSecond</code>).  The compiler needs a way of working out what the output is, provided that it knows the input types.</p>
+    
+    <h3 id="dependent-types" class="section"><a class="anchor-link" href="#dependent-types"><code class="fas fa-link fa-sm"></code></a>Dependent types</h3>
+    <p>What we actually want is a dependent type.  A division operation should occur at the type level, taking two input types and supplying a dependent output type.
+    We can create the trait <code>Divide</code> with a dependent output type:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Divide</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>] {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span>
+}</span></code></pre>
+    <p>We also need to define an <code>Aux</code> type alias.  This is known as the Aux pattern and makes it easier to refer to all three types at once.</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">Divide</span><span> {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">Aux</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">Out0</span><span>] = </span><span class="type-name">Divide</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">Out0</span><span> }
+}</span></code></pre>
+    <p>We can create instances of this divide typeclass with different output types, so the output type is dependent on the value of the divide typeclass instance.</p>
+    <p>When dividing, the compiler looks for this implicit typeclass instance and returns a quantity corresponding to the output type.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">divide</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">q0</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">q1</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">B</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="identifier">d</span><span>: </span><span class="type-name">Divide</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]): </span><span class="type-name">Quantity</span><span>[</span><span class="identifier">d</span><span>.</span><span class="type-name">Out</span><span>] =
+  </span><span class="type-name">Quantity</span><span>[</span><span class="identifier">d</span><span>.</span><span class="type-name">Out</span><span>](</span><span class="identifier">q0</span><span>.</span><span class="identifier">value</span><span> / </span><span class="identifier">q1</span><span>.</span><span class="identifier">value</span><span>)</span></code></pre>
+    <p>So given that we want to divide <code>A</code> by <code>B</code>, the compiler will look for a value of <code>Divide[A, B]</code> and find the <code>Out</code> type of it.  If no instance exists, the code doesn&#39;t compile.</p>
+    <p>We&#39;ll need some more types to represent the result of a division:</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">LightYearSecondsPerMetre</span><span>
+</span><span class="keyword">type</span><span> </span><span class="type-name">MetresPerSecondPerC</span><span>
+</span><span class="keyword">type</span><span> </span><span class="type-name">Dimensionless</span></code></pre>
+    <p>And we&#39;ll need to write instances for all combinations of dimensions.</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">kgDivideKg</span><span>: </span><span class="type-name">Divide</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">Kilogram</span><span>, </span><span class="type-name">Kilogram</span><span>, </span><span class="type-name">Dimensionless</span><span>] = 
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Divide</span><span>[</span><span class="type-name">Kilogram</span><span>, </span><span class="type-name">Kilogram</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">Dimensionless</span><span> }
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">lyDivideC</span><span>: </span><span class="type-name">Divide</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">LightYear</span><span>, </span><span class="type-name">C</span><span>, </span><span class="type-name">Year</span><span>] = 
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Divide</span><span>[</span><span class="type-name">LightYear</span><span>, </span><span class="type-name">C</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">Year</span><span> }
+	
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">lyDivideMps</span><span>: </span><span class="type-name">Divide</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">LightYear</span><span>, </span><span class="type-name">MetresPerSecond</span><span>, </span><span class="type-name">LightYearSecondsPerMetre</span><span>] = 
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Divide</span><span>[</span><span class="type-name">LightYear</span><span>, </span><span class="type-name">MetresPerSecond</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">LightYearSecondsPerMetre</span><span> }
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">mpsDivideC</span><span>: </span><span class="type-name">Divide</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">MetresPerSecond</span><span>, </span><span class="type-name">C</span><span>, </span><span class="type-name">MetresPerSecondPerC</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Divide</span><span>[</span><span class="type-name">MetresPerSecond</span><span>, </span><span class="type-name">C</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">MetresPerSecondPerC</span><span> }
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">mpsDivideMpsPerC</span><span>: </span><span class="type-name">Divide</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">MetresPerSecond</span><span>, </span><span class="type-name">MetresPerSecondPerC</span><span>, </span><span class="type-name">C</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Divide</span><span>[</span><span class="type-name">MetresPerSecond</span><span>, </span><span class="type-name">MetresPerSecondPerC</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">C</span><span> }</span></code></pre>
+    <p>And so on.</p>
+    <p>Unfortunately, there are an infinite number of combinations, so there are an infinite number of instances.
+    Nevertheless, let&#39;s plough on with the ones we&#39;ve written.  We can modify our rocket equation to use <code>add</code>, <code>times</code> and <code>divide</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">rocketSpeed</span><span> = </span><span class="identifier">times</span><span>(</span><span class="identifier">exhaust</span><span>, </span><span class="identifier">log</span><span>(</span><span class="identifier">divide</span><span>(</span><span class="identifier">add</span><span>(</span><span class="identifier">rocketMass</span><span>, </span><span class="identifier">fuelMass</span><span>), </span><span class="identifier">rocketMass</span><span>).</span><span class="identifier">value</span><span>))
+</span><span class="comment">// rocketSpeed: Quantity[Types.MetresPerSecond] = Quantity(5525452.939131783)
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">time</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">Year</span><span>] = </span><span class="identifier">divide</span><span>(</span><span class="identifier">distance</span><span>, </span><span class="identifier">rocketSpeed</span><span>)
+</span><span class="comment">// &lt;console&gt;:31: error: type mismatch;
+//  found   : Quantity[lyDivideMps.Out]
+//     (which expands to)  Quantity[MoreTypes.LightYearSecondsPerMetre]
+//  required: Quantity[Types.Year]
+//        val time: Quantity[Year] = divide(distance, rocketSpeed)
+//                                         ^</span></code></pre>
+    <p>Great!  We&#39;ve caught our bug!  The result was in <code>LightYearSecondsPerMetre</code>, not <code>Year</code>.  We made a unit conversion error, just like the Mars orbiter.</p>
+    <p>We can now fix this by adding a conversion:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">metresPerSecondPerC</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">MetresPerSecondPerC</span><span>] = </span><span class="identifier">divide</span><span>(</span><span class="type-name">Quantity</span><span>[</span><span class="type-name">MetresPerSecond</span><span>](</span><span class="number-literal">300000000.0</span><span>), </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">C</span><span>](</span><span class="number-literal">1.0</span><span>))
+</span><span class="comment">// metresPerSecondPerC: Quantity[MoreTypes.MetresPerSecondPerC] = Quantity(3.0E8)
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">speedInC</span><span> = </span><span class="identifier">divide</span><span>(</span><span class="identifier">rocketSpeed</span><span>, </span><span class="identifier">metresPerSecondPerC</span><span>)
+</span><span class="comment">// speedInC: Quantity[mpsDivideMpsPerC.Out] = Quantity(0.018418176463772612)
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">time</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">Year</span><span>] = </span><span class="identifier">divide</span><span>(</span><span class="identifier">distance</span><span>, </span><span class="identifier">speedInC</span><span>)
+</span><span class="comment">// time: Quantity[Types.Year] = Quantity(4180.65274547967)</span></code></pre>
+    <p>It seems like it&#39;s going to take a lot longer than we hoped to get to Libra.  Perhaps it&#39;s unwise to send a person.</p>
+    
+    <h2 id="automatic-derivation" class="section"><a class="anchor-link" href="#automatic-derivation"><code class="fas fa-link fa-sm"></code></a>Automatic derivation</h2>
+    <p>We found the bug, but we needed to explicitly write out typeclass instances for every combination of dimensions.
+    This might have worked for our small problem, but it just doesn&#39;t scale in the long run.
+    We need to figure out a way of deriving the typeclass instances automatically.
+    To attempt this, we first need to generalize what a combination of dimensions actually is.</p>
+    
+    <h3 id="representing-dimensions" class="section"><a class="anchor-link" href="#representing-dimensions"><code class="fas fa-link fa-sm"></code></a>Representing dimensions</h3>
+    <p>We can represent a combination of dimensions as a heterogeneous list (HList) of base dimensions.  HLists are defined in <a href="https://github.com/milessabin/shapeless">shapeless</a>, a cornerstone of most functional libraries, and can be thought of as a type level list.</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">LightYearSeconds</span><span> = </span><span class="type-name">LightYear</span><span> :: </span><span class="type-name">Second</span><span> :: </span><span class="type-name">HNil</span></code></pre>
+    <p>This is good for multiples of dimensions, such as <code>LightYearSeconds</code>, but doesn&#39;t represent combinations created from division, such as <code>MetresPerSecond</code>.
+    To do this, we need some way of representing integer exponents as types. We can represent integers as types using Singleton types.  We actually need these singleton types in type position.  This is supported by a new feature present in <a href="https://typelevel.org/scala/">Typelevel Scala</a>, called <a href="http://docs.scala-lang.org/sips/pending/42.type.html">literal types</a>:</p>
+    <pre><code class="nohighlight"><span class="identifier">scalaOrganization</span><span> := </span><span class="string-literal">&quot;org.typelevel&quot;</span><span>
+</span><span class="identifier">scalacOptions</span><span> += </span><span class="string-literal">&quot;-Yliteral-types&quot;</span></code></pre>
+    <p>We need to represent a key value pair of dimension and integer exponent. We could use a <code>Tuple</code> for this, but will use a shapeless <code>FieldType</code> instead.  This is similar to a <code>Tuple</code>, but is more compatible with some of shapeless&#39;s typeclasses.</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">MetresPerSecond</span><span> = </span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Metre</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Second</span><span>, -</span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span></code></pre>
+    <p>It&#39;s important to note that the number <code>1</code> above is a type, not a value.  Because it&#39;s a type, the compiler can work with it.</p>
+    
+    <h3 id="operations-on-singleton-types" class="section"><a class="anchor-link" href="#operations-on-singleton-types"><code class="fas fa-link fa-sm"></code></a>Operations on Singleton types</h3>
+    <p>When we multiply and divide dimensions, we want to add or subtract from these exponents.</p>
+    <p>We can use a library called <a href="https://github.com/fthomas/singleton-ops">singleton ops</a> to do this.  This provides us with type level integer operations using the <code>OpInt</code> typeclass:</p>
+    <pre><code class="nohighlight"><span class="type-name">OpInt</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="number-literal">1</span><span> + </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>]
+</span><span class="type-name">OpInt</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="number-literal">3</span><span> * </span><span class="number-literal">2</span><span>, </span><span class="number-literal">6</span><span>]</span></code></pre>
+    <p>It also provides a convenient alias for integer singleton types</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">XInt</span><span> = </span><span class="type-name">Singleton</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">Int</span></code></pre>
+    <p>The type <code>1</code>, for example, is a subtype of <code>XInt</code>.</p>
+    
+    <h3 id="deriving-typeclass-instances" class="section"><a class="anchor-link" href="#deriving-typeclass-instances"><code class="fas fa-link fa-sm"></code></a>Deriving typeclass instances</h3>
+    <p>We now need to automatically derive typeclass instances of <code>Divide</code>.
+    To do this, we&#39;re going to derive instances for <code>Invert</code> and <code>Multiply</code> operations first.
+    Deriving <code>Divide</code> then becomes much simpler.</p>
+    <p>The technique we&#39;re going to use to automatically derive instances is known as typeclass induction.</p>
+    
+    <h3 id="typeclass-induction" class="section"><a class="anchor-link" href="#typeclass-induction"><code class="fas fa-link fa-sm"></code></a>Typeclass Induction</h3>
+    <p>Aaron Levin gave a great introduction to induction in his talk earlier at the <a href="https://typelevel.org/event/2017-06-summit-copenhagen/">Typelevel Summit</a>.  In summary, you can derive an implicit typeclass instance for all cases by:</p>
+    <ol class="arabic">
+      <li>Providing it for the base case</li>
+      <li>Providing it for the n + 1 case, given that the n case is provided</li>
+    </ol>
+    <p>This is similar to the mathematical method of proof by induction.</p>
+    
+    <h3 id="invert" class="section"><a class="anchor-link" href="#invert"><code class="fas fa-link fa-sm"></code></a>Invert</h3>
+    <p>We&#39;re first going to derive inductive typeclass instances for the <code>Invert</code> operation.
+    Inverting a quantity raises it to the exponent of <code>-1</code>.  This means that the exponents of all dimensions must be negated.</p>
+    <p>For example, the inverse of <code>FieldType[Metre, 1] :: HNil</code> is <code>FieldType[Metre, -1] :: HNil</code>.
+    <code>Invert</code> takes one input type and returns one output type:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Invert</span><span>[</span><span class="type-name">A</span><span>] {
+	</span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span>
+}
+</span><span class="keyword">object</span><span> </span><span class="type-name">Invert</span><span> {
+	</span><span class="keyword">type</span><span> </span><span class="type-name">Aux</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">Out0</span><span>] = </span><span class="type-name">Invert</span><span>[</span><span class="type-name">A</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">Out0</span><span> }
+}</span></code></pre>
+    <p>To inductively derive typeclass instances for inverting, we need to prove that:</p>
+    <ol class="arabic">
+      <li>We can derive an instance for <code>HNil</code> (the base case)</li>
+      <li>We can derive an instance for a non-empty HList (the n + 1 case), provided there is an existing instance for its tail (the n case)</li>
+    </ol>
+    <p>The base case operates on <code>HNil</code></p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">baseCase</span><span>: </span><span class="type-name">Invert</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">HNil</span><span>, </span><span class="type-name">HNil</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">Invert</span><span>[</span><span class="type-name">HNil</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">HNil</span><span> }</span></code></pre>
+    <p>The inductive case assumes that the tail has an instance, and derives an instance for the head by negating the exponent:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">inductiveCase</span><span>[</span><span class="type-name">D</span><span>, </span><span class="type-name">Exp</span><span> &lt;: </span><span class="type-name">XInt</span><span>, </span><span class="type-name">NExp</span><span> &lt;: </span><span class="type-name">XInt</span><span>, </span><span class="type-name">Tail</span><span> &lt;: </span><span class="type-name">HList</span><span>, 
+  </span><span class="type-name">OutTail</span><span> &lt;: </span><span class="type-name">HList</span><span>](
+    </span><span class="keyword">implicit</span><span> </span><span class="identifier">negateEv</span><span>: </span><span class="type-name">OpInt</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">Negate</span><span>[</span><span class="type-name">Exp</span><span>], </span><span class="type-name">NExp</span><span>],
+    </span><span class="identifier">tailEv</span><span>: </span><span class="type-name">Invert</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">Tail</span><span>, </span><span class="type-name">OutTail</span><span>]
+): </span><span class="type-name">Invert</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">D</span><span>, </span><span class="type-name">Exp</span><span>] :: </span><span class="type-name">Tail</span><span>, </span><span class="type-name">FieldType</span><span>[</span><span class="type-name">D</span><span>, </span><span class="type-name">NExp</span><span>] :: </span><span class="type-name">OutTail</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Invert</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">D</span><span>, </span><span class="type-name">Exp</span><span>] :: </span><span class="type-name">Tail</span><span>] {
+    </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">FieldType</span><span>[</span><span class="type-name">D</span><span>, </span><span class="type-name">NExp</span><span>] :: </span><span class="type-name">OutTail</span><span>
+}</span></code></pre>
+    <p>When the compiler looks for the implicit instance for <code>FieldType[Metre, 1] :: HNil</code>:</p>
+    <ul>
+      <li>It finds that the <code>inductiveCase</code> method has a return type which fits the signature</li>
+      <li>It can find the required evidence <code>negateEv</code> for negating <code>1</code> from singleton ops</li>
+      <li>It requires evidence of an implicit instance for the tail <code>HNil</code></li>
+      <li>It finds that <code>baseCase</code> provides this evidence</li>
+    </ul>
+    <p>So in hunting for implicit typeclass instance for the whole list, the compiler goes and finds instances for the tail (the n case), right up until the base.  If we provide an inductive proof with a <code>baseCase</code> and an <code>inductiveCase</code>, we fit the bill for what the compiler needs.</p>
+    
+    <h3 id="multiply" class="section"><a class="anchor-link" href="#multiply"><code class="fas fa-link fa-sm"></code></a>Multiply</h3>
+    <p>Now that we&#39;ve tested a basic example of induction, we can go on to a more complex one.</p>
+    <p>We want to multiply two HLists of dimensions together. This means that the exponents should be added.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Multiply</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>] {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span>
+}
+</span><span class="keyword">object</span><span> </span><span class="type-name">Multiply</span><span> {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">Aux</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">Out0</span><span>] = </span><span class="type-name">Multiply</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>] { </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">Out0</span><span> }
+}</span></code></pre>
+    <p>This is harder to make inductive because there are two input lists involved.  Luckily, we only need to recurse over one of them, as we can pick dimensions from the other using shapeless&#39;s <code>Selector</code>.  We will recurse over the left list and can pick elements from the right list.</p>
+    <p>Our base case can be the same:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">baseCase</span><span>: </span><span class="type-name">Multiply</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">HNil</span><span>, </span><span class="type-name">HNil</span><span>, </span><span class="type-name">HNil</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">Multiply</span><span>[</span><span class="type-name">HNil</span><span>, </span><span class="type-name">HNil</span><span>] {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">HNil</span><span>
+}</span></code></pre>
+    <p>We can define the inductive case using the following logic:
+    1.  Pick the exponent in the right list corresponding to the head dimension in the left list
+    2.  Add the left and right exponents together
+    3.  Filter the term from the right list to get the remaining elements
+    4.  Look for a typeclass instance for the left list tail and the remaining elements in the right list</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">inductiveCase</span><span>[</span><span class="type-name">D</span><span>, </span><span class="type-name">R</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">LExp</span><span> &lt;: </span><span class="type-name">XInt</span><span> , </span><span class="type-name">RExp</span><span> &lt;: </span><span class="type-name">XInt</span><span>, 
+  </span><span class="type-name">OutExp</span><span> &lt;: </span><span class="type-name">XInt</span><span>, </span><span class="type-name">RTail</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">LTail</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">OutTail</span><span> &lt;: </span><span class="type-name">HList</span><span>](
+  </span><span class="keyword">implicit</span><span> </span><span class="identifier">pickEv</span><span>: </span><span class="type-name">Selector</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">R</span><span>, </span><span class="type-name">D</span><span>, </span><span class="type-name">RExp</span><span>],
+  </span><span class="identifier">addEv</span><span>: </span><span class="type-name">OpInt</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">LExp</span><span> + </span><span class="type-name">RExp</span><span>, </span><span class="type-name">OutExp</span><span>],
+  </span><span class="identifier">filterEv</span><span>: </span><span class="type-name">FilterNot</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">R</span><span>, </span><span class="type-name">FieldType</span><span>[</span><span class="type-name">D</span><span>, </span><span class="type-name">RExp</span><span>], </span><span class="type-name">RTail</span><span>],
+  </span><span class="identifier">tailEv</span><span>: </span><span class="type-name">Multiply</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">LTail</span><span>, </span><span class="type-name">RTail</span><span>, </span><span class="type-name">OutTail</span><span>]
+): </span><span class="type-name">Multiply</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">D</span><span>, </span><span class="type-name">LExp</span><span>] :: </span><span class="type-name">LTail</span><span>, </span><span class="type-name">R</span><span>, </span><span class="type-name">FieldType</span><span>[</span><span class="type-name">D</span><span>, </span><span class="type-name">OutExp</span><span>] :: </span><span class="type-name">OutTail</span><span>] = 
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Multiply</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">D</span><span>, </span><span class="type-name">LExp</span><span>] :: </span><span class="type-name">LTail</span><span>, </span><span class="type-name">R</span><span>] {
+    </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">FieldType</span><span>[</span><span class="type-name">D</span><span>, </span><span class="type-name">OutExp</span><span>] :: </span><span class="type-name">OutTail</span><span>
+}</span></code></pre>
+    <p>When the compiler looks for an implicit instance of multiply for <code>FieldType[Metre, -1] :: HNil</code> and <code>FieldType[Metre, 3] :: HNil</code>:</p>
+    <ul>
+      <li>It finds that the <code>inductiveCase</code> has a return type which fits the signature</li>
+      <li>Given that the head of the left list is <code>Metre</code>, it selects the exponent for <code>Metre</code> from the right list</li>
+      <li>It can find the evidence <code>addEv</code> to add the exponents <code>-1</code> and <code>3</code></li>
+      <li>It filters <code>Metre</code> from the right list to get <code>HNil</code></li>
+      <li>It requires evidence of an instance for  <code>HNil</code> and <code>HNil</code></li>
+      <li>This is provided by the base case</li>
+    </ul>
+    <p>The compiler can now find instances of <code>Multiply</code>, as long as a dimension appears in both the left and right lists.
+    This can be extended to when a dimension doesn&#39;t appear by writing a few more inductive cases.</p>
+    
+    <h3 id="divide" class="section"><a class="anchor-link" href="#divide"><code class="fas fa-link fa-sm"></code></a>Divide</h3>
+    <p>The reason we went to the effort of writing <code>Invert</code> and <code>Multiply</code> was to divide.
+    Dividing a numerator by a denominator is as simple as inverting the denominator and multiplying it by the numerator.
+    We can write this in a single non-inductive instance:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">divide</span><span>[</span><span class="type-name">L</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">R</span><span> &lt;: </span><span class="type-name">HList</span><span>, </span><span class="type-name">RInverted</span><span> &lt;: </span><span class="type-name">HList</span><span>, 
+  </span><span class="type-name">Divided</span><span> &lt;: </span><span class="type-name">HList</span><span>](
+  </span><span class="keyword">implicit</span><span> </span><span class="identifier">invertEv</span><span>: </span><span class="type-name">Invert</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">R</span><span>, </span><span class="type-name">RInverted</span><span>],
+  </span><span class="identifier">multiplyEv</span><span>: </span><span class="type-name">Multiply</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">L</span><span>, </span><span class="type-name">RInverted</span><span>, </span><span class="type-name">Divided</span><span>]
+): </span><span class="type-name">Divide</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">L</span><span>, </span><span class="type-name">R</span><span>, </span><span class="type-name">Divided</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">Divide</span><span>[</span><span class="type-name">L</span><span>, </span><span class="type-name">R</span><span>] {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">Out</span><span> = </span><span class="type-name">Divided</span><span>
+}</span></code></pre>
+    <p>That&#39;s far simpler than the work we&#39;ve done before - we&#39;re just building on the typeclasses we wrote to do this.</p>
+    
+    <h3 id="automatically-derived-instances" class="section"><a class="anchor-link" href="#automatically-derived-instances"><code class="fas fa-link fa-sm"></code></a>Automatically derived instances</h3>
+    <p>We can now have compile time dimensional analysis without writing out divide instances for every combination of dimensions:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">rocketMass</span><span> = </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Kilogram</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>](</span><span class="number-literal">40.0</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">fuelMass</span><span> = </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Kilogram</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>](</span><span class="number-literal">10000.0</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">exhaust</span><span> = </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Metre</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Second</span><span>, -</span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>](</span><span class="number-literal">1000000.0</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">distance</span><span> = </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">LightYear</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>](</span><span class="number-literal">77.0</span><span>)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">rocketSpeed</span><span> = </span><span class="identifier">times</span><span>(</span><span class="identifier">exhaust</span><span>, </span><span class="identifier">log</span><span>(</span><span class="identifier">divide</span><span>(</span><span class="identifier">add</span><span>(</span><span class="identifier">rocketMass</span><span>, </span><span class="identifier">fuelMass</span><span>), </span><span class="identifier">rocketMass</span><span>).</span><span class="identifier">value</span><span>))
+</span><span class="keyword">val</span><span> </span><span class="identifier">time</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Year</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>] = </span><span class="identifier">divide</span><span>(</span><span class="identifier">distance</span><span>, </span><span class="identifier">rocketSpeed</span><span>)
+</span><span class="comment">// error: type mismatch; found: FieldType[LightYear, 1] :: FieldType[Metre, -1] :: FieldType[Second, 1] :: HNil; required: FieldType[Year, 1] :: HNil</span></code></pre>
+    <p>Yay! We&#39;ve solved the problem!  It looks a lot more verbose than what we started with, but we can tidy this up by using extension methods:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">final</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DoubleOps</span><span>(</span><span class="keyword">val</span><span> </span><span class="identifier">d</span><span>: </span><span class="type-name">Double</span><span>) {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">ly</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">LightYear</span><span>,</span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>] = </span><span class="type-name">Quantity</span><span>(</span><span class="identifier">d</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">kg</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Kilogram</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>] = </span><span class="type-name">Quantity</span><span>(</span><span class="identifier">d</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">yr</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Year</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>]     = </span><span class="type-name">Quantity</span><span>(</span><span class="identifier">d</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">mps</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Metre</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Second</span><span>, -</span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>] = </span><span class="type-name">Quantity</span><span>(</span><span class="identifier">d</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">c</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">LightYear</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">FieldType</span><span>[</span><span class="type-name">Year</span><span>, -</span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>] = </span><span class="type-name">Quantity</span><span>(</span><span class="identifier">d</span><span>)
+}</span></code></pre>
+    <p>We can also add symbolic infix operators for <code>add</code>, <code>times</code> and <code>divide</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">value</span><span>: </span><span class="type-name">Double</span><span>) {
+  </span><span class="keyword">def</span><span> +(</span><span class="identifier">q</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">Quantity</span><span>(</span><span class="identifier">value</span><span> + </span><span class="identifier">q</span><span>.</span><span class="identifier">value</span><span>)
+  </span><span class="keyword">def</span><span> *(</span><span class="identifier">v</span><span>: </span><span class="type-name">Double</span><span>): </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">Quantity</span><span>(</span><span class="identifier">value</span><span> + </span><span class="identifier">v</span><span>)
+  </span><span class="keyword">def</span><span> /[</span><span class="type-name">B</span><span>](</span><span class="identifier">q</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">B</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="identifier">d</span><span>: </span><span class="type-name">Divide</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]): </span><span class="type-name">Quantity</span><span>[</span><span class="identifier">d</span><span>.</span><span class="type-name">Out</span><span>] = </span><span class="type-name">Quantity</span><span>(</span><span class="identifier">value</span><span> / </span><span class="identifier">q</span><span>.</span><span class="identifier">value</span><span>)
+}</span></code></pre>
+    
+    <h2 id="we-ve-reached-libra" class="section"><a class="anchor-link" href="#we-ve-reached-libra"><code class="fas fa-link fa-sm"></code></a>We&#39;ve reached Libra!</h2>
+    <p>We started with doubles:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">rocketSpeed</span><span> = </span><span class="number-literal">1000000.0</span><span> * </span><span class="identifier">log</span><span>((</span><span class="number-literal">40.0</span><span> + </span><span class="number-literal">10000.0</span><span>) / </span><span class="number-literal">40.0</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">time</span><span> = </span><span class="number-literal">77.0</span><span> / </span><span class="identifier">rocketSpeed</span></code></pre>
+    <p>And we finished with compile time dimensional analysis:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">rocketSpeed</span><span> = </span><span class="number-literal">1000000.0</span><span>.</span><span class="identifier">mps</span><span> * </span><span class="identifier">log</span><span>(((</span><span class="number-literal">40.0</span><span>.</span><span class="identifier">kg</span><span> +</span><span class="number-literal">10000.0</span><span>.</span><span class="identifier">kg</span><span>) /</span><span class="number-literal">40.0</span><span>.</span><span class="identifier">kg</span><span>).</span><span class="identifier">value</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">speedConversion</span><span> = </span><span class="number-literal">300000000.0</span><span>.</span><span class="identifier">mps</span><span> / </span><span class="number-literal">1</span><span>.</span><span class="identifier">c</span><span> 
+</span><span class="keyword">val</span><span> </span><span class="identifier">speedInC</span><span> = </span><span class="identifier">rocketSpeed</span><span> / </span><span class="identifier">speedConversion</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">time</span><span> = </span><span class="number-literal">77.0</span><span>.</span><span class="identifier">ly</span><span> / </span><span class="identifier">speedInC</span><span>
+</span><span class="comment">//time: Quantity[FieldType[Year, 1] :: HNil] = Quantity(4180.65274634)</span></code></pre>
+    <p>The code isn&#39;t more verbose - if anything, it&#39;s more explanatory and just as easy to work with.</p>
+    
+    <h2 id="rolling-this-out-to-more-problems" class="section"><a class="anchor-link" href="#rolling-this-out-to-more-problems"><code class="fas fa-link fa-sm"></code></a>Rolling this out to more problems</h2>
+    <p>All we need to provide for the business logic of our rocket launch problem are the dimensions and <code>DoubleOps</code>.
+    We could roll this out to any other problem.  Let&#39;s say we wanted to do a currency conversion between <code>GBP</code> and <code>DKK</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">exchangeRate</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">DKK</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">FieldType</span><span>[</span><span class="type-name">GBP</span><span>, -</span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>] = 
+   </span><span class="identifier">currentExchangeRate</span><span>() 
+</span><span class="type-name">Val</span><span> </span><span class="identifier">krone</span><span>: </span><span class="type-name">Quantity</span><span>[</span><span class="type-name">FieldType</span><span>[</span><span class="type-name">DKK</span><span>, </span><span class="number-literal">1</span><span>] :: </span><span class="type-name">HNil</span><span>] = </span><span class="number-literal">10</span><span>.</span><span class="identifier">gbp</span><span> * </span><span class="identifier">exchangeRate</span></code></pre>
+    <p>We get dimensional analysis for any problem domain out of the box!</p>
+    <p>Most of the code we&#39;ve written is library code.  In fact, it&#39;s Libra code!  <a href="https://to-ithaca.github.io/libra/">Libra</a> is a dimensional analysis library based on typelevel induction.  It performs compile time dimensional analysis to any problem domain.  It also uses <a href="https://github.com/non/spire">spire</a> for its numeric typeclasses, so can be used for far more than just doubles.</p>
+    
+    <h2 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h2>
+    <p>It&#39;s been a long way from the humble <code>Double</code>.  We started with basic types, explored dependent types, took a look at Typelevel Scala along the way, before finally ending up performing typelevel induction.  As a result, we&#39;ve managed to achieve compile time dimensional analysis for any problem. If you&#39;re curious about typelevel induction take a look at <a href="https://github.com/to-ithaca/libra">the Libra codebase</a> for more examples.  Enjoy!</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Zainab Ali</strong>
+              
+              <br />
+              Zainab is a functional programmer who converted from object oriented design.  A physicist at heart, she was excited to find an application of dimensional analysis and dependent types to real world problems.  She is the author of Libra and a contributor to many typelevel libraries, such as cats and fs2.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

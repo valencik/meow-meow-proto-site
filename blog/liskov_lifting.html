@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>When can Liskov be lifted?</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">When can Liskov be lifted?</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on March 9, 2014
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="when-can-liskov-be-lifted" class="title">When can Liskov be lifted?</h1>
+    <p>Scalaz avoids
+    <a href="http://docs.scala-lang.org/tutorials/tour/variances.html">variance in the sense of the Scala type parameter annotation</a>,
+    with its associated higher-kind implications, except where it has
+    historically featured variance; even here, variance is vanishing as
+    <a href="https://github.com/scalaz/scalaz/pull/630">unsoundness in its released implementations is discovered</a>.</p>
+    <p>There is a deeply related concept in Scalaz&#39;s typeclasses, though:
+    <em>covariant and contravariant
+    functors</em>. <a href="http://docs.typelevel.org/api/scalaz/stable/7.0.4/doc/#scalaz.Functor"><code>Functor</code></a>
+    is traditional shorthand for covariant functor, whereas
+    <a href="http://docs.typelevel.org/api/scalaz/stable/7.0.4/doc/#scalaz.Contravariant"><code>Contravariant</code></a>
+    represents contravariant functors.</p>
+    <p>These concepts are related, but neither subsumes the other. A
+    <code>Functor</code> instance does not require its parameter to be
+    Scala-covariant. A type can be Scala-covariant over a parameter
+    without having a legal <code>Functor</code> instance.</p>
+    
+    <h2 id="liskov" class="section"><a class="anchor-link" href="#liskov"><code class="fas fa-link fa-sm"></code></a><code>Liskov</code></h2>
+    <p><a href="http://docs.typelevel.org/api/scalaz/stable/7.0.4/doc/#scalaz.Liskov"><code>Liskov</code></a>,
+    also known as <code>&lt;~&lt;</code> and very close to Scala&#39;s own
+    <a href="http://www.scala-lang.org/api/current/#scala.Predef$$$less$colon$less"><code>&lt;:&lt;</code></a>,
+    represents a subtyping relationship, and is defined by the ability to
+    lift it into Scala-covariant and Scala-contravariant parameter
+    positions, like so:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">liftCo</span><span>[</span><span class="type-name">F</span><span>[+</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span> &lt;~&lt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] &lt;~&lt; </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">liftCt</span><span>[</span><span class="type-name">F</span><span>[-</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span> &lt;~&lt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>] &lt;~&lt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+    <p>As <code>Liskov</code> is, soundly, Scala-variant, this can be implemented
+    without a cast. However, it can only be called with Scala-covariant
+    <code>F</code>.</p>
+    <p>By definition, applying an <code>A&nbsp;&lt;~&lt;&nbsp;B</code> to a value of type <code>A</code> should
+    yield a value of type <code>B</code>, but must also do nothing but return the
+    value; in other words, it is an <em>operational identity</em>. Despite the
+    limitation of <code>liftCo</code>, for functorial values that are <em>parametrically
+    sound</em>, even for Scala-invariant <code>F</code>, it is operationally sound to
+    lift <code>Liskov</code>, though impossible to implement without exploiting Scala
+    soundness holes:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">liftCvf</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Functor</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span> &lt;~&lt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] &lt;~&lt; </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]</span></code></pre>
+    <p>For example,
+    <a href="https://github.com/scalaz/scalaz/blob/v7.1.0-M5/core/src/main/scala/scalaz/IList.scala#L434-L437">this is sound for <code>scalaz.IList</code></a>.</p>
+    
+    <h2 id="but-ilist-int-isn-t-a-subtype-of-ilist-any" class="section"><a class="anchor-link" href="#but-ilist-int-isn-t-a-subtype-of-ilist-any"><code class="fas fa-link fa-sm"></code></a>But <code>IList[Int]</code> isn&#39;t a subtype of <code>IList[Any]</code>!</h2>
+    <p>Sure, as far as Scala is concerned.  But <code>Liskov</code> is all about making
+    claims that can&#39;t directly be proven due to the language&#39;s
+    limitations.  Haskell allows you to constrain functions with type
+    equalities, which is very important when working with type families;
+    Scala doesn&#39;t, so we get
+    <a href="http://docs.typelevel.org/api/scalaz/stable/7.0.4/doc/#scalaz.Leibniz"><code>Leibniz</code></a>
+    instead.</p>
+    <p>A type is a set of values.  Where <em>Y</em> is a supertype of <em>X</em>, every
+    value in <em>X</em> is in <em>Y</em>.  Since <code>IList[String](&quot;hi&quot;, &quot;there&quot;)</code> has the
+    same representation as <code>IList[Any](&quot;hi&quot;, &quot;there&quot;)</code>, they are the same
+    value.  This is true for <em>all</em> <code>IList[String]</code>s, but the opposite is
+    not true; therefore, <code>IList[Any]</code> is an <code>IList[String]</code> supertype,
+    regardless of what Scala knows.</p>
+    <p>So doing a casting <code>Liskov</code> lift, like that into <code>IList</code>, is
+    essentially “admitted” in a proof system sense.  You are saying, “I
+    can&#39;t prove that this subtype relationship holds, but it does, so
+    assume it.”</p>
+    <p><strong>To decide whether an admitted <code>A &lt;~&lt; B</code> is sound</strong>: suppose that the
+    compiler admits that subtyping relationship.  Can it then draw
+    incorrect conclusions, about the sets of values, derived from that
+    assumption?  This is the cardinal rule.</p>
+    <p>By extension, <strong>to decide whether an <code>F</code> permits Liskov lifting</strong>:
+    does the above rule pass given <code>F[A] &lt;~&lt; F[B]</code> <em>for all</em> <code>A</code>, <code>B</code>
+    where <code>B</code> is a supertype of <code>A</code>?</p>
+    
+    <h2 id="parametrically-sound-covariance" class="section"><a class="anchor-link" href="#parametrically-sound-covariance"><code class="fas fa-link fa-sm"></code></a>Parametrically sound covariance</h2>
+    <p>Because a <code>Liskov</code> must be an operational identity, it is essential
+    that, given any value of <code>F[A]</code>, for all supertypes <code>B</code> of <code>A</code>, the
+    representation of <code>F[B]</code> must be identical.  You can determine this by
+    analyzing the subclasses of <code>F</code> as an algebraic data type, where the
+    key test is to ensure that <code>A</code> <em>never</em> appears in the primitive
+    contravariant position: as the parameter to a function.  This test is
+    not quite enough to prove that <code>Liskov</code> lifting is sound, but it gets
+    us most of the way.</p>
+    <p>For example, an <code>IList</code> of <code>&quot;hi&quot;</code> and <code>&quot;there&quot;</code> has exactly the same
+    representation whether you instantiated the <code>IList</code> with <code>String</code> or
+    with <code>Any</code>. So that is a good first test. If a class changes its
+    construction behavior based on manifest type information, or its basic
+    data construction functions violate
+    <a href="http://failex.blogspot.com/2013/06/fake-theorems-for-free.html">the rules of parametricity</a>,
+    that is a good sign that the data type cannot follow these rules.</p>
+    <p>This data type analysis is recursive: a data type being variant in a
+    parametrically sound way over a parameter requires that all
+    appearances of that parameter in elements of your data type are also
+    parametrically sound in that way. For example, if your <code>F[A]</code> contains
+    an <code>IList[A]</code> in its representation, you may rely on <code>IList</code>&#39;s
+    parametrically sound covariance when considering <code>F</code>&#39;s.</p>
+    <p>Any <code>var</code>, or <code>var</code>-like thing such as an <code>Array</code>, places its
+    parameter in an invariant position, because it features a getter
+    (return type) and setter (parameter type). So its presence in the data
+    model invalidates <code>Liskov</code> lifting if the type parameter appears
+    within it.</p>
+    <p>Obviously, runtime evidence of a type parameter&#39;s value eliminates the
+    possibility of lifting <code>Liskov</code> over that parameter.</p>
+    <p>You cannot perform this representation analysis without considering
+    all subclasses of a class under consideration. For example,
+    considering only
+    <a href="http://www.scala-lang.org/api/current/#scala.collection.immutable.HashSet"><code>HashSet</code></a>,
+    <a href="http://www.scala-lang.org/api/current/#scala.collection.immutable.Set"><code>collection.immutable.Set</code></a>
+    appears to allow <code>Liskov</code> lifting. However,
+    <a href="http://www.scala-lang.org/api/current/#scala.collection.immutable.TreeSet"><code>TreeSet</code></a>,
+    a subclass of <code>Set</code>, contains a function <code>(A,&nbsp;A)&nbsp;=&gt;&nbsp;Ordering</code>. If
+    <em>any</em> representation contains a contradiction like this, <code>Liskov</code>
+    lifting is unsafe. You cannot constrain <code>Liskov</code> application by a
+    runtime test.</p>
+    <p>If you permit open subclassing, you must either declare the
+    requirement to preserve parametric covariance, or accept that it will
+    be violated, and so forbid <code>Liskov</code> lifting.</p>
+    <p>Data that doesn&#39;t use a type parameter doesn&#39;t affect its parametric
+    soundness.  For example, here <code>A</code> is invariant, but <code>B</code> is covariant:</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">VA</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">xs</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">ys</span><span>: </span><span class="type-name">IList</span><span>[</span><span class="type-name">B</span><span>])</span></code></pre>
+    
+    <h2 id="gadts" class="section"><a class="anchor-link" href="#gadts"><code class="fas fa-link fa-sm"></code></a>GADTs</h2>
+    <p>Some features of Scala resist simple ADT analysis, so must be
+    considered separately from the above.  Despite their sound covariance
+    considering only the representational rules in the previous section,
+    they still break the cardinal rule by allowing the compiler to make
+    invalid assumptions about the sets of values.  A “recoverable phantom”
+    implies a type relationship that forbids <code>Liskov</code>-lifting, for
+    example:</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Gimme</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">GimmeI</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Gimme</span><span>[</span><span class="type-name">Int</span><span>]</span></code></pre>
+    <p>In pattern matching, given a <code>Gimme[A]</code> over unknown <code>A</code>, matching
+    <code>GimmeI</code> successfully recovers the type equality <code>A&nbsp;~&nbsp;Int</code>; therefore,
+    <code>Liskov</code>-lifting is unsound for <code>Gimme</code>.  For example, lifting
+    <code>Int&nbsp;&lt;~&lt;&nbsp;Any</code>, applying to <code>GimmeI</code>, and matching, gives us
+    <code>Any&nbsp;~&nbsp;Int</code>, which is nonsense.</p>
+    <p>We can reason about this type equality as a value member of <code>GimmeI</code>
+    of type <code>Leibniz[⊥,&nbsp;⊤,&nbsp;A,&nbsp;Int]</code>, which places <code>A</code> in a
+    representationally invariant position.</p>
+    <p>Some other GADTs invalidate covariance. For example:</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">P</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PP</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">P</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">b</span><span>: </span><span class="type-name">P</span><span>[</span><span class="type-name">B</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">P</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>)]</span></code></pre>
+    <p>The pattern match of a <code>P[A]</code> to <code>PP[_,_]</code> can theoretically determine
+    <code>A&nbsp;~&nbsp;(x,&nbsp;y)&nbsp;forSome&nbsp;{type&nbsp;x;&nbsp;type&nbsp;y}</code>, so <code>Liskov</code> cannot be lifted
+    into <code>P</code>.</p>
+    <p>However, not all GADTs invalidate <code>Liskov</code>-lifting:</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">AM</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">FAM</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">AM</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">AM</span><span>[</span><span class="type-name">B</span><span>]</span></code></pre>
+    <p>Matching <code>AM[A]</code> to <code>FAM[_,_]</code> reveals nothing about <code>A</code>; its use of
+    GADTs only introduces a new existential unrelated to <code>A</code>.  Considering
+    only <code>B</code>, as the <code>A</code> parameter is called in <code>FAM</code>, its covariance is
+    sound in <code>FAM</code>, so <code>Liskov</code>s can be lifted into <code>AM</code>.</p>
+    
+    <h2 id="contravariance" class="section"><a class="anchor-link" href="#contravariance"><code class="fas fa-link fa-sm"></code></a>Contravariance</h2>
+    <p><code>Liskov</code>s can also be lifted into parametrically sound contravariant
+    positions.  This looks a bit like:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">liftCtf</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Contravariant</span><span>, </span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span> &lt;~&lt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>] &lt;~&lt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+    <p>Analysis of parametrically sound contravariance is essentially the
+    same as that for covariance.  The only difference is that, for <code>F[A]</code>,
+    <code>A</code> can <em>only</em> appear in the primitive contravariant position: the
+    function parameter type.</p>
+    <p>With regard to recursion, the “flipping” behavior of
+    Scala-contravariance applies.  For example, this data type is soundly
+    contravariant over <code>A</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">IOf</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">f</span><span>: </span><span class="type-name">IList</span><span>[</span><span class="type-name">A</span><span>] =&gt; </span><span class="type-name">Unit</span><span>)</span></code></pre>
+    <p><code>IList</code> is soundly covariant over <code>A</code>, and <code>IList[A]</code> appears in
+    soundly contravariant position, making <code>A</code> contravariant.  Meanwhile,
+    <code>A</code> is soundly <em>co</em>variant in this data type built upon <code>IOf</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">IOf2</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">f</span><span>: </span><span class="type-name">IOf</span><span>[</span><span class="type-name">IOf</span><span>[</span><span class="type-name">A</span><span>]])</span></code></pre>
+    
+    <h2 id="some-surprises" class="section"><a class="anchor-link" href="#some-surprises"><code class="fas fa-link fa-sm"></code></a>Some surprises</h2>
+    <p>Despite the unsoundness of <code>Liskov</code>-lifting into <code>Gimme</code> earlier, it
+    may seem surprising that Scala allows:</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">GimmeC</span><span>[+</span><span class="type-name">A</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">GimmeCI</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Gimme</span><span>[</span><span class="type-name">Int</span><span>]</span></code></pre>
+    <p>Moreover, this isn&#39;t a bug; it&#39;s perfectly sound.  That is because,
+    while matching <code>GimmeI</code> causes Scala to infer <code>A ~ Int</code>, it won&#39;t do
+    that for <code>GimmeCI</code>!  Scala can soundly determine that <code>A ⊇ Int</code> when
+    it matches <code>GimmeCI</code>, but I do not think it even goes so far as to do
+    that as of this writing.  We can&#39;t blame Scala for this difference;
+    Scala has declared up front that its type system encodes what it
+    believes, and is <em>our</em> responsibility to follow the cardinal rule of
+    not violating its assumptions if we lift <code>Liskov</code> into <code>Gimme</code>.</p>
+    <p>As stated earlier, <code>Liskov</code> cannot be lifted into
+    <code>collection.immutable.Set</code>; <code>TreeSet</code> exists to trivially demonstrate
+    the problem, but even if <code>TreeSet</code> was not there, we would not be able
+    to honestly do it because <code>c.i.Set</code> is open to new subclasses that
+    could perform similar violations.  However, despite lacking a
+    <code>Functor</code>, <code>scalaz.ISet</code> <em>does</em> allow <code>Liskov</code>-lifting.
+    <a href="https://github.com/scalaz/scalaz/blob/ac8c4684ef89f1b950e71237819d78f573e552ea/core/src/main/scala/scalaz/ISet.scala#L552-L561">Do the ADT analysis yourself, if you like.</a>
+    Well, so, once you convert your <code>ISet[Int]</code> to <code>ISet[Any]</code>, you can&#39;t
+    do many operations on it, but that&#39;s neither here nor there.</p>
+    
+    <h2 id="should-this-function-exist" class="section"><a class="anchor-link" href="#should-this-function-exist"><code class="fas fa-link fa-sm"></code></a>Should this function exist?</h2>
+    <p>The Scalaz community has settled on a definition of
+    covariant-functoriality that conforms with the principle of parametric
+    soundness. The rejection of <code>Functor</code> instances
+    <a href="https://github.com/scalaz/scalaz/pull/307">for the <code>scala.collection.*</code> classes</a>,
+    which have subclasses with mutable values over their parameters, and
+    <a href="https://github.com/scalaz/scalaz/pull/276">for <code>collection.immutable.Set</code></a>,
+    which has the <code>TreeSet</code> case stated above and violates parametricity
+    in the construction of <code>HashSet</code>s, speak to this. As far as I know,
+    Scalaz contains no <code>Functor</code>s that are both Scala-invariant and
+    violate the rules delineated above.</p>
+    <p>So how do you feel about the provision of a combinator of the type of
+    <code>liftCvf</code> for Scalaz&#39;s <code>Functor</code>?</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

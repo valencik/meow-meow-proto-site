@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Support Typelevel thanks to Triplequote Hydra and compile Scala faster!</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Support Typelevel thanks to Triplequote Hydra and compile Scala faster!</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Typelevel Steering Committee<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on May 29, 2019
+    </p>
+     
+      <span class="bulma-tag">governance</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="support-typelevel-thanks-to-triplequote-hydra-and-compile-scala-faster" class="title">Support Typelevel thanks to Triplequote Hydra and compile Scala faster!</h1>
+    <p>Hello Community!</p>
+    <p>As you all know, back in April we announced the <a href="typelevel-sustainability-program-announcement.html">Typelevel Sustainability Program</a> and we have been delighted by the overwhelming support we received both from companies and individuals: thank you all!</p>
+    <p>In just a little bit more than one month we reached 10% of the fundraising goal we set to $150,000. While this is an excellent start, to successfully support the long term sustainability of our ecosystem, we need you to keep advocating for us.</p>
+    <p>One difficulty we are aware of is that it can be hard to convince a company to donate money even if it benefits extensively from our ecosystem. This, despite developers knowing how important it is to sustain the maintenance and development of the open source libraries they love and use every day.</p>
+    
+    <h3 id="announcing-give-25-get-25-compile-scala-75-faster" class="section"><a class="anchor-link" href="#announcing-give-25-get-25-compile-scala-75-faster"><code class="fas fa-link fa-sm"></code></a>Announcing: Give 25%, Get 25%, Compile Scala 75% faster!</h3>
+    <p>To help us get over this hurdle, we are stoked to announce that <a href="https://triplequote.com/">Triplequote</a>, the creator of <a href="https://triplequote.com/hydra">Triplequote Hydra</a> - the only multicore Scala compiler with built-in compile-time monitoring - has kindly offered to donate 25% of each yearly Hydra license <a href="https://triplequote.com/hydra/pricing/">purchased online</a> until June 30th using the discount code <strong>TYPELEVEL25</strong>. But that’s not it, by using the discount code you also benefit from a 25% discount on their list pricing!</p>
+    <p>Using Hydra has proven to be incredibly valuable for Scala projects that rely on our ecosystem, and it delivered impressive compilation speedups. Nowadays, even <a href="https://github.com/typelevel/cats/pull/2848">Cats is compiled with Hydra</a>. Therefore, if you are looking for a way to help us reach our fundraising goal, while also profiting from a great product, don’t let this opportunity slip away. Head over to the <a href="https://triplequote.com/hydra/trial">Hydra trial page</a> and get started with it in no time using your preferred development tool, whether that is sbt, Maven, Gradle, or IntelliJ IDEA! Just don’t forget to use the discount code <strong>TYPELEVEL25</strong></p>
+    <p>&lt;a class=&quot;dbox-donation-button&quot; href=&quot;https://triplequote.com/hydra/checkout&quot; style=&quot;background:#F95A66 url(<a href="https://d1iczxrky3cnb2.cloudfront.net/white_logo.png">https://d1iczxrky3cnb2.cloudfront.net/white_logo.png</a>) no-repeat 37px center; color: #fff;text-decoration: none;font-family: Verdana,sans-serif;display: inline-block;font-size: 16px;padding: 15px 38px 15px 75px; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; box-shadow: 0 1px 0 0 #ae3e47; text-shadow: 0 1px rgba(0, 0, 0, 0.3);&quot; &gt;DO THE THING&lt;/a&gt;</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/typelevel-bot.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Typelevel Steering Committee</strong>
+              
+              <br />
+              The Typelevel Steering Committee was the former governing body of Typelevel, until the Foundation was established in 2025.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/typelevel">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              <a class="bulma-level-item" href="http://bsky.app/profile/typelevel.org">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-bluesky"></i></span>
+              </a>
+              
+              
+              <a class="bulma-level-item" href="https://fosstodon.org/@typelevel">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-mastodon"></i></span>
+              </a>
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

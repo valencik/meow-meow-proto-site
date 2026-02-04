@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Tagless Final Algebras and Streaming</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Tagless Final Algebras and Streaming</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Gabriel Volpe<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on May 9, 2018
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="tagless-final-algebras-and-streaming" class="title">Tagless Final Algebras and Streaming</h1>
+    <p>There have been a couple of really <a href="optimizing-final-tagless.html">nice blog posts</a> about <code>Tagless Final</code> and some related topics. However, I have faced some design problems when writing some algebras and haven&#39;t seen anybody talking about. So please let me introduce this problem to you.</p>
+    
+    <h3 id="algebra-definition" class="section"><a class="anchor-link" href="#algebra-definition"><code class="fas fa-link fa-sm"></code></a>Algebra definition</h3>
+    <p>Given the following data definition:</p>
+    <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">ItemName</span><span>(</span><span class="identifier">value</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyVal</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Item</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">ItemName</span><span>, </span><span class="identifier">price</span><span>: </span><span class="type-name">BigDecimal</span><span>)</span></code></pre>
+    <p>Consider the following algebra:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">ItemRepository</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findAll</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">Item</span><span>]]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">find</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">ItemName</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Item</span><span>]]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">item</span><span>: </span><span class="type-name">Item</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">ItemName</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+}</span></code></pre>
+    <p>Let&#39;s go through each method&#39;s definition:</p>
+    <ul>
+      <li><code>findAll</code> needs to return many Items, obtainable inside a context: <code>F[List[Item]]</code>.</li>
+      <li><code>find</code> might or might not return an Item inside a context: <code>F[Option[Item]]</code>.</li>
+      <li><code>save</code> and <code>remove</code> will perform some actions without returning any actual value: <code>F[Unit]</code>.</li>
+    </ul>
+    <p>Everything is clear and you might have seen this kind of pattern before, so let&#39;s create an interpreter for it:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">doobie</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">doobie</span><span>.</span><span class="identifier">util</span><span>.</span><span class="identifier">transactor</span><span>.</span><span class="type-name">Transactor</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">Sync</span><span>
+
+</span><span class="comment">// Doobie implementation (not fully implemented, what matters here are the types).
+</span><span class="keyword">class</span><span> </span><span class="type-name">PostgreSQLItemRepository</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">xa</span><span>: </span><span class="type-name">Transactor</span><span>[</span><span class="type-name">F</span><span>])
+                                    (</span><span class="keyword">implicit</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">Sync</span><span>[</span><span class="type-name">F</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">ItemRepository</span><span>[</span><span class="type-name">F</span><span>] {
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">findAll</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">Item</span><span>]] = </span><span class="string-literal">sql&quot;select name, price from items&quot;</span><span>
+                                           .</span><span class="identifier">query</span><span>[</span><span class="type-name">Item</span><span>]
+                                           .</span><span class="identifier">to</span><span>[</span><span class="type-name">List</span><span>]
+                                           .</span><span class="identifier">transact</span><span>(</span><span class="identifier">xa</span><span>)
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">find</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">ItemName</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Item</span><span>]] = </span><span class="type-name">F</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="type-name">None</span><span>)
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">item</span><span>: </span><span class="type-name">Item</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="type-name">F</span><span>.</span><span class="identifier">unit</span><span>
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">ItemName</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="type-name">F</span><span>.</span><span class="identifier">unit</span><span>
+}</span></code></pre>
+    <p>Here we are using <a href="http://tpolecat.github.io/doobie/">Doobie</a>, defined as <code>A principled JDBC layer for Scala</code> and one of the most popular DB libraries in the Typelevel ecosystem. And it comes with one super powerful feature: it supports <code>Streaming</code> results, since it&#39;s built on top of <a href="https://functional-streams-for-scala.github.io/fs2/">fs2</a>.</p>
+    <p>Now it could be very common to have a huge amount of <code>Item</code>s in our DB that a <code>List</code> will not fit into memory and / or it will be a very expensive operation. So we might want to stream the results of <code>findAll</code> instead of have them all in memory on a <code>List</code>, making <code>Doobie</code> a great candidate for the job. But wait... We have a problem now. Our <code>ItemRepository</code> algebra has fixed the definition of <code>findAll</code> as <code>F[List[Item]]</code> so we won&#39;t be able to create an interpreter that returns a streaming result instead.</p>
+    
+    <h3 id="rethinking-our-algebra" class="section"><a class="anchor-link" href="#rethinking-our-algebra"><code class="fas fa-link fa-sm"></code></a>Rethinking our algebra</h3>
+    <p>We should think about abstracting over that <code>List</code> and two of the most common abstractions that immediately come to mind are <code>Foldable</code> and <code>Traverse</code>. But although these typeclasses are very useful, they are not enough to represent a stream of values, so we should come up with a better abstraction.</p>
+    <p>Well, it seems that our options are either adding another higher-kinded parameter <code>G[_]</code> to our algebra or just define an abstract member <code>G[_]</code>. So let&#39;s go with the first one:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">ItemRepository</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findAll</span><span>: </span><span class="type-name">G</span><span>[</span><span class="type-name">Item</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">find</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">ItemName</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Item</span><span>]]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">item</span><span>: </span><span class="type-name">Item</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">ItemName</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+}</span></code></pre>
+    <p>Great! This looks good so far.</p>
+    
+    <h3 id="streaming-support-interpreter" class="section"><a class="anchor-link" href="#streaming-support-interpreter"><code class="fas fa-link fa-sm"></code></a>Streaming support interpreter</h3>
+    <p>Now let&#39;s write a new <code>PostgreSQL</code> interpreter with streaming support:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">doobie</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">doobie</span><span>.</span><span class="identifier">util</span><span>.</span><span class="identifier">transactor</span><span>.</span><span class="type-name">Transactor</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">fs2</span><span>.</span><span class="type-name">Stream</span><span>
+
+</span><span class="comment">// Doobie implementation (not fully implemented, what matters here are the types).
+</span><span class="keyword">class</span><span> </span><span class="type-name">StreamingItemRepository</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">xa</span><span>: </span><span class="type-name">Transactor</span><span>[</span><span class="type-name">F</span><span>])
+                                   (</span><span class="keyword">implicit</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">Sync</span><span>[</span><span class="type-name">F</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">ItemRepository</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Stream</span><span>[</span><span class="type-name">F</span><span>, ?]] {
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">findAll</span><span>: </span><span class="type-name">Stream</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Item</span><span>] = </span><span class="string-literal">sql&quot;select name, price from items&quot;</span><span>
+                                           .</span><span class="identifier">query</span><span>[</span><span class="type-name">Item</span><span>]
+                                           .</span><span class="identifier">stream</span><span>
+                                           .</span><span class="identifier">transact</span><span>(</span><span class="identifier">xa</span><span>)
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">find</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">ItemName</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Item</span><span>]] = </span><span class="type-name">F</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="type-name">None</span><span>)
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">item</span><span>: </span><span class="type-name">Item</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="type-name">F</span><span>.</span><span class="identifier">delay</span><span>(</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Saving item: </span><span class="substitution">$item</span><span class="string-literal">&quot;</span><span>))
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">ItemName</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="type-name">F</span><span>.</span><span class="identifier">delay</span><span>(</span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;Removing item: </span><span class="substitution">$item</span><span class="string-literal">&quot;</span><span>))
+}</span></code></pre>
+    <p>Voilà! We got our streaming implementation of <code>findAll</code>.</p>
+    
+    <h3 id="test-interpreter" class="section"><a class="anchor-link" href="#test-interpreter"><code class="fas fa-link fa-sm"></code></a>Test interpreter</h3>
+    <p>That&#39;s all we wanted, but what about testing it? Sure, we might prefer to have a simple implementation by just using a plain <code>List</code>, so what can we possibly do?</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">MemRepository</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">ItemRepository</span><span>[</span><span class="type-name">Id</span><span>, </span><span class="type-name">List</span><span>] {
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">mem</span><span> = </span><span class="type-name">MutableMap</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Item</span><span>]
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">findAll</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Item</span><span>] = </span><span class="identifier">mem</span><span>.</span><span class="identifier">headOption</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span class="number-literal">._2</span><span>).</span><span class="identifier">toList</span><span>
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">find</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">ItemName</span><span>): </span><span class="type-name">Id</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">Item</span><span>]] = </span><span class="identifier">mem</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">name</span><span>.</span><span class="identifier">value</span><span>)
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">item</span><span>: </span><span class="type-name">Item</span><span>): </span><span class="type-name">Id</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="identifier">mem</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">item</span><span>.</span><span class="identifier">name</span><span>.</span><span class="identifier">value</span><span>, </span><span class="identifier">item</span><span>)
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">ItemName</span><span>): </span><span class="type-name">Id</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="identifier">mem</span><span>.</span><span class="identifier">remove</span><span>(</span><span class="identifier">name</span><span>.</span><span class="identifier">value</span><span>)
+    ()
+  }
+}</span></code></pre>
+    <p>That&#39;s pretty much it! We managed to abstract over the return type of <code>findAll</code> by just adding an extra parameter to our algebra.</p>
+    
+    <h3 id="about-composition" class="section"><a class="anchor-link" href="#about-composition"><code class="fas fa-link fa-sm"></code></a>About composition</h3>
+    <p>At this point the avid reader might have thought, what if I want to write a generic function that takes all the items (using <code>findAll</code>), applies some discounts and writes them back to the DB (using <code>save</code>)?</p>
+    <p>Short answer is, you might want to define a different algebra where <code>findAll</code> and <code>save</code> have the same types (eg: both of them are streams) but in case you find yourself wanting to make this work with the current types then let&#39;s try and find out!</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">DiscountProcessor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Functor</span><span>](</span><span class="identifier">repo</span><span>: </span><span class="type-name">ItemRepository</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">G</span><span>], </span><span class="identifier">join</span><span>: </span><span class="type-name">G</span><span>[</span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]] =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]) {
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">process</span><span>(</span><span class="identifier">discount</span><span>: </span><span class="type-name">Double</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] = {
+    </span><span class="keyword">val</span><span> </span><span class="identifier">items</span><span>: </span><span class="type-name">G</span><span>[</span><span class="type-name">Item</span><span>] = </span><span class="identifier">repo</span><span>.</span><span class="identifier">findAll</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">item</span><span> =&gt; </span><span class="identifier">item</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">price</span><span> = </span><span class="identifier">item</span><span>.</span><span class="identifier">price</span><span> * (</span><span class="number-literal">1</span><span> - </span><span class="identifier">discount</span><span>)))
+    </span><span class="keyword">val</span><span> </span><span class="identifier">saved</span><span>: </span><span class="type-name">G</span><span>[</span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]] = </span><span class="identifier">items</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">repo</span><span>.</span><span class="identifier">save</span><span>)
+    </span><span class="identifier">join</span><span>(</span><span class="identifier">saved</span><span>)
+  }
+}</span></code></pre>
+    <p>We defined a <code>join</code> function responsible for evaluating the effects and flatten the result to <code>F[Unit]</code>. As you can see below, this works for both a streaming interpreter and a list interpreter (shout out to <a href="https://github.com/fthomas">fthomas</a> for proposing this solution):</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">StreamingDiscountInterpreter</span><span> {
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">join</span><span>: </span><span class="type-name">Stream</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>]] =&gt; </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="identifier">_</span><span>.</span><span class="identifier">evalMap</span><span>(</span><span class="identifier">identity</span><span>).</span><span class="identifier">compile</span><span>.</span><span class="identifier">drain</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">repo</span><span>: </span><span class="type-name">ItemRepository</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Stream</span><span>[</span><span class="type-name">IO</span><span>, ?]]): </span><span class="type-name">DiscountProcessor</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Stream</span><span>[</span><span class="type-name">IO</span><span>, ?]] =
+    </span><span class="keyword">new</span><span> </span><span class="type-name">DiscountProcessor</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Stream</span><span>[</span><span class="type-name">IO</span><span>, ?]](</span><span class="identifier">repo</span><span>, </span><span class="identifier">join</span><span>)
+
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">ListDiscountInterpreter</span><span> {
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">join</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>]] =&gt; </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="identifier">list</span><span> =&gt; </span><span class="type-name">Traverse</span><span>[</span><span class="type-name">List</span><span>].</span><span class="identifier">sequence</span><span>(</span><span class="identifier">list</span><span>).</span><span class="identifier">void</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">repo</span><span>: </span><span class="type-name">ItemRepository</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>]): </span><span class="type-name">DiscountProcessor</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>] =
+    </span><span class="keyword">new</span><span> </span><span class="type-name">DiscountProcessor</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">List</span><span>](</span><span class="identifier">repo</span><span>, </span><span class="identifier">join</span><span>)
+
+}</span></code></pre>
+    <p>While in this case it was possible to make it generic I don&#39;t recommend to do this at home because:</p>
+    <ol class="arabic">
+      <li>it involves some extra boilerplate and the code becomes harder to understand / maintain.</li>
+      <li>as soon as the logic gets more complicated you might run out of options to make it work in a generic way.</li>
+      <li>you lose the ability to use the <code>fs2 DSL</code> which is super convenient.</li>
+    </ol>
+    <p>What I recommend instead, is to write this kind of logic in the streaming interpreter itself. You could also write a generic program that implements the parts that can be abstracted (eg. applying a discount to an item <code>f: Item =&gt; Item</code>) and leave the other parts to the interpreter.</p>
+    
+    <h3 id="design-alternative" class="section"><a class="anchor-link" href="#design-alternative"><code class="fas fa-link fa-sm"></code></a>Design alternative</h3>
+    <p>Another possible and very interesting alternative suggested by <a href="https://github.com/mpilquist">Michael Pilquist</a>, would be to define our repository as follows:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">ItemRepository</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">S</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>], </span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">findAll</span><span>: </span><span class="type-name">S</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Item</span><span>]
+}</span></code></pre>
+    <p>Where the second type parameter matches the shape of <code>fs2.Stream</code>. In this case our streaming repository will remain the same (it should just extend <code>ItemRepository[F, Stream]</code> instead of <code>ItemRepository[F, Stream[F, ?]]</code>) but our in memory interpreter will now rely on <code>fs2.Stream</code> instead of a parametric <code>G[_]</code>, for example:</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">MemRepositoryAlt</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">ItemRepository</span><span>[</span><span class="type-name">Id</span><span>, </span><span class="type-name">Stream</span><span>] {
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">findAll</span><span>: </span><span class="type-name">Stream</span><span>[</span><span class="type-name">Id</span><span>, </span><span class="type-name">Item</span><span>] = {
+    </span><span class="string-literal">sql&quot;select name, price from items&quot;</span><span>
+      .</span><span class="identifier">query</span><span>[</span><span class="type-name">Item</span><span>]
+      .</span><span class="identifier">stream</span><span>
+      .</span><span class="identifier">transact</span><span>(</span><span class="identifier">xa</span><span>)
+  }
+
+}</span></code></pre>
+    <p>I think it&#39;s an alternative worth exploring further that might require a blog post on its own, so I&#39;ll leave it here for reference :)</p>
+    
+    <h3 id="source-of-inspiration" class="section"><a class="anchor-link" href="#source-of-inspiration"><code class="fas fa-link fa-sm"></code></a>Source of inspiration</h3>
+    <p>I&#39;ve come up with most of the ideas presented here during my work on <a href="https://gvolpe.github.io/fs2-rabbit/">Fs2 Rabbit</a>, a stream based client for <code>Rabbit MQ</code>, where I make heavy use of this technique as I originally described in <a href="https://partialflow.wordpress.com/2018/02/01/a-tale-of-tagless-final-cats-effect-and-streaming-fs2-rabbit-v0-1/">this blog post</a>.</p>
+    <p>Another great source of inspiration was <a href="https://www.youtube.com/watch?v=1h11efA4k8E">this talk</a> given by <a href="https://github.com/LukaJCB">Luka Jacobowitz</a> at Scale by the Bay.</p>
+    
+    <h3 id="abstracting-over-the-effect-type" class="section"><a class="anchor-link" href="#abstracting-over-the-effect-type"><code class="fas fa-link fa-sm"></code></a>Abstracting over the effect type</h3>
+    <p>One thing you might have noticed in the examples above is that both <code>ItemRepository</code> interpreters are not fixed to <code>IO</code> or <code>Task</code> or any other effect type but rather requiring a parametric <code>F[_]</code> and an implicit instance of <code>Sync[F]</code>. This is a quite powerful technique for both library authors and application developers. Well know libraries such as <a href="https://http4s.org/">Http4s</a>, <a href="https://monix.io/">Monix</a> and <a href="https://functional-streams-for-scala.github.io/fs2/">Fs2</a> make a heavy use of it.</p>
+    <p>And by requiring a <code>Sync[F]</code> instance we are just saying that our implementation will need to suspend synchronous side effects.</p>
+    <p>Once at the edge of our program, commonly the main method, we can give <code>F[_]</code> a concrete type. At the moment, there are two options: <code>cats.effect.IO</code> and <code>monix.eval.Task</code>. But hopefully soon we&#39;ll have a <code>Scalaz 8 IO</code> implementation as well (fingers crossed).</p>
+    
+    <h3 id="principle-of-least-power" class="section"><a class="anchor-link" href="#principle-of-least-power"><code class="fas fa-link fa-sm"></code></a>Principle of least power</h3>
+    <p>Abstracting over the effect type doesn&#39;t only mean that we should require <code>Sync[F]</code>, <code>Async[F]</code> or <code>Effect[F]</code>. It also means that we should only require the minimal typeclass instance that satisfies our predicate. For example:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Functor</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">bar</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="number-literal">1</span><span>.</span><span class="identifier">pure</span><span>[</span><span class="type-name">F</span><span>]
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Functor</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">String</span><span>] =
+  </span><span class="identifier">fa</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">toString</span><span>)</span></code></pre>
+    <p>Here our <code>bar</code> method just returns a pure value in the <code>F</code> context, thus we need an <code>Applicative[F]</code> instance that defines <code>pure</code>. On the other hand, our <code>foo</code> method just converts the inner <code>Int</code> into <code>String</code>, what we call a pure data transformation. So all we need here is a <code>Functor[F]</code> instance. Another example:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Monad</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">fp</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">String</span><span>] =
+`  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">a</span><span> &lt;- </span><span class="identifier">bar</span><span>[</span><span class="type-name">F</span><span>]
+    </span><span class="identifier">b</span><span> &lt;- </span><span class="identifier">bar</span><span>[</span><span class="type-name">F</span><span>]
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span></code></pre>
+    <p>The above implementation makes use of a <code>for-comprehension</code> which is a syntactic sugar for <code>flatMap</code> and <code>map</code>, so all we need is a <code>Monad[F]</code> instance because we also need an <code>Applicative[F]</code> instance for <code>bar</code>, otherwise we could just use a <code>FlatMap[F]</code> instance.</p>
+    
+    <h3 id="final-thoughts" class="section"><a class="anchor-link" href="#final-thoughts"><code class="fas fa-link fa-sm"></code></a>Final thoughts</h3>
+    <p>I think we got quite far with all these abstractions, giving us the chance to write clean and elegant code in a pure functional programming style, and there&#39;s even more! Other topics worth mentioning that might require a blog post on their own are:</p>
+    <ul>
+      <li>Dependency Injection</li>
+    </ul>
+    <ul>
+      <li>Tagless Final + implicits (MTL style) enables DI in an elegant way.</li>
+      <li>Algebras Composition</li>
+    </ul>
+    <ul>
+      <li>It is very common to have multiple algebras with a different <code>F[_]</code> implementation. In some cases, <code>FunctionK</code> (a.k.a. natural transformation) can be the solution.</li>
+    </ul>
+    <p>What do you think about it? Have you come across a similar design problem? I&#39;d love to hear your thoughts!</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/gvolpe.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Gabriel Volpe</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/gvolpe">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

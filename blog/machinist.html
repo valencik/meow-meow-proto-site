@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Machinist vs. value classes</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Machinist vs. value classes</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Erik Osheim<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on August 6, 2015
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="machinist-vs-value-classes" class="title">Machinist vs. value classes</h1>
+    <p>This article is about <a href="https://github.com/typelevel/machinist">machinist</a>, a stand-alone project which started out as part of the <a href="https://github.com/non/spire">spire</a> project and has been originally published in <a href="https://gist.github.com/non/a6ff3c0796e566db20d1">October 2014</a>.
+    The original description can be found on <a href="spires-ops-macros.html">this blog</a>.
+    You should read that linked post first if you are not familiar with how Machinist works.</p>
+    
+    <h2 id="introduction" class="section"><a class="anchor-link" href="#introduction"><code class="fas fa-link fa-sm"></code></a>Introduction</h2>
+    <p><a href="https://github.com/typelevel/machinist/issues/2">Machinist Issue #2</a> asks:</p>
+    <blockquote>Is it correct, that this stuff is completely obsolete now due to
+    value classes or are there still some use cases? An example of using
+    value class for zero-cost implicit enrichment: (...)</blockquote>
+    <p>The short answer is that value classes existed before the Machinist macros were implemented, and they do not solve the same problem Machinist solves.</p>
+    <p>This article is the long answer.</p>
+    
+    <h2 id="the-base-case" class="section"><a class="anchor-link" href="#the-base-case"><code class="fas fa-link fa-sm"></code></a>The base case</h2>
+    <p>The Machinist&#39;s goal is to remove <em>any</em> overhead that would distinguish
+    using a type class &quot;directly&quot; from using it indirectly via an implicit
+    operator.</p>
+    <p>Imagine we have the following &quot;toy&quot; type class:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Div</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">div</span><span>(</span><span class="identifier">lhs</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">rhs</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span>
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Div</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">DivString</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Div</span><span>[</span><span class="type-name">String</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">div</span><span>(</span><span class="identifier">lhs</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">rhs</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">String</span><span> = </span><span class="identifier">lhs</span><span> + </span><span class="string-literal">&quot;/&quot;</span><span> + </span><span class="identifier">rhs</span><span>
+  }
+}</span></code></pre>
+    <p>This allows us to write generic code such as:</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">Test1</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">gen</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Div</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> = </span><span class="identifier">ev</span><span>.</span><span class="identifier">div</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">test</span><span>: </span><span class="type-name">String</span><span> = </span><span class="identifier">gen</span><span>(</span><span class="string-literal">&quot;foo&quot;</span><span>, </span><span class="string-literal">&quot;bar&quot;</span><span>)
+}</span></code></pre>
+    <p>We have a generic method <code>gen</code> that works with any type we have a <code>Div[A]</code> instance for, and we verify that it works using a <code>test</code> method that operates on some strings. So far, so good. But obviously, calling <code>ev.div</code> is a bit ugly.</p>
+    
+    <h2 id="implicit-conversion-with-a-value-class" class="section"><a class="anchor-link" href="#implicit-conversion-with-a-value-class"><code class="fas fa-link fa-sm"></code></a>Implicit conversion with a value class</h2>
+    <p>We can make the <code>gen</code> method look a bit nicer by using an implicit conversion. Here&#39;s the code:</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">Test3</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DivOps</span><span>[</span><span class="type-name">A</span><span>](</span><span class="keyword">val</span><span> </span><span class="identifier">lhs</span><span>: </span><span class="type-name">A</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyVal</span><span> {
+    </span><span class="keyword">def</span><span> /(</span><span class="identifier">rhs</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Div</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> = </span><span class="identifier">ev</span><span>.</span><span class="identifier">div</span><span>(</span><span class="identifier">lhs</span><span>, </span><span class="identifier">rhs</span><span>)
+  }
+}
+
+</span><span class="keyword">class</span><span> </span><span class="type-name">Test3</span><span> {
+  </span><span class="keyword">import</span><span> </span><span class="type-name">Test3</span><span>.</span><span class="type-name">DivOps</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">gen</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Div</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = </span><span class="identifier">x</span><span> / </span><span class="identifier">y</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">test</span><span>: </span><span class="type-name">String</span><span> = </span><span class="identifier">gen</span><span>(</span><span class="string-literal">&quot;foo&quot;</span><span>, </span><span class="string-literal">&quot;bar&quot;</span><span>)
+}</span></code></pre>
+    <p>Now, we can just say <code>x / y</code> and have that call <code>Div#div</code> automatically. We also don&#39;t need a reference to <code>ev: Div[A]</code> so we can use the nicer <code>[A: Div]</code> syntax. </p>
+    <p>With a normal implicit conversion, every call to <code>gen</code> would construct an instance of <code>Test3.DivOps</code>. However, since we have defined <code>Test3.DivOps</code> as a value class (by extending <code>AnyVal</code>), the object instantiation is ellided. Instead, the method call is dispatched to <code>Test3.DivOps.$div$extension</code> which calls <code>ev.div</code>.</p>
+    <p>We often talk about value classes as not having a <em>cost</em>. Since no class is instantiated, we are not required to pay a cost in allocations, but we do still pay a cost in indirection (instead of calling <code>ev.div</code> directly as in <code>Test1</code> we have an intermediate extension method).</p>
+    <p>You can see the difference in the output from <code>javap</code>.</p>
+    <p>In the case of <code>Test1.gen</code>, the call to <code>ev.div</code> and return are all handled with 5 instructions (8 bytes of bytecode):</p>
+    <pre><code>// cost.Test1.gen(A, A, Div[A]): A
+0: aload_3
+1: aload_1
+2: aload_2
+3: invokeinterface #16,  3           // InterfaceMethod cost/Div.div:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+8: areturn</code></pre>
+    <p>In the case of <code>Test3.gen</code>, there is extra ceremony setting up the companion objects, and a call to the extension method (<code>$div$extension</code>), which is defined in <code>Test3.DivOps</code>:</p>
+    <pre><code>// cost.Test3.gen(A, A, Div[A]): A
+0: getstatic     #25                 // Field cost/Test3$DivOps$.MODULE$:Lcost/Test3$DivOps$;
+3: getstatic     #16                 // Field cost/Test3$.MODULE$:Lcost/Test3$;
+6: aload_1
+7: invokevirtual #18                 // Method cost/Test3$.DivOps:(Ljava/lang/Object;)Ljava/lang/Object;
+10: aload_2
+11: aload_3
+12: invokevirtual #28                 // Method cost/Test3$DivOps$.$div$extension:(Ljava/lang/Object;Ljava/lang/Object;Lcost/Div;)Ljava/lang/Object;
+15: areturn
+
+// cost.Test3.DivOps.$div$extension(A, A, Div[A]): A
+0: aload_3
+1: aload_1
+2: aload_2
+3: invokeinterface #20,  3           // InterfaceMethod cost/Div.div:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+8: areturn</code></pre>
+    <p>In fact the bytecode for the extension method is uncannily similar to that of <code>Test1.gen</code>, but in this case <code>Test3.gen</code> involves 8 more instructions (15 bytes).</p>
+    <p>In some cases these bytecode differences might not be significant (for example if the running time of <code>Div[A].div</code> is expected to dwarf the cost of method dispatch). However, when type classes are used to support primitive operations (such as addition or comparisons) it&#39;s likely that this overhead might be significant.</p>
+    
+    <h2 id="enter-machinist" class="section"><a class="anchor-link" href="#enter-machinist"><code class="fas fa-link fa-sm"></code></a>Enter machinist</h2>
+    <p>Machinist is based on a set of macros that were introduced in <a href="https://github.com/non/spire">Spire</a> to remove the performance penalties associated with generic math implementations. These macros were based on an even earlier approach which used a compiler plugin.</p>
+    <p>The basic approach has not changed: at compile-time we can detect situations where we build an object just to assemble a method call with the arguments to its constructor. In these cases we rewrite the tree, removing the object allocation and making the method call directly. Machinist&#39;s documentation goes to some trouble to explain it, but basically, we want to be able to write code like <code>Test3.gen</code> but have it interpreted as <code>Test1.gen</code>. That is literally the entire purpose of machinist.</p>
+    <p>Here&#39;s a construction that works for this example:</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">Test2</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DivOps</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">lhs</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Div</span><span>[</span><span class="type-name">A</span><span>]) {
+    </span><span class="keyword">def</span><span> /(</span><span class="identifier">rhs</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = </span><span class="identifier">macro</span><span> </span><span class="identifier">machinist</span><span>.</span><span class="type-name">DefaultOps</span><span>.</span><span class="identifier">binop</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>]
+  }
+}
+
+</span><span class="keyword">class</span><span> </span><span class="type-name">Test2</span><span> {
+  </span><span class="keyword">import</span><span> </span><span class="type-name">Test2</span><span>.</span><span class="type-name">DivOps</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">gen</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Div</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = </span><span class="identifier">x</span><span> / </span><span class="identifier">y</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">test</span><span>: </span><span class="type-name">String</span><span> = </span><span class="identifier">gen</span><span>(</span><span class="string-literal">&quot;foo&quot;</span><span>, </span><span class="string-literal">&quot;bar&quot;</span><span>)
+}</span></code></pre>
+    <p>We use the <code>machinist.DefaultOps</code> object to provide an instance of the <code>binop</code> macros, which will rewrite <code>DivOps(x)(ev).$div(y)</code> into <code>ev.div(x, y)</code>.</p>
+    <p>Here&#39;s what we end up with in bytecode:</p>
+    <pre><code>// cost.Test2.gen(A, A, Div[A]): A
+0: aload_3
+1: aload_1
+2: aload_2
+3: invokeinterface #26,  3           // InterfaceMethod cost/Div.div:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+8: areturn</code></pre>
+    <p>As you can see, the sourcecode for <code>Test2.gen</code> is identical to <code>Test3.gen</code>, and the bytecode for <code>Test2.gen</code> is identical to that of <code>Test1.gen</code>. Success!</p>
+    
+    <h2 id="caveats" class="section"><a class="anchor-link" href="#caveats"><code class="fas fa-link fa-sm"></code></a>Caveats</h2>
+    <p>There are a few caveats that are worth mentioning:</p>
+    
+    <h3 id="managing-compilation-units" class="section"><a class="anchor-link" href="#managing-compilation-units"><code class="fas fa-link fa-sm"></code></a>Managing compilation units</h3>
+    <p>The issue that sparked this article used the operator <code>+/+</code>. Machinist claims to be able to support any symbolic operator. Why didn&#39;t we use that operator here?</p>
+    <p>The answer has to do with how Scala macros work. Scala requires that macros be defined in a separate &quot;compilation unit&quot; from the one they are invoked in. This makes it very awkward to create a code snippet that both defines and uses a macro. In this case, it means that we can&#39;t extend <code>machinist.Ops</code> to define new symbolic operators in the same file that demonstrates their use. This is why we used <code>/</code> (which maps to <code>div</code> and is a &quot;default operator&quot;).</p>
+    <p>You can arrange your &quot;real&quot; projects so that they are not affected by this limitation.</p>
+    
+    <h3 id="use-outside-of-generic-methods" class="section"><a class="anchor-link" href="#use-outside-of-generic-methods"><code class="fas fa-link fa-sm"></code></a>Use outside of generic methods</h3>
+    <p>Now that we&#39;ve demonstrated the cost that implicit conversions to value classes impose, you might imagine wanting to perform this transformation on <em>all</em> your implicit conversions.</p>
+    <p>Unfortunately, Machinist is not sufficiently general to support this. Right now its macros support a number of different &quot;shapes&quot; but assume generic method which dispatches to an implicit evidence parameter. It might be possible to write macros which inline the method body of a concrete implicit class, but that&#39;s outside the scope of the project. </p>
+    
+    <h2 id="postscript-messy-details" class="section"><a class="anchor-link" href="#postscript-messy-details"><code class="fas fa-link fa-sm"></code></a>Postscript: messy details</h2>
+    <p>This article throws around a lot of source code and bytecode.  Below are included the files needed to build the demo (<code>cost.scala</code> and <code>build.sbt</code>) as well as the <code>javap</code> output from the three test classes, and the value class.</p>
+    
+    <h3 id="cost-scala" class="section"><a class="anchor-link" href="#cost-scala"><code class="fas fa-link fa-sm"></code></a>cost.scala</h3>
+    <pre><code class="nohighlight"><span class="keyword">package</span><span> </span><span class="identifier">cost</span><span>
+
+</span><span class="keyword">import</span><span> </span><span class="identifier">language</span><span>.</span><span class="identifier">implicitConversions</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">language</span><span>.</span><span class="identifier">experimental</span><span>.</span><span class="identifier">macros</span><span>
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Div</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">div</span><span>(</span><span class="identifier">lhs</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">rhs</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span>
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Div</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="type-name">DivString</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Div</span><span>[</span><span class="type-name">String</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">div</span><span>(</span><span class="identifier">lhs</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">rhs</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">String</span><span> = </span><span class="identifier">lhs</span><span> + </span><span class="string-literal">&quot;/&quot;</span><span> + </span><span class="identifier">rhs</span><span>
+  }
+}
+
+</span><span class="keyword">class</span><span> </span><span class="type-name">Test1</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">gen</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Div</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> = </span><span class="identifier">ev</span><span>.</span><span class="identifier">div</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">test</span><span>: </span><span class="type-name">String</span><span> = </span><span class="identifier">gen</span><span>(</span><span class="string-literal">&quot;foo&quot;</span><span>, </span><span class="string-literal">&quot;bar&quot;</span><span>)
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Test2</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DivOps</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">lhs</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Div</span><span>[</span><span class="type-name">A</span><span>]) {
+    </span><span class="keyword">def</span><span> /(</span><span class="identifier">rhs</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = </span><span class="identifier">macro</span><span> </span><span class="identifier">machinist</span><span>.</span><span class="type-name">DefaultOps</span><span>.</span><span class="identifier">binop</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>]
+  }
+}
+
+</span><span class="keyword">class</span><span> </span><span class="type-name">Test2</span><span> {
+  </span><span class="keyword">import</span><span> </span><span class="type-name">Test2</span><span>.</span><span class="type-name">DivOps</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">gen</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Div</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = </span><span class="identifier">x</span><span> / </span><span class="identifier">y</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">test</span><span>: </span><span class="type-name">String</span><span> = </span><span class="identifier">gen</span><span>(</span><span class="string-literal">&quot;foo&quot;</span><span>, </span><span class="string-literal">&quot;bar&quot;</span><span>)
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Test3</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">DivOps</span><span>[</span><span class="type-name">A</span><span>](</span><span class="keyword">val</span><span> </span><span class="identifier">lhs</span><span>: </span><span class="type-name">A</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">AnyVal</span><span> {
+    </span><span class="keyword">def</span><span> /(</span><span class="identifier">rhs</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">Div</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> = </span><span class="identifier">ev</span><span>.</span><span class="identifier">div</span><span>(</span><span class="identifier">lhs</span><span>, </span><span class="identifier">rhs</span><span>)
+  }
+}
+
+</span><span class="keyword">class</span><span> </span><span class="type-name">Test3</span><span> {
+  </span><span class="keyword">import</span><span> </span><span class="type-name">Test3</span><span>.</span><span class="type-name">DivOps</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">gen</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Div</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = </span><span class="identifier">x</span><span> / </span><span class="identifier">y</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">test</span><span>: </span><span class="type-name">String</span><span> = </span><span class="identifier">gen</span><span>(</span><span class="string-literal">&quot;foo&quot;</span><span>, </span><span class="string-literal">&quot;bar&quot;</span><span>)
+}</span></code></pre>
+    
+    <h3 id="build-sbt" class="section"><a class="anchor-link" href="#build-sbt"><code class="fas fa-link fa-sm"></code></a>build.sbt</h3>
+    <pre><code class="nohighlight"><span class="identifier">name</span><span> := </span><span class="string-literal">&quot;cost&quot;</span><span>
+
+</span><span class="identifier">scalaVersion</span><span> := </span><span class="string-literal">&quot;2.11.2&quot;</span><span>
+
+</span><span class="identifier">resolvers</span><span> += </span><span class="string-literal">&quot;bintray/non&quot;</span><span> </span><span class="identifier">at</span><span> </span><span class="string-literal">&quot;http://dl.bintray.com/non/maven&quot;</span><span>
+
+</span><span class="identifier">libraryDependencies</span><span> += </span><span class="string-literal">&quot;org.typelevel&quot;</span><span> %% </span><span class="string-literal">&quot;machinist&quot;</span><span> % </span><span class="string-literal">&quot;0.2.2&quot;</span></code></pre>
+    
+    <h3 id="test1-out" class="section"><a class="anchor-link" href="#test1-out"><code class="fas fa-link fa-sm"></code></a>Test1.out</h3>
+    <pre><code>Compiled from &quot;cost.scala&quot;
+public class cost.Test1 {
+  public &lt;A extends java/lang/Object&gt; A gen(A, A, cost.Div&lt;A&gt;);
+    Code:
+       0: aload_3       
+       1: aload_1       
+       2: aload_2       
+       3: invokeinterface #16,  3           // InterfaceMethod cost/Div.div:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       8: areturn       
+
+  public java.lang.String test();
+    Code:
+       0: aload_0       
+       1: ldc           #27                 // String foo
+       3: ldc           #29                 // String bar
+       5: getstatic     #35                 // Field cost/Div$.MODULE$:Lcost/Div$;
+       8: invokevirtual #39                 // Method cost/Div$.DivString:()Lcost/Div;
+      11: invokevirtual #41                 // Method gen:(Ljava/lang/Object;Ljava/lang/Object;Lcost/Div;)Ljava/lang/Object;
+      14: checkcast     #43                 // class java/lang/String
+      17: areturn       
+
+  public cost.Test1();
+    Code:
+       0: aload_0       
+       1: invokespecial #47                 // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V
+       4: return        
+}</code></pre>
+    
+    <h3 id="test2-out" class="section"><a class="anchor-link" href="#test2-out"><code class="fas fa-link fa-sm"></code></a>Test2.out</h3>
+    <pre><code>Compiled from &quot;cost.scala&quot;
+public class cost.Test2 {
+  public static &lt;A extends java/lang/Object&gt; cost.Test2$DivOps&lt;A&gt; DivOps(A, cost.Div&lt;A&gt;);
+    Code:
+       0: getstatic     #16                 // Field cost/Test2$.MODULE$:Lcost/Test2$;
+       3: aload_0       
+       4: aload_1       
+       5: invokevirtual #18                 // Method cost/Test2$.DivOps:(Ljava/lang/Object;Lcost/Div;)Lcost/Test2$DivOps;
+       8: areturn       
+
+  public &lt;A extends java/lang/Object&gt; A gen(A, A, cost.Div&lt;A&gt;);
+    Code:
+       0: aload_3       
+       1: aload_1       
+       2: aload_2       
+       3: invokeinterface #26,  3           // InterfaceMethod cost/Div.div:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       8: areturn       
+
+  public java.lang.String test();
+    Code:
+       0: aload_0       
+       1: ldc           #37                 // String foo
+       3: ldc           #39                 // String bar
+       5: getstatic     #44                 // Field cost/Div$.MODULE$:Lcost/Div$;
+       8: invokevirtual #48                 // Method cost/Div$.DivString:()Lcost/Div;
+      11: invokevirtual #50                 // Method gen:(Ljava/lang/Object;Ljava/lang/Object;Lcost/Div;)Ljava/lang/Object;
+      14: checkcast     #52                 // class java/lang/String
+      17: areturn       
+
+  public cost.Test2();
+    Code:
+       0: aload_0       
+       1: invokespecial #56                 // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V
+       4: return        
+}</code></pre>
+    
+    <h3 id="test3-out" class="section"><a class="anchor-link" href="#test3-out"><code class="fas fa-link fa-sm"></code></a>Test3.out</h3>
+    <pre><code>Compiled from &quot;cost.scala&quot;
+public class cost.Test3 {
+  public static java.lang.Object DivOps(java.lang.Object);
+    Code:
+       0: getstatic     #16                 // Field cost/Test3$.MODULE$:Lcost/Test3$;
+       3: aload_0       
+       4: invokevirtual #18                 // Method cost/Test3$.DivOps:(Ljava/lang/Object;)Ljava/lang/Object;
+       7: areturn       
+
+  public &lt;A extends java/lang/Object&gt; A gen(A, A, cost.Div&lt;A&gt;);
+    Code:
+       0: getstatic     #25                 // Field cost/Test3$DivOps$.MODULE$:Lcost/Test3$DivOps$;
+       3: getstatic     #16                 // Field cost/Test3$.MODULE$:Lcost/Test3$;
+       6: aload_1       
+       7: invokevirtual #18                 // Method cost/Test3$.DivOps:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: aload_2       
+      11: aload_3       
+      12: invokevirtual #28                 // Method cost/Test3$DivOps$.$div$extension:(Ljava/lang/Object;Ljava/lang/Object;Lcost/Div;)Ljava/lang/Object;
+      15: areturn       
+
+  public java.lang.String test();
+    Code:
+       0: aload_0       
+       1: ldc           #39                 // String foo
+       3: ldc           #41                 // String bar
+       5: getstatic     #46                 // Field cost/Div$.MODULE$:Lcost/Div$;
+       8: invokevirtual #50                 // Method cost/Div$.DivString:()Lcost/Div;
+      11: invokevirtual #52                 // Method gen:(Ljava/lang/Object;Ljava/lang/Object;Lcost/Div;)Ljava/lang/Object;
+      14: checkcast     #54                 // class java/lang/String
+      17: areturn       
+
+  public cost.Test3();
+    Code:
+       0: aload_0       
+       1: invokespecial #58                 // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V
+       4: return        
+}</code></pre>
+    
+    <h3 id="test3-divops-out" class="section"><a class="anchor-link" href="#test3-divops-out"><code class="fas fa-link fa-sm"></code></a>Test3.DivOps.out</h3>
+    <pre><code>Compiled from &quot;cost.scala&quot;
+public class cost.Test3$DivOps$ {
+  public static final cost.Test3$DivOps$ MODULE$;
+
+  public static {};
+    Code:
+       0: new           #2                  // class cost/Test3$DivOps$
+       3: invokespecial #12                 // Method &quot;&lt;init&gt;&quot;:()V
+       6: return        
+
+  public final &lt;A extends java/lang/Object&gt; A $div$extension(A, A, cost.Div&lt;A&gt;);
+    Code:
+       0: aload_3       
+       1: aload_1       
+       2: aload_2       
+       3: invokeinterface #20,  3           // InterfaceMethod cost/Div.div:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       8: areturn       
+
+  public final &lt;A extends java/lang/Object&gt; int hashCode$extension(A);
+    Code:
+       0: aload_1       
+       1: invokevirtual #32                 // Method java/lang/Object.hashCode:()I
+       4: ireturn       
+
+  public final &lt;A extends java/lang/Object&gt; boolean equals$extension(A, java.lang.Object);
+    Code:
+       0: aload_2       
+       1: astore_3      
+       2: aload_3       
+       3: instanceof    #36                 // class cost/Test3$DivOps
+       6: ifeq          15
+       9: iconst_1      
+      10: istore        4
+      12: goto          18
+      15: iconst_0      
+      16: istore        4
+      18: iload         4
+      20: ifeq          61
+      23: aload_2       
+      24: ifnonnull     31
+      27: aconst_null   
+      28: goto          38
+      31: aload_2       
+      32: checkcast     #36                 // class cost/Test3$DivOps
+      35: invokevirtual #40                 // Method cost/Test3$DivOps.lhs:()Ljava/lang/Object;
+      38: astore        5
+      40: aload_1       
+      41: aload         5
+      43: invokestatic  #45                 // Method scala/runtime/BoxesRunTime.equals:(Ljava/lang/Object;Ljava/lang/Object;)Z
+      46: ifeq          53
+      49: iconst_1      
+      50: goto          54
+      53: iconst_0      
+      54: ifeq          61
+      57: iconst_1      
+      58: goto          62
+      61: iconst_0      
+      62: ireturn       
+
+  public cost.Test3$DivOps$();
+    Code:
+       0: aload_0       
+       1: invokespecial #47                 // Method java/lang/Object.&quot;&lt;init&gt;&quot;:()V
+       4: aload_0       
+       5: putstatic     #49                 // Field MODULE$:Lcost/Test3$DivOps$;
+       8: return        
+}</code></pre>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/non.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Erik Osheim</strong>
+              
+              <br />
+              Erik Osheim is one of the founders of Typelevel, and maintains several Scala libraries including Cats, Spire, and others. He hacks Scala for a living at Stripe, and is committed to having his cake and eating it too when it comes to functional programming. Besides programming he spends time playing music, drinking tea, and cycling around Providence, Rhode Island.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/non">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

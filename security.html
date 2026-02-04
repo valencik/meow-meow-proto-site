@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="css/code.css">
+  <link rel="stylesheet" href="search/docs.css">
+  <script src="main.js"></script>
+
+  <title>Security Policy</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="index.html">
+      <img src="img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="blog/">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+  <div class="bulma-section bulma-content bulma-container bulma-is-max-desktop">
+    <h1 id="security-policy" class="title">Security Policy</h1>
+    
+    <h2 id="reporting-a-security-issue" class="section"><a class="anchor-link" href="#reporting-a-security-issue"><code class="fas fa-link fa-sm"></code></a>Reporting a Security Issue</h2>
+    <p>To report a security issue, please email <a href="mailto:security@typelevel.org"><a href="mailto:security@typelevel.org">security@typelevel.org</a></a> with a description of the issue, the steps you took to create the issue, affected versions, and, if known, mitigations for the issue.  The Security Team will attempt to respond within 3 working days of your email.  If the issue is confirmed as a vulnerability, we will open a Security Advisory.  This project follows a 90 day disclosure timeline.</p>
+    
+    <h2 id="procedure" class="section"><a class="anchor-link" href="#procedure"><code class="fas fa-link fa-sm"></code></a>Procedure</h2>
+    <ol class="arabic">
+      <li>A GitHub Security Advisory will be created in the appropriate repository.</li>
+      <li>A project member works privately with the reporter to resolve the vulnerability.</li>
+      <li>The project creates a new release of the package the vulnerabilty affects to deliver its fix.</li>
+      <li>The project publicly announces the vulnerability and describes how to apply the fix.</li>
+    </ol>
+    
+    <h2 id="scala-steward" class="section"><a class="anchor-link" href="#scala-steward"><code class="fas fa-link fa-sm"></code></a>Scala Steward</h2>
+    <p>We strongly recommend users of our libraries to use <a href="https://github.com/scala-steward-org/scala-steward">Scala Steward</a> or something similar to 
+    automatically receive updates.</p>
+    
+    <h2 id="typelevel-security-team" class="section"><a class="anchor-link" href="#typelevel-security-team"><code class="fas fa-link fa-sm"></code></a>Typelevel Security Team</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>email</th>
+          <th>PGP public key</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="https://github.com/rossabaker">Ross A. Baker</a></td>
+          <td><a href="mailto:ross@rossabaker.com">ross@rossabaker.com</a></td>
+          <td><a href="https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x904c153733dbb0106915c0bd975be5bc29d92ca5">0x975BE5BC29D92CA5</a></td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/armanbilge">Arman Bilge</a></td>
+          <td><a href="mailto:arman@typelevel.org">arman@typelevel.org</a></td>
+          <td><a href="https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1CAE49948EE0A2D7154A2B62A335B107E9282548">0xA335B107E9282548</a></td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/bpholt">Brian P. Holt</a></td>
+          <td><a href="mailto:bholt+typelevel-security@planetholt.com">bholt+typelevel-security@planetholt.com</a></td>
+          <td>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="#">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

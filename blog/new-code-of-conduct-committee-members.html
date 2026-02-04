@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Code of Conduct Committee</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Code of Conduct Committee</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Typelevel Steering Committee<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on November 21, 2024
+    </p>
+     
+      <span class="bulma-tag">governance</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="code-of-conduct-committee" class="title">Code of Conduct Committee</h1>
+    <p>A few months back the Typelevel Steering Committee put out <a href="call-for-code-of-conduct-committee-members.html">a call for new members</a> to join the Typelevel Code of Conduct Committee. Thank you very much to all who applied, it&#39;s lovely to see folks interested in keeping our community safe.</p>
+    <p>Since that time, the Typelevel Steering Committee voted in three new members to the Code of Conduct Committee! The committee now has five members total.</p>
+    <p>Here are some brief introductions to our current committee members.</p>
+    
+    <h4 id="lucas-satabin-he-him" class="section"><a class="anchor-link" href="#lucas-satabin-he-him"><code class="fas fa-link fa-sm"></code></a>Lucas Satabin (he/him)</h4>
+    <blockquote>
+      <p>I&#39;ve been using Scala since 2009 both professionally and personally, and the Typelevel ecosystem since the scalac fork. Since then I have been trying to contribute libraries in the ecosystem on a regular basis. I currently work at <a href="https://commercetools.com/">commercetools</a>.</p>
+      <p>I am based in the Paris area in France, and in my free time I like to play board games, TTRPGs, CRPGs, and I read a lot of comic books (mostly European and American). Baking bread, making mustard, and brewing slow coffees are my favorite kitchen based activities. I also tend to talk too much about trains.</p>
+    </blockquote>
+    
+    <h4 id="kateu-herbert-he-him" class="section"><a class="anchor-link" href="#kateu-herbert-he-him"><code class="fas fa-link fa-sm"></code></a>Kateu Herbert (he/him)</h4>
+    <blockquote>I’ve been programming with Scala for about 5 years now. I am a statistician by profession, currently working as a data analyst for <a href="https://www.enveritas.org/">Enveritas</a> based in Kampala, Uganda. I use Scala for all my personal projects and in my free time, I share my knowledge through <a href="https://hkateu.github.io/kateuherbert.github.io/">blog posts</a>. Other hobbies include playing around with Linux distros, training my dog, and watching and reading about tech related content.</blockquote>
+    
+    <h4 id="arman-bilge-he-him" class="section"><a class="anchor-link" href="#arman-bilge-he-him"><code class="fas fa-link fa-sm"></code></a>Arman Bilge (he/him)</h4>
+    <blockquote>I&#39;m Arman, based in Seattle, and I have been involved with Typelevel for almost four years now. I was first drawn to contribute by the welcoming and friendly people in our Discord! This community is near and dear to me and I am committed to fostering a safe and inclusive environment where we can work, learn and play together :)</blockquote>
+    
+    <h4 id="sam-pillsworth-she-her" class="section"><a class="anchor-link" href="#sam-pillsworth-she-her"><code class="fas fa-link fa-sm"></code></a>Sam Pillsworth (she/her)</h4>
+    <blockquote>Hi, I&#39;m Sam! I&#39;m part of the Typelevel Steering Committee and now also the code of conduct committee! I care deeply about the Typelevel community and creating a welcoming and supportive environment for everyone. I live in Canada, and when I&#39;m not doing computer related activities I like to read books and play with my dog.</blockquote>
+    
+    <h4 id="andrew-valencik-he-him" class="section"><a class="anchor-link" href="#andrew-valencik-he-him"><code class="fas fa-link fa-sm"></code></a>Andrew Valencik (he/him)</h4>
+    <blockquote>Hi, I&#39;m Andrew, I live in Ottawa, Canada. I hang out around Typelevel because the people are kind and welcoming. I want to help keep our community a safe and fun space. I think the libraries are pretty cool too and enjoy contributing to open source when I can. When I&#39;m not thinking about computers I&#39;m probably thinking about food or my two cats.</blockquote>
+    
+    <h4 id="what-does-this-mean-for-our-community" class="section"><a class="anchor-link" href="#what-does-this-mean-for-our-community"><code class="fas fa-link fa-sm"></code></a>What does this mean for our community?</h4>
+    <p>Code of Conduct members will work in accordance with the <a href="https://github.com/typelevel/governance/blob/main/CODE-OF-CONDUCT.md">Code of Conduct</a> and <a href="https://github.com/typelevel/governance/blob/main/ENFORCEMENT-POLICY.md">Enforcement Policy</a>. 
+    The team is expected to evaluate reported incidents about Code of Conduct violations and propose behavior adjustments or consequences for the reported behavior which will be done with the help of community moderators. 
+    This ensures Code of Conduct violations are dealt with promptly and all community members feel welcome and safe as part of the Typelevel community.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/typelevel-bot.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Typelevel Steering Committee</strong>
+              
+              <br />
+              The Typelevel Steering Committee was the former governing body of Typelevel, until the Foundation was established in 2025.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/typelevel">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              <a class="bulma-level-item" href="http://bsky.app/profile/typelevel.org">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-bluesky"></i></span>
+              </a>
+              
+              
+              <a class="bulma-level-item" href="https://fosstodon.org/@typelevel">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-mastodon"></i></span>
+              </a>
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

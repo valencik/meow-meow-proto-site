@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Subtype type classes don&#39;t work</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Subtype type classes don&#39;t work</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Adelbert Chang<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on September 30, 2016
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="subtype-type-classes-don-t-work" class="title">Subtype type classes don&#39;t work</h1>
+    <p><em>Update: A comprehensive version of this blog post was published at the
+    <a href="https://conf.researchr.org/track/scala-2017/scala-2017-papers<Paste>">2017 Scala Symposium</a> and is available <a href="http://www.sigplan.org/OpenTOC/scala17.html">for free</a>
+    through the ACM OpenTOC service. The corresponding talk can be found
+    <a href="https://www.youtube.com/watch?v=BGoTXO1V0HM&list=PL6KWJEIH5ulcNeQ92iKFN2k-UIV9QHExH&index=3">here</a>.</em></p>
+    <p>The common encoding of type classes in Scala relies on subtyping. This singular
+    fact gives us a certain cleanliness in the code, but at what cost?</p>
+    
+    <h2 id="problem" class="section"><a class="anchor-link" href="#problem"><code class="fas fa-link fa-sm"></code></a>Problem</h2>
+    <p>Consider the following hierarchy of type classes. A similar hierarchy can be
+    found in both <a href="https://github.com/typelevel/cats" title="Typelevel Cats">Cats</a> and <a href="https://github.com/scalaz/scalaz/tree/series/7.3.x" title="Scalaz 7">Scalaz 7</a>.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]]
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>]
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Traverse</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]</span></code></pre>
+    <p>For purposes of demonstration I will be using Cats for the rest of this post,
+    but the same arguments apply to Scalaz 7.</p>
+    <p>We will also assume that there is syntax accompanying this hierarchy, allowing
+    us to call methods like <code>map</code>, <code>flatMap</code>, and <code>traverse</code> directly on some
+    <code>F[A]</code>, provided <code>F</code> has the appropriate type class instances (<code>Functor</code>,
+    <code>Monad</code>, and <code>Traverse</code>, respectively).</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span></code></pre>
+    <p>One important consequence is we can use for comprehensions in methods
+    parameterized over some <code>Monad</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="keyword">for</span><span> {
+  </span><span class="identifier">a</span><span> &lt;- </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="number-literal">10</span><span>)
+  </span><span class="identifier">b</span><span> &lt;- </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="number-literal">20</span><span>)
+} </span><span class="keyword">yield</span><span> </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span></code></pre>
+    <p>Notice that due to how for comprehensions <a href="http://docs.scala-lang.org/tutorials/FAQ/yield.html" title="How does yield work?">desugar</a>, there is also
+    a call to <code>map</code> in there. Since our type class hierarchy is encoded via
+    subtyping Scala knows a <code>Monad[F]</code> implies a <code>Functor[F]</code>, so all is well.
+    Or is it?</p>
+    <p>Consider a case where we want to abstract over a data type that has
+    both <code>Monad</code> and <code>Traverse</code>.</p>
+    <pre><code class="nohighlight"><span class="comment">// Ignore the fact we&#39;re not even using `Traverse` - we can&#39;t even call `map`!
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="number-literal">10</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">identity</span><span>)
+</span><span class="comment">// &lt;console&gt;:19: error: value map is not a member of type parameter F[Int]
+//        def foo[F[_]: Monad: Traverse]: F[Int] = Monad[F].pure(10).map(identity)
+//                                                                   ^
+// &lt;console&gt;:19: error: missing argument list for method identity in object Predef
+// Unapplied methods are only converted to functions when a function type is expected.
+// You can make this conversion explicit by writing `identity _` or `identity(_)` instead of `identity`.
+//        def foo[F[_]: Monad: Traverse]: F[Int] = Monad[F].pure(10).map(identity)
+//                                                                       ^</span></code></pre>
+    <p>We&#39;re already in trouble. In order to call <code>map</code> we need <code>F</code> to have a
+    <code>Functor</code> instance, which it does via <code>Monad</code> as before.. but now also via
+    <code>Traverse</code>. It is for precisely this reason that this does not work. Because
+    our encoding of type classes uses subtyping, a <code>Monad[F]</code> <strong>is a</strong> <code>Functor[F]</code>.
+    Similarly, a <code>Traverse[F]</code> <strong>is a</strong> <code>Functor[F]</code>. When implicit resolution
+    attempts to find a <code>Functor[F]</code>, it can&#39;t decide between <code>Monad[F]</code>&#39;s or
+    <code>Traverse[F]</code>&#39;s and bails out. Even though the instances may be,
+    <a href="https://www.youtube.com/watch?v=hIZxTQP1ifo" title="Edward Kmett - Type Classes vs. the World">and arguably should be</a>, the same, the compiler has no way of
+    knowing that.</p>
+    <p>This problem generalizes to anytime the compiler decides an implicit is ambiguous,
+    such as method calls.</p>
+    <pre><code class="nohighlight"><span class="comment">// The fact we don&#39;t actually use `Functor` here is irrelevant.
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">bar</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>: </span><span class="type-name">Functor</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="number-literal">10</span><span>)</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">callBar</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="identifier">bar</span><span>[</span><span class="type-name">F</span><span>]
+</span><span class="comment">// &lt;console&gt;:19: error: ambiguous implicit values:
+//  both value evidence$2 of type cats.Traverse[F]
+//  and value evidence$1 of type cats.Monad[F]
+//  match expected type cats.Functor[F]
+//        def callBar[F[_]: Monad: Traverse]: F[Int] = bar[F]
+//                                                        ^</span></code></pre>
+    <p>What do we do? For <code>map</code> it is easy enough to arbitrarily pick one
+    of the instances and call <code>map</code> on that. For function calls you
+    can thread the implicit through explicitly.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">map</span><span>(</span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="number-literal">10</span><span>))(</span><span class="identifier">identity</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">callBar</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="identifier">bar</span><span>(</span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>], </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>])
+                                       </span><span class="comment">// or bar(Monad[F], Traverse[F])</span></code></pre>
+    <p>For <code>foo</code> it&#39;s not <em>too</em> terrible. For <code>bar</code> though we are
+    already starting to see it get unwieldy. While we could have passed in
+    <code>Monad[F]</code> or <code>Traverse[F]</code> for the second parameter which corresponds
+    to <code>bar</code>&#39;s <code>Functor[F]</code> constraint, we can only pass in <code>Monad[F]</code> for
+    the first parameter to satisfy <code>Applicative[F]</code>. Because implicit resolution
+    can&#39;t disambiguate the <code>Functor[F]</code> by itself we&#39;ve had to pass it in
+    explicitly, but by doing so we also have to pass in everything else explicitly!
+    We become the implicit resolver. And this is with just two constraints, what
+    if we had three, four, five?</p>
+    <p>And the trouble doesn&#39;t end there. We asked for a <code>Monad</code> so let&#39;s try using
+    a for comprehension.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="keyword">for</span><span> {
+  </span><span class="identifier">a</span><span> &lt;- </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="number-literal">10</span><span>)
+  </span><span class="identifier">b</span><span> &lt;- </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="number-literal">20</span><span>)
+} </span><span class="keyword">yield</span><span> </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span><span>
+</span><span class="comment">// &lt;console&gt;:21: error: value map is not a member of type parameter F[Int]
+//          b &lt;- Monad[F].pure(20)
+//                            ^</span></code></pre>
+    <p>This is also broken! Because of how <a href="http://docs.scala-lang.org/tutorials/FAQ/yield.html" title="How does yield work?">for comprehensions</a> desugar, a
+    <code>map</code> call is inevitable which leads to the for comprehension breaking down.
+    This drastically reduces the ergonomics of doing anything monadic.</p>
+    <p>As with <code>map</code> we could call <code>flatMap</code> on <code>Monad</code> directly, but this quickly
+    becomes cumbersome.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = {
+  </span><span class="keyword">val</span><span> </span><span class="type-name">M</span><span> = </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>]
+  </span><span class="type-name">M</span><span>.</span><span class="identifier">flatMap</span><span>(</span><span class="type-name">M</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="number-literal">10</span><span>)) { </span><span class="identifier">a</span><span> =&gt;
+    </span><span class="type-name">M</span><span>.</span><span class="identifier">map</span><span>(</span><span class="type-name">M</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="number-literal">20</span><span>)) { </span><span class="identifier">b</span><span> =&gt;
+      </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span><span>
+    }
+  }
+}</span></code></pre>
+    <p>These same problems arise if you ask for two or more type classes that share a
+    common superclass. Some examples of this:</p>
+    <ul>
+      <li>Two or more of Monad{Error, Plus, Reader, State, Writer} (ambiguous Monad)</li>
+    </ul>
+    <ul>
+      <li>This prevents ergonomic use of <a href="https://hackage.haskell.org/package/mtl" title="mtl: Monad classes, using functional dependencies">&quot;MTL-style&quot;</a></li>
+      <li>MonadPlus + Monad (ambiguous Monad)</li>
+      <li>Alternative + Traverse (ambiguous Functor)</li>
+      <li>MonadRec + MonadPlus (ambiguous Monad)</li>
+    </ul>
+    <p>This suggests every type class have only <strong>one</strong> subclass.
+    That is quite limiting as is readily demonstrated by the extremely useful
+    <code>Applicative</code> and <code>Traverse</code> type classes. What do we do?</p>
+    
+    <h2 id="solution" class="section"><a class="anchor-link" href="#solution"><code class="fas fa-link fa-sm"></code></a>Solution (?)</h2>
+    <p>This more or less remains an open problem in Scala. There has been
+    an interesting alternative prototyped in <a href="https://github.com/aloiscochard/scato" title="Scato">scato</a>, now making its way to
+    <a href="https://github.com/scalaz/scalaz/tree/series/8.0.x" title="Scalaz 8">Scalaz 8</a>, that has received some positive feedback. The gist of the
+    encoding completely throws out the notion of subtyping, encoding the hierarchy
+    via members instead.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+}
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">functor</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">pure</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map2</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>])(</span><span class="identifier">f</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>) =&gt; </span><span class="type-name">C</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">C</span><span>]
+}
+
+</span><span class="comment">// Definitions elided for space
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] { </span><span class="keyword">def</span><span> </span><span class="declaration-name">applicative</span><span>: </span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>] }
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Traverse</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] { </span><span class="keyword">def</span><span> </span><span class="declaration-name">functor</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] }</span></code></pre>
+    <p>Because there is no relation between the type classes, there is no
+    danger of implicit ambiguity. However, for that very reason, having a
+    <code>Monad[F]</code> no longer implies having a <code>Functor[F]</code>. Not currently
+    anyway. What we can do is use implicit conversions to re-encode the
+    hierarchy.</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">applicativeIsFunctor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>]: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] =
+  </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">functor</span><span>
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">traverseIsFunctor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] =
+  </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Traverse</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">functor</span></code></pre>
+    <p>But now we&#39;re back to square one.</p>
+    <pre><code class="nohighlight"><span class="comment">// Syntax for Functor
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">FunctorOps</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]) {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">B</span><span>](</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="type-name">F</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">fa</span><span>)(</span><span class="identifier">f</span><span>)
+}</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] =
+  </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">pure</span><span>(</span><span class="number-literal">10</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">identity</span><span>)
+</span><span class="comment">// &lt;console&gt;:18: error: value map is not a member of type parameter F[Int]
+//          implicitly[Applicative[F]].pure(10).map(identity)
+//                                              ^
+// &lt;console&gt;:18: error: missing argument list for method identity in object Predef
+// Unapplied methods are only converted to functions when a function type is expected.
+// You can make this conversion explicit by writing `identity _` or `identity(_)` instead of `identity`.
+//          implicitly[Applicative[F]].pure(10).map(identity)
+//                                                  ^</span></code></pre>
+    <p>Since both implicits have equal priority, the compiler
+    doesn&#39;t know which one to pick. <strong>However</strong>, Scala has mechanisms for
+    <a href="http://eed3si9n.com/revisiting-implicits-without-import-tax" title="revisiting implicits without import tax">prioritizing implicits</a> which solves the problem.</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">Prioritized</span><span> { </span><span class="comment">// needed for tut, irrelevant to demonstration
+</span><span>  </span><span class="keyword">trait</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+  }
+
+  </span><span class="comment">// Prioritize implicit conversions - Functor only for brevity
+</span><span>  </span><span class="keyword">trait</span><span> </span><span class="type-name">FunctorConversions1</span><span> {
+    </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">applicativeIsFunctor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>]: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] =
+      </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">functor</span><span>
+  }
+
+  </span><span class="keyword">trait</span><span> </span><span class="type-name">FunctorConversions0</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">FunctorConversions1</span><span> {
+    </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">traverseIsFunctor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] =
+      </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Traverse</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">functor</span><span>
+  }
+
+  </span><span class="keyword">object</span><span> </span><span class="type-name">Functor</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">FunctorConversions0</span><span>
+
+  </span><span class="keyword">trait</span><span> </span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">functor</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">pure</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">map2</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>])(</span><span class="identifier">f</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>) =&gt; </span><span class="type-name">C</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">C</span><span>]
+  }
+
+  </span><span class="comment">// Definition elided for space
+</span><span>  </span><span class="keyword">trait</span><span> </span><span class="type-name">Traverse</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] { </span><span class="keyword">def</span><span> </span><span class="declaration-name">functor</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] }
+
+  </span><span class="comment">// Syntax for Functor
+</span><span>  </span><span class="keyword">implicit</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">FunctorOps</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]) {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">B</span><span>](</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="type-name">F</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">fa</span><span>)(</span><span class="identifier">f</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = {
+    </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>]] </span><span class="comment">// we have Applicative
+</span><span>    </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Traverse</span><span>[</span><span class="type-name">F</span><span>]]    </span><span class="comment">// we have Traverse
+</span><span>    </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]]     </span><span class="comment">// we also have Functor!
+</span><span>
+    </span><span class="comment">// and we have syntax!
+</span><span>    </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">pure</span><span>(</span><span class="number-literal">10</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">identity</span><span>)
+  }
+}</span></code></pre>
+    <p>Because implicit resolution treats implicits in subtypes with higher priority,
+    we can organize conversions appropriately to prevent ambiguity. Here this means
+    that <code>applicativeIsFunctor</code> has lower priority than <code>traverseIsFunctor</code>, so
+    when both <code>Applicative</code> and <code>Traverse</code> instances are in scope and the compiler
+    is looking for a <code>Functor</code>, <code>traverseIsFunctor</code> wins.</p>
+    <p>One thing to note is that we&#39;ve baked the implicit hierarchy into <code>Functor</code>
+    itself - in general this means all superclasses are aware of their subclasses.
+    This is convenient from a usability perspective as companion objects are
+    considered during implicit resolution, but from a modularity perspective is
+    strange and in this case would prevent extensions to the hierarchy from external
+    sources. This can be solved by removing the hierarchy from the superclasses
+    (removing <code>Functor</code>&#39;s <code>extends FunctorConversions0</code>), but comes at
+    the cost of needing an import at use sites to bring the implicits into scope.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+}
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">functor</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">pure</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map2</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>])(</span><span class="identifier">f</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>) =&gt; </span><span class="type-name">C</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">C</span><span>]
+}
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Traverse</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] { </span><span class="keyword">def</span><span> </span><span class="declaration-name">functor</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] }
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">FunctorOps</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]) {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">B</span><span>](</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="type-name">F</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">fa</span><span>)(</span><span class="identifier">f</span><span>)
+}
+
+</span><span class="comment">// Separate from type class definitions
+</span><span>
+</span><span class="keyword">trait</span><span> </span><span class="type-name">FunctorConversions1</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">applicativeIsFunctor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>]: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] =
+    </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">functor</span><span>
+}
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">FunctorConversions0</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">FunctorConversions1</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">traverseIsFunctor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] =
+    </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Traverse</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">functor</span><span>
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Prelude</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">FunctorConversions0</span></code></pre>
+    <pre><code class="nohighlight"><span class="comment">// Need this import to get implicit conversions in scope
+</span><span class="keyword">import</span><span> </span><span class="type-name">Prelude</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = {
+  </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>]]
+  </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Traverse</span><span>[</span><span class="type-name">F</span><span>]]
+  </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]]
+
+  </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">pure</span><span>(</span><span class="number-literal">10</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">identity</span><span>)
+}</span></code></pre>
+    <p><code>Prelude</code> could be provided by the base library, but external libraries
+    with their own type classes can still extend the hierarchy and provide
+    their own <code>Prelude</code>.</p>
+    <p>A more developed form can be seen in the <a href="https://github.com/scalaz/scalaz/blob/611d69f6b2bff3500181d0338dec9d6143d386ad/base/src/main/scala/BaseHierarchy.scala" title="Scalaz 8 base hierarchy">BaseHierarchy</a> of Scalaz 8.</p>
+    <p>Do we win? I&#39;m not sure. This encoding is certainly more cumbersome than what
+    we started with, but solves the problems we ran into.</p>
+    
+    <h2 id="compromise" class="section"><a class="anchor-link" href="#compromise"><code class="fas fa-link fa-sm"></code></a>Compromise?</h2>
+    <p>Another thing we can try is to make some compromise of the two. We can
+    continue to use subtyping for a blessed subset of the hierarchy, and use
+    members for any branching type class.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+}
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">FunctorOps</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]) {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">B</span><span>](</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="type-name">F</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">fa</span><span>)(</span><span class="identifier">f</span><span>)
+}
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">pure</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map2</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>])(</span><span class="identifier">f</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>) =&gt; </span><span class="type-name">C</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">C</span><span>]
+}
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>]
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Traverse</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] { </span><span class="keyword">def</span><span> </span><span class="declaration-name">functor</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>] }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Applicative</span><span>: </span><span class="type-name">Traverse</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] =
+  </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Applicative</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">pure</span><span>(</span><span class="number-literal">10</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">identity</span><span>)</span></code></pre>
+    <p>This works, but is even messier than the alternatives. We have to
+    decide which type classes get to live in the subtype hierarchy and which are
+    doomed (blessed?) to express the relationship with members. But maybe the
+    pros outweigh the cons. Pull requests with this change have been filed for
+    <a href="https://github.com/typelevel/cats/pull/1379" title="MTL fix for Cats">Cats</a> and <a href="https://github.com/scalaz/scalaz/pull/1262" title="MTL fix for Scalaz">Scalaz 7.3</a>.</p>
+    <p>I&#39;m not convinced that the story is over though. Maybe there&#39;s another solution
+    yet to be discovered.</p>
+    <p>For further reading, there are open tickets for both <a href="https://github.com/typelevel/cats/issues/1210" title="Better accommodate MTL style">Cats</a> and
+    <a href="https://github.com/scalaz/scalaz/issues/1110" title="MTL-style doesn&#39;t seem to work in Scala">Scalaz 7</a> documenting the subtyping problem. A discussion around
+    the Scato encoding for Scalaz 8 can be found <a href="https://github.com/scalaz/scalaz/issues/1084" title="[scalaz8] Subtyping-free encoding for typeclasses">here</a>.</p>
+    <p><em>This article was tested with Scala 2.11.8 and Cats 0.7.2 using <a href="https://github.com/tpolecat/tut" title="tut: doc/tutorial generator for scala">tut</a>.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/adelbertc.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Adelbert Chang</strong>
+              
+              <br />
+              Adelbert is an engineer at Box where he attempts to reliably copy bytes from one machine to another. He enjoys writing pure functional programs, teaching functional programming, and learning more about computing.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/adelbertc">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Information hiding, enforced</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Information hiding, enforced</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Adelbert Chang<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on March 13, 2016
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="information-hiding-enforced" class="title">Information hiding, enforced</h1>
+    <p>Code should be reusable. An expression traversing a data structure
+    shouldn&#39;t be written multiple times, it should be pulled out into a
+    generic traversal function. At a larger scale, a random number generator
+    shouldn&#39;t be written multiple times, but rather pulled out into a
+    module that can be used by others.</p>
+    <p>It is important that such abstractions must be done carefully.
+    Often times a type is visible to the caller, and if the type
+    is not handled carefully the abstraction can leak.</p>
+    <p>For example, a set with fast random indexing (useful for random
+    walks on a graph) can be implemented with a sorted <code>Vector</code>.
+    However, if the <code>Vector</code> type is
+    leaked, the user can use this knowledge to violate the invariant.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">annotation</span><span>.</span><span class="identifier">tailrec</span><span>
+
+</span><span class="comment">/** (i in repr, position of i in repr) */</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">binarySearch</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">repr</span><span>: </span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>]): (</span><span class="type-name">Boolean</span><span>, </span><span class="type-name">Int</span><span>) = </span><span class="comment">/* elided */</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">IntSet</span><span> {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">Repr</span><span> = </span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">empty</span><span>: </span><span class="type-name">Repr</span><span> = </span><span class="type-name">Vector</span><span>.</span><span class="identifier">empty</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">repr</span><span>: </span><span class="type-name">Repr</span><span>): </span><span class="type-name">Repr</span><span> = {
+    </span><span class="keyword">val</span><span> (</span><span class="identifier">isMember</span><span>, </span><span class="identifier">indexOf</span><span>) = </span><span class="identifier">binarySearch</span><span>(</span><span class="identifier">i</span><span>, </span><span class="identifier">repr</span><span>)
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">isMember</span><span>) </span><span class="identifier">repr</span><span>
+    </span><span class="keyword">else</span><span> {
+      </span><span class="keyword">val</span><span> (</span><span class="identifier">prefix</span><span>, </span><span class="identifier">suffix</span><span>) = </span><span class="identifier">repr</span><span>.</span><span class="identifier">splitAt</span><span>(</span><span class="identifier">indexOf</span><span>)
+      </span><span class="identifier">prefix</span><span> ++ </span><span class="type-name">Vector</span><span>(</span><span class="identifier">i</span><span>) ++ </span><span class="identifier">suffix</span><span>
+    }
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">contains</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">repr</span><span>: </span><span class="type-name">Repr</span><span>): </span><span class="type-name">Boolean</span><span> =
+    </span><span class="identifier">binarySearch</span><span>(</span><span class="identifier">i</span><span>, </span><span class="identifier">repr</span><span>)</span><span class="number-literal">._1</span><span>
+}</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="type-name">IntSet</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="comment">// import IntSet._
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">good</span><span> = </span><span class="identifier">add</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="identifier">add</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="identifier">add</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="identifier">empty</span><span>)))
+</span><span class="comment">// good: IntSet.Repr = Vector(1, 5, 10)
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">goodResult</span><span> = </span><span class="identifier">contains</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="identifier">good</span><span>)
+</span><span class="comment">// goodResult: Boolean = true
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">bad</span><span> = </span><span class="identifier">good</span><span>.</span><span class="identifier">reverse</span><span> </span><span class="comment">// We know it&#39;s a Vector!
+// bad: scala.collection.immutable.Vector[Int] = Vector(10, 5, 1)
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">badResult</span><span> = </span><span class="identifier">contains</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="identifier">bad</span><span>)
+</span><span class="comment">// badResult: Boolean = false
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">bad2</span><span> = </span><span class="type-name">Vector</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">5</span><span>, </span><span class="number-literal">1</span><span>) </span><span class="comment">// Alternatively..
+// bad2: scala.collection.immutable.Vector[Int] = Vector(10, 5, 1)
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">badResult2</span><span> = </span><span class="identifier">contains</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="identifier">bad2</span><span>)
+</span><span class="comment">// badResult2: Boolean = false</span></code></pre>
+    <p>The issue here is the user knows more about the representation than they
+    should. The function <code>add</code> enforces the sorted invariant on each insert,
+    and the function <code>contains</code> leverages this to do an efficient look-up.
+    Because the <code>Vector</code> definition of <code>Repr</code> is exposed, the user is
+    free to create any <code>Vector</code> they wish which may violate the invariant,
+    thus breaking <code>contains</code>.</p>
+    <p>In general, the <strong>name</strong> of the representation type is needed but the
+    <strong>definition</strong> is not. If the definition is hidden, the user is only able to
+    work with the type to the extent the module allows. This is precisely
+    the notion of information hiding. If this can be enforced by the type
+    system, modules can be swapped in and out without worrying about breaking
+    client code.</p>
+    
+    <h1 id="quantification" class="section"><a class="anchor-link" href="#quantification"><code class="fas fa-link fa-sm"></code></a>Quantification</h1>
+    <p>It turns out there is a <a href="http://dl.acm.org/citation.cfm?id=6042" title="On understanding types, data abstraction, and polymorphism - Luca Cardelli, Peter Wegner">well understood principle</a>
+    behind this idea called <em>existential quantification</em>. Contrast with
+    universal quantification which says &quot;for all&quot;, existential quantification
+    says &quot;there is a.&quot;</p>
+    <p>Below is an encoding of universal quantification via parametric polymorphism.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Universal</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">A</span><span>]: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">A</span><span>
+}</span></code></pre>
+    <p>Here <code>Universal#apply</code> says <em>for all</em> choices of <code>A</code>, a function <code>A =&gt; A</code> can be
+    written. In the <a href="http://homepages.inf.ed.ac.uk/wadler/topics/history.html#propositions-as-types" title="Propositions as Types - Philip Wadler">Curry-Howard Isomorphism</a>, a profound
+    relationship between logic and computation, this translates to &quot;for all propositions
+    <code>A</code>, <code>A</code> implies <code>A</code>.&quot; It is therefore acceptable to write the following, which picks
+    <code>A</code> to be <code>Int</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">intInstantiatedU</span><span>(</span><span class="identifier">u</span><span>: </span><span class="type-name">Universal</span><span>): </span><span class="type-name">Int</span><span> =&gt; </span><span class="type-name">Int</span><span> =
+  (</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>) =&gt; </span><span class="identifier">u</span><span>.</span><span class="identifier">apply</span><span>(</span><span class="identifier">i</span><span>)
+</span><span class="comment">// intInstantiatedU: (u: Universal)Int =&gt; Int</span></code></pre>
+    <p>Existential quantification can also be written in Scala.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Existential</span><span> {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">A</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">A</span><span>
+}</span></code></pre>
+    <p>Note that this is just one way of encoding existentials - for a deeper
+    discussion, refer to the excellent <a href="type-members-parameters.html" title="Type members are [almost] type parameters">Type Parameters and Type Members</a>
+    blog series.</p>
+    <p>The type parameter on <code>apply</code> has been moved up to a type member of the trait.
+    Practically, this means every instance of <code>Existential</code> must pick <strong>one</strong> choice of
+    <code>A</code>, whereas in <code>Universal</code> the <code>A</code> was parameterized and therefore free. In the
+    language of logic, <code>Existential#apply</code> says &quot;there is a&quot; or &quot;there exists some <code>A</code> such that
+    <code>A</code> implies <code>A</code>.&quot; This &quot;there is a&quot; is the crux of the error when trying
+    to write a corresponding <code>intExistential</code> function.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">intInstantiatedE</span><span>(</span><span class="identifier">e</span><span>: </span><span class="type-name">Existential</span><span>): </span><span class="type-name">Int</span><span> =&gt; </span><span class="type-name">Int</span><span> =
+  (</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>) =&gt; </span><span class="identifier">e</span><span>.</span><span class="identifier">apply</span><span>(</span><span class="identifier">i</span><span>)
+</span><span class="comment">// &lt;console&gt;:19: error: type mismatch;
+//  found   : i.type (with underlying type Int)
+//  required: e.A
+//          (i: Int) =&gt; e.apply(i)
+//                              ^</span></code></pre>
+    <p>In code, the type in <code>Existential</code> is chosen per-instance, so there is no way
+    of knowing what the actual type chosen is. In logical terms, the only guarantee is
+    that there exists some proposition that satisfies the implication, but it is not
+    necessarily the case (and often is not) it holds for all propositions.</p>
+    
+    <h1 id="abstract-types" class="section"><a class="anchor-link" href="#abstract-types"><code class="fas fa-link fa-sm"></code></a>Abstract types</h1>
+    <p>In the ML family of languages (e.g. Standard ML, OCaml), existential quantification
+    and thus information hiding, is achieved through <a href="http://dl.acm.org/citation.cfm?id=45065" title="Abstract types have existential type">type members</a>.
+    Programs are organized into <a href="https://realworldocaml.org/v1/en/html/files-modules-and-programs.html" title="Real World OCaml: Files, Modules, and Programs">modules</a> which are what contain these
+    types.</p>
+    <p>In Scala, this translates to organizing code with the object system, using the same
+    type member feature to hide representation. The earlier example of <code>IntSet</code> can then
+    be written:</p>
+    <pre><code class="nohighlight"><span class="comment">/** Abstract signature */</span><span>
+</span><span class="keyword">trait</span><span> </span><span class="type-name">IntSet</span><span> {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">Repr</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">empty</span><span>: </span><span class="type-name">Repr</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">repr</span><span>: </span><span class="type-name">Repr</span><span>): </span><span class="type-name">Repr</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">contains</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">repr</span><span>: </span><span class="type-name">Repr</span><span>): </span><span class="type-name">Boolean</span><span>
+}
+
+</span><span class="comment">/** Concrete implementation */</span><span>
+</span><span class="keyword">object</span><span> </span><span class="type-name">VectorIntSet</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">IntSet</span><span> {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">Repr</span><span> = </span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">empty</span><span>: </span><span class="type-name">Repr</span><span> = </span><span class="type-name">Vector</span><span>.</span><span class="identifier">empty</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">repr</span><span>: </span><span class="type-name">Repr</span><span>): </span><span class="type-name">Repr</span><span> = {
+    </span><span class="keyword">val</span><span> (</span><span class="identifier">isMember</span><span>, </span><span class="identifier">indexOf</span><span>) = </span><span class="identifier">binarySearch</span><span>(</span><span class="identifier">i</span><span>, </span><span class="identifier">repr</span><span>)
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">isMember</span><span>) </span><span class="identifier">repr</span><span>
+    </span><span class="keyword">else</span><span> {
+      </span><span class="keyword">val</span><span> (</span><span class="identifier">prefix</span><span>, </span><span class="identifier">suffix</span><span>) = </span><span class="identifier">repr</span><span>.</span><span class="identifier">splitAt</span><span>(</span><span class="identifier">indexOf</span><span>)
+      </span><span class="identifier">prefix</span><span> ++ </span><span class="type-name">Vector</span><span>(</span><span class="identifier">i</span><span>) ++ </span><span class="identifier">suffix</span><span>
+    }
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">contains</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">repr</span><span>: </span><span class="type-name">Repr</span><span>): </span><span class="type-name">Boolean</span><span> =
+    </span><span class="identifier">binarySearch</span><span>(</span><span class="identifier">i</span><span>, </span><span class="identifier">repr</span><span>)</span><span class="number-literal">._1</span><span>
+}</span></code></pre>
+    <p>As long as client code is written against the signature, the
+    representation cannot be leaked.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">goodUsage</span><span>(</span><span class="identifier">set</span><span>: </span><span class="type-name">IntSet</span><span>) = {
+  </span><span class="keyword">import</span><span> </span><span class="identifier">set</span><span>.</span><span class="identifier">_</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">s</span><span> = </span><span class="identifier">add</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="identifier">add</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="identifier">add</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="identifier">empty</span><span>)))
+  </span><span class="identifier">contains</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="identifier">s</span><span>)
+}
+</span><span class="comment">// goodUsage: (set: IntSet)Boolean</span></code></pre>
+    <p>If the user tries to assert the representation type, the type
+    checker prevents it <strong>at compile time</strong>.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">badUsage</span><span>(</span><span class="identifier">set</span><span>: </span><span class="type-name">IntSet</span><span>) = {
+  </span><span class="keyword">import</span><span> </span><span class="identifier">set</span><span>.</span><span class="identifier">_</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">s</span><span> = </span><span class="identifier">add</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="identifier">add</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="identifier">empty</span><span>))
+
+  </span><span class="comment">// Maybe it&#39;s a Vector
+</span><span>  </span><span class="identifier">s</span><span>.</span><span class="identifier">reverse</span><span>
+  </span><span class="identifier">contains</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="type-name">Vector</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">5</span><span>, </span><span class="number-literal">1</span><span>))
+}
+</span><span class="comment">// &lt;console&gt;:23: error: value reverse is not a member of set.Repr
+//          s.reverse
+//            ^
+// &lt;console&gt;:24: error: type mismatch;
+//  found   : scala.collection.immutable.Vector[Int]
+//  required: set.Repr
+//          contains(10, Vector(10, 5, 1))
+//                             ^</span></code></pre>
+    
+    <h1 id="parametricity" class="section"><a class="anchor-link" href="#parametricity"><code class="fas fa-link fa-sm"></code></a>Parametricity</h1>
+    <p>Abstract types enforce information hiding at the definition site (the definition
+    of <code>IntSet</code> is what hides <code>Repr</code>). There is another mechanism that enforces information
+    hiding, which pushes the constraint to the use site.</p>
+    <p>Consider implementing the following function.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = ???</span></code></pre>
+    <p>Given nothing is known about <code>a</code>, the only possible thing <code>foo</code> can do is return <code>a</code>. If
+    instead of a type parameter the function was given more information..</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">bar</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">String</span><span> = </span><span class="string-literal">&quot;not even going to use `a`&quot;</span></code></pre>
+    <p>..that information can be leveraged to do unexpected things. This is similar to
+    the first <code>IntSet</code> example when knowledge of the underlying <code>Vector</code> allowed unintended
+    behavior to occur.</p>
+    <p>From the outside looking in, <code>foo</code> is universally quantified - the caller gets to
+    pick any <code>A</code> they want. From the inside looking out, it is
+    <a href="existential-inside.html" title="It’s existential on the inside">existentially quantified</a> - the implementation knows only as much
+    about <code>A</code> as there are constraints on <code>A</code> (in this case, nothing).</p>
+    <p>Consider another function <code>listReplace</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">listReplace</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">as</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">B</span><span>] = ???</span></code></pre>
+    <p>Given the type parameters, <code>listReplace</code> looks fairly constrained. The name and signature
+    suggests it takes each element of <code>as</code> and replaces it with <code>b</code>, returning a new list.
+    However, even knowledge of <code>List</code> can lead to type checking implementations with strange behavior.</p>
+    <pre><code class="nohighlight"><span class="comment">// Completely ignores the input parameters
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">listReplace</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">as</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="type-name">List</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">B</span><span>]</span></code></pre>
+    <p>Here, knowledge of <code>List</code> allows the implementation
+    to create a list out of thin air and use that in the implementation. If instead <code>listReplace</code>
+    only knew about some <code>F[_]</code> where <code>F</code> is a <code>Functor</code>, the implementation becomes much more
+    constrained.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]
+}
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">listFunctor</span><span>: </span><span class="type-name">Functor</span><span>[</span><span class="type-name">List</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Functor</span><span>[</span><span class="type-name">List</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">map</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>): </span><span class="type-name">List</span><span>[</span><span class="type-name">B</span><span>] =
+      </span><span class="identifier">fa</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">f</span><span>)
+  }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">replace</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Functor</span><span>, </span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>] =
+  </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Functor</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">map</span><span>(</span><span class="identifier">fa</span><span>)(</span><span class="identifier">_</span><span> =&gt; </span><span class="identifier">b</span><span>)</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">replace</span><span>(</span><span class="type-name">List</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>), </span><span class="string-literal">&quot;typelevel&quot;</span><span>)
+</span><span class="comment">// res8: List[String] = List(typelevel, typelevel, typelevel)</span></code></pre>
+    <p>Absent any knowledge of <code>F</code> other than the ability to <code>map</code> over it, <code>replace</code> is
+    forced to do the correct thing. Put differently, irrelevant information about <code>F</code> is hidden.</p>
+    <p>The fundamental idea behind this is known as parametricity, made popular by Philip Wadler&#39;s
+    seminal <a href="http://dl.acm.org/citation.cfm?id=99404" title="Theorems for free!">Theorems for free!</a> paper. The technique is best summarized by the
+    following excerpt from the paper:</p>
+    <blockquote>Write down the definition of a polymorphic function on a piece of paper. Tell me its type,
+    but be careful not to let me see the function&#39;s definition. I will tell you a theorem that
+    the function satisfies.</blockquote>
+    
+    <h1 id="why-types-matter" class="section"><a class="anchor-link" href="#why-types-matter"><code class="fas fa-link fa-sm"></code></a>Why types matter</h1>
+    <p>Information hiding is a core tenet of good program design, and it is important to make
+    sure it is enforced. Underlying information hiding is existential quantification,
+    which can manifest itself in computation through abstract types and
+    parametricity. Few languages support defining abstract type members, and fewer
+    yet support higher-kinded types used in the <code>replace</code> example. It is therefore
+    to the extent that a language&#39;s type system is expressive that
+    <a href="https://www.cis.upenn.edu/~bcpierce/tapl/" title="Types and Programming Languages - Benjamin C. Pierce">abstraction can be enforced</a>.</p>
+    <p><em>This blog post was tested with Scala 2.11.7 using <a href="https://github.com/tpolecat/tut" title="tut: doc/tutorial generator for scala">tut</a>.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/adelbertc.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Adelbert Chang</strong>
+              
+              <br />
+              Adelbert is an engineer at Box where he attempts to reliably copy bytes from one machine to another. He enjoys writing pure functional programs, teaching functional programming, and learning more about computing.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/adelbertc">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

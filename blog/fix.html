@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Primitive recursion with fix and Mu</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Primitive recursion with fix and Mu</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on April 14, 2014
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="primitive-recursion-with-fix-and-mu" class="title">Primitive recursion with fix and Mu</h1>
+    <p>Consider the simple cons-list datatype.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Equal</span><span>, </span><span class="identifier">scalaz</span><span>.</span><span class="identifier">std</span><span>.</span><span class="identifier">option</span><span>.</span><span class="identifier">_</span><span>, </span><span class="identifier">scalaz</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">std</span><span>.</span><span class="identifier">option</span><span>.</span><span class="identifier">_</span><span>,
+       </span><span class="identifier">scalaz</span><span>.</span><span class="identifier">std</span><span>.</span><span class="identifier">anyVal</span><span>.</span><span class="identifier">_</span><span>, </span><span class="identifier">scalaz</span><span>.</span><span class="identifier">std</span><span>.</span><span class="identifier">function</span><span>.</span><span class="identifier">_</span><span>,
+       </span><span class="identifier">scala</span><span>.</span><span class="identifier">reflect</span><span>.</span><span class="identifier">runtime</span><span>.</span><span class="identifier">universe</span><span>.</span><span class="identifier">reify</span><span>
+
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">XList</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">XNil</span><span>[</span><span class="type-name">A</span><span>]() </span><span class="keyword">extends</span><span> </span><span class="type-name">XList</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">XCons</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">head</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">tail</span><span>: </span><span class="type-name">XList</span><span>[</span><span class="type-name">A</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">XList</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+    <p>And a simple function over this structure.  Say, a simple summing
+    function.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">sum</span><span>(</span><span class="identifier">xs</span><span>: </span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>]): </span><span class="type-name">Int</span><span> = </span><span class="identifier">xs</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">XNil</span><span>() =&gt; </span><span class="number-literal">0</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">XCons</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">xs</span><span>) =&gt; </span><span class="identifier">x</span><span> + </span><span class="identifier">sum</span><span>(</span><span class="identifier">xs</span><span>)
+}</span></code></pre>
+    <p>And that seems to work out alright.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">nums</span><span> = </span><span class="type-name">XCons</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="type-name">XCons</span><span>(</span><span class="number-literal">3</span><span>, </span><span class="type-name">XCons</span><span>(</span><span class="number-literal">4</span><span>, </span><span class="type-name">XCons</span><span>(</span><span class="number-literal">42</span><span>, </span><span class="type-name">XNil</span><span>()))))
+</span><span class="identifier">nums</span><span>: </span><span class="type-name">XCons</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">XCons</span><span>(</span><span class="number-literal">2</span><span>,</span><span class="type-name">XCons</span><span>(</span><span class="number-literal">3</span><span>,</span><span class="type-name">XCons</span><span>(</span><span class="number-literal">4</span><span>,</span><span class="type-name">XCons</span><span>(</span><span class="number-literal">42</span><span>,</span><span class="type-name">XNil</span><span>()))))
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">sum</span><span>(</span><span class="identifier">nums</span><span>)
+</span><span class="identifier">res0</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">51</span></code></pre>
+    <p>Has it ever struck you as curious that, though its own value was
+    required to construct a value like <code>sum</code>, the system has no problem
+    with that?</p>
+    <p>Oh, well, that&#39;s just a recursive function, you say.  Well, what&#39;s so
+    special about recursive functions?  Why do they get special treatment
+    so that they can define themselves with themselves?</p>
+    
+    <h2 id="induction-and-termination" class="section"><a class="anchor-link" href="#induction-and-termination"><code class="fas fa-link fa-sm"></code></a>Induction and termination</h2>
+    <p>First, let&#39;s be clear: there&#39;s a limit to how much of <code>sum</code> can be
+    used in its own definition.</p>
+    <p>Let us consider the moral equivalent of the statement “this function
+    gives the sum of a list of integers because it is the function that
+    gives the sum of a list of integers.”</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">sum2</span><span>(</span><span class="identifier">xs</span><span>: </span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>]): </span><span class="type-name">Int</span><span> = </span><span class="identifier">sum2</span><span>(</span><span class="identifier">xs</span><span>)</span></code></pre>
+    <p>scalac will compile this definition; it is well-typed.  However, it
+    will be nonsensical at runtime, because it is nonsense; it will either
+    throw some exception or loop forever.</p>
+    <p>Let us consider a similar case: the infinite list of 42s.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">fortyTwos</span><span>: </span><span class="type-name">Stream</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="number-literal">42</span><span> #:: </span><span class="identifier">fortyTwos</span><span>
+</span><span class="identifier">fortyTwos</span><span>: </span><span class="type-name">Stream</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Stream</span><span>(</span><span class="number-literal">42</span><span>, ?)
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">fortyTwos</span><span> </span><span class="identifier">take</span><span> </span><span class="number-literal">5</span><span> </span><span class="identifier">toList</span><span>
+</span><span class="identifier">res0</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">List</span><span>(</span><span class="number-literal">42</span><span>, </span><span class="number-literal">42</span><span>, </span><span class="number-literal">42</span><span>, </span><span class="number-literal">42</span><span>, </span><span class="number-literal">42</span><span>)</span></code></pre>
+    <p>The definition of <code>fortyTwos</code> is like that of <code>sum</code>; it uses its own
+    value while constructing said value.  A similar definition to <code>sum2</code>
+    is, likewise, nonsense, though scalac can catch this particular case:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">fortyTwos2</span><span>: </span><span class="type-name">Stream</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="identifier">fortyTwos2</span><span>
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">7</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">value</span><span> </span><span class="identifier">fortyTwos2</span><span> </span><span class="identifier">does</span><span> </span><span class="identifier">nothing</span><span> </span><span class="identifier">other</span><span> </span><span class="identifier">than</span><span> </span><span class="identifier">call</span><span> </span><span class="identifier">itself</span><span> </span><span class="identifier">recursively</span><span>
+       </span><span class="keyword">val</span><span> </span><span class="identifier">fortyTwos2</span><span>: </span><span class="type-name">Stream</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="identifier">fortyTwos2</span><span>
+                                     ^</span></code></pre>
+    <p>Obviously, functions <em>aren&#39;t</em> special; non-function values, like
+    functions, can be defined using their own values.  But how can we
+    characterize the difference between the good, terminating definitions,
+    and the bad, nonterminating definitions?</p>
+    <p>Proof systems like Coq and Agda perform a strong check on recursive
+    definitions; for definitions like <code>sum</code>, they require the recursion
+    match the structure of the data type, just as ours does, so that each
+    recursive call is known to operate over smaller data.  For definitions
+    like <code>fortyTwos</code>, they apply other strategies.  In Scala, we have to
+    make do with informality.</p>
+    <p>I like to think of it this way: <strong>a recursive definition must always
+    perform at least one inductive step</strong>.  <code>sum</code> does so because, in the
+    recursive case, it gives “supposing I have the sum of <code>tail</code>, the sum
+    is the <code>head</code> plus that.”  <code>fortyTwos</code> does because it says “the value
+    <code>fortyTwos</code> is <code>42</code> consed onto the value <code>fortyTwos</code>.”  It is, at
+    least, the start of a systematic way of thinking about terminating
+    recursive definitions.</p>
+    
+    <h2 id="abstracting-the-recursion" class="section"><a class="anchor-link" href="#abstracting-the-recursion"><code class="fas fa-link fa-sm"></code></a>Abstracting the recursion</h2>
+    <p>Now that we have a framework for thinking about what is required in a
+    recursive definition, we can start abstracting over it.</p>
+    <p>The above recursive definitions were accomplished with special
+    language support: the right-hand side of any term definition, <code>val</code> or
+    <code>def</code>, can refer to the thing being so defined.  Scalaz provides
+    <a href="http://docs.typelevel.org/api/scalaz/stable/7.0.4/doc/scalaz/std/function$.html">the <code>fix</code> function</a>,
+    which, if it were provided intrinsically, would eliminate the need for
+    this language support.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">fix</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">f</span><span>: (=&gt; </span><span class="type-name">A</span><span>) =&gt; </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = {
+  </span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span> = </span><span class="identifier">f</span><span>(</span><span class="identifier">a</span><span>)
+  </span><span class="identifier">a</span><span>
+}</span></code></pre>
+    <p>In this definition, the value returned by <code>f</code> <em>is</em> the value given to
+    it as an argument.  It&#39;s a by-name argument because that&#39;s how we
+    enforce the requirement: <code>f</code> must perform at least one inductive step
+    in the definition of its result, though it can refer to that result by
+    its argument, which we enforce by requiring it to return a value
+    <em>before</em> evaluating that argument.</p>
+    <p>Let&#39;s redefine <code>sum</code> with <code>fix</code>, after importing it from
+    <code>scalaz.std.function</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">sum3</span><span>: </span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>] =&gt; </span><span class="type-name">Int</span><span> = </span><span class="identifier">fix</span><span>[</span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>] =&gt; </span><span class="type-name">Int</span><span>](</span><span class="identifier">rec</span><span> =&gt; {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">XNil</span><span>() =&gt; </span><span class="number-literal">0</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">XCons</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">xs</span><span>) =&gt; </span><span class="identifier">x</span><span> + </span><span class="identifier">rec</span><span>.</span><span class="identifier">apply</span><span>(</span><span class="identifier">xs</span><span>)
+})</span></code></pre>
+    <p>And Scala thinks that&#39;s alright.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">sum3</span><span>(</span><span class="identifier">nums</span><span>)
+</span><span class="identifier">res1</span><span>: </span><span class="type-name">Int</span><span> = </span><span class="number-literal">51</span></code></pre>
+    <p>The interesting thing here is that <code>sum3</code>&#39;s definition doesn&#39;t refer
+    to the name <code>sum3</code>; the recursion is entirely inside the <code>fix</code>
+    argument.  So one advantage of <code>fix</code> is that it&#39;s easy to write
+    recursive values as expressions without giving them a name.</p>
+    <p>For example, there&#39;s the definition of <code>fortyTwos</code>:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">fix</span><span>[</span><span class="type-name">Stream</span><span>[</span><span class="type-name">Int</span><span>]](</span><span class="number-literal">42</span><span> #:: </span><span class="identifier">_</span><span>)
+</span><span class="identifier">res2</span><span>: </span><span class="type-name">Stream</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Stream</span><span>(</span><span class="number-literal">42</span><span>, ?)
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">res2</span><span> </span><span class="identifier">take</span><span> </span><span class="number-literal">5</span><span> </span><span class="identifier">toList</span><span>
+</span><span class="identifier">res3</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">List</span><span>(</span><span class="number-literal">42</span><span>, </span><span class="number-literal">42</span><span>, </span><span class="number-literal">42</span><span>, </span><span class="number-literal">42</span><span>, </span><span class="number-literal">42</span><span>)</span></code></pre>
+    
+    <h2 id="for-special-data-structures" class="section"><a class="anchor-link" href="#for-special-data-structures"><code class="fas fa-link fa-sm"></code></a>For special data structures</h2>
+    <p>It can be inconvenient to avoid evaluating the argument when providing
+    an induction step.  Fortunately, the requirement that <code>f</code> be nonstrict
+    in its argument is too strong to characterize the space of values that
+    can be defined with <code>fix</code>-style recursion.</p>
+    <p>For a given data type, there&#39;s often a way to abstract out the
+    nonstrictness.  For example, here&#39;s an <code>Equal</code> instance combinator
+    that is fully evaluated, but doesn&#39;t force the argument until after
+    the (equivalent) result has been produced.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">lazyEqual</span><span>[</span><span class="type-name">A</span><span>](</span><span class="type-name">A</span><span>: =&gt; </span><span class="type-name">Equal</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Equal</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">Equal</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">equal</span><span>(</span><span class="identifier">l</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">r</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Boolean</span><span> = </span><span class="type-name">A</span><span> </span><span class="identifier">equal</span><span> (</span><span class="identifier">l</span><span>, </span><span class="identifier">r</span><span>)
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">equalIsNatural</span><span> = </span><span class="type-name">A</span><span>.</span><span class="identifier">equalIsNatural</span><span>
+}</span></code></pre>
+    <p>Given that, we can produce a <code>fix</code> variant for <code>Equal</code> that passes the
+    <code>Equal</code> argument strictly.  You&#39;re simply not allowed to invoke any of
+    the typeclass&#39;s methods.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">fixEq</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">f</span><span>: </span><span class="type-name">Equal</span><span>[</span><span class="type-name">A</span><span>] =&gt; </span><span class="type-name">Equal</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Equal</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="identifier">fix</span><span>[</span><span class="type-name">Equal</span><span>[</span><span class="type-name">A</span><span>]](</span><span class="type-name">A</span><span> =&gt; </span><span class="identifier">f</span><span>(</span><span class="identifier">lazyEqual</span><span>(</span><span class="type-name">A</span><span>)))</span></code></pre>
+    <p>And now, we have the machinery to build a fully derived <code>Equal</code>
+    instance for <code>XList</code>, without function recursion, by defining the base
+    case and inductive step!</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="identifier">`list equal`</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Equal</span><span>]: </span><span class="type-name">Equal</span><span>[</span><span class="type-name">XList</span><span>[</span><span class="type-name">A</span><span>]] =
+  </span><span class="identifier">fixEq</span><span>[</span><span class="type-name">XList</span><span>[</span><span class="type-name">A</span><span>]](</span><span class="keyword">implicit</span><span> </span><span class="identifier">rec</span><span> =&gt;
+    </span><span class="type-name">Equal</span><span>.</span><span class="identifier">equalBy</span><span>[</span><span class="type-name">XList</span><span>[</span><span class="type-name">A</span><span>], </span><span class="type-name">Option</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">XList</span><span>[</span><span class="type-name">A</span><span>])]]{
+      </span><span class="keyword">case</span><span> </span><span class="type-name">XNil</span><span>() =&gt; </span><span class="type-name">None</span><span>
+      </span><span class="keyword">case</span><span> </span><span class="type-name">XCons</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">xs</span><span>) =&gt; </span><span class="type-name">Some</span><span>((</span><span class="identifier">x</span><span>, </span><span class="identifier">xs</span><span>))
+    })</span></code></pre>
+    <p>That works out to interesting compiled output.  Note especially the
+    last line, and its (strict) use of <code>rec</code> towards the end.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">reify</span><span>(</span><span class="identifier">fixEq</span><span>[</span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>]](</span><span class="keyword">implicit</span><span> </span><span class="identifier">rec</span><span> =&gt;
+     |     </span><span class="type-name">Equal</span><span>.</span><span class="identifier">equalBy</span><span>[</span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Option</span><span>[(</span><span class="type-name">Int</span><span>, </span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>])]]{
+     |       </span><span class="keyword">case</span><span> </span><span class="type-name">XNil</span><span>() =&gt; </span><span class="type-name">None</span><span>
+     |       </span><span class="keyword">case</span><span> </span><span class="type-name">XCons</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">xs</span><span>) =&gt; </span><span class="type-name">Some</span><span>((</span><span class="identifier">x</span><span>, </span><span class="identifier">xs</span><span>))
+     |     }))
+</span><span class="identifier">res10</span><span>: </span><span class="identifier">reflect</span><span>.</span><span class="identifier">runtime</span><span>.</span><span class="identifier">universe</span><span>.</span><span class="type-name">Expr</span><span>[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Equal</span><span>[</span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>]]] = 
+</span><span class="type-name">Expr</span><span>[</span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Equal</span><span>[</span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>]]](</span><span class="identifier">$read</span><span>.</span><span class="identifier">fixEq</span><span>[</span><span class="identifier">$read</span><span>.</span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>]](((</span><span class="keyword">implicit</span><span> </span><span class="identifier">rec</span><span>) =&gt;
+ </span><span class="type-name">Equal</span><span>.</span><span class="identifier">equalBy</span><span>[</span><span class="identifier">$read</span><span>.</span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Option</span><span>[</span><span class="type-name">Tuple2</span><span>[</span><span class="type-name">Int</span><span>, </span><span class="identifier">$read</span><span>.</span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>]]]]
+ (((</span><span class="identifier">x0$1</span><span>) =&gt; </span><span class="identifier">x0$1</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="identifier">$read</span><span>.</span><span class="type-name">XNil</span><span>() =&gt; </span><span class="type-name">None</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="identifier">$read</span><span>.</span><span class="type-name">XCons</span><span>((</span><span class="identifier">x</span><span> @ </span><span class="identifier">_</span><span>), (</span><span class="identifier">xs</span><span> @ </span><span class="identifier">_</span><span>)) =&gt; </span><span class="type-name">Some</span><span>.</span><span class="identifier">apply</span><span>(</span><span class="type-name">Tuple2</span><span>.</span><span class="identifier">apply</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">xs</span><span>))
+}))(</span><span class="identifier">option</span><span>.</span><span class="identifier">optionEqual</span><span>(</span><span class="identifier">tuple</span><span>.</span><span class="identifier">tuple2Equal</span><span>(</span><span class="identifier">anyVal</span><span>.</span><span class="identifier">intInstance</span><span>, </span><span class="identifier">rec</span><span>))))))</span></code></pre>
+    <p>f0, a binary serialization library,
+    <a href="https://github.com/joshcough/f0/blob/v1.1.1/src/main/scala/f0/Readers.scala#L216-L222">uses a similar technique</a>
+    to help define codecs on recursive data structures.</p>
+    
+    <h2 id="what-about-xlist" class="section"><a class="anchor-link" href="#what-about-xlist"><code class="fas fa-link fa-sm"></code></a>What about <code>XList</code>?</h2>
+    <p>If we can abstract out the idea of recursive value definitions, what
+    about recursive type definitions?  Well, thanks to higher kinds, sure!
+    Scalaz doesn&#39;t provide it, but it is commonly called <code>Mu</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Mu</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">value</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Mu</span><span>[</span><span class="type-name">F</span><span>]])</span></code></pre>
+    <p>We have to put a class in the middle of it so that we don&#39;t have an
+    infinite type; Haskell has a similar restriction.  But the principle
+    is the same as with <code>fix</code>: feed one datatype induction step <code>F</code> to the
+    higher-order type <code>Mu</code> and it will feed <code>F</code>&#39;s result back to itself.</p>
+    <p>For example, here is the equivalent definition of <code>XList</code> with <code>Mu</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">XList2Step</span><span>[</span><span class="type-name">A</span><span>] = {</span><span class="keyword">type</span><span> λ[α] = </span><span class="type-name">Option</span><span>[(</span><span class="type-name">A</span><span>, α)]}
+</span><span class="keyword">type</span><span> </span><span class="type-name">XList2</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">Mu</span><span>[</span><span class="type-name">XList2Step</span><span>[</span><span class="type-name">A</span><span>]#λ]</span></code></pre>
+    <p>Note the typelambda&#39;s similarity to the second type argument to
+    <code>#equalBy</code> above.  And for demonstration, the isomorphism with
+    <code>XList</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">onetotwo</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">xs</span><span>: </span><span class="type-name">XList</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">XList2</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="identifier">xs</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">XNil</span><span>() =&gt; </span><span class="type-name">Mu</span><span>[</span><span class="type-name">XList2Step</span><span>[</span><span class="type-name">A</span><span>]#λ](</span><span class="type-name">None</span><span>)
+  </span><span class="keyword">case</span><span> </span><span class="type-name">XCons</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">xs</span><span>) =&gt; </span><span class="type-name">Mu</span><span>[</span><span class="type-name">XList2Step</span><span>[</span><span class="type-name">A</span><span>]#λ](</span><span class="type-name">Some</span><span>((</span><span class="identifier">x</span><span>, </span><span class="identifier">onetotwo</span><span>(</span><span class="identifier">xs</span><span>))))
+}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">twotoone</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">xs</span><span>: </span><span class="type-name">XList2</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">XList</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="identifier">xs</span><span>.</span><span class="identifier">value</span><span> </span><span class="identifier">cata</span><span> ({</span><span class="keyword">case</span><span> (</span><span class="identifier">x</span><span>, </span><span class="identifier">xs</span><span>) =&gt; </span><span class="type-name">XCons</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">twotoone</span><span>(</span><span class="identifier">xs</span><span>))}, </span><span class="type-name">XNil</span><span>())</span></code></pre>
+    <p>Of course, <code>fix</code> lends itself to both of these definitions; I have
+    left its use off here.  But let&#39;s check those functions:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">onetotwo</span><span>(</span><span class="identifier">nums</span><span>)
+</span><span class="identifier">res11</span><span>: </span><span class="type-name">XList2</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Mu</span><span>(</span><span class="type-name">Some</span><span>((</span><span class="number-literal">2</span><span>,</span><span class="type-name">Mu</span><span>(</span><span class="type-name">Some</span><span>((</span><span class="number-literal">3</span><span>,</span><span class="type-name">Mu</span><span>(</span><span class="type-name">Some</span><span>((</span><span class="number-literal">4</span><span>,</span><span class="type-name">Mu</span><span>(</span><span class="type-name">Some</span><span>((</span><span class="number-literal">42</span><span>,</span><span class="type-name">Mu</span><span>(</span><span class="type-name">None</span><span>)))))))))))))
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">twotoone</span><span>(</span><span class="identifier">res11</span><span>)
+</span><span class="identifier">res12</span><span>: </span><span class="type-name">XList</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">XCons</span><span>(</span><span class="number-literal">2</span><span>,</span><span class="type-name">XCons</span><span>(</span><span class="number-literal">3</span><span>,</span><span class="type-name">XCons</span><span>(</span><span class="number-literal">4</span><span>,</span><span class="type-name">XCons</span><span>(</span><span class="number-literal">42</span><span>,</span><span class="type-name">XNil</span><span>()))))</span></code></pre>
+    
+    <h2 id="fix-over-mu" class="section"><a class="anchor-link" href="#fix-over-mu"><code class="fas fa-link fa-sm"></code></a><code>fix</code> over <code>Mu</code></h2>
+    <p>And, finally, the associated general <code>Equal</code> definition for <code>Mu</code>.  The
+    <code>contramap</code> step is just noise to deal with the fact that the <code>Mu</code>
+    structure has to actually exist; you can ignore it for the most part.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">equalMu</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Equal</span><span>[</span><span class="type-name">Mu</span><span>[</span><span class="type-name">F</span><span>]] =&gt; </span><span class="type-name">Equal</span><span>[</span><span class="type-name">F</span><span>[</span><span class="type-name">Mu</span><span>[</span><span class="type-name">F</span><span>]]]): </span><span class="type-name">Equal</span><span>[</span><span class="type-name">Mu</span><span>[</span><span class="type-name">F</span><span>]] =
+  </span><span class="identifier">fixEq</span><span>[</span><span class="type-name">Mu</span><span>[</span><span class="type-name">F</span><span>]](</span><span class="identifier">emf</span><span> =&gt; </span><span class="identifier">fa</span><span>(</span><span class="identifier">emf</span><span>) </span><span class="identifier">contramap</span><span> (</span><span class="identifier">_</span><span>.</span><span class="identifier">value</span><span>))</span></code></pre>
+    <p>The evidence we really want is <code>forall a. Equal[a] =&gt; Equal[F[a]]</code>,
+    but that&#39;s too hard to express in Scala, so this does it in a pinch.
+    All we&#39;re interested in is that we can derive <code>F</code>&#39;s equality given the
+    equality of any type argument given to it.  Let&#39;s prove that we have
+    such an <code>Equal</code>-lifter:</p>
+    <pre><code class="nohighlight"><span class="comment">// redefined because Tuple2Equal scalaz is strict on equalIsNatural
+</span><span class="keyword">class</span><span> </span><span class="type-name">Tuple2Equal</span><span>[</span><span class="type-name">A1</span><span>, </span><span class="type-name">A2</span><span>](</span><span class="identifier">_1</span><span>: </span><span class="type-name">Equal</span><span>[</span><span class="type-name">A1</span><span>], </span><span class="identifier">_2</span><span>: </span><span class="type-name">Equal</span><span>[</span><span class="type-name">A2</span><span>])
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">Equal</span><span>[(</span><span class="type-name">A1</span><span>, </span><span class="type-name">A2</span><span>)] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">equal</span><span>(</span><span class="identifier">f1</span><span>: (</span><span class="type-name">A1</span><span>, </span><span class="type-name">A2</span><span>), </span><span class="identifier">f2</span><span>: (</span><span class="type-name">A1</span><span>, </span><span class="type-name">A2</span><span>)) =
+    </span><span class="identifier">_1</span><span>.</span><span class="identifier">equal</span><span>(</span><span class="identifier">f1</span><span class="number-literal">._1</span><span>, </span><span class="identifier">f2</span><span class="number-literal">._1</span><span>) &amp;&amp; </span><span class="identifier">_2</span><span>.</span><span class="identifier">equal</span><span>(</span><span class="identifier">f1</span><span class="number-literal">._2</span><span>, </span><span class="identifier">f2</span><span class="number-literal">._2</span><span>)
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">equalIsNatural</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">_1</span><span>.</span><span class="identifier">equalIsNatural</span><span> &amp;&amp; </span><span class="identifier">_2</span><span>.</span><span class="identifier">equalIsNatural</span><span>
+}
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">tup2eq</span><span>[</span><span class="type-name">A1</span><span>: </span><span class="type-name">Equal</span><span>, </span><span class="type-name">A2</span><span>: </span><span class="type-name">Equal</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Tuple2Equal</span><span>[</span><span class="type-name">A1</span><span>, </span><span class="type-name">A2</span><span>](</span><span class="identifier">implicitly</span><span>, </span><span class="identifier">implicitly</span><span>)
+
+</span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Blah</span><span> </span><span class="comment">// just a placeholder
+</span><span>
+</span><span class="identifier">scala</span><span>&gt; {</span><span class="keyword">implicit</span><span> </span><span class="type-name">X</span><span>: </span><span class="type-name">Equal</span><span>[</span><span class="type-name">Blah</span><span>] =&gt; </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Equal</span><span>[</span><span class="type-name">XList2Step</span><span>[</span><span class="type-name">Int</span><span>]#λ[</span><span class="type-name">Blah</span><span>]]]}
+</span><span class="identifier">res4</span><span>: </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Equal</span><span>[</span><span class="type-name">Blah</span><span>] =&gt; </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Equal</span><span>[</span><span class="type-name">Option</span><span>[(</span><span class="type-name">Int</span><span>, </span><span class="type-name">Blah</span><span>)]] = &lt;</span><span class="identifier">function1</span><span>&gt;</span></code></pre>
+    <p>And now that we have <code>F</code> equality, we&#39;re done, because <code>Mu</code> is <code>F</code>s
+    all the way down.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">equalMu</span><span>[</span><span class="type-name">XList2Step</span><span>[</span><span class="type-name">Int</span><span>]#λ](</span><span class="keyword">implicit</span><span> </span><span class="identifier">fa</span><span> =&gt; </span><span class="identifier">implicitly</span><span>)
+</span><span class="identifier">res5</span><span>: </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Equal</span><span>[</span><span class="type-name">Mu</span><span>[[α]</span><span class="type-name">Option</span><span>[(</span><span class="type-name">Int</span><span>, α)]]] = </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Equal$$anon$2</span><span class="annotation">@de52bcf</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">res5</span><span> </span><span class="identifier">equal</span><span> (</span><span class="identifier">onetotwo</span><span>(</span><span class="identifier">nums</span><span>), </span><span class="identifier">onetotwo</span><span>(</span><span class="identifier">nums</span><span>))
+</span><span class="identifier">res6</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">true</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">res5</span><span> </span><span class="identifier">equal</span><span> (</span><span class="identifier">onetotwo</span><span>(</span><span class="identifier">nums</span><span>), </span><span class="identifier">onetotwo</span><span>(</span><span class="type-name">XCons</span><span>(</span><span class="number-literal">3</span><span>,</span><span class="identifier">nums</span><span>)))
+</span><span class="identifier">res7</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">false</span></code></pre>
+    <p><em>This article was tested with Scala 2.10.4 &amp; Scalaz 7.0.6.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

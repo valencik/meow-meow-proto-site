@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Higher Leibniz</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Higher Leibniz</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on September 20, 2014
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="higher-leibniz" class="title">Higher Leibniz</h1>
+    <p>We’ve previously seen
+    <a href="type_equality_to_leibniz.html">the basic implementation and motivation for <code>scalaz.Leibniz</code></a>.
+    But there’s still quite a bit more to this traditionally esoteric
+    member of the Scalaz collection of well-typed stuff.</p>
+    
+    <h2 id="strictly-necessarily-strict" class="section"><a class="anchor-link" href="#strictly-necessarily-strict"><code class="fas fa-link fa-sm"></code></a>Strictly necessarily strict</h2>
+    <p>The word “witness” implies that <code>Leibniz</code> is a passive bystander in
+    your function; sitting back and telling you that some type is equal to
+    another type, otherwise content to let the <em>real</em> code do the real
+    work.  The fact that <code>Leibniz</code> lifts into functions (which are a
+    member of the <em>everything</em> set, you’ll agree) might reinforce the
+    notion that <code>Leibniz</code> is spooky action at a distance.</p>
+    <p>But one of the nice things about <code>Leibniz</code> is that there’s really no
+    cheating: the value with its shiny new type is dependent on the
+    <code>Leibniz</code> actually existing, and its <code>subst</code>, however much a glorified
+    identity function it might be, completing successfully.</p>
+    <p>To see this in action, let’s check in with the bastion of not
+    evaluating stuff, Haskell.</p>
+    
+    <h2 id="the-haskell-implementation" class="section"><a class="anchor-link" href="#the-haskell-implementation"><code class="fas fa-link fa-sm"></code></a>The Haskell implementation</h2>
+    <pre><code class="nohighlight"><span class="comment">{-# LANGUAGE RankNTypes, PolyKinds #-}</span><span>
+</span><span class="keyword">module</span><span> </span><span class="type-name">Leib</span><span>
+  ( </span><span class="type-name">Leib</span><span>()
+  , </span><span class="identifier">subst</span><span>
+  , </span><span class="identifier">lift</span><span>
+  , </span><span class="identifier">symm</span><span>
+  , </span><span class="identifier">compose</span><span>
+  ) </span><span class="keyword">where</span><span>
+
+</span><span class="keyword">import</span><span> </span><span class="type-name">Data</span><span>.</span><span class="type-name">Functor</span><span>
+
+</span><span class="keyword">data</span><span> </span><span class="type-name">Leib</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span> = </span><span class="type-name">Leib</span><span> {
+  </span><span class="identifier">subst</span><span> :: </span><span class="keyword">forall</span><span> </span><span class="identifier">f</span><span>. </span><span class="identifier">f</span><span> </span><span class="identifier">a</span><span> -&gt; </span><span class="identifier">f</span><span> </span><span class="identifier">b</span><span>
+}
+
+</span><span class="identifier">refl</span><span> :: </span><span class="type-name">Leib</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">a</span><span>
+</span><span class="identifier">refl</span><span> = </span><span class="type-name">Leib</span><span> </span><span class="identifier">id</span><span>
+
+</span><span class="identifier">lift</span><span> :: </span><span class="type-name">Leib</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span> -&gt; </span><span class="type-name">Leib</span><span> (</span><span class="identifier">f</span><span> </span><span class="identifier">a</span><span>) (</span><span class="identifier">f</span><span> </span><span class="identifier">b</span><span>)
+</span><span class="identifier">lift</span><span> </span><span class="identifier">ab</span><span> = </span><span class="identifier">runOn</span><span> . </span><span class="identifier">subst</span><span> </span><span class="identifier">ab</span><span> . </span><span class="type-name">On</span><span> $ </span><span class="identifier">refl</span><span>
+
+</span><span class="keyword">newtype</span><span> </span><span class="type-name">On</span><span> </span><span class="identifier">c</span><span> </span><span class="identifier">f</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span> = </span><span class="type-name">On</span><span> {
+  </span><span class="identifier">runOn</span><span> :: </span><span class="identifier">c</span><span> (</span><span class="identifier">f</span><span> </span><span class="identifier">a</span><span>) (</span><span class="identifier">f</span><span> </span><span class="identifier">b</span><span>)
+}
+
+</span><span class="identifier">symm</span><span> :: </span><span class="type-name">Leib</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span> -&gt; </span><span class="type-name">Leib</span><span> </span><span class="identifier">b</span><span> </span><span class="identifier">a</span><span>
+</span><span class="identifier">symm</span><span> </span><span class="identifier">ab</span><span> = </span><span class="identifier">runDual</span><span> . </span><span class="identifier">subst</span><span> </span><span class="identifier">ab</span><span> . </span><span class="type-name">Dual</span><span> $ </span><span class="identifier">refl</span><span>
+
+</span><span class="keyword">newtype</span><span> </span><span class="type-name">Dual</span><span> </span><span class="identifier">c</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span> = </span><span class="type-name">Dual</span><span> {
+  </span><span class="identifier">runDual</span><span> :: </span><span class="identifier">c</span><span> </span><span class="identifier">b</span><span> </span><span class="identifier">a</span><span>
+}
+
+</span><span class="identifier">compose</span><span> :: </span><span class="type-name">Leib</span><span> </span><span class="identifier">b</span><span> </span><span class="identifier">c</span><span> -&gt; </span><span class="type-name">Leib</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span> -&gt; </span><span class="type-name">Leib</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">c</span><span>
+</span><span class="identifier">compose</span><span> = </span><span class="identifier">subst</span></code></pre>
+    <p>We use <a href="http://www.haskell.org/haskellwiki/Newtype">newtypes</a> in place
+    of type lambdas, and a value instead of a method, but the
+    implementation is otherwise identical.</p>
+    
+    <h2 id="it-s-really-there" class="section"><a class="anchor-link" href="#it-s-really-there"><code class="fas fa-link fa-sm"></code></a>It’s really there</h2>
+    <p>OK.  Let’s try to make a fake <code>Leib</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">badForce</span><span> :: </span><span class="type-name">Leib</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span>
+</span><span class="identifier">badForce</span><span> = </span><span class="type-name">Leib</span><span> $ \</span><span class="identifier">_</span><span> -&gt; </span><span class="identifier">error</span><span> </span><span class="string-literal">&quot;sorry for fibbing&quot;</span></code></pre>
+    <p>The following code will signal an error only if forcing the <em>head
+    cons</em> of the <code>subst</code>ed list signals such an error.  We never give
+    Haskell the chance to force anything else.</p>
+    <pre><code class="nohighlight"><span>λ&gt; </span><span class="identifier">subst</span><span> (</span><span class="identifier">badForce</span><span> :: </span><span class="type-name">Leib</span><span> </span><span class="type-name">Int</span><span> </span><span class="type-name">String</span><span>) [</span><span class="number-literal">42</span><span>] `</span><span class="identifier">seq</span><span>` </span><span class="number-literal">33</span><span>
+*** </span><span class="type-name">Exception</span><span>: </span><span class="identifier">sorry</span><span> </span><span class="identifier">for</span><span> </span><span class="identifier">fibbing</span></code></pre>
+    <p>Oh well, let’s try to bury it behind combinators.</p>
+    <pre><code class="nohighlight"><span>λ&gt; </span><span class="identifier">subst</span><span> (</span><span class="identifier">symm</span><span> . </span><span class="identifier">symm</span><span> $ </span><span class="identifier">badForce</span><span> :: </span><span class="type-name">Leib</span><span> </span><span class="type-name">Int</span><span> </span><span class="type-name">String</span><span>) [</span><span class="number-literal">42</span><span>] `</span><span class="identifier">seq</span><span>` </span><span class="number-literal">33</span><span>
+*** </span><span class="type-name">Exception</span><span>: </span><span class="identifier">sorry</span><span> </span><span class="identifier">for</span><span> </span><span class="identifier">fibbing</span><span>
+λ&gt; </span><span class="identifier">subst</span><span> (</span><span class="identifier">compose</span><span> </span><span class="identifier">refl</span><span> $ </span><span class="identifier">badForce</span><span> :: </span><span class="type-name">Leib</span><span> </span><span class="type-name">Int</span><span> </span><span class="type-name">String</span><span>) [</span><span class="number-literal">42</span><span>] `</span><span class="identifier">seq</span><span>` </span><span class="number-literal">33</span><span>
+*** </span><span class="type-name">Exception</span><span>: </span><span class="identifier">sorry</span><span> </span><span class="identifier">for</span><span> </span><span class="identifier">fibbing</span></code></pre>
+    <p>Hmm.  We have two properties:</p>
+    <ol class="arabic">
+      <li>The <code>id</code> from <code>refl</code>?  The type-substituted data actually goes
+      through that function.  The same goes for the <code>subst</code> method in
+      Scala.</li>
+      <li>When using <code>Leibniz</code> combinators, the strictness forms a chain to
+      all underlying <code>Leibniz</code> evidence.  If there are any missing
+      values, the transform will also fail.</li>
+    </ol>
+    
+    <h2 id="higher-kinded-leibniz" class="section"><a class="anchor-link" href="#higher-kinded-leibniz"><code class="fas fa-link fa-sm"></code></a>Higher kinded <code>Leibniz</code></h2>
+    <p>Let’s try a variant on <code>Leib</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">LeibF</span><span>[</span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">H</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">subst</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]]](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">G</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">H</span><span>]
+}</span></code></pre>
+    <p>This reads “<code>LeibF[G, H]</code> can replace <code>G</code> with <code>H</code> in <strong>any</strong> type
+    function”.  But, whereas the
+    <a href="https://blogs.atlassian.com/2013/09/scala-types-of-a-higher-kind/">kind</a>
+    of the types that Leib discusses is <code>*</code>, for <code>LeibF</code> it’s <code>*-&gt;*</code>.  So,
+    <code>LeibF[List, List]</code> exhibits that the <em>type constructors</em> <code>List</code> and
+    <code>List</code> are equal.</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">refl</span><span>[</span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>]]: </span><span class="type-name">LeibF</span><span>[</span><span class="type-name">G</span><span>, </span><span class="type-name">G</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">LeibF</span><span>[</span><span class="type-name">G</span><span>, </span><span class="type-name">G</span><span>] {
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">subst</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]]](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">G</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">G</span><span>] = </span><span class="identifier">fa</span><span>
+}</span></code></pre>
+    <p>Interestingly, except for the kinds of type parameters, these
+    definitions are exactly the same as for <code>Leib</code>.  Does that hold for
+    lift?</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">lift</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>], </span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>[</span><span class="identifier">_</span><span>] , </span><span class="type-name">B</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">ab</span><span>: </span><span class="type-name">LeibF</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]): </span><span class="type-name">LeibF</span><span>[</span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>, ?], </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>, ?]] =
+  </span><span class="identifier">ab</span><span>.</span><span class="identifier">subst</span><span>[</span><span class="type-name">Lambda</span><span>[</span><span class="identifier">x</span><span>[</span><span class="identifier">_</span><span>] =&gt; </span><span class="type-name">LeibF</span><span>[</span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>, ?], </span><span class="type-name">F</span><span>[</span><span class="identifier">x</span><span>, ?]]]](</span><span class="type-name">LeibF</span><span>.</span><span class="identifier">refl</span><span>[</span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>, ?]])</span></code></pre>
+    <p>Despite that we are positively buried in type lambdas (yet moderated
+    by <a href="https://github.com/non/kind-projector">Kind Projector</a>) now,
+    absolutely!</p>
+    <p>As an exercise, adapt your <code>symm</code> and <code>compose</code> methods from the last
+    part for <code>LeibF</code>, by only changing type parameters and switching any
+    <code>refl</code> references.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">symm</span><span>[</span><span class="type-name">A</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">B</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">ab</span><span>: </span><span class="type-name">LeibF</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]): </span><span class="type-name">LeibF</span><span>[</span><span class="type-name">B</span><span>, </span><span class="type-name">A</span><span>]
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">compose</span><span>[</span><span class="type-name">A</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">B</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">C</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">ab</span><span>: </span><span class="type-name">LeibF</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>], </span><span class="identifier">bc</span><span>: </span><span class="type-name">LeibF</span><span>[</span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>]): </span><span class="type-name">LeibF</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">C</span><span>]</span></code></pre>
+    <p>You can write a <code>Leibniz</code> and associated combinators for types of
+    <em>any</em> kind; the principles and implementation techniques outlined
+    above for types of kind <code>*-&gt;*</code> apply to all kinds.</p>
+    
+    <h2 id="whence-polykinds" class="section"><a class="anchor-link" href="#whence-polykinds"><code class="fas fa-link fa-sm"></code></a>Whence <code>PolyKinds</code>?</h2>
+    <p>You have to define a new <code>Leib</code> variant and set of combinators for
+    each kind you wish to support.  There is no need to do this in
+    Haskell, though.</p>
+    <pre><code class="nohighlight"><span>λ&gt; :</span><span class="identifier">k</span><span> </span><span class="type-name">Leib</span><span> []
+</span><span class="type-name">Leib</span><span> [] :: (* -&gt; *) -&gt; *
+λ&gt; :</span><span class="identifier">t</span><span> </span><span class="identifier">refl</span><span> :: </span><span class="type-name">Leib</span><span> [] []
+</span><span class="identifier">refl</span><span> :: </span><span class="type-name">Leib</span><span> [] [] :: </span><span class="type-name">Leib</span><span> [] []
+λ&gt; :</span><span class="identifier">t</span><span> </span><span class="identifier">lift</span><span> (</span><span class="identifier">refl</span><span> :: </span><span class="type-name">Leib</span><span> [] [])
+</span><span class="identifier">lift</span><span> (</span><span class="identifier">refl</span><span> :: </span><span class="type-name">Leib</span><span> [] []) :: </span><span class="type-name">Leib</span><span> (</span><span class="identifier">f</span><span> []) (</span><span class="identifier">f</span><span> [])
+λ&gt; :</span><span class="identifier">t</span><span> </span><span class="identifier">compose</span><span> (</span><span class="identifier">refl</span><span> :: </span><span class="type-name">Leib</span><span> [] [])
+</span><span class="identifier">compose</span><span> (</span><span class="identifier">refl</span><span> :: </span><span class="type-name">Leib</span><span> [] []) :: </span><span class="type-name">Leib</span><span> </span><span class="identifier">a</span><span> [] -&gt; </span><span class="type-name">Leib</span><span> </span><span class="identifier">a</span><span> []</span></code></pre>
+    <p>In Haskell, we can take advantage of the fact that the actual
+    implementations are kind-agnostic, by having those definitions be
+    applicable to all kinds via
+    <a href="http://www.haskell.org/ghc/docs/7.8.3/html/users_guide/kind-polymorphism.html">the <code>PolyKinds</code> language extension</a>,
+    mentioned at the top of the Haskell code above.  No such luck in
+    Scala.</p>
+    
+    <h2 id="better-gadts" class="section"><a class="anchor-link" href="#better-gadts"><code class="fas fa-link fa-sm"></code></a>Better GADTs</h2>
+    <p><a href="http://d.hatena.ne.jp/xuwei/20140706/1404612620">In a post from a couple months ago</a>,
+    Kenji Yoshida outlines an interesting way to simulate the missing
+    type-evidence features of Scala’s GADT support with <code>Leibniz</code>.  This
+    works in Haskell, too, in case you are comfortable with turning on
+    <a href="http://www.haskell.org/ghc/docs/7.8.3/html/users_guide/other-type-extensions.html#universal-quantification"><code>RankNTypes</code></a>
+    but not
+    <a href="http://www.haskell.org/ghc/docs/7.8.3/html/users_guide/data-type-extensions.html#gadt"><code>GADTs</code></a>
+    somehow.</p>
+    <p>Let’s examine Kenji’s GADT.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">X</span><span>[</span><span class="type-name">A</span><span>]() </span><span class="keyword">extends</span><span> </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Y</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]</span></code></pre>
+    <p>For completeness, let’s also see the Haskell version, including the
+    function that demands so much hoop-jumping in Scala, but just works in
+    Haskell.</p>
+    <pre><code class="nohighlight"><span class="comment">{-# LANGUAGE GADTs #-}</span><span>
+</span><span class="keyword">module</span><span> </span><span class="type-name">FooXY</span><span> </span><span class="keyword">where</span><span>
+
+</span><span class="keyword">data</span><span> </span><span class="type-name">Foo</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span> </span><span class="keyword">where</span><span>
+  </span><span class="type-name">X</span><span> :: </span><span class="type-name">Foo</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">a</span><span>
+  </span><span class="type-name">Y</span><span> :: </span><span class="identifier">a</span><span> -&gt; </span><span class="identifier">b</span><span> -&gt; </span><span class="type-name">Foo</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span>
+
+</span><span class="identifier">hoge</span><span> :: </span><span class="type-name">Foo</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span> -&gt; </span><span class="identifier">f</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">c</span><span> -&gt; </span><span class="identifier">f</span><span> </span><span class="identifier">b</span><span> </span><span class="identifier">c</span><span>
+</span><span class="identifier">hoge</span><span> </span><span class="type-name">X</span><span> </span><span class="identifier">bar</span><span> = </span><span class="identifier">bar</span></code></pre>
+    <p>Note that the Haskell type system understands that when <code>hoge</code>’s first
+    argument’s data constructor is <code>X</code>, the type variables <code>a</code> and <code>b</code>
+    must be the same type, and therefore by implication the argument of
+    type <code>f a c</code> must also be of type <code>f b c</code>.  This is what we’re trying
+    to get Scala to understand.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">hoge1</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>](</span><span class="identifier">foo</span><span>: </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>], </span><span class="identifier">bar</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">C</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>] =
+  </span><span class="identifier">foo</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">X</span><span>() =&gt; </span><span class="identifier">bar</span><span>
+  }</span></code></pre>
+    <p>This transliteration of the above Haskell <code>hoge</code> function fails to
+    compile, as Kenji notes, with the following:</p>
+    <pre><code class="nohighlight"><span>…/</span><span class="type-name">LeibnizArticle</span><span>.</span><span class="identifier">scala</span><span>:</span><span class="number-literal">39</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">bar</span><span>.</span><span class="keyword">type</span><span> (</span><span class="keyword">with</span><span> </span><span class="identifier">underlying</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>,</span><span class="type-name">C</span><span>])
+ </span><span class="identifier">required</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>,</span><span class="type-name">C</span><span>]
+      </span><span class="keyword">case</span><span> </span><span class="type-name">X</span><span>() =&gt; </span><span class="identifier">bar</span><span>
+                  ^</span></code></pre>
+    
+    <h2 id="the-overridden-cata-method" class="section"><a class="anchor-link" href="#the-overridden-cata-method"><code class="fas fa-link fa-sm"></code></a>The overridden <code>cata</code> method</h2>
+    <p>Kenji introduces a <code>cata</code> method on <code>Foo</code> to constrain use of the
+    <code>Leibniz.force</code> hack, while still providing external code with usable
+    <code>Leibniz</code> evidence that can be lifted to implement <code>hoge</code>.  However,
+    by implementing the method in a slightly different way, we can use
+    <code>refl</code> instead.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cata</span><span>[</span><span class="type-name">Z</span><span>](</span><span class="identifier">x</span><span>: (</span><span class="type-name">A</span><span> </span><span class="type-name">Leib</span><span> </span><span class="type-name">B</span><span>) =&gt; </span><span class="type-name">Z</span><span>, </span><span class="identifier">y</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>) =&gt; </span><span class="type-name">Z</span><span>): </span><span class="type-name">Z</span><span>
+}
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">X</span><span>[</span><span class="type-name">A</span><span>]() </span><span class="keyword">extends</span><span> </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cata</span><span>[</span><span class="type-name">Z</span><span>](</span><span class="identifier">x</span><span>: (</span><span class="type-name">A</span><span> </span><span class="type-name">Leib</span><span> </span><span class="type-name">A</span><span>) =&gt; </span><span class="type-name">Z</span><span>, </span><span class="identifier">y</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>) =&gt; </span><span class="type-name">Z</span><span>) =
+    </span><span class="identifier">x</span><span>(</span><span class="type-name">Leib</span><span>.</span><span class="identifier">refl</span><span>)
+}
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Y</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cata</span><span>[</span><span class="type-name">Z</span><span>](</span><span class="identifier">x</span><span>: (</span><span class="type-name">A</span><span> </span><span class="type-name">Leib</span><span> </span><span class="type-name">B</span><span>) =&gt; </span><span class="type-name">Z</span><span>, </span><span class="identifier">y</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>) =&gt; </span><span class="type-name">Z</span><span>) =
+    </span><span class="identifier">y</span><span>(</span><span class="identifier">a</span><span>, </span><span class="identifier">b</span><span>)
+}</span></code></pre>
+    <p>Now we can replace the pattern match (and all other such pattern
+    matches) with an equivalent <code>cata</code> invocation.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">hoge2</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>](</span><span class="identifier">foo</span><span>: </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>], </span><span class="identifier">bar</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">C</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>] =
+  </span><span class="identifier">foo</span><span>.</span><span class="identifier">cata</span><span>(</span><span class="identifier">x</span><span> =&gt; </span><span class="identifier">x</span><span>.</span><span class="identifier">subst</span><span>[</span><span class="type-name">F</span><span>[?, </span><span class="type-name">C</span><span>]](</span><span class="identifier">bar</span><span>),
+           (</span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>) =&gt; </span><span class="identifier">sys</span><span> </span><span class="identifier">error</span><span> </span><span class="string-literal">&quot;nonexhaustive&quot;</span><span>)</span></code></pre>
+    <p>So why can we get away with <code>Leib.refl</code>, whereas the function version
+    Kenji presents cannot?  Compare the <code>cata</code> signature in <code>Foo</code> versus
+    <code>X</code>:</p>
+    <pre><code class="nohighlight"><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cata</span><span>[</span><span class="type-name">Z</span><span>](</span><span class="identifier">x</span><span>: (</span><span class="type-name">A</span><span> </span><span class="type-name">Leib</span><span> </span><span class="type-name">B</span><span>) =&gt; </span><span class="type-name">Z</span><span>, </span><span class="identifier">y</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>) =&gt; </span><span class="type-name">Z</span><span>): </span><span class="type-name">Z</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cata</span><span>[</span><span class="type-name">Z</span><span>](</span><span class="identifier">x</span><span>: (</span><span class="type-name">A</span><span> </span><span class="type-name">Leib</span><span> </span><span class="type-name">A</span><span>) =&gt; </span><span class="type-name">Z</span><span>, </span><span class="identifier">y</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>) =&gt; </span><span class="type-name">Z</span><span>): </span><span class="type-name">Z</span></code></pre>
+    <p>We supplied <code>A</code> for both the <code>A</code> and <code>B</code> type parameters in our
+    <code>extends</code> clause, so that substitution also applies in all methods
+    from <code>Foo</code> that we’re implementing, including <code>cata</code>.  At that point
+    it’s obvious to the compiler that <code>refl</code> implements the requested
+    <code>Leib</code>.</p>
+    <p>Incidentally, a similar style of substitution underlies the definition
+    of <code>refl</code>.</p>
+    
+    <h2 id="the-leib-member" class="section"><a class="anchor-link" href="#the-leib-member"><code class="fas fa-link fa-sm"></code></a>The <code>Leib</code> member</h2>
+    <p>What if we don’t want to write or maintain an overriding-style <code>cata</code>?
+    After all, that’s an n² commitment.  Instead, we can incorporate a
+    <code>Leib</code> value in the GADT.  First, let’s see what the equivalent
+    Haskell is, without the <code>GADTs</code> extension:</p>
+    <pre><code class="nohighlight"><span class="keyword">data</span><span> </span><span class="type-name">Foo</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span> = </span><span class="type-name">X</span><span> (</span><span class="type-name">Leib</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span>) | </span><span class="type-name">Y</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span>
+
+</span><span class="identifier">hoge</span><span> :: </span><span class="type-name">Foo</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">b</span><span> -&gt; </span><span class="identifier">f</span><span> </span><span class="identifier">a</span><span> </span><span class="identifier">c</span><span> -&gt; </span><span class="identifier">f</span><span> </span><span class="identifier">b</span><span> </span><span class="identifier">c</span><span>
+</span><span class="identifier">hoge</span><span> (</span><span class="type-name">X</span><span> </span><span class="identifier">leib</span><span>) </span><span class="identifier">bar</span><span> = </span><span class="identifier">runDual</span><span> . </span><span class="identifier">subst</span><span> </span><span class="identifier">leib</span><span> . </span><span class="type-name">Dual</span><span> $ </span><span class="identifier">bar</span></code></pre>
+    <p>We needed <code>RankNTypes</code> to implement <code>Leib</code>, of course, but perhaps
+    that’s acceptable.  It’s useful in
+    <a href="https://ermine-language.github.io/">Ermine</a>, which supports rank-N
+    types but not GADTs as of this writing.</p>
+    <p>The above is simple enough to port to Scala, though.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">X</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">leib</span><span>: </span><span class="type-name">Leib</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Y</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">B</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">hoge3</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>](</span><span class="identifier">foo</span><span>: </span><span class="type-name">Foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>], </span><span class="identifier">bar</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">C</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>] =
+  </span><span class="identifier">foo</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">X</span><span>(</span><span class="identifier">leib</span><span>) =&gt; </span><span class="identifier">leib</span><span>.</span><span class="identifier">subst</span><span>[</span><span class="type-name">F</span><span>[?, </span><span class="type-name">C</span><span>]](</span><span class="identifier">bar</span><span>)
+  }</span></code></pre>
+    <p>It feels a little weird that <code>X</code> now must retain <code>Foo</code>’s
+    type-system-level separation of the two type parameters.  But this
+    style may more naturally integrate in your ADTs, and it is much closer
+    to the original non-working <code>hoge1</code> implementation.</p>
+    <p>It also feels a little weird that you have to waste a slot carting
+    around this evidence of type equality.  As demonstrated in section
+    “It’s really there” above, though, <em>it matters that the instance
+    exists</em>.</p>
+    <p>You can play games with this definition to make it easier to supply
+    the wholly mechanical <code>leib</code> argument to <code>X</code>, e.g. adding it as an
+    <code>implicit val</code> in the second parameter list so it can be imported and
+    implicitly supplied on <code>X</code> construction.  The basic technique is
+    exactly the same as above, though.</p>
+    
+    <h2 id="leibniz-mastery" class="section"><a class="anchor-link" href="#leibniz-mastery"><code class="fas fa-link fa-sm"></code></a><code>Leibniz</code> mastery</h2>
+    <p>This time we talked about</p>
+    <ul>
+      <li>Why it matters that <code>subst</code> always executes to use a type equality,</li>
+      <li>the Haskell implementation,</li>
+      <li>higher-kinded type equalities and their <code>Leibniz</code>es,</li>
+      <li>simulating GADTs with <code>Leibniz</code> members of data constructors.</li>
+    </ul>
+    <p><em>This article was tested with Scala 2.11.2,
+    <a href="https://github.com/non/kind-projector">Kind Projector</a> 0.5.2, and
+    <a href="http://www.haskell.org/platform/">GHC</a> 7.8.3.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

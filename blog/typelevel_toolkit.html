@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Typelevel Toolkit</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Typelevel Toolkit</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Rishad Sewnarain<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on April 3, 2023
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="typelevel-toolkit" class="title">Typelevel Toolkit</h1>
+    <p>Getting started in the wondrous world of functional programming using <a href="https://typelevel.org/projects">Typelevel libraries</a> can be daunting. Before you can even write your first pure &quot;Hello, World!&quot; you&#39;ll need to install a Java runtime, editor tooling and build tools. Then you&#39;ll need to setup some project using <a href="https://www.scala-sbt.org/">sbt</a> or <a href="https://github.com/com-lihaoyi/mill">mill</a>. As an added consequence, after all the setup, the idea of using these battle-tested libraries for small scripts will seem like a chore. This is where <a href="https://typelevel.org/toolkit/">Typelevel Toolkit</a> comes in. It provides an easy start for beginning and experienced developers with Scala and functional programming.</p>
+    
+    <h1 id="scala-cli-to-the-rescue" class="section"><a class="anchor-link" href="#scala-cli-to-the-rescue"><code class="fas fa-link fa-sm"></code></a>scala-cli to the rescue</h1>
+    <p><a href="https://scala-cli.virtuslab.org/">scala-cli</a> is a command-line interface to quickly develop and experiment with Scala, it&#39;s even on track to <a href="https://docs.scala-lang.org/sips/scala-cli.html">becoming the new scala command</a>. The interface has a lot of advantages, but one of the most important ones is that it makes learning, developing and building Scala scripts and small applications friction-less and easy to use.</p>
+    <p>You can get <code>scala-cli</code> by following the installation instructions described here: <a href="https://scala-cli.virtuslab.org/docs/overview#installation"><a href="https://scala-cli.virtuslab.org/docs/overview#installation">https://scala-cli.virtuslab.org/docs/overview#installation</a></a>. The great part here is that once you have <code>scala-cli</code> installed, it will take care of the rest: Java runtimes, editor tooling, compilation targets(including a native target!) and you can even use dependencies in your scripts!</p>
+    
+    <h2 id="an-example-of-setting-up-your-script" class="section"><a class="anchor-link" href="#an-example-of-setting-up-your-script"><code class="fas fa-link fa-sm"></code></a>An example of setting up your script</h2>
+    <p>First off, let&#39;s create a new directory that will contain our script(s).</p>
+    <pre><code class="nohighlight"><span>mkdir myscript &amp;&amp; </span><span class="identifier">cd</span><span> myscript</span></code></pre>
+    <p>Now we can use <code>scala-cli</code> to create all the files necessary for editor tooling to work:</p>
+    <pre><code class="nohighlight"><span>scala-cli setup-ide .</span></code></pre>
+    <p>Finally, let&#39;s create a Scala file and try to compile it.</p>
+    <pre><code class="nohighlight"><span>touch Main.scala
+scala-cli compile --watch Main.scala</span></code></pre>
+    <p>The last command also includes a <code>--watch</code> flag, so we can hack on our script and <code>scala-cli</code> will try to compile the file on every save.
+    This creates a very nice feedback loop!</p>
+    
+    <h1 id="putting-the-fun-in-functional" class="section"><a class="anchor-link" href="#putting-the-fun-in-functional"><code class="fas fa-link fa-sm"></code></a>Putting the fun in functional</h1>
+    <p><a href="https://typelevel.org/toolkit/">Typelevel Toolkit</a> uses <code>scala-cli</code> and Typelevel libraries to provide a runway for your next Scala script or command-line interface. With a single line, Typelevel Toolkit gives you:</p>
+    <ul>
+      <li><a href="https://typelevel.org/cats-effect/">Cats Effect</a> a production proven pure asynchronous runtime.</li>
+      <li><a href="https://fs2.io">fs2</a> an amazing streaming I/O library.</li>
+      <li><a href="https://http4s.org/v0.23/docs/client.html">http4s-ember-client</a> for a full-fledged HTTP client.</li>
+      <li><a href="https://circe.github.io/circe/">circe</a> for dealing with JSON.</li>
+      <li><a href="https://github.com/typelevel/munit-cats-effect">MUnit</a> an unit testing library and an integration to easily unit test pure functional programs.</li>
+      <li><a href="https://fs2-data.gnieh.org/documentation/csv/">fs2-data-csv</a> for handling CSV files.</li>
+      <li><a href="https://ben.kirw.in/decline/effect.html">decline</a> a composable commandline parser and it&#39;s integration with Cats Effect.</li>
+    </ul>
+    <p>Typelevel Toolkit shines with <code>scala-cli</code>, but it can also be used by sbt or mill if that is preferred.
+    More concretely this means your next ad-hoc script won&#39;t be Bash or Python spaghetti, but Scala code that can be a joy to hack on as time goes on, without the boilerplate.</p>
+    <p>You can use the toolkit by using a
+    <a href="https://scala-cli.virtuslab.org/docs/guides/using-directives">scala-cli directive</a></p>
+    <pre><code class="nohighlight"><span class="comment">//&gt; using dep &quot;org.typelevel::toolkit::0.0.4&quot;</span></code></pre>
+    <p>This will pull in the <code>typelevel/toolkit</code> dependency and then you&#39;re just an import away from your first pure functional &quot;Hello, World!&quot;:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.*
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Hello</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">IOApp</span><span>.</span><span class="type-name">Simple</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">run</span><span> = </span><span class="type-name">IO</span><span>.</span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Hello, World!&quot;</span><span>)
+}</span></code></pre>
+    <p>You can compile and run this program by using a single command: <code>scala-cli run Main.scala</code>.</p>
+    <p>A &quot;Hello, World!&quot; is only the start, the goal here is to make functional programming friendly and practical. As such, Typelevel toolkit comes with <a href="https://typelevel.org/toolkit/examples.html">examples</a> that introduces beginners on how one can use the included libraries to achieve common tasks.</p>
+    <p>For the full list of libraries included in Typelevel Toolkit, please see the overview: <a href="https://typelevel.org/toolkit/#overview"><a href="https://typelevel.org/toolkit/#overview">https://typelevel.org/toolkit/#overview</a></a>. If you feel like anything is missing, <a href="https://github.com/typelevel/toolkit/issues/1">join the discussion</a>.</p>
+    
+    <h1 id="we-can-have-nice-things" class="section"><a class="anchor-link" href="#we-can-have-nice-things"><code class="fas fa-link fa-sm"></code></a>We can have nice things</h1>
+    <p>Typelevel libraries are production-proven, well tested, build upon rock solid semantics, and almost all have Scala 3 support.
+    However their entry-point is higher than your usual scripting language. Pure functional programming has a reputation of being hard to learn, and Typelevel Toolkit is a way to play in that world, without learning an entire ecosystem first.</p>
+    <p>The libraries in the toolkit compliment each other and target common usecases, thus providing a coherent mini-ecosystem, that scales extremely well, thanks to Cats Effect. <strong>With support for other runtimes besides the JVM</strong>. This means that your scripts can run in a <a href="https://scala-cli.virtuslab.org/docs/guides/scala-js">JavaScript environment</a>, thanks to <a href="https://www.scala-js.org/">scala-js</a>. Or you can use <a href="https://github.com/scala-native/scala-native">scala-native</a> to get a <a href="https://scala-cli.virtuslab.org/docs/guides/scala-native">native binary</a>, just like Rust and Go!</p>
+    <p><code>scala-cli</code> again, makes things easy for us by having simple commands to compile to a certain target:</p>
+    <pre><code class="nohighlight"><span class="comment"># To compile to JavaScript
+</span><span>scala-cli Main.scala --js  
+
+</span><span class="comment"># To target native
+</span><span>scala-cli Main.scala --native</span></code></pre>
+    <p>If you just want to explore Typelevel Toolkit, you can quickly open a REPL using the following command:</p>
+    <pre><code class="nohighlight"><span>scala-cli repl --dep </span><span class="string-literal">&quot;org.typelevel::toolkit::0.0.4&quot;</span></code></pre>
+    <p>With <code>scala-cli</code>, there a few other cool things you get here:</p>
+    <ul>
+      <li><a href="https://scala-cli.virtuslab.org/docs/guides/sbt-mill">export current build into sbt or mill</a></li>
+      <li><a href="https://scala-cli.virtuslab.org/docs/cookbooks/gists">create and share gists</a></li>
+      <li><a href="https://scala-cli.virtuslab.org/docs/cookbooks/native-images">package your script using GraalVM</a></li>
+    </ul>
+    
+    <h1 id="summary" class="section"><a class="anchor-link" href="#summary"><code class="fas fa-link fa-sm"></code></a>Summary</h1>
+    <p><code>scala-cli</code> is great. It&#39;s easy to get started with and great to use. Typelevel Toolkit leverages its versatility and provides a &quot;pure functional standard library&quot; in a single directive. This will enable you to create and develop scripts fast with high refactorability, an awesome developer experience and lots of functions that compose well! All those benefits while remaining beginner-friendly.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/zetashift.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Rishad Sewnarain</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/zetashift">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

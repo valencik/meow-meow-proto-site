@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Nested existentials</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Nested existentials</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on July 27, 2015
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="nested-existentials" class="title">Nested existentials</h1>
+    <p><em>This is the fifth of a series of articles on “Type Parameters and
+    Type Members”.  If you haven’t yet, you should
+    <a href="type-members-parameters.html">start at the beginning</a>,
+    which introduces code we refer to throughout this article without
+    further ado.</em></p>
+    <p>Let’s consider a few values of type <code>MList</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">estrs</span><span>: </span><span class="type-name">MList</span><span> = </span><span class="type-name">MCons</span><span>(</span><span class="string-literal">&quot;hi&quot;</span><span>, </span><span class="type-name">MCons</span><span>(</span><span class="string-literal">&quot;bye&quot;</span><span>, </span><span class="type-name">MNil</span><span>())): </span><span class="type-name">MList</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">String</span><span>]
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">eints</span><span>: </span><span class="type-name">MList</span><span> = </span><span class="type-name">MCons</span><span>(</span><span class="number-literal">21</span><span>, </span><span class="type-name">MCons</span><span>(</span><span class="number-literal">42</span><span>, </span><span class="type-name">MNil</span><span>())): </span><span class="type-name">MList</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">Int</span><span>]
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">ebools</span><span>: </span><span class="type-name">MList</span><span> = </span><span class="type-name">MCons</span><span>(</span><span class="boolean-literal">true</span><span>, </span><span class="type-name">MCons</span><span>(</span><span class="boolean-literal">false</span><span>, </span><span class="type-name">MNil</span><span>())): </span><span class="type-name">MList</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">Boolean</span><span>]</span></code></pre>
+    <p>Recall
+    <a href="type-members-parameters.html#why-all-the-type-t">from the first part</a>
+    that the equivalent type in <code>PList</code> style is <code>PList[_]</code>.  Now, these
+    variables all have the “same” type, by virtue of forgetting what their
+    specific element type is, though you know that every value of, for
+    example, <code>estrs</code> has the same type.</p>
+    
+    <h2 id="what-if-we-list-different-existentials" class="section"><a class="anchor-link" href="#what-if-we-list-different-existentials"><code class="fas fa-link fa-sm"></code></a>What if we list <em>different</em> existentials?</h2>
+    <p>Lists hold values of the same type, and as you might expect, you can
+    put these three lists in another list:</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">elists</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">MList</span><span>] = 
+  </span><span class="type-name">PCons</span><span>(</span><span class="identifier">estrs</span><span>, </span><span class="type-name">PCons</span><span>(</span><span class="identifier">eints</span><span>, </span><span class="type-name">PCons</span><span>(</span><span class="identifier">ebools</span><span>, </span><span class="type-name">PNil</span><span>())))</span></code></pre>
+    <p>Again, the equivalent is <code>PList[PList[_]]</code>.  We can see what this
+    means merely by doing substitution in the <code>PList</code> type.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PList</span><span>
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PNil</span><span>() </span><span class="keyword">extends</span><span> </span><span class="type-name">PList</span><span>
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">head</span><span>: </span><span class="type-name">MList</span><span>, </span><span class="identifier">tail</span><span>: </span><span class="type-name">PList</span><span>)
+</span><span class="comment">// don&#39;t compile this, it&#39;s a thought process</span></code></pre>
+    <p>Equivalently, <code>head</code> would have type <code>PList[_]</code>, a homogeneous list of
+    unknown element type, just like <code>MList</code>.</p>
+    
+    <h2 id="method-equivalence-broken" class="section"><a class="anchor-link" href="#method-equivalence-broken"><code class="fas fa-link fa-sm"></code></a>Method equivalence … broken?</h2>
+    <p>But we come to a problem.  Suppose we wish to count the elements of
+    doubly-nested lists.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">plenLength</span><span>(</span><span class="identifier">xss</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">PList</span><span>[</span><span class="identifier">_</span><span>]]): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">plenLengthTP</span><span>(</span><span class="identifier">xss</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">plenLengthTP</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">xss</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">PList</span><span>[</span><span class="type-name">T</span><span>]]): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">xss</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PNil</span><span>() =&gt; </span><span class="number-literal">0</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">h</span><span>, </span><span class="identifier">t</span><span>) =&gt; </span><span class="identifier">plengthT</span><span>(</span><span class="identifier">h</span><span>) + </span><span class="identifier">plenLengthTP</span><span>(</span><span class="identifier">t</span><span>)
+  }
+
+</span><span class="type-name">TmTp5</span><span>.</span><span class="identifier">scala</span><span>:</span><span class="number-literal">16</span><span>: </span><span class="identifier">no</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">parameters</span><span> </span><span class="keyword">for</span><span> </span><span class="identifier">method</span><span> </span><span class="identifier">plenLengthTP</span><span>:
+⤹ (</span><span class="identifier">xss</span><span>: </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="type-name">T</span><span>]])</span><span class="type-name">Int</span><span> </span><span class="identifier">exist</span><span> </span><span class="identifier">so</span><span> </span><span class="identifier">that</span><span> </span><span class="identifier">it</span><span>
+⤹ </span><span class="identifier">can</span><span> </span><span class="identifier">be</span><span> </span><span class="identifier">applied</span><span> </span><span class="identifier">to</span><span> </span><span class="identifier">arguments</span><span> (</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">_</span><span>]])
+ --- </span><span class="identifier">because</span><span> ---
+</span><span class="identifier">argument</span><span> </span><span class="identifier">expression</span><span>&#39;</span><span class="identifier">s</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">is</span><span> </span><span class="identifier">not</span><span> </span><span class="identifier">compatible</span><span> </span><span class="keyword">with</span><span> </span><span class="identifier">formal</span><span> </span><span class="identifier">parameter</span><span> </span><span class="keyword">type</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">_</span><span>]]
+ </span><span class="identifier">required</span><span>: </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[?</span><span class="type-name">T</span><span>]]</span></code></pre>
+    <p>According to our equivalence test, neither of these methods works to
+    implement the other!  This despite
+    <a href="type-members-parameters.html#when-is-existential-ok">the “simple rule” we have already discussed</a>.
+    Here’s the error the other way.</p>
+    <pre><code class="nohighlight"><span class="type-name">TmTp5</span><span>.</span><span class="identifier">scala</span><span>:</span><span class="number-literal">20</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="type-name">T</span><span>]]
+ </span><span class="identifier">required</span><span>: </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">_</span><span>]]</span></code></pre>
+    <p>The problem with calling <code>plenLengthTP</code> from <code>plenLength</code> is <em>there is
+    no one <code>T</code> we can choose, even an unspeakable one, to call
+    <code>plenLengthTP</code></em>.  That’s what the <code>?T</code> and the “no type parameters”
+    phrasing in the first error above means.</p>
+    <p>This is an accurate compiler error because <code>PList[PList[_]]</code> means
+    <code>PList[PList[E]&nbsp;forSome&nbsp;{type&nbsp;E}]</code>.  Let’s see the substitution again.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PList</span><span>
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PNil</span><span>() </span><span class="keyword">extends</span><span> </span><span class="type-name">PList</span><span>
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">head</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">E</span><span>] </span><span class="identifier">forSome</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">E</span><span>}, </span><span class="identifier">tail</span><span>: </span><span class="type-name">PList</span><span>)
+</span><span class="comment">// don&#39;t compile this, it&#39;s a thought process</span></code></pre>
+    <p>Java has the same problem.  See?</p>
+    <pre><code class="nohighlight"><span class="type-name">int</span><span> </span><span class="identifier">llLength</span><span>(</span><span class="keyword">final</span><span> </span><span class="type-name">List</span><span>&lt;</span><span class="type-name">List</span><span>&lt;?&gt;&gt; </span><span class="identifier">xss</span><span>) {
+    </span><span class="keyword">return</span><span> </span><span class="identifier">llLengthTP</span><span>(</span><span class="identifier">xss</span><span>);
+}
+
+&lt;</span><span class="type-name">T</span><span>&gt; </span><span class="type-name">int</span><span> </span><span class="identifier">llLengthTP</span><span>(</span><span class="keyword">final</span><span> </span><span class="type-name">List</span><span>&lt;</span><span class="type-name">List</span><span>&lt;</span><span class="type-name">T</span><span>&gt;&gt; </span><span class="identifier">xss</span><span>) {
+    </span><span class="keyword">return</span><span> </span><span class="number-literal">0</span><span>;  </span><span class="comment">// we only care about types in this example
+</span><span>}
+
+</span><span class="type-name">TmTp5</span><span>.</span><span class="identifier">java</span><span>:</span><span class="number-literal">7</span><span>:  </span><span class="identifier">error</span><span>: </span><span class="identifier">method</span><span> </span><span class="identifier">llLengthTP</span><span> </span><span class="identifier">in</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">TmTp5</span><span>
+⤹ </span><span class="identifier">cannot</span><span> </span><span class="identifier">be</span><span> </span><span class="identifier">applied</span><span> </span><span class="identifier">to</span><span> </span><span class="identifier">given</span><span> </span><span class="identifier">types</span><span>;
+    </span><span class="keyword">return</span><span> </span><span class="identifier">llLengthTP</span><span>(</span><span class="identifier">xss</span><span>);
+           ^
+
+</span><span class="comment">// or, with llLengthTP calling llLength
+</span><span class="type-name">TmTp5</span><span>.</span><span class="identifier">java</span><span>:</span><span class="number-literal">11</span><span>:  </span><span class="identifier">error</span><span>: </span><span class="identifier">incompatible</span><span> </span><span class="identifier">types</span><span>: </span><span class="type-name">List</span><span>&lt;</span><span class="type-name">List</span><span>&lt;</span><span class="type-name">T</span><span>&gt;&gt;
+⤹ </span><span class="identifier">cannot</span><span> </span><span class="identifier">be</span><span> </span><span class="identifier">converted</span><span> </span><span class="identifier">to</span><span> </span><span class="type-name">List</span><span>&lt;</span><span class="type-name">List</span><span>&lt;?&gt;&gt;
+    </span><span class="keyword">return</span><span> </span><span class="identifier">llLength</span><span>(</span><span class="identifier">xss</span><span>);
+                    ^</span></code></pre>
+    <p>This discovery, which I made for myself
+    <a href="https://bitbucket.org/ermine-language/ermine-writers/src/c63d4060a74f1c8520ea1c8c3ba51ebd5d269780/writers/javafx/src/main/java/com/clarifi/reporting/writers/jfx/table/JFXTables.java?at=default#JFXTables.java-163">in the depths of the Ermine Java code</a>
+    (though it was certainly already well-known to others), was my first
+    clue, personally, that the term
+    <a href="method-equiv.html#why-are-existentials-harder-to-think-about">“wildcard” was a lie, as discussed in a previous part</a>.</p>
+    
+    <h2 id="scoping-existential-quantifiers" class="section"><a class="anchor-link" href="#scoping-existential-quantifiers"><code class="fas fa-link fa-sm"></code></a>Scoping existential quantifiers</h2>
+    <p>The difference is, in Scala, we can write an equivalent for
+    <code>plenLengthTP</code>, using the Scala-only
+    <a href="http://www.artima.com/pins1ed/combining-scala-and-java.html#29.3"><code>forSome</code> <em>existential quantifier</em></a>.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">plenLengthE</span><span>(</span><span class="identifier">xss</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">PList</span><span>[</span><span class="type-name">E</span><span>]] </span><span class="identifier">forSome</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">E</span><span>}): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">plenLengthTP</span><span>(</span><span class="identifier">xss</span><span>)</span></code></pre>
+    <p>Of course, this type doesn’t mean the same thing as <code>plenLength</code>’s
+    type; for both <code>plenLengthE</code> and <code>plenLengthTP</code>, we demand proof that
+    each sublist in the argument has the same element type, which is not a
+    condition satisfied by either <code>PList[PList[_]]</code> or its equivalent
+    <code>PList[MList]</code>.</p>
+    <p>&lt;div class=&quot;side-note&quot;&gt;
+      &lt;p&gt;The reason you can’t invoke &lt;code&gt;plenLength&lt;/code&gt; from
+      &lt;code&gt;plenLengthTP&lt;/code&gt; is complicated, even for this article.  In
+      short, &lt;code&gt;plenLength&lt;/code&gt; demands evidence that,
+      &lt;em&gt;supposing&lt;/em&gt; &lt;code&gt;PList&lt;/code&gt; had a method taking an
+      argument of the element type,
+      e.g. &lt;code&gt;def&nbsp;lookAt(x:&nbsp;T):&nbsp;Unit&lt;/code&gt;, it could do things like
+      &lt;code&gt;xss.lookAt(PList(&quot;hi&quot;,&nbsp;PNil()))&lt;/code&gt;.  In
+      &lt;code&gt;plenLengthTP&lt;/code&gt;, this hypothetical method could only be
+      invoked with empty lists, or lists gotten by inspecting
+      &lt;code&gt;xss&lt;/code&gt; itself.&lt;/p&gt;</p>
+    <p>&lt;p&gt;That no such method exists is irrelevant for the purposes of this
+      reasoning; we have written the definition of &lt;code&gt;PList&lt;/code&gt; in a
+      way that scalac assumes that such a method may exist.  You can
+      determine the consequences yourself by adding the
+      &lt;code&gt;lookAt&lt;/code&gt; method to &lt;code&gt;PList&lt;/code&gt;, repeating the
+      above substitution for &lt;code&gt;PList&lt;/code&gt;, and thinking about the
+      meaning of the resulting &lt;code&gt;def lookAt(x:
+      PList<a href="../todo/">E</a>&nbsp;forSome&nbsp;{type&nbsp;E}): Unit&lt;/code&gt;.&lt;/p&gt;
+    &lt;/div&gt;</p>
+    <p>Let’s examine the meaning of the type
+    <code>PList[PList[E]]&nbsp;forSome&nbsp;{type&nbsp;E}</code>.  It requires a little bit more
+    mental suspension.</p>
+    <pre><code class="nohighlight"><span class="comment">// Let there be some unknown (abstract)
+</span><span class="keyword">type</span><span> </span><span class="type-name">E</span><span>
+</span><span class="comment">// then the structure of the value is
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PList</span><span>
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PNil</span><span>() </span><span class="keyword">extends</span><span> </span><span class="type-name">PList</span><span>
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">head</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">E</span><span>], </span><span class="identifier">tail</span><span>: </span><span class="type-name">PList</span><span>)
+</span><span class="comment">// don&#39;t compile this, it&#39;s a thought process</span></code></pre>
+    <p>By moving the <code>forSome</code> <em>existential scope</em> outside the outer <code>PList</code>,
+    we also move the existential type variable outside of the whole
+    structure, substituting <em>the same</em> variable for each place we’re
+    expanding the type under consideration.  Once the <code>forSome</code> scope
+    extends over the whole type, Scala can pick that type as the parameter
+    to <code>plenLengthTP</code>.</p>
+    <p>This isn’t possible in Java at all; <code>PList&lt;PList&lt;?&gt;&gt;</code> is your only
+    choice, as <strong><code>?</code> in Java, like <code>_</code> in Scala, is always scoped to
+    exactly one level outside</strong>.  So in Java, you simply can’t write
+    <code>plenLengthE</code>’s type.  Luckily, the type-parameter equivalent is
+    perfectly expressible.</p>
+    
+    <h2 id="what-happens-when-i-move-the-existential-scope" class="section"><a class="anchor-link" href="#what-happens-when-i-move-the-existential-scope"><code class="fas fa-link fa-sm"></code></a>What happens when I move the existential scope?</h2>
+    <p>Of course, moving the scope makes the type mean something different,
+    which you can tell by counting how many <code>E</code>s there will be in a value.
+    A <code>PList[PList[_]]</code> is a list of lists where each list may have a
+    different, unknown element type, like <code>elists</code>.  A
+    <code>PList[PList[E]]&nbsp;forSome&nbsp;{type&nbsp;E}</code> is a list of lists where you still
+    don’t know the inner element type, but you know it’s the same for each
+    sublist.  We can tell that because, in the expansion, there’s only one
+    <code>E</code>, whereas the expansion for the former has an <code>E</code> introduced in
+    each <code>head</code> value.</p>
+    <p>So for the latter it is type-correct to, say, move elements from one
+    sublist to another; you know that, whichever pair of sublists you
+    choose to make this trade, they have the same element type.  But you
+    <em>don’t know that</em> for <code>PList[PList[_]]</code>.</p>
+    <p>Similarly, also by substitution, <code>PList[_]&nbsp;=&gt;&nbsp;Int</code> is a function that
+    takes <code>PList</code>s of any element type and returns <code>Int</code>, like <code>plengthE</code>.
+    You can figure this out by substituting for
+    <a href="https://github.com/scala/scala/blob/v2.11.7/src/library/scala/Function1.scala#L32-L36"><code>Function1#apply</code></a>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">v1</span><span>: </span><span class="type-name">T1</span><span>): </span><span class="type-name">R</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">v1</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="identifier">_</span><span>]): </span><span class="type-name">Int</span></code></pre>
+    <p>But <code>(PList[E]&nbsp;=&gt;&nbsp;Int)&nbsp;forSome&nbsp;{type&nbsp;E}</code> is a function that takes
+    <code>PList</code>s of <em>one specific</em> element type that we don’t know.</p>
+    <pre><code class="nohighlight"><span class="comment">// Let there be some unknown (abstract)
+</span><span class="keyword">type</span><span> </span><span class="type-name">E</span><span>
+</span><span class="comment">// then the method is
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">v1</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">E</span><span>]): </span><span class="type-name">Int</span></code></pre>
+    <p>It’s easy to use existential scoping to create functions that are
+    impossible to call and other values that are impossible to use besides
+    functions.  This is almost one of those:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">badlength</span><span>: (</span><span class="type-name">PList</span><span>[</span><span class="type-name">E</span><span>] =&gt; </span><span class="type-name">Int</span><span>) </span><span class="identifier">forSome</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">E</span><span>} = </span><span class="identifier">plengthE</span><span>
+</span><span class="identifier">badlength</span><span>(??? : </span><span class="type-name">PList</span><span>[</span><span class="type-name">Int</span><span>])
+
+</span><span class="type-name">TmTp5</span><span>.</span><span class="identifier">scala</span><span>:</span><span class="number-literal">29</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="type-name">Int</span><span>]
+ </span><span class="identifier">required</span><span>: </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="type-name">E</span><span>] </span><span class="identifier">where</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">E</span><span>
+</span><span class="identifier">badlength</span><span>(??? : </span><span class="type-name">PList</span><span>[</span><span class="type-name">Int</span><span>])
+              ^</span></code></pre>
+    <p>But in this case, there is one way we can call this function: with an
+    empty list.  Whatever the <code>E</code> is, it will be inferred when we call
+    <code>PNil()</code>.  So <code>badlength(PNil())</code> works.</p>
+    <p>There is a broader theme here hinted at by the interaction between
+    <code>PNil</code> and <code>badlength</code>: <strong>the most efficient, most easily understood
+    way to work with values of existential type is with type-parameterized
+    methods</strong>.  But we’ll get to that later.</p>
+    
+    <h2 id="back-to-type-members" class="section"><a class="anchor-link" href="#back-to-type-members"><code class="fas fa-link fa-sm"></code></a>Back to type members</h2>
+    <p>Let us translate the working existential variant we discovered above
+    to the <code>PList[MList]</code> form of the function, though.  What is the
+    existential equivalent to <code>mlenLengthTP</code>?</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">mlenLengthTP</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">xss</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">MList</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">T</span><span>]]): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">xss</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PNil</span><span>() =&gt; </span><span class="number-literal">0</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">h</span><span>, </span><span class="identifier">t</span><span>) =&gt; </span><span class="identifier">mlength</span><span>(</span><span class="identifier">h</span><span>) + </span><span class="identifier">mlenLengthTP</span><span>(</span><span class="identifier">t</span><span>)
+  }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">mlenLength</span><span>(</span><span class="identifier">xss</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">MList</span><span>]): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">mlenLengthTP</span><span>(</span><span class="identifier">xss</span><span>)
+
+</span><span class="type-name">TmTp5</span><span>.</span><span class="identifier">scala</span><span>:</span><span class="number-literal">38</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">MList</span><span>]
+ </span><span class="identifier">required</span><span>: </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">MList</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="keyword">this</span><span>.</span><span class="type-name">T</span><span>]]
+  </span><span class="identifier">mlenLengthTP</span><span>(</span><span class="identifier">xss</span><span>)
+               ^</span></code></pre>
+    <p><code>MList</code> is equivalent to <code>MList&nbsp;{type&nbsp;T&nbsp;=&nbsp;E}&nbsp;forSome&nbsp;{type&nbsp;E}</code>.  We
+    can prove that directly in Scala.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">MList</span><span> =:= (</span><span class="type-name">MList</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="type-name">E</span><span>} </span><span class="identifier">forSome</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">E</span><span>})]
+</span><span class="identifier">res0</span><span>: =:=[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">MList</span><span>,</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">MList</span><span>{</span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="type-name">E</span><span>} </span><span class="identifier">forSome</span><span> { </span><span class="keyword">type</span><span> </span><span class="type-name">E</span><span> }] = &lt;</span><span class="identifier">function1</span><span>&gt;</span></code></pre>
+    <p>That’s why we could use <code>runStSource</code> to infer a type parameter for
+    the existential <code>S</code> in
+    <a href="type-projection.html#type-parameters-see-existentially">the last post</a>:
+    the scope is on the outside, so there’s exactly one type parameter to
+    infer.  So the scoping problem now looks very similar to the
+    <code>PList</code>-in-<code>PList</code> problem, and we can write:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">mlenLengthE</span><span>(</span><span class="identifier">xss</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">MList</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="type-name">E</span><span>]] </span><span class="identifier">forSome</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">E</span><span>})
+  : </span><span class="type-name">Int</span><span> = </span><span class="identifier">mlenLengthTP</span><span>(</span><span class="identifier">xss</span><span>)</span></code></pre>
+    
+    <h2 id="a-triangular-generalization" class="section"><a class="anchor-link" href="#a-triangular-generalization"><code class="fas fa-link fa-sm"></code></a>A triangular generalization</h2>
+    <p>Once again, <code>mlenLengthE</code> demands proof that each sublist of <code>xss</code> has
+    the same element type, by virtue of the position of its <code>forSome</code>
+    scope.  We can’t satisfy that with <code>elists</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">mlenLengthE</span><span>(</span><span class="identifier">elists</span><span>)</span></code></pre>
+    <p>Or, we <em>shouldn’t</em> be able to, anyway.
+    <a href="https://issues.scala-lang.org/browse/SI-9410">Sometimes, the wrong thing happens.</a>
+    We get the right error when we try to invoke <code>mlenLengthTP</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">mlenLengthTP</span><span>(</span><span class="identifier">elists</span><span>)
+
+</span><span class="type-name">TmTp5</span><span>.</span><span class="identifier">scala</span><span>:</span><span class="number-literal">43</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">MList</span><span>]
+ </span><span class="identifier">required</span><span>: </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">MList</span><span>.</span><span class="type-name">Aux</span><span>[</span><span class="keyword">this</span><span>.</span><span class="type-name">T</span><span>]]
+    (</span><span class="identifier">which</span><span> </span><span class="identifier">expands</span><span> </span><span class="identifier">to</span><span>)  </span><span class="identifier">tmtp</span><span>.</span><span class="type-name">PList</span><span>[</span><span class="identifier">tmtp</span><span>.</span><span class="type-name">MList</span><span>{</span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="keyword">this</span><span>.</span><span class="type-name">T</span><span>}]
+</span><span class="identifier">mlenLengthTP</span><span>(</span><span class="identifier">elists</span><span>)
+             ^</span></code></pre>
+    <p>So we have <code>mlenLengthE</code>&nbsp;$\equiv_m$&nbsp;<code>mlenLengthTP</code>.  <code>mlenLength</code>,
+    however, is incompatible with both; neither is more general than the
+    other!  What we really want is a function that is more general than
+    all three, and subsumes all their definitions.  Here it is, in two
+    variants: one half-type-parameterized, the other wholly existential.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">mlenLengthTP2</span><span>[</span><span class="type-name">T</span><span> &lt;: </span><span class="type-name">MList</span><span>](</span><span class="identifier">xss</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">xss</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PNil</span><span>() =&gt; </span><span class="number-literal">0</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">h</span><span>, </span><span class="identifier">t</span><span>) =&gt; </span><span class="identifier">mlength</span><span>(</span><span class="identifier">h</span><span>) + </span><span class="identifier">mlenLengthTP2</span><span>(</span><span class="identifier">t</span><span>)
+  }
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">mlenLengthE2</span><span>(</span><span class="identifier">xss</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="identifier">_</span><span> &lt;: </span><span class="type-name">MList</span><span>]): </span><span class="type-name">Int</span><span> =
+  </span><span class="identifier">xss</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PNil</span><span>() =&gt; </span><span class="number-literal">0</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">h</span><span>, </span><span class="identifier">t</span><span>) =&gt; </span><span class="identifier">mlength</span><span>(</span><span class="identifier">h</span><span>) + </span><span class="identifier">mlenLengthTP2</span><span>(</span><span class="identifier">t</span><span>)
+  }</span></code></pre>
+    <p>We’ve woven a tangled web, so here are, restated, the full
+    relationships for the <code>MList</code>-in-<code>PList</code> functions above.</p>
+    <ol class="arabic">
+      <li><code>mlenLengthTP2</code> $\equiv_m$ <code>mlenLengthE2</code></li>
+      <li><code>mlenLengthTP</code> $\equiv_m$ <code>mlenLengthE</code></li>
+      <li>$\neg($<code>mlenLength</code> $&lt;:_m$ <code>mlenLengthE</code>$)$</li>
+      <li>$\neg($<code>mlenLengthE</code> $&lt;:_m$ <code>mlenLength</code>$)$</li>
+      <li>$\neg($<code>mlenLength</code> $&lt;:_m$ <code>mlenLengthTP</code>$)$</li>
+      <li>$\neg($<code>mlenLengthTP</code> $&lt;:_m$ <code>mlenLength</code>$)$</li>
+      <li><code>mlenLengthTP2</code> $&lt;_m$ <code>mlenLengthTP</code></li>
+      <li><code>mlenLengthTP2</code> $&lt;_m$ <code>mlenLength</code></li>
+      <li><code>mlenLengthTP2</code> $&lt;_m$ <code>mlenLengthE</code></li>
+      <li><code>mlenLengthE2</code> $&lt;_m$ <code>mlenLengthTP</code></li>
+      <li><code>mlenLengthE2</code> $&lt;_m$ <code>mlenLength</code></li>
+      <li><code>mlenLengthE2</code> $&lt;_m$ <code>mlenLengthE</code></li>
+    </ol>
+    <p>Moreover, the full existential in <code>mlenLengthE2</code> is shorthand for:</p>
+    <pre><code class="nohighlight"><span class="type-name">PList</span><span>[</span><span class="type-name">E</span><span>] </span><span class="identifier">forSome</span><span> {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">E</span><span> &lt;: </span><span class="type-name">MList</span><span> {
+    </span><span class="keyword">type</span><span> </span><span class="type-name">T</span><span> = </span><span class="type-name">E2</span><span>
+  } </span><span class="identifier">forSome</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">E2</span><span>}
+}</span></code></pre>
+    <p>…a nested existential, though not in the meaning I intend in the title
+    of this article.  You can prove it with <code>=:=</code>, as above.</p>
+    <p>And I say all this simply as a means of saying that <em>this</em> is what
+    you’re signing up for when you decide to “simplify” your code by using
+    type members instead of parameters and leaving off the refinements
+    that make them concrete.</p>
+    <p>In
+    <a href="values-never-change-types.html">the next part, “Values never change types”</a>,
+    we’ll get some idea of why working with existential types can be so
+    full of compiler errors, especially when allowing for mutation and
+    impure functions.</p>
+    <p><em>This article was tested with Scala 2.11.7 and Java 1.8.0_45.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

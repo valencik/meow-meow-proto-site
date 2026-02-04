@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>How do I error handle thee?</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">How do I error handle thee?</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Adelbert Chang<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on February 21, 2014
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="how-do-i-error-handle-thee" class="title">How do I error handle thee?</h1>
+    <p>Scala has several ways to deal with error handling, and often times people
+    get confused as to when to use what. This post hopes to address that.</p>
+    <p><em>Let me count the ways.</em></p>
+    
+    <h2 id="option" class="section"><a class="anchor-link" href="#option"><code class="fas fa-link fa-sm"></code></a><code>Option</code></h2>
+    <p>People coming to Scala from Java-like languages are often told <code>Option</code> is
+    a replacement for <code>null</code> or exception throwing. Say we have a function that
+    creates some sort of interval, but only allows intervals where the lower bound
+    comes first.</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">Interval</span><span>(</span><span class="keyword">val</span><span> </span><span class="identifier">low</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="keyword">val</span><span> </span><span class="identifier">high</span><span>: </span><span class="type-name">Int</span><span>) {
+  </span><span class="keyword">if</span><span> (</span><span class="identifier">low</span><span> &gt; </span><span class="identifier">high</span><span>)
+    </span><span class="keyword">throw</span><span> </span><span class="keyword">new</span><span> </span><span class="type-name">Exception</span><span>(</span><span class="string-literal">&quot;Lower bound must be smaller than upper bound!&quot;</span><span>)
+}</span></code></pre>
+    <p>Here we want to create an <code>Interval</code>, but we want to ensure that the lower bound
+    is smaller than the upper bound. If it isn&#39;t, we throw an exception. The idea here
+    is to have some sort of &quot;guarantee&quot; that if at any point I&#39;m given an <code>Interval</code>,
+    the lower bound is smaller than the upper bound (otherwise an exception would have
+    been thrown).</p>
+    <p>However, throwing exceptions breaks our ability to reason about a function/program.
+    Control is handed off to the call site, and we hope the call site catches it – if not,
+    it propagates further up until at some point something catches it, or our program
+    crashes. We&#39;d like something a bit cleaner than that.</p>
+    <p>Enter <code>Option</code> – given our <code>Interval</code> constructor, construction may or may not succeed.
+    Put another way, after we enter the constructor, we may or may not have a valid
+    <code>Interval</code>. <code>Option</code> is a type that represents a value that may or may not be there;
+    it can either be <code>Some</code> or <code>None</code>. Let&#39;s use what&#39;s called a <em>smart constructor</em>.</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Interval</span><span> </span><span class="keyword">private</span><span>(</span><span class="keyword">val</span><span> </span><span class="identifier">low</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="keyword">val</span><span> </span><span class="identifier">high</span><span>: </span><span class="type-name">Int</span><span>)
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Interval</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">low</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">high</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Interval</span><span>] =
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">low</span><span> &lt;= </span><span class="identifier">high</span><span>) </span><span class="type-name">Some</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">Interval</span><span>(</span><span class="identifier">low</span><span>, </span><span class="identifier">high</span><span>))
+    </span><span class="keyword">else</span><span> </span><span class="type-name">None</span><span>
+}</span></code></pre>
+    <p>We make our class <code>final</code> so nothing can inherit from it, and we make our constructor
+    private so nobody can create an instance of <code>Interval</code> without going through our own
+    smart constructor function, <code>Interval.apply</code>. Our <code>apply</code> function takes some relevant
+    parameters, and returns an <code>Option[Interval]</code> that may or may not contain our constructed
+    <code>Interval</code>. Our function does not arbitrarily kick control back to the call site due
+    to an exception and we can reason about it much more easily.</p>
+    
+    <h2 id="either-and-scalaz" class="section"><a class="anchor-link" href="#either-and-scalaz"><code class="fas fa-link fa-sm"></code></a><code>Either</code> and <code>scalaz.\/</code></h2>
+    <p>So, <code>Option</code> gives us <code>Some</code> or <code>None</code>, which is all we need if there is only one thing
+    that could go wrong. For instance, the standard library&#39;s <code>Map[K, V]</code> has a function <code>get</code>
+    that given a key of type <code>K</code>, returns <code>Option[V]</code> – clearly if the key exists, the associated
+    value is returned (wrapped in a <code>Some</code>). If the key does not exist, it returns a <code>None</code>.</p>
+    <p>But sometimes one of several things can go wrong. Let&#39;s say we have some wonky type that
+    wants a string that is exactly of length 5 and another string that is a palindrome.</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Wonky</span><span> </span><span class="keyword">private</span><span>(</span><span class="identifier">five</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">palindrome</span><span>: </span><span class="type-name">String</span><span>)
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Wonky</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">validate</span><span>(</span><span class="identifier">five</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">palindrome</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">Wonky</span><span>] =
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">five</span><span>.</span><span class="identifier">size</span><span> != </span><span class="number-literal">5</span><span>) </span><span class="type-name">None</span><span>
+    </span><span class="keyword">else</span><span> </span><span class="keyword">if</span><span> (</span><span class="identifier">palindrome</span><span> != </span><span class="identifier">palindrome</span><span>.</span><span class="identifier">reverse</span><span>) </span><span class="type-name">None</span><span>
+    </span><span class="keyword">else</span><span> </span><span class="type-name">Some</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">Wonky</span><span>(</span><span class="identifier">five</span><span>, </span><span class="identifier">palindrome</span><span>))
+}
+
+</span><span class="comment">/* Somewhere else.. */</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">w</span><span> = </span><span class="type-name">Wonky</span><span>.</span><span class="identifier">validate</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) </span><span class="comment">// say this returns None</span></code></pre>
+    <p>Clearly something went wrong here, but we don&#39;t know what. If the strings were sent over
+    from some front end via JSON or something, when we send an error back hopefully we have
+    something more descriptive than &quot;Something went wrong.&quot; What we want is instead of <code>None</code>,
+    we want something more descriptive. We can look into <code>Either</code> for this, where we use
+    <code>Left</code> to hold some sort of error value (similar to <code>None</code>), and <code>Right</code> to hold a successful
+    one (similar to <code>Some</code>).</p>
+    <p>To manipulate such values that may or may not exist (presumably obtained from functions that may or may not
+    fail), we use monadic functions such as <code>flatMap</code>, often in the form of monad comprehensions, or
+    for comprehensions as Scala calls them.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">x</span><span> = ...
+</span><span class="keyword">val</span><span> </span><span class="identifier">y</span><span> = ...
+
+</span><span class="keyword">for</span><span> {
+  </span><span class="identifier">a</span><span> &lt;- </span><span class="identifier">foo</span><span>(</span><span class="identifier">x</span><span>)
+  </span><span class="identifier">b</span><span> &lt;- </span><span class="identifier">bar</span><span>(</span><span class="identifier">a</span><span>)
+  </span><span class="identifier">c</span><span> &lt;- </span><span class="identifier">baz</span><span>(</span><span class="identifier">y</span><span>)
+  </span><span class="identifier">d</span><span> &lt;- </span><span class="identifier">quux</span><span>(</span><span class="identifier">b</span><span>, </span><span class="identifier">c</span><span>)
+} </span><span class="keyword">yield</span><span> </span><span class="identifier">d</span></code></pre>
+    <p>In the case of <code>Option</code>, if any of <code>foo/bar/baz/quux</code> returns a <code>None</code>, that <code>None</code> simply
+    gets threaded through the rest of the computation – no <code>try/catch</code> statements marching off
+    the right side of the screen!</p>
+    <p>For comprehensions in Scala require the type we&#39;re working with to have <code>flatMap</code> and
+    <code>map</code>. <code>flatMap</code>, along with <code>pure</code> and some laws, are the requisite functions needed
+    to form a monad – <code>map</code> can be defined in terms of <code>flatMap</code> and <code>pure</code>.
+    With <code>scala.util.Either</code> however, we don&#39;t have those – we have
+    to use an explicit conversion via <code>Either#right</code> or <code>Either#left</code> to get a
+    <code>RightProjection</code> or <code>LeftProjection</code> (respectively), which specifies in what direction we bias
+    the <code>map</code> and <code>flatMap</code> calls. The convention however, is that the right side is the &quot;correct&quot;
+    (or &quot;right&quot;, if you will) side and the left represents the failure case, but it is tedious to
+    continously call <code>Either#right</code> on values of type <code>Either</code> to achieve this.</p>
+    <p>Thankfully, we have an alternative in the Scalaz library via
+    <code>scalaz.\/</code> (I just pronounce this &quot;either&quot; – some say disjoint union or just &quot;or&quot;), a right-biased
+    version of <code>scala.util.Either</code> – that is, calling <code>\/#map</code> maps over the value if it&#39;s in
+    a &quot;right&quot; (<code>scalaz.\/-</code>), otherwise if it&#39;s &quot;left&quot; (<code>scalaz.-\/</code>) it just threads it through
+    without touching it, much like how <code>Option</code> behaves. We can therefore alter the earlier function:</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">WonkyError</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MustHaveLengthFive</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">WonkyError</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MustBePalindromic</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">WonkyError</span><span>
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Wonky</span><span> </span><span class="keyword">private</span><span>(</span><span class="identifier">five</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">palindrome</span><span>: </span><span class="type-name">String</span><span>)
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Wonky</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">validate</span><span>(</span><span class="identifier">five</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">palindrome</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">WonkyError</span><span> \/ </span><span class="type-name">Wonky</span><span> =
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">five</span><span>.</span><span class="identifier">size</span><span> != </span><span class="number-literal">5</span><span>) -\/(</span><span class="type-name">MustHaveLengthFive</span><span>(</span><span class="identifier">five</span><span>))
+    </span><span class="keyword">else</span><span> </span><span class="keyword">if</span><span> (</span><span class="identifier">palindrome</span><span> != </span><span class="identifier">palindrome</span><span>.</span><span class="identifier">reverse</span><span>) -\/(</span><span class="type-name">MustBePalindromic</span><span>(</span><span class="identifier">palindrome</span><span>))
+    </span><span class="keyword">else</span><span> \/-(</span><span class="keyword">new</span><span> </span><span class="type-name">Wonky</span><span>(</span><span class="identifier">five</span><span>, </span><span class="identifier">palindrome</span><span>))
+}
+
+</span><span class="comment">/* Somewhere else.. */</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">w</span><span> = </span><span class="type-name">Wonky</span><span>.</span><span class="identifier">validate</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)</span></code></pre>
+    <p><code>scalaz.\/</code> also has several useful methods not found on <code>Either</code>.</p>
+    
+    <h2 id="try" class="section"><a class="anchor-link" href="#try"><code class="fas fa-link fa-sm"></code></a><code>Try</code></h2>
+    <p>As of Scala 2.10, we have <code>scala.util.Try</code> which is essentially an either, with the left type
+    fixed as <code>Throwable</code>. There are two problems (that I can think of at this moment) with this:</p>
+    <ol class="arabic">
+      <li>We want to avoid exceptions where we can.</li>
+      <li>It violates the monad laws.</li>
+    </ol>
+    <p>A big factor in our ability to deal with all these error handling types nicely
+    is using their monadic properties in for comprehensions.</p>
+    <p>For an explanation of the monad laws, there is a nice post
+    <a href="http://eed3si9n.com/learning-scalaz/Monad+laws.html">here</a> describing them (using Scala). <code>Try</code>
+    violates the left identity.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">foo</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Try</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="keyword">throw</span><span> </span><span class="keyword">new</span><span> </span><span class="type-name">Exception</span><span>(</span><span class="string-literal">&quot;oops&quot;</span><span>)
+
+</span><span class="identifier">foo</span><span>(</span><span class="number-literal">1</span><span>) </span><span class="comment">// exception is thrown
+</span><span>
+</span><span class="type-name">Try</span><span>(</span><span class="number-literal">1</span><span>).</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">foo</span><span>) </span><span class="comment">// scala.util.Failure</span></code></pre>
+    <p>This can cause unexpected behavior when used, perhaps in a monad/for comprehension. Furthermore,
+    <code>Try</code> encourages the use of <code>Throwable</code>s which breaks control flow and parametricity.
+    While it certainly may be convenient to be able to wrap an arbitrarily code block with the <code>Try</code> constructor
+    and let it catch any exception that may be thrown, we still recommend using an algebraic data type
+    describing the errors and using <code>YourErrorType \/ YourReturnType</code>.</p>
+    
+    <h2 id="scalaz-validation" class="section"><a class="anchor-link" href="#scalaz-validation"><code class="fas fa-link fa-sm"></code></a><code>scalaz.Validation</code></h2>
+    <p>Going back to our previous example with validating wonky strings, we see an improvement that
+    could be made.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">WonkyError</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MustHaveLengthFive</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">WonkyError</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MustBePalindromic</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">WonkyError</span><span>
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Wonky</span><span> </span><span class="keyword">private</span><span>(</span><span class="identifier">five</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">palindrome</span><span>: </span><span class="type-name">String</span><span>)
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Wonky</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">validate</span><span>(</span><span class="identifier">five</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">palindrome</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">WonkyError</span><span> \/ </span><span class="type-name">Wonky</span><span> =
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">five</span><span>.</span><span class="identifier">size</span><span> != </span><span class="number-literal">5</span><span>) -\/(</span><span class="type-name">MustHaveLengthFive</span><span>(</span><span class="identifier">five</span><span>))
+    </span><span class="keyword">else</span><span> </span><span class="keyword">if</span><span> (</span><span class="identifier">palindrome</span><span> != </span><span class="identifier">palindrome</span><span>.</span><span class="identifier">reverse</span><span>) -\/(</span><span class="type-name">MustBePalindromic</span><span>(</span><span class="identifier">palindrome</span><span>))
+    </span><span class="keyword">else</span><span> \/-(</span><span class="keyword">new</span><span> </span><span class="type-name">Wonky</span><span>(</span><span class="identifier">five</span><span>, </span><span class="identifier">palindrome</span><span>))
+}
+
+</span><span class="comment">/* Somewhere else.. */</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">w</span><span> = </span><span class="type-name">Wonky</span><span>.</span><span class="identifier">validate</span><span>(</span><span class="string-literal">&quot;foo&quot;</span><span>, </span><span class="string-literal">&quot;bar&quot;</span><span>) </span><span class="comment">// -\/(MustHaveLengthFive(&quot;foo&quot;))</span></code></pre>
+    <p>The fact that one string must have a length of 5 can be checked and reported separately from the other 
+    being palindromic. Note that in the above example <code>&quot;foo&quot;</code> does not satisfy the length requirement,
+    and <code>&quot;bar&quot;</code> does not satisfy the palindromic requirement, yet only <code>&quot;foo&quot;</code>&#39;s error is reported
+    due to how <code>\/</code> works. What if we want to report any and all errors that could be reported
+    (&quot;foo&quot; does not have a length of 5 and &quot;bar&quot; is not palindromic)?</p>
+    <p>If we want to validate several properties at once, and return any and all validation errors,
+    we can turn to <code>scalaz.Validation</code>. The modified function would look something like:</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">WonkyError</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MustHaveLengthFive</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">WonkyError</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MustBePalindromic</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">WonkyError</span><span>
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Wonky</span><span> </span><span class="keyword">private</span><span>(</span><span class="identifier">five</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">palindrome</span><span>: </span><span class="type-name">String</span><span>)
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Wonky</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">checkFive</span><span>(</span><span class="identifier">five</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">ValidationNel</span><span>[</span><span class="type-name">WonkyError</span><span>, </span><span class="type-name">String</span><span>] =
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">five</span><span>.</span><span class="identifier">size</span><span> != </span><span class="number-literal">5</span><span>) </span><span class="type-name">MustHaveLengthFive</span><span>(</span><span class="identifier">five</span><span>).</span><span class="identifier">failNel</span><span>
+    </span><span class="keyword">else</span><span> </span><span class="identifier">five</span><span>.</span><span class="identifier">success</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">checkPalindrome</span><span>(</span><span class="identifier">p</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">ValidationNel</span><span>[</span><span class="type-name">WonkyError</span><span>, </span><span class="type-name">String</span><span>] =
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">p</span><span> != </span><span class="identifier">p</span><span>.</span><span class="identifier">reverse</span><span>) </span><span class="type-name">MustBePalindromic</span><span>(</span><span class="identifier">p</span><span>).</span><span class="identifier">failNel</span><span>
+    </span><span class="keyword">else</span><span> </span><span class="identifier">p</span><span>.</span><span class="identifier">success</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">validate</span><span>(</span><span class="identifier">five</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">palindrome</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">ValidationNel</span><span>[</span><span class="type-name">WonkyError</span><span>, </span><span class="type-name">Wonky</span><span>] =
+    (</span><span class="identifier">checkFive</span><span>(</span><span class="identifier">five</span><span>) |@| </span><span class="identifier">checkPalindrome</span><span>(</span><span class="identifier">palindrome</span><span>)) { (</span><span class="identifier">f</span><span>, </span><span class="identifier">p</span><span>) =&gt; </span><span class="keyword">new</span><span> </span><span class="type-name">Wonky</span><span>(</span><span class="identifier">f</span><span>, </span><span class="identifier">p</span><span>) }
+}
+
+</span><span class="comment">/* Somewhere else.. */</span><span>
+</span><span class="comment">// Failure(NonEmptyList(MustHaveLengthFive(&quot;foo&quot;), MustBePalindromic(&quot;bar&quot;)))
+</span><span class="type-name">Wonky</span><span>.</span><span class="identifier">validate</span><span>(</span><span class="string-literal">&quot;foo&quot;</span><span>, </span><span class="string-literal">&quot;bar&quot;</span><span>)
+
+</span><span class="comment">// Failure(NonEmptyList(MustBePalindromic(&quot;bar&quot;)))
+</span><span class="type-name">Wonky</span><span>.</span><span class="identifier">validate</span><span>(</span><span class="string-literal">&quot;monad&quot;</span><span>, </span><span class="string-literal">&quot;bar&quot;</span><span>)
+
+</span><span class="comment">// Success(Wonky(&quot;monad&quot;, &quot;radar&quot;))
+</span><span class="type-name">Wonky</span><span>.</span><span class="identifier">validate</span><span>(</span><span class="string-literal">&quot;monad&quot;</span><span>, </span><span class="string-literal">&quot;radar&quot;</span><span>)</span></code></pre>
+    <p>Awesome! However, there is one caveat – we cannot in good conscience use
+    <code>scalaz.Validation</code> in a for comprehension. Why? Because there is no valid
+    monad for it. <code>Validation</code>&#39;s accumulative nature works via its <code>Applicative</code>
+    instance, but due to how the instance works, there is no consistent monad
+    (every monad is an applicative functor, where monadic bind is consistent with
+    applicative apply). However, you can use the <code>Validation#disjunction</code> function to
+    convert it to a <code>scalaz.\/</code>, which can then be used in a for comprehension.</p>
+    <p>One more thing to note: in the above code snippet I used
+    <code>ValidationNel</code>, which is just a type alias.
+    <code>ValidationNel[E, A]</code> stands for for 
+    <code>Validation[NonEmptyList[E], A]</code> – the actual <code>Validation</code> will take
+    anything on the left side that is a <code>Semigroup</code>, and <code>ValidationNel</code> is
+    provided as a convenience as often times you may want a non-empty
+    list of errors describing the various errors that happened in a function.
+    However, you can do several interesting things with other semigroups.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/adelbertc.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Adelbert Chang</strong>
+              
+              <br />
+              Adelbert is an engineer at Box where he attempts to reliably copy bytes from one machine to another. He enjoys writing pure functional programs, teaching functional programming, and learning more about computing.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/adelbertc">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

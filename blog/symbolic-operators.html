@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Symbolic operators and type classes for Cats</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Symbolic operators and type classes for Cats</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Erik Osheim<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on August 7, 2015
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="symbolic-operators-and-type-classes-for-cats" class="title">Symbolic operators and type classes for Cats</h1>
+    <p>This post is an introduction into how operators are implemented in Cats and has been originally published in <a href="https://gist.github.com/non/3abdb35a72c39276d3d9">August 2015</a>.
+    Some more details can be found in the <a href="machinist.html">previous post</a>.</p>
+    <p>One of the simplest and most recognizable type classes is the semigroup.
+    This type class abstracts over the ability to combine values of a certain
+    type in an associative manner.</p>
+    <p>&lt;div class=&quot;side-note&quot;&gt;
+      What does &lt;em&gt;associativity&lt;/em&gt; mean?
+      We call an operation $\oplus$ associative, if for all $a$, $b$ and $c$, $a \oplus (b \oplus c) = (a \oplus b) \oplus c$ holds.
+      Read more about this in the &lt;a href=&quot;https://github.com/non/algebra#algebraic-properties-and-terminology&quot;&gt;README of the algebra repository&lt;/a&gt;.
+    &lt;/div&gt;</p>
+    <p>Cats provides <code>cats.Semigroup[A]</code> to model semigroups.
+    The <code>combine</code> method takes two values of the type <code>A</code> and returns an <code>A</code> value.</p>
+    <p>In addition, Cats defines syntax allowing the binary operator <code>|+|</code> to be
+    used in place of the <code>combine</code> method.</p>
+    
+    <h2 id="small-example" class="section"><a class="anchor-link" href="#small-example"><code class="fas fa-link fa-sm"></code></a>Small example</h2>
+    <p>Here is a small method that provides a generic way to combine the elements
+    of a list:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Semigroup</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">gsum</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Semigroup</span><span>](</span><span class="identifier">values</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Option</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="keyword">if</span><span> (</span><span class="identifier">values</span><span>.</span><span class="identifier">isEmpty</span><span>) </span><span class="type-name">None</span><span> </span><span class="keyword">else</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">values</span><span>.</span><span class="identifier">reduceLeft</span><span>((</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) =&gt; </span><span class="identifier">x</span><span> |+| </span><span class="identifier">y</span><span>))</span></code></pre>
+    <p>(A similar method is built into Cats as <code>Semigroup.combineAllOption</code>.)</p>
+    
+    <h2 id="how-does-it-work" class="section"><a class="anchor-link" href="#how-does-it-work"><code class="fas fa-link fa-sm"></code></a>How does it work?</h2>
+    <p>One of the parts of <code>gsum</code> that might be hard to understand is where
+    the <code>|+|</code> method comes from. Since <code>x</code> and <code>y</code> are totally generic values
+    (of type <code>A</code>) how can we call a method on them?</p>
+    <p>To boil the example down further, consider this simpler example:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="number-literal">19</span><span> |+| </span><span class="number-literal">20</span><span> </span><span class="comment">// produces 39</span></code></pre>
+    <p>How does this work? We know that the <code>Int</code> type does not have a <code>|+|</code> method.
+    Experienced Scala developers will suspect that implicits play a role here,
+    but what are the details?</p>
+    
+    <h2 id="in-detail" class="section"><a class="anchor-link" href="#in-detail"><code class="fas fa-link fa-sm"></code></a>In detail</h2>
+    <p>Let&#39;s walk through how the expression <code>19 |+| 20</code> is compiled.</p>
+    <p>First, a <code>|+|</code> method is needed on <code>Int</code>. Since
+    <a href="https://github.com/scala/scala/blob/v2.11.7/src/library/scala/Int.scala"><code>Int</code></a>
+    does not provide one, the compiler searches for an implicit conversion to a
+    type that <em>does</em> have a <code>|+|</code> method.</p>
+    <p>Due to our import, it will find the
+    <a href="https://github.com/non/cats/blob/82dbf4076572dfbb6e29dd49875f5e5d929f80be/core/src/main/scala/cats/syntax/semigroup.scala#L8"><code>semigroupSyntax[A]</code></a>
+    method, which returns a type that has a <code>|+|</code> method (specifically
+    <a href="https://github.com/non/cats/blob/82dbf4076572dfbb6e29dd49875f5e5d929f80be/core/src/main/scala/cats/syntax/semigroup.scala#L12"><code>SemigroupOps[A]</code></a>).
+    However, <code>semigroupSyntax</code> requires an implicit <code>Semigroup[A]</code> value to be in scope.
+    Do we have a <code>Semigroup[Int]</code> in scope?</p>
+    <p>Yes we do. Our import also provides an implicit value <a href="https://github.com/non/cats/blob/82dbf4076572dfbb6e29dd49875f5e5d929f80be/std/src/main/scala/cats/std/anyval.scala#L23"><code>intGroup</code></a>
+    of type <code>AdditiveCommutativeGroup[Int]</code>. Leaving aside what <em>additive</em>, <em>commutative</em>,
+    and <em>group</em> mean here, this is a subtype of <code>Semigroup[Int]</code>, so it matches.</p>
+    <p>Let&#39;s continue with our current example. At this point we have gone from:</p>
+    <pre><code class="nohighlight"><span class="number-literal">19</span><span> |+| </span><span class="number-literal">20</span><span> </span><span class="comment">// produces 39</span></code></pre>
+    <p>to:</p>
+    <pre><code class="nohighlight"><span class="identifier">semigroupSyntax</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="number-literal">19</span><span>)(</span><span class="identifier">intGroup</span><span>) |+| </span><span class="number-literal">20</span></code></pre>
+    <p>But we aren&#39;t out of the woods yet! We still need to see how this expression
+    is evaluated.</p>
+    
+    <h2 id="of-macros-and-machinists" class="section"><a class="anchor-link" href="#of-macros-and-machinists"><code class="fas fa-link fa-sm"></code></a>Of macros and machinists</h2>
+    <p>Looking at how the <code>|+|</code> method is
+    <a href="https://github.com/non/cats/blob/82dbf4076572dfbb6e29dd49875f5e5d929f80be/core/src/main/scala/cats/syntax/semigroup.scala#L13">implemented</a>
+    reveals the cryptic <code>macro Ops.binop[A, A]</code>. What is this?</p>
+    <p>Following the rabbit hole farther, we come to
+    <a href="https://github.com/non/cats/blob/82dbf4076572dfbb6e29dd49875f5e5d929f80be/macros/src/main/scala/cats/macros/Ops.scala#L6"><code>cats.macros.Ops</code></a>
+    which provides the macro implementation that <code>|+|</code> is using. Aside from a
+    <a href="https://github.com/non/cats/blob/82dbf4076572dfbb6e29dd49875f5e5d929f80be/macros/src/main/scala/cats/macros/Ops.scala#L18">suggestively named</a>
+    item in the <code>operatorNames</code> map, we don&#39;t have any clues what is going on.</p>
+    <p>The <a href="https://github.com/typelevel/machinist">machinist</a> project was created
+    to optimize exactly this kind of implicit syntax problem. What will happen here
+    is that <code>operatorNames</code> describes how to rewrite expressions using type
+    classes. Long-story short, we will transform:</p>
+    <pre><code class="nohighlight"><span class="identifier">semigroupSyntax</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="number-literal">19</span><span>)(</span><span class="identifier">intGroup</span><span>) |+| </span><span class="number-literal">20</span></code></pre>
+    <p>into:</p>
+    <pre><code class="nohighlight"><span class="identifier">intGroup</span><span>.</span><span class="identifier">combine</span><span>(</span><span class="number-literal">19</span><span>, </span><span class="number-literal">20</span><span>)</span></code></pre>
+    <p>The aforementioned suggestive map item tells us that we should rewrite the <code>|+|</code> operator
+    to method calls on the given type class (i.e. <code>intGroup</code>) using <code>.combine</code>.</p>
+    
+    <h2 id="finishing-up" class="section"><a class="anchor-link" href="#finishing-up"><code class="fas fa-link fa-sm"></code></a>Finishing up</h2>
+    <p>Just to confirm that we&#39;re done, let&#39;s look at what <code>intGroup.combine</code> will do.
+    We started with a call to <code>AdditiveCommutativeGroup[Int]</code>, which will find
+    <a href="https://github.com/non/algebra/blob/v0.3.1/std/shared/src/main/scala/algebra/std/int.scala#L12"><code>intAlgebra</code></a>.
+    Then we call the <a href="https://github.com/non/algebra/blob/v0.3.1/core/src/main/scala/algebra/ring/Additive.scala#L93"><code>.additive</code></a>
+    method on it to produce a <code>CommutativeGroup[Int]</code>.</p>
+    <p>So putting that together, we can see that calling <code>intGroup.combine(19, 20)</code>
+    will call <code>intAlgebra.plus(19, 20)</code>, and that this is defined as <code>19 + 20</code>,
+    as we would expect.</p>
+    <p>Whew!</p>
+    
+    <h2 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h2>
+    <p>This is a lot of machinery. The incredibly terse and expressive syntax it
+    enables is quite nice, but you can see that even leaving out one import
+    will cause the whole edifice to come tumbling down.</p>
+    <p>The easiest way to use Cats is to just import <code>cats.implicits._</code>. That
+    way, you can be sure that you have all of it. There are individual imports
+    from <code>cats.syntax</code> and <code>cats.std</code> which can be used to pinpoint the exact
+    values and method you want to put into scope, but getting these right
+    can be a bit tricky, especially for newcomers.</p>
+    <p>Some more examples of Machinist can be found in the <a href="https://github.com/typelevel/machinist/blob/v0.4.1/README.md#examples">README</a>.</p>
+    
+    <h2 id="errata" class="section"><a class="anchor-link" href="#errata"><code class="fas fa-link fa-sm"></code></a>Errata</h2>
+    <p>You may also decide that the syntax convenience is not worth it. To write our
+    original example without syntax implicits (but still using implicit values)
+    you could say:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Semigroup</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">gsum</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">values</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="identifier">s</span><span>: </span><span class="type-name">Semigroup</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">Option</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="keyword">if</span><span> (</span><span class="identifier">values</span><span>.</span><span class="identifier">isEmpty</span><span>) </span><span class="type-name">None</span><span> </span><span class="keyword">else</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">values</span><span>.</span><span class="identifier">reduceLeft</span><span>((</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) =&gt; </span><span class="identifier">s</span><span>.</span><span class="identifier">combine</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)))
+
+</span><span class="comment">// values.reduceLeft(s.combine) would also work</span></code></pre>
+    <p>Whether to use syntax implicits or explicit method calls is mostly a matter
+    of preference. Personally, I like using syntax explicits to help make generic
+    code read in a clearer manner, but as always, your mileage may vary.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/non.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Erik Osheim</strong>
+              
+              <br />
+              Erik Osheim is one of the founders of Typelevel, and maintains several Scala libraries including Cats, Spire, and others. He hacks Scala for a living at Stripe, and is committed to having his cake and eating it too when it comes to functional programming. Besides programming he spends time playing music, drinking tea, and cycling around Providence, Rhode Island.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/non">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

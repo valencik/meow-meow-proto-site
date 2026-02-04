@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Typelevel Code of Conduct</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="../blog/">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+  <div class="bulma-section bulma-content bulma-container bulma-is-max-desktop">
+    <h1 id="typelevel-code-of-conduct" class="title">Typelevel Code of Conduct</h1>
+    <p>The Typelevel community is made up of members from around the globe with a diverse set of skills, personalities, and experiences.
+    It is through these differences that our community experiences great successes and continued growth.
+    When you&#39;re working with members of the community, this Code of Conduct will help steer your interactions and keep Typelevel a positive, successful, and growing community.
+    Whether you are new or familiar with our community, we care about making it a welcoming and safe place for you and we&#39;re here to support you.</p>
+    
+    <h2 id="our-community" class="section"><a class="anchor-link" href="#our-community"><code class="fas fa-link fa-sm"></code></a>Our Community</h2>
+    <p>Members of the Typelevel community are open, considerate, and respectful.
+    Behaviors that reinforce these values contribute to a positive environment, and include:</p>
+    <ul>
+      <li><strong>Being kind.</strong> We treat our fellow community members with the empathy, respect and dignity all people deserve.</li>
+      <li><strong>Focusing on what is best for the community.</strong> We&#39;re respectful of the processes set forth in the community, and we work within them.</li>
+      <li><strong>Showing empathy towards other community members.</strong> We&#39;re attentive in our communications, whether in person or online, and we&#39;re tactful when approaching differing views.</li>
+      <li><strong>Acknowledging time and effort.</strong> We&#39;re respectful of the volunteer efforts that permeate the Typelevel community. We&#39;re thoughtful when addressing the efforts of others, keeping in mind that often the labor was completed simply for the good of the community.</li>
+      <li><strong>Being respectful of differing viewpoints and experiences.</strong> We remember that everyone was new to Scala at some point. We want to encourage newcomers to join our community and learn the Scala language and ecosystem. Always assume good intentions and a willingness to learn, just as you are willing to evolve your own opinion as you gain new insights.</li>
+      <li><strong>Being considerate.</strong> Members of the community are considerate of their peers -- other Scala users.</li>
+      <li><strong>Being respectful.</strong> We&#39;re respectful of others, their positions, their skills, their commitments, and their efforts.</li>
+      <li><strong>Gracefully accepting constructive criticism.</strong> When we disagree, we are courteous in raising our issues.</li>
+      <li><strong>Using welcoming and inclusive language.</strong> We&#39;re accepting of all who wish to take part in our activities, fostering an environment where anyone can participate and everyone can make a difference.</li>
+    </ul>
+    
+    <h2 id="our-standards" class="section"><a class="anchor-link" href="#our-standards"><code class="fas fa-link fa-sm"></code></a>Our Standards</h2>
+    <p>Every member of our community has the right to have their identity respected.
+    The Typelevel community is dedicated to providing a positive experience for everyone, regardless of age, gender identity and expression, sexual orientation, disability, neurodivergence, physical appearance, body size, ethnicity, nationality, race, or religion (or lack thereof), education, or socio-economic status.</p>
+    
+    <h3 id="inappropriate-behavior" class="section"><a class="anchor-link" href="#inappropriate-behavior"><code class="fas fa-link fa-sm"></code></a>Inappropriate Behavior</h3>
+    <p>Examples of unacceptable behavior by participants include:</p>
+    <ul>
+      <li>Harassment of any participants in any form</li>
+      <li>Deliberate intimidation, stalking, or following</li>
+      <li>Logging or taking screenshots of online activity for harassment purposes</li>
+      <li>Publishing others&#39; private information, such as a physical or electronic address, without explicit permission</li>
+      <li>Violent threats or language directed against another person</li>
+      <li>Incitement of violence or harassment towards any individual, including encouraging a person to commit suicide or to engage in self-harm</li>
+      <li>Creating additional online accounts in order to harass another person or circumvent a ban</li>
+      <li>Sexual language and imagery in online communities or in any conference venue, including talks</li>
+      <li>Insults, put downs, or jokes that are based upon stereotypes, that are exclusionary, or that hold others up for ridicule</li>
+      <li>Excessive swearing</li>
+      <li>Unwelcome sexual attention or advances</li>
+      <li>Unwelcome physical contact, including simulated physical contact (eg, textual descriptions like &quot;hug&quot; or &quot;backrub&quot;) without consent or after a request to stop</li>
+      <li>Pattern of inappropriate social contact, such as requesting/assuming inappropriate levels of intimacy with others</li>
+      <li>Sustained disruption of online community discussions, in-person presentations, or other in-person events</li>
+      <li>Spamming, trolling, flaming, baiting or other attention-stealing behavior</li>
+      <li>Continued one-on-one communication after requests to cease</li>
+      <li>Other conduct that is inappropriate for a professional audience</li>
+    </ul>
+    <p>Community members asked to stop any inappropriate behavior are expected to comply immediately.</p>
+    
+    <h3 id="consequences" class="section"><a class="anchor-link" href="#consequences"><code class="fas fa-link fa-sm"></code></a>Consequences</h3>
+    <p>If a participant engages in behavior that violates our standards, the Typelevel Code of Conduct Committee will take any action they deem appropriate, including but not limited to: warning the offender, or expelling them from the community or current community events with no refund of event tickets.</p>
+    <p>The full list of consequences for inappropriate behavior is listed in the <a href="enforcement.html">Enforcement Procedures</a>.</p>
+    
+    <h2 id="scope" class="section"><a class="anchor-link" href="#scope"><code class="fas fa-link fa-sm"></code></a>Scope</h2>
+    <p>The enforcement policies listed above apply to all official Typelevel channels, including but not limited to the following: mailing lists, both organization and affiliate GitHub repositories, Typelevel Discord server, and Typelevel venues and events.
+    If unaffiliated projects adopt the Typelevel Code of Conduct, please contact the maintainers of those projects for enforcement.</p>
+    
+    <h2 id="contact" class="section"><a class="anchor-link" href="#contact"><code class="fas fa-link fa-sm"></code></a>Contact</h2>
+    <p>For questions related to our code of conduct, or to report possible violations, please immediately <a href="mailto:coc@typelevel.org">contact the Typelevel Code of Conduct Committee</a> or one of its members:</p>
+    <ul>
+      <li><a href="mailto:sam@blerf.ca">Sam Pillsworth</a></li>
+      <li><a href="mailto:andrew.valencik@gmail.com">Andrew Valencik</a></li>
+      <li><a href="mailto:hkateu@gmail.com">Kateu Herbert</a></li>
+      <li><a href="mailto:armanbilge@gmail.com">Arman Bilge</a></li>
+      <li><a href="mailto:lucas.satabin@gnieh.org">Lucas Satabin</a></li>
+    </ul>
+    
+    <h2 id="attribution" class="section"><a class="anchor-link" href="#attribution"><code class="fas fa-link fa-sm"></code></a>Attribution</h2>
+    <p>This code of conduct is a modified version of the <a href="https://www.python.org/psf/conduct">Python Software Foundation Code of Conduct</a>, licensed under the <a href="https://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</p>
+    <p>Additional language was incorporated from the following:</p>
+    <ul>
+      <li><a href="https://otter.technology/code-of-conduct-training/">Otter Tech</a> resources, licensed under a <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International</a>.</li>
+      <li><a href="https://www.scala-lang.org/conduct/">Scala Code of Conduct</a>, licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</li>
+      <li><a href="https://affectconf.com/coc/">Affect Conf Code of Conduct</a>, licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</li>
+      <li><a href="http://citizencodeofconduct.org/">Citizen Code of Conduct</a>, licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</li>
+      <li><a href="https://www.contributor-covenant.org/version/1/4/code-of-conduct">Contributor Covenant version 1.4</a>, licensed<a href="https://github.com/ContributorCovenant/contributor_covenant/blob/master/LICENSE.md"> Creative Commons Attribution 4.0 License</a>.</li>
+      <li><a href="https://www.djangoproject.com/conduct/">Django Project Code of Conduct</a>, licensed under a <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported License</a>.</li>
+      <li><a href="https://lgbtq.technology/coc.html">LGBTQ in Tech Slack Code of Conduct</a>, licensed under a <a href="https://creativecommons.org/publicdomain/zero/1.0/">Creative Commons Zero License</a>.</li>
+      <li><a href="https://us.pycon.org/2018/about/code-of-conduct/">PyCon 2018 Code of Conduct</a>, licensed under a <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported License</a>.</li>
+      <li><a href="https://www.rust-lang.org/en-US/conduct.html">Rust Code of Conduct</a></li>
+    </ul>
+  </div>
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="#">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

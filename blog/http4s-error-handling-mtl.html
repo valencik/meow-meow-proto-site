@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Error handling in Http4s with classy optics</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Error handling in Http4s with classy optics</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Gabriel Volpe<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on August 25, 2018
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="error-handling-in-http4s-with-classy-optics" class="title">Error handling in Http4s with classy optics</h1>
+    <p>As a longtime <code>http4s</code> user I keep on learning new things and I&#39;m always trying to come up with the best practices for writing http applications. This time I want to talk about my latest achievements in error handling within the context of an http application where it basically means mapping each business error to the appropiate <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">http response</a>.</p>
+    <p>So let&#39;s get started by putting up an example of an http application with three different endpoints that interacts with a <code>UserAlgebra</code> that may or may not fail with some specific errors.</p>
+    <p>If you are one of those who don&#39;t like to read and prefer to jump straight into the code please find it <a href="https://gist.github.com/gvolpe/3fa32dd1b6abce2a5466efbf0eca9e94">here</a> :)</p>
+    
+    <h3 id="user-algebra" class="section"><a class="anchor-link" href="#user-algebra"><code class="fas fa-link fa-sm"></code></a>User Algebra</h3>
+    <p>We have a simple <code>UserAlgebra</code> that let us perform some actions such as finding and persisting users.</p>
+    <pre><code class="nohighlight"><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">User</span><span>(</span><span class="identifier">username</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">age</span><span>: </span><span class="type-name">Int</span><span>)
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">UserUpdateAge</span><span>(</span><span class="identifier">age</span><span>: </span><span class="type-name">Int</span><span>)
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">UserAlgebra</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">find</span><span>(</span><span class="identifier">username</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">User</span><span>]]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">user</span><span>: </span><span class="type-name">User</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateAge</span><span>(</span><span class="identifier">username</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">age</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+}</span></code></pre>
+    <p>And also an ADT of the possible errors that may arise. I&#39;ll explain later in this post why it extends <code>Exception</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">UserError</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Exception</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">UserAlreadyExists</span><span>(</span><span class="identifier">username</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">UserError</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">UserNotFound</span><span>(</span><span class="identifier">username</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">UserError</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InvalidUserAge</span><span>(</span><span class="identifier">age</span><span>: </span><span class="type-name">Int</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">UserError</span></code></pre>
+    
+    <h3 id="user-interpreter" class="section"><a class="anchor-link" href="#user-interpreter"><code class="fas fa-link fa-sm"></code></a>User Interpreter</h3>
+    <p>And here we have a simple interpreter for our <code>UserAlgebra</code> for demonstration purposes so you can have an idea on how the logic would look like. In a real-life project an interpreter will more likely connect to a database instead of using an in-memory representaion based on <code>Ref</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">Sync</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="type-name">Ref</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">UserInterpreter</span><span> {
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">create</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="keyword">implicit</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">Sync</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">UserAlgebra</span><span>[</span><span class="type-name">F</span><span>]] =
+    </span><span class="type-name">Ref</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">User</span><span>]](</span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>).</span><span class="identifier">map</span><span> { </span><span class="identifier">state</span><span> =&gt;
+      </span><span class="keyword">new</span><span> </span><span class="type-name">UserAlgebra</span><span>[</span><span class="type-name">F</span><span>] {
+        </span><span class="keyword">private</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">validateAge</span><span>(</span><span class="identifier">age</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+          </span><span class="keyword">if</span><span> (</span><span class="identifier">age</span><span> &lt;= </span><span class="number-literal">0</span><span>) </span><span class="type-name">F</span><span>.</span><span class="identifier">raiseError</span><span>(</span><span class="type-name">InvalidUserAge</span><span>(</span><span class="identifier">age</span><span>)) </span><span class="keyword">else</span><span> </span><span class="type-name">F</span><span>.</span><span class="identifier">unit</span><span>
+
+        </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">find</span><span>(</span><span class="identifier">username</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">User</span><span>]] =
+          </span><span class="identifier">state</span><span>.</span><span class="identifier">get</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">username</span><span>))
+
+        </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">save</span><span>(</span><span class="identifier">user</span><span>: </span><span class="type-name">User</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+          </span><span class="identifier">validateAge</span><span>(</span><span class="identifier">user</span><span>.</span><span class="identifier">age</span><span>) *&gt;
+            </span><span class="identifier">find</span><span>(</span><span class="identifier">user</span><span>.</span><span class="identifier">username</span><span>).</span><span class="identifier">flatMap</span><span> {
+              </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>) =&gt;
+                </span><span class="type-name">F</span><span>.</span><span class="identifier">raiseError</span><span>(</span><span class="type-name">UserAlreadyExists</span><span>(</span><span class="identifier">user</span><span>.</span><span class="identifier">username</span><span>))
+              </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt;
+                </span><span class="identifier">state</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">updated</span><span>(</span><span class="identifier">user</span><span>.</span><span class="identifier">username</span><span>, </span><span class="identifier">user</span><span>))
+            }
+
+        </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateAge</span><span>(</span><span class="identifier">username</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">age</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+          </span><span class="identifier">validateAge</span><span>(</span><span class="identifier">age</span><span>) *&gt;
+            </span><span class="identifier">find</span><span>(</span><span class="identifier">username</span><span>).</span><span class="identifier">flatMap</span><span> {
+              </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">user</span><span>) =&gt;
+                </span><span class="identifier">state</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">updated</span><span>(</span><span class="identifier">username</span><span>, </span><span class="identifier">user</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">age</span><span> = </span><span class="identifier">age</span><span>)))
+              </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt;
+                </span><span class="type-name">F</span><span>.</span><span class="identifier">raiseError</span><span>(</span><span class="type-name">UserNotFound</span><span>(</span><span class="identifier">username</span><span>))
+            }
+      }
+    }
+
+}</span></code></pre>
+    
+    <h3 id="http-routes" class="section"><a class="anchor-link" href="#http-routes"><code class="fas fa-link fa-sm"></code></a>Http Routes</h3>
+    <p>The following implementation of <code>UserRoutes</code> applies the tagless final encoding and the concept of &quot;abstracting over the effect type&quot; where we do not commit to a particular effect until the edge of our application.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">circe</span><span>.</span><span class="identifier">generic</span><span>.</span><span class="identifier">auto</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">io</span><span>.</span><span class="identifier">circe</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">http4s</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">http4s</span><span>.</span><span class="identifier">circe</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">http4s</span><span>.</span><span class="identifier">circe</span><span>.</span><span class="type-name">CirceEntityDecoder</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">http4s</span><span>.</span><span class="identifier">dsl</span><span>.</span><span class="type-name">Http4sDsl</span><span>
+
+</span><span class="keyword">class</span><span> </span><span class="type-name">UserRoutes</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Sync</span><span>](</span><span class="identifier">userAlgebra</span><span>: </span><span class="type-name">UserAlgebra</span><span>[</span><span class="type-name">F</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">Http4sDsl</span><span>[</span><span class="type-name">F</span><span>] {
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">routes</span><span>: </span><span class="type-name">HttpRoutes</span><span>[</span><span class="type-name">F</span><span>] = </span><span class="type-name">HttpRoutes</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">F</span><span>] {
+
+    </span><span class="keyword">case</span><span> </span><span class="type-name">GET</span><span> -&gt; </span><span class="type-name">Root</span><span> / </span><span class="string-literal">&quot;users&quot;</span><span> / </span><span class="identifier">username</span><span> =&gt;
+      </span><span class="identifier">userAlgebra</span><span>.</span><span class="identifier">find</span><span>(</span><span class="identifier">username</span><span>).</span><span class="identifier">flatMap</span><span> {
+        </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">user</span><span>) =&gt; </span><span class="type-name">Ok</span><span>(</span><span class="identifier">user</span><span>.</span><span class="identifier">asJson</span><span>)
+        </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="type-name">NotFound</span><span>(</span><span class="identifier">username</span><span>.</span><span class="identifier">asJson</span><span>)
+      }
+
+    </span><span class="keyword">case</span><span> </span><span class="identifier">req</span><span> @ </span><span class="type-name">POST</span><span> -&gt; </span><span class="type-name">Root</span><span> / </span><span class="string-literal">&quot;users&quot;</span><span> =&gt;
+      </span><span class="identifier">req</span><span>.</span><span class="identifier">as</span><span>[</span><span class="type-name">User</span><span>].</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">user</span><span> =&gt;
+        </span><span class="identifier">userAlgebra</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">user</span><span>) *&gt; </span><span class="type-name">Created</span><span>(</span><span class="identifier">user</span><span>.</span><span class="identifier">username</span><span>.</span><span class="identifier">asJson</span><span>)
+      }
+
+    </span><span class="keyword">case</span><span> </span><span class="identifier">req</span><span> @ </span><span class="type-name">PUT</span><span> -&gt; </span><span class="type-name">Root</span><span> / </span><span class="string-literal">&quot;users&quot;</span><span> / </span><span class="identifier">username</span><span> =&gt;
+      </span><span class="identifier">req</span><span>.</span><span class="identifier">as</span><span>[</span><span class="type-name">UserUpdateAge</span><span>].</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">userUpdate</span><span> =&gt;
+        </span><span class="identifier">userAlgebra</span><span>.</span><span class="identifier">updateAge</span><span>(</span><span class="identifier">username</span><span>, </span><span class="identifier">userUpdate</span><span>.</span><span class="identifier">age</span><span>) *&gt; </span><span class="type-name">Ok</span><span>(</span><span class="identifier">username</span><span>)
+      }
+  }
+
+}</span></code></pre>
+    <p>Now this particular implementation is missing a very important part: error handling. If we use the <code>UserAlgebra</code>&#39;s interpreter previously defined we will clearly miss the three errors defined by the <code>UserError</code> ADT.</p>
+    <p><strong><em>NOTE: If you are not familiar with these concepts make sure you check out <a href="https://youtu.be/pGfj_l-h3M8?t=887">my talk at Scala Matsuri</a> early this year where I also talk about error handling in http applications using the Http4s library.</em></strong></p>
+    
+    <h3 id="http-error-handling" class="section"><a class="anchor-link" href="#http-error-handling"><code class="fas fa-link fa-sm"></code></a>Http Error Handling</h3>
+    <p>Okay let&#39;s just go ahead and add some error handling to our http route by taking advantange of the <code>MonadError</code> instance defined by our constraint <code>Sync[F]</code> and making use of the syntax provided by <code>cats</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">UserRoutesAlt</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Sync</span><span>](</span><span class="identifier">userAlgebra</span><span>: </span><span class="type-name">UserAlgebra</span><span>[</span><span class="type-name">F</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">Http4sDsl</span><span>[</span><span class="type-name">F</span><span>] {
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">routes</span><span>: </span><span class="type-name">HttpRoutes</span><span>[</span><span class="type-name">F</span><span>] = </span><span class="type-name">HttpRoutes</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">F</span><span>] {
+
+    </span><span class="keyword">case</span><span> </span><span class="type-name">GET</span><span> -&gt; </span><span class="type-name">Root</span><span> / </span><span class="string-literal">&quot;users&quot;</span><span> / </span><span class="identifier">username</span><span> =&gt;
+      </span><span class="identifier">userAlgebra</span><span>.</span><span class="identifier">find</span><span>(</span><span class="identifier">username</span><span>).</span><span class="identifier">flatMap</span><span> {
+        </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">user</span><span>) =&gt; </span><span class="type-name">Ok</span><span>(</span><span class="identifier">user</span><span>.</span><span class="identifier">asJson</span><span>)
+        </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="type-name">NotFound</span><span>(</span><span class="identifier">username</span><span>.</span><span class="identifier">asJson</span><span>)
+      }
+
+    </span><span class="keyword">case</span><span> </span><span class="identifier">req</span><span> @ </span><span class="type-name">POST</span><span> -&gt; </span><span class="type-name">Root</span><span> / </span><span class="string-literal">&quot;users&quot;</span><span> =&gt;
+      </span><span class="identifier">req</span><span>.</span><span class="identifier">as</span><span>[</span><span class="type-name">User</span><span>].</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">user</span><span> =&gt;
+        </span><span class="identifier">userAlgebra</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">user</span><span>) *&gt; </span><span class="type-name">Created</span><span>(</span><span class="identifier">user</span><span>.</span><span class="identifier">username</span><span>.</span><span class="identifier">asJson</span><span>)
+      }.</span><span class="identifier">handleErrorWith</span><span> {
+        </span><span class="keyword">case</span><span> </span><span class="type-name">UserAlreadyExists</span><span>(</span><span class="identifier">username</span><span>) =&gt; </span><span class="type-name">Conflict</span><span>(</span><span class="identifier">username</span><span>.</span><span class="identifier">asJson</span><span>)
+      }
+
+    </span><span class="keyword">case</span><span> </span><span class="identifier">req</span><span> @ </span><span class="type-name">PUT</span><span> -&gt; </span><span class="type-name">Root</span><span> / </span><span class="string-literal">&quot;users&quot;</span><span> / </span><span class="identifier">username</span><span> =&gt;
+      </span><span class="identifier">req</span><span>.</span><span class="identifier">as</span><span>[</span><span class="type-name">UserUpdateAge</span><span>].</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">userUpdate</span><span> =&gt;
+        </span><span class="identifier">userAlgebra</span><span>.</span><span class="identifier">updateAge</span><span>(</span><span class="identifier">username</span><span>, </span><span class="identifier">userUpdate</span><span>.</span><span class="identifier">age</span><span>) *&gt; </span><span class="type-name">Ok</span><span>(</span><span class="identifier">username</span><span>.</span><span class="identifier">asJson</span><span>)
+      }.</span><span class="identifier">handleErrorWith</span><span> {
+        </span><span class="keyword">case</span><span> </span><span class="type-name">InvalidUserAge</span><span>(</span><span class="identifier">age</span><span>) =&gt; </span><span class="type-name">BadRequest</span><span>(</span><span class="string-literal">s&quot;Invalid age </span><span class="substitution">$age</span><span class="string-literal">&quot;</span><span>.</span><span class="identifier">asJson</span><span>)
+      }
+  }
+
+}</span></code></pre>
+    <p>Now we can say this implementation is quite elegant! We are handling and mapping business errors to the according http response and our code compiles without any warning whatsoever. But wait... We are not handling the <code>UserNotFound</code> error and the compiler didn&#39;t tell us about it! That&#39;s not cool and we as functional programmers believe in types because we can know what a function might do just by looking at the types but here it seems we hit the wall.</p>
+    <p>The problem is that our constraint of type <code>Sync</code> from <code>cats-effect</code> has a <code>MonadError</code> instance with its type error fixed as <code>Throwable</code>. So the compiler can&#39;t help us here since this type is too generic. And we can&#39;t add a constraint for <code>MonadError[F, UserError]</code> because we would get an &quot;ambigous implicits&quot; error with two instances of <code>MonadError</code> in scope.</p>
+    <p>So, what can we do about it?</p>
+    
+    <h3 id="next-level-mtl-optics" class="section"><a class="anchor-link" href="#next-level-mtl-optics"><code class="fas fa-link fa-sm"></code></a>Next level MTL: Optics</h3>
+    <p>I heard sometime ago about Classy Optics (Lenses, Prisms, etc) when I was learning Haskell and watched <a href="https://www.youtube.com/watch?v=GZPup5Iuaqw">this amazing talk</a> by George Wilson but I never got to use this concept in Scala until now!</p>
+    <p>Well first, let me give you a quick definition of <code>Lens</code>es and <code>Prism</code>s. In a few words we can define:</p>
+    <ul>
+      <li><code>Lens</code>es as getters and setters that compose making the accessing of nested data structure&#39;s fields quite easy.</li>
+      <li><code>Prism</code>s as first-class pattern matching that let us access branches of an ADT and that also compose.</li>
+    </ul>
+    <p>And <code>Classy Optics</code> as the idea of &quot;associate with each type a typeclass full of optics for that type&quot;.</p>
+    <p><strong><em>So what am I talking about and how can these concepts help us solving the http error handling problem?</em></strong></p>
+    <p>Remember that I defined the <code>UserError</code> ADT by extending <code>Exception</code>?</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">UserError</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Exception</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">UserAlreadyExists</span><span>(</span><span class="identifier">username</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">UserError</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">UserNotFound</span><span>(</span><span class="identifier">username</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">UserError</span><span>
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InvalidUserAge</span><span>(</span><span class="identifier">age</span><span>: </span><span class="type-name">Int</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">UserError</span></code></pre>
+    <p>Well there&#39;s a reason! By making <code>UserError</code> a subtype of <code>Exception</code> (and by default of <code>Throwable</code>) we can take advantage of <code>Prisms</code> by going back and forth in the types. See what I&#39;m going yet?</p>
+    <p><code>UserRoute</code> has a <code>Sync[F]</code> constraint, meaning that we have available a <code>MonadError[F, Throwable]</code> instance, but we would like to have <code>MonadError[F, UserError]</code> instead to leverage the Scala compiler. The caveat is that the error types need to be of the same family so we can derive a <code>Prism</code> that can navigate the errors types in one direction or another. But how do we derive it?</p>
+    
+    <h4 id="cats-meow-mtl" class="section"><a class="anchor-link" href="#cats-meow-mtl"><code class="fas fa-link fa-sm"></code></a>Cats Meow MTL</h4>
+    <p>Fortunately our friend <a href="https://twitter.com/oleg_pyzhcov">Oleg Pyzhcov</a> has created this great library named <a href="https://github.com/oleg-py/meow-mtl">meow-mtl</a> that makes heavy use of <a href="https://github.com/milessabin/shapeless">Shapeless</a> in order to derive <code>Lenses</code> and <code>Prisms</code> and it provides instances for some <code>cats-effect</code> compatible datatypes.</p>
+    <p>And two of the supported typeclasses are <code>ApplicativeError</code> and <code>MonadError</code> as long as the error type is a subtype of <code>Throwable</code> to make it compatible with <code>cats-effect</code>. So we can do something like this:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">MonadError</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">com</span><span>.</span><span class="identifier">olegpy</span><span>.</span><span class="identifier">meow</span><span>.</span><span class="identifier">hierarchy</span><span>.</span><span class="identifier">_</span><span> </span><span class="comment">// All you need is this import!
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">util</span><span>.</span><span class="type-name">Random</span><span>
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">CustomError</span><span>(</span><span class="identifier">msg</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">Throwable</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">customHandle</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">f</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">fallback</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">CustomError</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="identifier">f</span><span>.</span><span class="identifier">handleErrorWith</span><span>(</span><span class="identifier">_</span><span> =&gt; </span><span class="identifier">fallback</span><span>)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">io</span><span>: </span><span class="type-name">IO</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">IO</span><span>(</span><span class="type-name">Random</span><span>.</span><span class="identifier">nextInt</span><span>(</span><span class="number-literal">2</span><span>)).</span><span class="identifier">flatMap</span><span> { </span><span class="keyword">case</span><span> </span><span class="number-literal">1</span><span> =&gt; </span><span class="type-name">IO</span><span>.</span><span class="identifier">raiseError</span><span>(</span><span class="keyword">new</span><span> </span><span class="type-name">Exception</span><span>(</span><span class="string-literal">&quot;boom&quot;</span><span>)) }
+</span><span class="identifier">customHandle</span><span>(</span><span class="identifier">io</span><span>, </span><span class="type-name">IO</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="number-literal">123</span><span>))</span></code></pre>
+    
+    <h4 id="generalizing-http-error-handling" class="section"><a class="anchor-link" href="#generalizing-http-error-handling"><code class="fas fa-link fa-sm"></code></a>Generalizing Http Error Handling</h4>
+    <p>Now back to our use case. We can&#39;t have a <code>MonadError[F, UserError]</code> constraint because there&#39;s already a <code>MonadError[F, Throwable]</code> in scope given our <code>Sync[F]</code> constraint. But it turns out we can make this work if we also abstract over the error handling by introducing an <code>HttpErrorHandler</code> algebra where the error type is a subtype of <code>Throwable</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">HttpErrorHandler</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span> &lt;: </span><span class="type-name">Throwable</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">handle</span><span>(</span><span class="identifier">routes</span><span>: </span><span class="type-name">HttpRoutes</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">HttpRoutes</span><span>[</span><span class="type-name">F</span><span>]
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">HttpErrorHandler</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span> &lt;: </span><span class="type-name">Throwable</span><span>](</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">HttpErrorHandler</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>]) = </span><span class="identifier">ev</span><span>
+}</span></code></pre>
+    <p><code>UserRoutes</code> can now have an additional constraint of type <code>HttpErrorHandler[F, UserError]</code> so we clearly know what kind of errors we are dealing with and can have the Scala compiler on our side.</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">UserRoutesMTL</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Sync</span><span>](</span><span class="identifier">userAlgebra</span><span>: </span><span class="type-name">UserAlgebra</span><span>[</span><span class="type-name">F</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="type-name">H</span><span>: </span><span class="type-name">HttpErrorHandler</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">UserError</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">Http4sDsl</span><span>[</span><span class="type-name">F</span><span>] {
+
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">httpRoutes</span><span>: </span><span class="type-name">HttpRoutes</span><span>[</span><span class="type-name">F</span><span>] = </span><span class="type-name">HttpRoutes</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">F</span><span>] {
+
+    </span><span class="keyword">case</span><span> </span><span class="type-name">GET</span><span> -&gt; </span><span class="type-name">Root</span><span> / </span><span class="string-literal">&quot;users&quot;</span><span> / </span><span class="identifier">username</span><span> =&gt;
+      </span><span class="identifier">userAlgebra</span><span>.</span><span class="identifier">find</span><span>(</span><span class="identifier">username</span><span>).</span><span class="identifier">flatMap</span><span> {
+        </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">user</span><span>) =&gt; </span><span class="type-name">Ok</span><span>(</span><span class="identifier">user</span><span>.</span><span class="identifier">asJson</span><span>)
+        </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="type-name">NotFound</span><span>(</span><span class="identifier">username</span><span>.</span><span class="identifier">asJson</span><span>)
+      }
+
+    </span><span class="keyword">case</span><span> </span><span class="identifier">req</span><span> @ </span><span class="type-name">POST</span><span> -&gt; </span><span class="type-name">Root</span><span> / </span><span class="string-literal">&quot;users&quot;</span><span> =&gt;
+      </span><span class="identifier">req</span><span>.</span><span class="identifier">as</span><span>[</span><span class="type-name">User</span><span>].</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">user</span><span> =&gt;
+        </span><span class="identifier">userAlgebra</span><span>.</span><span class="identifier">save</span><span>(</span><span class="identifier">user</span><span>) *&gt; </span><span class="type-name">Created</span><span>(</span><span class="identifier">user</span><span>.</span><span class="identifier">username</span><span>.</span><span class="identifier">asJson</span><span>)
+      }
+
+    </span><span class="keyword">case</span><span> </span><span class="identifier">req</span><span> @ </span><span class="type-name">PUT</span><span> -&gt; </span><span class="type-name">Root</span><span> / </span><span class="string-literal">&quot;users&quot;</span><span> / </span><span class="identifier">username</span><span> =&gt;
+      </span><span class="identifier">req</span><span>.</span><span class="identifier">as</span><span>[</span><span class="type-name">UserUpdateAge</span><span>].</span><span class="identifier">flatMap</span><span> { </span><span class="identifier">userUpdate</span><span> =&gt;
+        </span><span class="identifier">userAlgebra</span><span>.</span><span class="identifier">updateAge</span><span>(</span><span class="identifier">username</span><span>, </span><span class="identifier">userUpdate</span><span>.</span><span class="identifier">age</span><span>) *&gt; </span><span class="type-name">Created</span><span>(</span><span class="identifier">username</span><span>.</span><span class="identifier">asJson</span><span>)
+      }
+  }
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">routes</span><span>: </span><span class="type-name">HttpRoutes</span><span>[</span><span class="type-name">F</span><span>] = </span><span class="type-name">H</span><span>.</span><span class="identifier">handle</span><span>(</span><span class="identifier">httpRoutes</span><span>)
+
+}</span></code></pre>
+    <p>We are basically delegating the error handling (AKA mapping business errors to appropiate http responses) to a specific algebra.</p>
+    <p>We also need an implementation for this algebra in order to handle errors of type <code>UserError</code> but first we can introduce a <code>RoutesHttpErrorHandler</code> object that encapsulates the repetitive task of handling errors given an <code>HttpRoutes[F]</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">ApplicativeError</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">data</span><span>.{</span><span class="type-name">Kleisli</span><span>, </span><span class="type-name">OptionT</span><span>}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">RoutesHttpErrorHandler</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span> &lt;: </span><span class="type-name">Throwable</span><span>](</span><span class="identifier">routes</span><span>: </span><span class="type-name">HttpRoutes</span><span>[</span><span class="type-name">F</span><span>])(</span><span class="identifier">handler</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">Response</span><span>[</span><span class="type-name">F</span><span>]])(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ev</span><span>: </span><span class="type-name">ApplicativeError</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>]): </span><span class="type-name">HttpRoutes</span><span>[</span><span class="type-name">F</span><span>] =
+    </span><span class="type-name">Kleisli</span><span> { </span><span class="identifier">req</span><span>: </span><span class="type-name">Request</span><span>[</span><span class="type-name">F</span><span>] =&gt;
+      </span><span class="type-name">OptionT</span><span> {
+        </span><span class="identifier">routes</span><span>.</span><span class="identifier">run</span><span>(</span><span class="identifier">req</span><span>).</span><span class="identifier">value</span><span>.</span><span class="identifier">handleErrorWith</span><span> { </span><span class="identifier">e</span><span> =&gt; </span><span class="identifier">handler</span><span>(</span><span class="identifier">e</span><span>).</span><span class="identifier">map</span><span>(</span><span class="type-name">Option</span><span>(</span><span class="identifier">_</span><span>)) }
+      }
+    }
+}</span></code></pre>
+    <p>And our implementation:</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">UserHttpErrorHandler</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="keyword">implicit</span><span> </span><span class="type-name">M</span><span>: </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">UserError</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">HttpErrorHandler</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">UserError</span><span>] </span><span class="keyword">with</span><span> </span><span class="type-name">Http4sDsl</span><span>[</span><span class="type-name">F</span><span>] {
+  </span><span class="keyword">private</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">handler</span><span>: </span><span class="type-name">UserError</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">Response</span><span>[</span><span class="type-name">F</span><span>]] = {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">InvalidUserAge</span><span>(</span><span class="identifier">age</span><span>) =&gt; </span><span class="type-name">BadRequest</span><span>(</span><span class="string-literal">s&quot;Invalid age </span><span class="substitution">$age</span><span class="string-literal">&quot;</span><span>.</span><span class="identifier">asJson</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="type-name">UserAlreadyExists</span><span>(</span><span class="identifier">username</span><span>) =&gt; </span><span class="type-name">Conflict</span><span>(</span><span class="identifier">username</span><span>.</span><span class="identifier">asJson</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="type-name">UserNotFound</span><span>(</span><span class="identifier">username</span><span>) =&gt; </span><span class="type-name">NotFound</span><span>(</span><span class="identifier">username</span><span>.</span><span class="identifier">asJson</span><span>)
+  }
+
+  </span><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">handle</span><span>(</span><span class="identifier">routes</span><span>: </span><span class="type-name">HttpRoutes</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">HttpRoutes</span><span>[</span><span class="type-name">F</span><span>] =
+    </span><span class="type-name">RoutesHttpErrorHandler</span><span>(</span><span class="identifier">routes</span><span>)(</span><span class="identifier">handler</span><span>)
+  }</span></code></pre>
+    <p>If we forget to handle some errors the compiler will shout at us <strong><em>&quot;match may not be exhaustive!&quot;</em></strong> That&#39;s fantastic :)</p>
+    
+    <h4 id="wiring-all-the-components" class="section"><a class="anchor-link" href="#wiring-all-the-components"><code class="fas fa-link fa-sm"></code></a>Wiring all the components</h4>
+    <p>And the last part will be the wiring of all these components where we need to include the <code>meow-mtl</code> import to figure out the derivation of the instances we need in order to make this work. It&#39;ll look something like this if using <code>cats.effect.IO</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">com</span><span>.</span><span class="identifier">olegpy</span><span>.</span><span class="identifier">meow</span><span>.</span><span class="identifier">hierarchy</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">userHttpErrorHandler</span><span>: </span><span class="type-name">HttpErrorHandler</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">UserError</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">UserHttpErrorHandler</span><span>[</span><span class="type-name">IO</span><span>]
+
+</span><span class="type-name">UserInterpreter</span><span>.</span><span class="identifier">create</span><span>[</span><span class="type-name">IO</span><span>].</span><span class="identifier">flatMap</span><span> { </span><span class="type-name">UserAlgebra</span><span> =&gt;
+  </span><span class="keyword">val</span><span> </span><span class="identifier">routes</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">UserRoutesMTL</span><span>[</span><span class="type-name">IO</span><span>](</span><span class="type-name">UserAlgebra</span><span>)
+  </span><span class="type-name">IO</span><span>.</span><span class="identifier">unit</span><span> </span><span class="comment">// pretend this is the rest of your program
+</span><span>}</span></code></pre>
+    
+    <h3 id="final-thoughts" class="section"><a class="anchor-link" href="#final-thoughts"><code class="fas fa-link fa-sm"></code></a>Final thoughts</h3>
+    <p>This is such an exciting time to be writing pure functional programming in Scala! The Typelevel ecosystem is getting richer and more mature, having an amazing set of libraries to solve business problems in an elegant and purely functional way.</p>
+    <p>I hope you have enjoyed this post and please do let me know if you know of better ways to solve this problem in the comments!</p>
+    <p>And last but not least I would like to thank all the friendly folks I hang out with in the <code>cats-effect</code>, <code>cats</code>, <code>fs2</code> and <code>http4s</code> Gitter channels for all the time and effort they put (<em>for free</em>) into making this community an amazing space.</p>
+    <p><strong>UPDATE:</strong> See the new article <a href="http4s-error-handling-mtl-2.html">Error handling in Http4s with classy optics – Part 2</a>.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/gvolpe.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Gabriel Volpe</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/gvolpe">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

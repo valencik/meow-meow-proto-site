@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Towards Scalaz (Part 2)</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Towards Scalaz (Part 2)</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Adelbert Chang<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on December 15, 2013
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="towards-scalaz-part-2" class="title">Towards Scalaz (Part 2)</h1>
+    <p>A lot of people see Scalaz as a hard fringe, ivory tower,
+    not suited for real-world applications library, which is
+    unfortunate. The goal of this blog post series is to introduce
+    various components of Scalaz, and hopefully through this
+    allow folks to gain an understanding towards the power of
+    Scalaz.</p>
+    <p>As a prerequisite, I assume knowledge of type classes as they
+    are implemented and used in Scala, higher kinded types,
+    and sum types (e.g. <code>Option/Some/None</code>, <code>Either/Left/Right</code>).</p>
+    <p>For a tutorial/review on (higher) kinds, I recommend the following resources:</p>
+    <ul>
+      <li><a href="http://blogs.atlassian.com/2013/09/scala-types-of-a-higher-kind/">Scala: Types of a higher kind</a></li>
+      <li><a href="http://adriaanm.github.io/files/higher.pdf">Generics of a Higher Kind</a></li>
+      <li><a href="http://stackoverflow.com/questions/6246719/what-is-a-higher-kinded-type-in-scala">SO: What is a higher kinded type in Scala?</a></li>
+    </ul>
+    
+    <h2 id="part-2-summations-of-a-higher-kind" class="section"><a class="anchor-link" href="#part-2-summations-of-a-higher-kind"><code class="fas fa-link fa-sm"></code></a>Part 2: Summations of a Higher Kind</h2>
+    <p><a href="towards-scalaz-1.html">Last time</a> we left off after
+    writing our own generic <code>sum</code> function:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.</span><span class="type-name">Monoid</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">sumGeneric</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">l</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="type-name">A</span><span>: </span><span class="type-name">Monoid</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">l</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="type-name">A</span><span>.</span><span class="identifier">zero</span><span>)((</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>) =&gt; </span><span class="type-name">A</span><span>.</span><span class="identifier">append</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>))</span></code></pre>
+    <p>This allowed us to sum a list not only of numeric types like
+    <code>Int</code>, but also others that could be added and had a &quot;zero&quot; such as
+    <code>String</code> via string concatenation and the empty string, as well as
+    <code>List[A]</code> via list concatenation and the empty list.</p>
+    <p>But, we can do better! Why limit ourselves to <code>List</code>? What if we want
+    to sum over a <code>Vector</code>, or even a tree? We <em>could</em> use <code>Seq</code> and that
+    would allow us to pass in <code>List</code> or <code>Vector</code>, but it still brings up
+    the problem of trees, and any other data structure that may not fit
+    the <code>Seq</code> bill.</p>
+    
+    <h3 id="what-do-we-want-folds" class="section"><a class="anchor-link" href="#what-do-we-want-folds"><code class="fas fa-link fa-sm"></code></a>What do we want? Folds!</h3>
+    <p>Recall when we &quot;came up with&quot; <code>Semigroup</code> and <code>Monoid</code> last time -
+    what did we do? We simply looked at what operations we needed
+    (<code>add/append</code> and <code>zero</code>) and factored it out into a type class.
+    Let&#39;s try doing the same this time.</p>
+    <p>So what are we doing with <code>List</code> in our implementation? Nothing much
+    really, we&#39;re just folding over it. If we think about it, we could
+    &quot;fold&quot; over say, a tree as well. Let&#39;s take this operation out into
+    a type class, and aptly name it <code>Foldable</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Foldable</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="comment">// Instead of requiring the contents to be monoidal, let&#39;s
+</span><span>  </span><span class="comment">// make it flexible by allowing a fold as long as we can convert
+</span><span>  </span><span class="comment">// the contents to a type that has a `Monoid`.
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">foldMap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="type-name">B</span><span>: </span><span class="type-name">Monoid</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">B</span><span>
+}</span></code></pre>
+    <p>And let&#39;s implement instances of this type class for <code>List</code> and our own
+    <code>Tree</code>.</p>
+    <p>Our tree definition:</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Tree</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Node</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">value</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">left</span><span>: </span><span class="type-name">Tree</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">right</span><span>: </span><span class="type-name">Tree</span><span>[</span><span class="type-name">A</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">Tree</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Leaf</span><span>[</span><span class="type-name">A</span><span>]() </span><span class="keyword">extends</span><span> </span><span class="type-name">Tree</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+    <p>and our instances:</p>
+    <pre><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">Foldable</span><span> {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">listIsFoldable</span><span>: </span><span class="type-name">Foldable</span><span>[</span><span class="type-name">List</span><span>] =
+    </span><span class="keyword">new</span><span> </span><span class="type-name">Foldable</span><span>[</span><span class="type-name">List</span><span>] {
+      </span><span class="keyword">def</span><span> </span><span class="declaration-name">foldMap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="type-name">B</span><span>: </span><span class="type-name">Monoid</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">B</span><span> =
+        </span><span class="identifier">fa</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="type-name">B</span><span>.</span><span class="identifier">zero</span><span>)((</span><span class="identifier">acc</span><span>, </span><span class="identifier">elem</span><span>) =&gt; </span><span class="type-name">B</span><span>.</span><span class="identifier">append</span><span>(</span><span class="identifier">acc</span><span>, </span><span class="identifier">f</span><span>(</span><span class="identifier">elem</span><span>)))
+    }
+
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">treeIsFoldable</span><span>: </span><span class="type-name">Foldable</span><span>[</span><span class="type-name">Tree</span><span>] =
+    </span><span class="keyword">new</span><span> </span><span class="type-name">Foldable</span><span>[</span><span class="type-name">Tree</span><span>] {
+      </span><span class="keyword">def</span><span> </span><span class="declaration-name">foldMap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Tree</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span>)(</span><span class="keyword">implicit</span><span> </span><span class="type-name">B</span><span>: </span><span class="type-name">Monoid</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">B</span><span> =
+        </span><span class="identifier">fa</span><span> </span><span class="keyword">match</span><span> {
+          </span><span class="keyword">case</span><span> </span><span class="type-name">Leaf</span><span>() =&gt;
+            </span><span class="type-name">B</span><span>.</span><span class="identifier">zero</span><span>
+          </span><span class="keyword">case</span><span> </span><span class="type-name">Node</span><span>(</span><span class="identifier">value</span><span>, </span><span class="identifier">left</span><span>, </span><span class="identifier">right</span><span>) =&gt;
+            </span><span class="type-name">B</span><span>.</span><span class="identifier">append</span><span>(</span><span class="identifier">f</span><span>(</span><span class="identifier">value</span><span>), </span><span class="type-name">B</span><span>.</span><span class="identifier">append</span><span>(</span><span class="identifier">foldMap</span><span>(</span><span class="identifier">left</span><span>)(</span><span class="identifier">f</span><span>), </span><span class="identifier">foldMap</span><span>(</span><span class="identifier">right</span><span>)(</span><span class="identifier">f</span><span>)))
+        }
+    }
+}</span></code></pre>
+    <p>and finally, our new summing function:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">sumGeneric</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">Foldable</span><span>[</span><span class="type-name">F</span><span>], </span><span class="type-name">A</span><span>: </span><span class="type-name">Monoid</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">fa</span><span>.</span><span class="identifier">foldMap</span><span>(</span><span class="identifier">identity</span><span>)</span></code></pre>
+    
+    <h3 id="scalaz-to-the-rescue" class="section"><a class="anchor-link" href="#scalaz-to-the-rescue"><code class="fas fa-link fa-sm"></code></a>Scalaz to the rescue</h3>
+    <p>As with last time, Scalaz defines the <code>Foldable</code> type class for us. However,
+    to really be &quot;foldable&quot;, not only should you define <code>foldMap</code>, but <code>foldRight</code>
+    as well. Some of you may be wondering why <code>foldRight</code> and not <code>foldLeft</code>, or both?
+    The reasons for this decision are that</p>
+    <ul>
+      <li><code>foldLeft</code> can be defined in terms of <code>foldRight</code> (a fun exercise is to try this for yourself)</li>
+      <li><code>foldLeft</code> fails on infinite lists (think <code>Stream</code> in Scala)</li>
+    </ul>
+    <p>That being said, Scalaz defines instances of <code>Foldable</code> for many of the standard
+    Scala types (<code>List</code>, <code>Vector</code>, <code>Stream</code>, <code>Option</code>), as well as its own (<code>Tree</code>, <code>EphemeralStream</code>).
+    The methods available on the type class not only include <code>foldMap</code> and <code>foldRight</code> which
+    are required to be implemented, but several derived ones as well including <code>fold</code> (<code>foldMap</code> with
+    <code>identity</code>), <code>foldLeft</code>, <code>toList/IndexedSeq/Stream</code>, among others.</p>
+    <p>So our code with <code>scalaz.Foldable</code> now looks like:</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scalaz</span><span>.{ </span><span class="type-name">Foldable</span><span>, </span><span class="type-name">Monoid</span><span> }
+
+</span><span class="comment">// Note that this is equivalent to scalaz.Foldable#fold
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">sumGeneric</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="keyword">implicit</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">Foldable</span><span>[</span><span class="type-name">F</span><span>], </span><span class="type-name">A</span><span>: </span><span class="type-name">Monoid</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> =
+  </span><span class="identifier">fa</span><span>.</span><span class="identifier">fold</span></code></pre>
+    <p>Note that the implementation of the function is rather plain, but that&#39;s a good thing!
+    This shows the level of genericity type classes, folds,  and Scalaz is capable of. If you ever
+    find yourself needing to fold something down, look at the methods available on
+    <code>scalaz.Foldable</code>. By simply adding an instance of <code>Foldable</code> to your <code>F[_]</code> by implementing
+    the two methods above, you get &quot;for free&quot; a bunch of
+    <a href="http://docs.typelevel.org/api/scalaz/stable/7.0.4/doc/#scalaz.Foldable">derived ones</a>!</p>
+    
+    <h3 id="an-aside-taming-the-elephant" class="section"><a class="anchor-link" href="#an-aside-taming-the-elephant"><code class="fas fa-link fa-sm"></code></a>An Aside: Taming the Elephant</h3>
+    <p>In recent days, the word &quot;Hadoop&quot; has become synonymous with &quot;big data.&quot; The MapReduce
+    system made popular by <a href="http://research.google.com/archive/mapreduce.html">Google</a>
+    has made it&#39;s way into several companies looking to glean information from their data.</p>
+    <p>Why am I mentioning this in a typelevel.scala blog post? Well, think about the reduce phase –
+    what is really happening? For a particular key, we&#39;re given a list of values emitted
+    for that key, and we want to reduce those values into a single value. Sound familiar?
+    Sounds a bit like <code>fold</code>, doesn&#39;t it? Note that not all reductions in MapReduce have to follow
+    monoid laws, but a surprising amount do as demonstrated by Twitter&#39;s
+    <a href="https://github.com/twitter/algebird">Algebird</a> project.</p>
+    <p>Going back to <code>fold</code>, recall that in order to just <code>fold</code> we need to have something
+    <code>Foldable</code> that contains something that already has a <code>Monoid</code> instance. A more general
+    approach, as taken by <code>scalaz.Foldable</code>, is to also provide a <code>foldMap</code> function which
+    lets us also pass in a function <em>map</em>ping each element of the <code>Foldable</code> to something
+    that is a <code>Monoid</code>, and reduce over that instead.</p>
+    <p>So. Given something, say a <code>List[A]</code>, we want to <em>Map</em> each element of the list to
+    an element of a type that has a <code>Monoid</code> instance, and then we want to <em>Reduce</em> the
+    list down to a single value. What is this? All together now: MapReduce!</p>
+    <p>Unfortunately, Hadoop MapReduce by itself does not give you anything like a <code>List</code>.
+    Fortunately, our good friends at <a href="http://www.nicta.com.au/">NICTA</a> have developed
+    and open sourced the wonderful <a href="https://github.com/nicta/scoobi">Scoobi</a> project,
+    which abstracts over Hadoop MapReduce by providing a <code>List</code>-like interface, called a
+    <code>DList</code> (distributed list). Users treat the <code>DList</code> very similarly to how they would
+    a regular Scala <code>List</code>, and perform operations on it that get compiled down into
+    MapReduce jobs. Such operations include not only the familiar (and expected) <code>map</code>
+    and <code>reduce</code> combinators, but also our friends <code>foldMap</code> and <code>fold</code>. While <code>DList</code>&#39;s
+    do not have a proper <code>Foldable</code> instance due to the difficulty of implementing <code>foldRight</code>
+    for the MapReduce, I find it to be a great example of the power of abstractions and
+    genericity abstract algebra and Scalaz provides to us as programmers.</p>
+    
+    <h2 id="further-reading" class="section"><a class="anchor-link" href="#further-reading"><code class="fas fa-link fa-sm"></code></a>Further Reading</h2>
+    <ul>
+      <li><a href="http://tmorris.net/posts/list-folds-bfpg/index.html">List Folds at BFPG</a></li>
+      <li><a href="http://www.cs.nott.ac.uk/~gmh/fold.pdf">A tutorial on the universality and expressiveness of folds</a></li>
+    </ul>
+    
+    <h2 id="getting-help" class="section"><a class="anchor-link" href="#getting-help"><code class="fas fa-link fa-sm"></code></a>Getting Help</h2>
+    <p>If you have any questions/comments/concerns, feel free to hop onto the IRC channel on
+    Freenode at <code>#scalaz</code>.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/adelbertc.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Adelbert Chang</strong>
+              
+              <br />
+              Adelbert is an engineer at Box where he attempts to reliably copy bytes from one machine to another. He enjoys writing pure functional programs, teaching functional programming, and learning more about computing.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/adelbertc">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

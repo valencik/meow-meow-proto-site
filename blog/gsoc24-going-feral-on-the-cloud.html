@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Google Summer of Code 2024 - Going Feral on The Cloud</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Google Summer of Code 2024 - Going Feral on The Cloud</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Ching Hian Chew<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on December 22, 2024
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="google-summer-of-code-2024-going-feral-on-the-cloud" class="title">Google Summer of Code 2024 - Going Feral on The Cloud</h1>
+    <p>This project was proposed by the Typelevel community in collaboration with the Scala Center, and carried out under Google Summer of Code (GSoC) 2024. Feral is a library in the Typelevel ecosystem that provides a framework for Scala developers to write and deploy serverless functions. As Feral was only supporting AWS Lambda, the goal of the project was to extend Feral to support other serverless providers, specifically Vercel and Google Cloud.</p>
+    <p>The vision for Feral is to enable Scala developers to easily switch between one cloud provider to another that better suits their needs, without the need for major refactoring of their codebases. Such convenience would give developers greater freedom as they do not need to be tied down to one platform. Furthermore, as Feral is part of the Typelevel ecosystem, developers who are currently using the Http4s Typelevel library for non-serverless web services may also effortlessly make the switch to serverless.</p>
+    <p>With these goals in mind, it is imperative to provide robust support for the common serverless providers, which is what the project aimed to work towards.</p>
+    
+    <h2 id="what-i-did" class="section"><a class="anchor-link" href="#what-i-did"><code class="fas fa-link fa-sm"></code></a>What I Did</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Pull Request (PR)</th>
+          <th>Status</th>
+          <th>Comments</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><a href="https://github.com/typelevel/feral/pull/476">Add <code>ApiGatewayV2WebSocketEvent</code></a></td>
+          <td>Merged</td>
+          <td>The addition of this AWS Lambda event provided an introduction to serverless functions for me, while enhancing the support that Feral has for AWS Lambda.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/typelevel/feral/pull/492">Created support for Vercel using Node.js runtime</a></td>
+          <td>Not Merged</td>
+          <td>Vercel&#39;s implementation of routes conflicts with the way Http4s handles routes. Due to this incompatibility between Feral and Vercel, this PR was not merged. Through working on this, there is a better understanding of how Vercel and Http4s work, which could pave the way for future work.</td>
+        </tr>
+        <tr>
+          <td><a href="https://github.com/typelevel/feral/pull/498">Created support for Google Cloud HTTP functions</a></td>
+          <td>Merged</td>
+          <td>This PR enabled support for both JVM and Node.js runtimes. There is a minor error logged in the JVM runtime implementation that we minimized to a bug unrelated to Feral or any of the Typelevel libraries. The error does not seem to impact the functionality of the resulting web application, but it would be good to further investigate the cause of it.</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h2 id="challenges-and-lessons-learnt" class="section"><a class="anchor-link" href="#challenges-and-lessons-learnt"><code class="fas fa-link fa-sm"></code></a>Challenges and Lessons Learnt</h2>
+    <p>It was challenging to support various serverless platforms, particularly Vercel and Google Cloud, which I created the initial implementation for. While I learnt along the way that the general procedure for supporting each platform was generally the same, where one would have to do things such as converting between types and using a dispatcher, there were still differences in certain details. For example, while referencing the pre-existing Feral implementation to support AWS Lambda event functions in order to support Google Cloud HTTP functions for the JVM runtime, I learnt that HTTP functions are a subset of AWS Lambda event functions, while they were separate in Google Cloud. </p>
+    <p>My lack of familiarity with Scala and functional programming also posed a hindrance. While I had previously done some functional programming with Scala prior to GSoC, it was still something rather new to me. As such, it took me a longer time to write code and debug than the time I would probably have taken if I was more familiar. However, this GSoC project gave me the opportunity to improve myself in these areas. I became more familiar with previously-learnt concepts such as monads, and learnt new things such as for-yield statements and how they can be desugared. </p>
+    <p>Through GSoC, I have learnt many new things while reinforcing what I already know. I am grateful that the Typelevel organization held a session that taught the concept of programs-as-values as it was something that I never knew existed. I also learnt to appreciate what I have learnt in school better, by experiencing first-hand how I can apply such knowledge in real-world situations. For example, this project utilized the concept of resource allocation which was something I had previously learnt about.</p>
+    
+    <h2 id="future-work" class="section"><a class="anchor-link" href="#future-work"><code class="fas fa-link fa-sm"></code></a>Future Work</h2>
+    <p>I plan to continue contributing to enhancing Feral after GSoC 2024 ends. Some ways I could do this is to create support for Google Cloud Event functions and create SBT plug-ins to test Google Cloud functions locally as well as deploy the functions. If possible, investigation could also be done on how, if possible, Vercel can be integrated into Feral without impeding developers from using Http4s with it. </p>
+    
+    <h2 id="acknowledgements" class="section"><a class="anchor-link" href="#acknowledgements"><code class="fas fa-link fa-sm"></code></a>Acknowledgements</h2>
+    <p>I would first like to thank my mentors, <a href="https://github.com/armanbilge">Arman</a> and <a href="https://github.com/toniogela">Antonio</a> for their constant guidance during GSoC. In particular, I would like to thank Arman for taking the time to set up weekly pair programming sessions, which has enhanced my learning experience greatly. I would also like to thank the Scala Center and the Typelevel community for proposing and supporting this project. Lastly, I would like to thank Google for hosting GSoC 2024 and providing me with the opportunity to learn about open source projects.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/Chingles2404.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Ching Hian Chew</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/Chingles2404">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

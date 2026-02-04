@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Making internal state functional</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Making internal state functional</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on May 10, 2016
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="making-internal-state-functional" class="title">Making internal state functional</h1>
+    <p><em>This is the ninth of a series of articles on “Type Parameters and
+    Type Members”.</em></p>
+    <p>Scala’s
+    <a href="http://www.scala-lang.org/api/2.11.8/scala/collection/generic/CanBuildFrom.html"><code>CanBuildFrom</code> API</a>
+    is relatively well-founded and flexible;
+    <a href="https://bitbucket.org/S11001001/record-map#markdown-header-using-gadts-to-find-fast-paths-safely">in combination with GADTs, it can provide that flexibility in a fully type-safe way</a>,
+    if users choose not to circumvent it with typecasting.</p>
+    <p>However, it is designed in a purely mutable way; you cannot write a
+    useful <code>CanBuildFrom</code> that does not rely on mutation, and you cannot
+    use the API externally in a functional way.</p>
+    <p>Let’s design an alternative to <code>CanBuildFrom</code> that makes sense in a
+    purely functional context, allowing both implementers and users to
+    avoid unsightly mutation.</p>
+    <p>Spoiler warning! Our first pass will have one glaring inelegance. We
+    will use concepts from previous articles in <em>Type Parameters and Type
+    Members</em> to “invert the abstraction”, which will greatly simplify the
+    design. Once you’re comfortable with the “inversion”, you can skip the
+    intermediate step and use this technique directly in your own designs.</p>
+    
+    <h2 id="disallowing-functional-approaches" class="section"><a class="anchor-link" href="#disallowing-functional-approaches"><code class="fas fa-link fa-sm"></code></a>Disallowing functional approaches</h2>
+    <p>The pattern of use of <code>CanBuildFrom</code> is</p>
+    <ol class="arabic">
+      <li><code>apply</code> the CBF to produce a
+      <a href="http://www.scala-lang.org/api/2.11.8/scala/collection/mutable/Builder.html"><code>Builder</code></a>.</li>
+      <li>Call <code>+=</code> and <code>++=</code> methods to “fill up” the <code>Builder</code>.</li>
+      <li>Call <code>result</code> to “finalize” or “commit” to the final structure.</li>
+    </ol>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">collection</span><span>.</span><span class="identifier">generic</span><span>.</span><span class="type-name">CanBuildFrom</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">cbf</span><span> = </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">CanBuildFrom</span><span>[</span><span class="type-name">Nothing</span><span>, </span><span class="type-name">Int</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>]]]
+</span><span class="keyword">val</span><span> </span><span class="identifier">b</span><span> = </span><span class="identifier">cbf</span><span>()
+</span><span class="identifier">b</span><span> += </span><span class="number-literal">3</span><span>
+</span><span class="identifier">b</span><span> ++= </span><span class="type-name">Seq</span><span>(</span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>)
+</span><span class="identifier">b</span><span>.</span><span class="identifier">result</span><span>()
+
+</span><span class="identifier">res0</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">List</span><span>(</span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>)</span></code></pre>
+    <p>Let’s set aside that this is only suited to eager collections, not
+    lazy ones like
+    <a href="http://www.scala-lang.org/api/2.11.8/scala/collection/immutable/Stream.html"><code>Stream</code></a>. You
+    can tell the problem by types: <code>+=</code> and <code>++=</code> have the return type
+    <code>this.type</code>. Effectively, this means that if their implementations are
+    purely functional, all they can do is return <code>this</code>:</p>
+    <pre><code class="nohighlight"><span>  </span><span class="keyword">def</span><span> +=(</span><span class="identifier">elem</span><span>: </span><span class="type-name">Elem</span><span>) = </span><span class="keyword">this</span><span>
+  </span><span class="keyword">def</span><span> ++=(</span><span class="identifier">elems</span><span>: </span><span class="type-name">TraversableOnce</span><span>[</span><span class="type-name">Elem</span><span>]) = </span><span class="keyword">this</span></code></pre>
+    <p>Aside from the informal contract of <code>Builder</code>, which suggests that
+    calls to these methods perform a side effect, the types enforce that
+    they <em>must</em> perform any useful work by means of side effects.</p>
+    <p>Returning <code>this.type</code> permits these methods to be called in a
+    superficially functional style:</p>
+    <pre><code class="nohighlight"><span class="identifier">b</span><span>.+=(</span><span class="number-literal">3</span><span>)
+ .++=(</span><span class="type-name">Seq</span><span>(</span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>))
+ .</span><span class="identifier">result</span><span>()
+
+</span><span class="identifier">res1</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">List</span><span>(</span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>)</span></code></pre>
+    <p>This retouch is only skin-deep, and can’t repair the defect making
+    <code>CanBuildFrom</code> unsuitable for functional programs, but it implies that
+    a functional alternative lurks nearby. Let’s go looking for it.</p>
+    
+    <h2 id="step-1-explicit-builder-state" class="section"><a class="anchor-link" href="#step-1-explicit-builder-state"><code class="fas fa-link fa-sm"></code></a>Step 1: explicit <code>Builder</code> state</h2>
+    <p>First, we need to take the essential mutation out of <code>Builder</code>. That
+    means it needs to provide an initial state, and the other methods must
+    use it as a parameter and return value.</p>
+    <ol class="arabic">
+      <li>We’ll add a new method to return the initial state.</li>
+      <li><code>+=</code> and <code>++=</code> will take that state as an argument, returning the
+      new state instead of <code>this.type</code>.</li>
+      <li><code>result</code> will take the final state as an argument, still producing
+      the result collection.</li>
+    </ol>
+    <p>While the intermediate state <em>might</em> be the same as the final state,
+    we don’t want to require that. So <code>Builder</code> also gains a type
+    parameter to represent the type of state, <code>S</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">FunBuilder</span><span>[</span><span class="type-name">S</span><span>, -</span><span class="type-name">Elem</span><span>, +</span><span class="type-name">To</span><span>] {
+  </span><span class="comment">/** Produce the initial state. */</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">init</span><span>: </span><span class="type-name">S</span><span>
+
+  </span><span class="comment">// note everywhere &#39;S&#39; was added
+</span><span>  </span><span class="keyword">def</span><span> +=(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>, </span><span class="identifier">elem</span><span>: </span><span class="type-name">Elem</span><span>): </span><span class="type-name">S</span><span>
+  </span><span class="keyword">def</span><span> ++=(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>, </span><span class="identifier">elems</span><span>: </span><span class="type-name">TraversableOnce</span><span>[</span><span class="type-name">Elem</span><span>]): </span><span class="type-name">S</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">result</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>): </span><span class="type-name">To</span><span>
+}</span></code></pre>
+    
+    <h2 id="a-sample-funbuilder" class="section"><a class="anchor-link" href="#a-sample-funbuilder"><code class="fas fa-link fa-sm"></code></a>A sample <code>FunBuilder</code></h2>
+    <p>We can incrementally build a
+    <a href="http://www.scala-lang.org/api/2.11.8/scala/collection/immutable/Vector.html"><code>Vector</code></a>,
+    but it may not be the most efficient way. Instead, let’s try to
+    accumulate a
+    <a href="http://www.scala-lang.org/api/2.11.8/scala/collection/immutable/List.html"><code>List</code></a>,
+    then construct the <code>Vector</code> once we’re done.</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">VectorBuilderList</span><span>[</span><span class="type-name">A</span><span>]
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">FunBuilder</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>], </span><span class="type-name">A</span><span>, </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]] {
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">init</span><span> = </span><span class="type-name">List</span><span>()
+  
+  </span><span class="keyword">def</span><span> +=(</span><span class="identifier">s</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">elem</span><span>: </span><span class="type-name">A</span><span>) = </span><span class="identifier">elem</span><span> :: </span><span class="identifier">s</span><span>
+  
+  </span><span class="keyword">def</span><span> ++=(</span><span class="identifier">s</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">elems</span><span>: </span><span class="type-name">TraversableOnce</span><span>[</span><span class="type-name">A</span><span>]) =
+    </span><span class="identifier">elems</span><span>.</span><span class="identifier">toList</span><span> </span><span class="identifier">reverse_</span><span>::: </span><span class="identifier">s</span><span>
+  
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">result</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]) =
+    </span><span class="identifier">s</span><span>.</span><span class="identifier">toVector</span><span>.</span><span class="identifier">reverse</span><span>
+}
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">vbl</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">VectorBuilderList</span><span>[</span><span class="type-name">Int</span><span>]
+</span><span class="identifier">vbl</span><span>.</span><span class="identifier">result</span><span>(</span><span class="identifier">vbl</span><span>.++=(</span><span class="identifier">vbl</span><span>.+=(</span><span class="identifier">vbl</span><span>.</span><span class="identifier">init</span><span>, </span><span class="number-literal">2</span><span>), </span><span class="type-name">Seq</span><span>(</span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>)))
+
+</span><span class="identifier">res0</span><span>: </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Vector</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>)</span></code></pre>
+    <p>(There’s a problem with <code>CanBuildFrom</code> now, but we’ll hold off fixing
+    it.)</p>
+    
+    <h2 id="a-slightly-different-builder" class="section"><a class="anchor-link" href="#a-slightly-different-builder"><code class="fas fa-link fa-sm"></code></a>A slightly different Builder</h2>
+    <p>Maybe it would be better to optimize for the <code>++=</code> “bulk add” method,
+    though.</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">VectorBuilderListList</span><span>[</span><span class="type-name">A</span><span>]
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">FunBuilder</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">Traversable</span><span>[</span><span class="type-name">A</span><span>]], </span><span class="type-name">A</span><span>, </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">init</span><span> = </span><span class="type-name">List</span><span>()
+  
+  </span><span class="keyword">def</span><span> +=(</span><span class="identifier">s</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Traversable</span><span>[</span><span class="type-name">A</span><span>]], </span><span class="identifier">elem</span><span>: </span><span class="type-name">A</span><span>) =
+    </span><span class="type-name">Traversable</span><span>(</span><span class="identifier">elem</span><span>) :: </span><span class="identifier">s</span><span>
+    
+  </span><span class="keyword">def</span><span> ++=(</span><span class="identifier">s</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Traversable</span><span>[</span><span class="type-name">A</span><span>]], </span><span class="identifier">elems</span><span>: </span><span class="type-name">TraversableOnce</span><span>[</span><span class="type-name">A</span><span>]) =
+    </span><span class="identifier">elems</span><span>.</span><span class="identifier">toTraversable</span><span> :: </span><span class="identifier">s</span><span>
+    
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">result</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">List</span><span>[</span><span class="type-name">Traversable</span><span>[</span><span class="type-name">A</span><span>]]) =
+    </span><span class="identifier">s</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]()){(</span><span class="identifier">z</span><span>, </span><span class="identifier">as</span><span>) =&gt; </span><span class="identifier">as</span><span> ++: </span><span class="identifier">z</span><span>}
+}
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">vbll</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">VectorBuilderListList</span><span>[</span><span class="type-name">Int</span><span>]
+</span><span class="identifier">vbll</span><span>.</span><span class="identifier">result</span><span>(</span><span class="identifier">vbll</span><span>.++=(</span><span class="identifier">vbll</span><span>.+=(</span><span class="identifier">vbll</span><span>.</span><span class="identifier">init</span><span>, </span><span class="number-literal">2</span><span>), </span><span class="type-name">Seq</span><span>(</span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>)))
+
+</span><span class="identifier">res0</span><span>: </span><span class="identifier">scala</span><span>.</span><span class="identifier">collection</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Vector</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>)</span></code></pre>
+    
+    <h2 id="hide-your-state" class="section"><a class="anchor-link" href="#hide-your-state"><code class="fas fa-link fa-sm"></code></a>Hide your state</h2>
+    <p>The type of these builders are different, even though their usage is
+    the same. This design also exposes what was originally <em>internal</em>
+    state as part of the API. Luckily, <code>CanBuildFrom</code> makes a point of
+    this when we try to integrate <code>FunBuilder</code> into our own CBF version;
+    there’s nowhere to put the <code>S</code> type parameter.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">FunCanBuildFrom</span><span>[-</span><span class="type-name">From</span><span>, -</span><span class="type-name">Elem</span><span>, +</span><span class="type-name">To</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(): </span><span class="type-name">FunBuilder</span><span>[</span><span class="type-name">S</span><span>, </span><span class="type-name">Elem</span><span>, </span><span class="type-name">To</span><span>]
+}
+
+…/</span><span class="type-name">FCBF</span><span>.</span><span class="identifier">scala</span><span>:</span><span class="number-literal">42</span><span>: </span><span class="identifier">not</span><span> </span><span class="identifier">found</span><span>: </span><span class="keyword">type</span><span> </span><span class="type-name">S</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(): </span><span class="type-name">FunBuilder</span><span>[</span><span class="type-name">S</span><span>, </span><span class="type-name">Elem</span><span>, </span><span class="type-name">To</span><span>]
+                          ^</span></code></pre>
+    <p>We can hide the state by forcing the caller to deal with the builder
+    in a state-generic context. One way to do this is with a generic
+    continuation.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">BuilderCont</span><span>[+</span><span class="type-name">Elem</span><span>, -</span><span class="type-name">To</span><span>, +</span><span class="type-name">Z</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">continue</span><span>[</span><span class="type-name">S</span><span>](</span><span class="identifier">builder</span><span>: </span><span class="type-name">FunBuilder</span><span>[</span><span class="type-name">S</span><span>, </span><span class="type-name">Elem</span><span>, </span><span class="type-name">To</span><span>]): </span><span class="type-name">Z</span><span>
+}
+
+</span><span class="comment">// in FunCanBuildFrom...
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">Z</span><span>](</span><span class="identifier">cont</span><span>: </span><span class="type-name">BuilderCont</span><span>[</span><span class="type-name">Elem</span><span>, </span><span class="type-name">To</span><span>, </span><span class="type-name">Z</span><span>]): </span><span class="type-name">Z</span></code></pre>
+    <p>Now we can implement a <code>FunCanBuildFrom</code> that can use either of the
+    <code>FunBuilder</code>s we’ve defined.</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">VectorCBF</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">bulkOptimized</span><span>: </span><span class="type-name">Boolean</span><span>)
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">FunCanBuildFrom</span><span>[</span><span class="type-name">Any</span><span>, </span><span class="type-name">A</span><span>, </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">Z</span><span>](</span><span class="identifier">cont</span><span>: </span><span class="type-name">BuilderCont</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>], </span><span class="type-name">Z</span><span>]) =
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">bulkOptimized</span><span>)
+      </span><span class="identifier">cont</span><span> </span><span class="identifier">continue</span><span> (</span><span class="keyword">new</span><span> </span><span class="type-name">VectorBuilderListList</span><span>)
+    </span><span class="keyword">else</span><span>
+      </span><span class="identifier">cont</span><span> </span><span class="identifier">continue</span><span> (</span><span class="keyword">new</span><span> </span><span class="type-name">VectorBuilderList</span><span>)
+}</span></code></pre>
+    <p>Take a look at the type flow. The caller of <code>apply</code> is the one who
+    decides the <code>Z</code> type. But the <code>apply</code> implementation chooses the <code>S</code>
+    to pass to <code>continue</code>, which cannot know any more about what that
+    state type is. (It can even choose different types based on runtime
+    decisions.) Information hiding is restored.</p>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">cbf</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">VectorCBF</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="boolean-literal">true</span><span>)
+</span><span class="identifier">cbf</span><span>{</span><span class="keyword">new</span><span> </span><span class="type-name">BuilderCont</span><span>[</span><span class="type-name">Int</span><span>, </span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">continue</span><span>[</span><span class="type-name">S</span><span>](</span><span class="identifier">vbl</span><span>: </span><span class="type-name">FunBuilder</span><span>[</span><span class="type-name">S</span><span>, </span><span class="type-name">Int</span><span>, </span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>]]) =
+    </span><span class="identifier">vbl</span><span>.</span><span class="identifier">result</span><span>(</span><span class="identifier">vbl</span><span>.++=(</span><span class="identifier">vbl</span><span>.+=(</span><span class="identifier">vbl</span><span>.</span><span class="identifier">init</span><span>, </span><span class="number-literal">2</span><span>), </span><span class="type-name">Seq</span><span>(</span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>)))
+}}
+
+</span><span class="identifier">res1</span><span>: </span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Vector</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>)</span></code></pre>
+    <p>Now the code using the <code>FunBuilder</code> can’t fiddle with the
+    <code>FunBuilder</code>’s state values; it can only rewind to previously seen
+    states, a norm to be expected in functional programming with
+    persistent state values.</p>
+    
+    <h2 id="existential-types-are-abstraction-inversion" class="section"><a class="anchor-link" href="#existential-types-are-abstraction-inversion"><code class="fas fa-link fa-sm"></code></a>Existential types are abstraction inversion</h2>
+    <p>This is rather a lot of inconvenient ceremony, though. Instead of
+    passing a continuation that receives the <code>S</code> type as an argument along
+    with the <code>FunBuilder</code>, let’s just have <code>apply</code> return the type along
+    with the <code>FunBuilder</code>. We have a tool for returning a pair of type and
+    value using that type.</p>
+    <pre><code class="nohighlight"><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(): </span><span class="type-name">FunBuilder</span><span>[</span><span class="identifier">_</span><span>, </span><span class="type-name">Elem</span><span>, </span><span class="type-name">To</span><span>]</span></code></pre>
+    <p>Remember that existential types are pairs.</p>
+    <p>Having collapsed callee-of-callee back to caller perspective, let’s
+    apply the rule of thumb from
+    <a href="type-members-parameters.html">the first post in this series</a>.</p>
+    <blockquote>A type parameter is usually more convenient and harder to screw up, but if you intend to use it existentially in most cases, changing it to a member is probably better.</blockquote>
+    <p>The usual case will be from the perspective of a CBF user, so the
+    usual use of the <code>S</code> parameter is existential. So let’s turn it into
+    the equivalent type member.</p>
+    <pre><code class="nohighlight"><span class="comment">// rewrite the heading of FunBuilder as
+</span><span class="keyword">trait</span><span> </span><span class="type-name">FunBuilder</span><span>[-</span><span class="type-name">Elem</span><span>, +</span><span class="type-name">To</span><span>] {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">S</span><span>
+  
+</span><span class="comment">// and FunCanBuildFrom#apply as
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(): </span><span class="type-name">FunBuilder</span><span>[</span><span class="type-name">Elem</span><span>, </span><span class="type-name">To</span><span>]
+
+</span><span class="comment">// and the parameter S moves to a member
+// for all implementations so far;
+// fix until compile or see appendix</span></code></pre>
+    <p>And we can see the information stays hidden.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">cbf</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">VectorCBF</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="boolean-literal">true</span><span>)
+</span><span class="identifier">cbf</span><span>: </span><span class="identifier">fcbf</span><span>.</span><span class="type-name">VectorCBF</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="identifier">fcbf</span><span>.</span><span class="type-name">VectorCBF</span><span>@4363e2ba
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">vb</span><span> = </span><span class="identifier">cbf</span><span>()
+</span><span class="identifier">vb</span><span>: </span><span class="identifier">fcbf</span><span>.</span><span class="type-name">FunBuilder</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>]] = </span><span class="identifier">fcbf</span><span>.</span><span class="type-name">VectorBuilderListList</span><span>@527c222e
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">with1</span><span> = </span><span class="identifier">vb</span><span>.+=(</span><span class="identifier">vb</span><span>.</span><span class="identifier">init</span><span>, </span><span class="number-literal">2</span><span>)
+</span><span class="identifier">with1</span><span>: </span><span class="identifier">vb</span><span>.</span><span class="type-name">S</span><span> = </span><span class="type-name">List</span><span>(</span><span class="type-name">List</span><span>(</span><span class="number-literal">2</span><span>))
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">with2</span><span> = </span><span class="identifier">vb</span><span>.++=(</span><span class="identifier">with1</span><span>, </span><span class="type-name">Seq</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>))
+</span><span class="identifier">with2</span><span>: </span><span class="identifier">vb</span><span>.</span><span class="type-name">S</span><span> = </span><span class="type-name">List</span><span>(</span><span class="type-name">List</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>), </span><span class="type-name">List</span><span>(</span><span class="number-literal">2</span><span>))
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">vb</span><span>.</span><span class="identifier">result</span><span>(</span><span class="identifier">with2</span><span>)
+</span><span class="identifier">res0</span><span>: </span><span class="type-name">Vector</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Vector</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>)</span></code></pre>
+    <p>As in
+    <a href="values-never-change-types.html#naming-the-existential">“Values never change types”</a>,
+    <code>vb.S</code> is abstract, existential, irreducible.</p>
+    
+    <h2 id="last-minute-adjustments" class="section"><a class="anchor-link" href="#last-minute-adjustments"><code class="fas fa-link fa-sm"></code></a>Last minute adjustments</h2>
+    <p><code>Builder</code> had to be separate from <code>CanBuildFrom</code> because the latter
+    had to be stateless, with <code>Builder</code> needing to be stateful. Now that
+    both are stateless, the <code>FunBuilder</code> API can probably be collapsed
+    into <code>FunCanBuildFrom</code>.</p>
+    <p>This leaves the question, what about the mutable-state <code>Builder</code>s?
+    They can mutate the <code>S</code>, returning the input state from <code>+=</code> and
+    <code>++=</code>. You can’t use <code>S</code> values to rewind such a <code>FunBuilder</code>, but you
+    couldn’t before, anyway.</p>
+    <p>In the next part, “Avoiding refinement with dependent method types”,
+    we’ll look at the meaning of Scala’s “dependent method types” feature,
+    using it to replace some more type parameters with type members in
+    non-existential use cases.</p>
+    <p><em>This article was tested with Scala 2.11.8.</em></p>
+    
+    <h2 id="appendix-final-funbuilder-examples" class="section"><a class="anchor-link" href="#appendix-final-funbuilder-examples"><code class="fas fa-link fa-sm"></code></a>Appendix: final <code>FunBuilder</code> examples</h2>
+    <p>The rewrite from <code>S</code> type parameter to member in the <code>FunBuilder</code>
+    implementations is a boring, mechanical transform, but I’ve included
+    it here for easy reference.</p>
+    <pre><code class="nohighlight"><span class="keyword">class</span><span> </span><span class="type-name">VectorBuilderList</span><span>[</span><span class="type-name">A</span><span>]
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">FunBuilder</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]] {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">S</span><span> = </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">init</span><span> = </span><span class="type-name">List</span><span>()
+  
+  </span><span class="keyword">def</span><span> +=(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>, </span><span class="identifier">elem</span><span>: </span><span class="type-name">A</span><span>) = </span><span class="identifier">elem</span><span> :: </span><span class="identifier">s</span><span>
+  
+  </span><span class="keyword">def</span><span> ++=(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>, </span><span class="identifier">elems</span><span>: </span><span class="type-name">TraversableOnce</span><span>[</span><span class="type-name">A</span><span>]) =
+    </span><span class="identifier">elems</span><span>.</span><span class="identifier">toList</span><span> </span><span class="identifier">reverse_</span><span>::: </span><span class="identifier">s</span><span>
+  
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">result</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>) =
+    </span><span class="identifier">s</span><span>.</span><span class="identifier">toVector</span><span>.</span><span class="identifier">reverse</span><span>
+}
+
+</span><span class="keyword">class</span><span> </span><span class="type-name">VectorBuilderListList</span><span>[</span><span class="type-name">A</span><span>]
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">FunBuilder</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]] {
+  </span><span class="keyword">type</span><span> </span><span class="type-name">S</span><span> = </span><span class="type-name">List</span><span>[</span><span class="type-name">Traversable</span><span>[</span><span class="type-name">A</span><span>]]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">init</span><span> = </span><span class="type-name">List</span><span>()
+  
+  </span><span class="keyword">def</span><span> +=(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>, </span><span class="identifier">elem</span><span>: </span><span class="type-name">A</span><span>) =
+    </span><span class="type-name">Traversable</span><span>(</span><span class="identifier">elem</span><span>) :: </span><span class="identifier">s</span><span>
+    
+  </span><span class="keyword">def</span><span> ++=(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>, </span><span class="identifier">elems</span><span>: </span><span class="type-name">TraversableOnce</span><span>[</span><span class="type-name">A</span><span>]) =
+    </span><span class="identifier">elems</span><span>.</span><span class="identifier">toTraversable</span><span> :: </span><span class="identifier">s</span><span>
+    
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">result</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>) =
+    </span><span class="identifier">s</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]()){(</span><span class="identifier">z</span><span>, </span><span class="identifier">as</span><span>) =&gt; </span><span class="identifier">as</span><span> ++: </span><span class="identifier">z</span><span>}
+}
+
+</span><span class="keyword">class</span><span> </span><span class="type-name">VectorCBF</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">bulkOptimized</span><span>: </span><span class="type-name">Boolean</span><span>)
+    </span><span class="keyword">extends</span><span> </span><span class="type-name">FunCanBuildFrom</span><span>[</span><span class="type-name">Any</span><span>, </span><span class="type-name">A</span><span>, </span><span class="type-name">Vector</span><span>[</span><span class="type-name">A</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>() =
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">bulkOptimized</span><span>)
+      </span><span class="keyword">new</span><span> </span><span class="type-name">VectorBuilderListList</span><span>
+    </span><span class="keyword">else</span><span>
+      </span><span class="keyword">new</span><span> </span><span class="type-name">VectorBuilderList</span><span>
+}</span></code></pre>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

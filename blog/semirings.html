@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>A tale on Semirings</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">A tale on Semirings</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Luka Jacobowitz<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on November 2, 2018
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="a-tale-on-semirings" class="title">A tale on Semirings</h1>
+    <p><em>Ever wondered why sum types are called sum types?
+    Or maybe you&#39;ve always wondered why the <code>&lt;*&gt;</code> operator uses exactly these symbols?
+    And what do these things have to do with Semirings?
+    Read this article and find out!</em></p>
+    <p>Most of us know and use <code>Monoid</code>s and <code>Semigroup</code>s.
+    They&#39;re super useful and come with properties that we can directly utilize to gain a higher level of abstractions at very little cost (In case you don&#39;t know about them, check out the <a href="https://typelevel.org/cats/typeclasses/semigroup.html">Cats documentation</a> for some insight).
+    Sometimes, however, certain types can have multiple <code>Monoid</code> or <code>Semigroup</code> instances.
+    An easy example are the various numeric types where both multiplication and addition form two completely lawful monoid instances.</p>
+    <p>In abstract algebra there is a an algebraic class for types with two <code>Monoid</code> instances that interact in a certain way.
+    These are called <code>Semiring</code>s (sometimes also <code>Rig</code>) and they are defined as two <code>Monoid</code>s with some special laws that define the interactions between them.
+    Because they are often used to describe numeric data types we usually classify them as <em>Additive</em> and <em>Multiplicative</em>. 
+    Just like with numeric types the laws of <code>Semiring</code> state that multiplication has to distribute over addition and multiplying a value with the additive identity (i.e. zero) absorbs the value and becomes zero.</p>
+    <p>There are different ways to encode this as type classes and different libraries handle this differently, but let&#39;s look at how the <a href="https://typelevel.org/algebra/">algebra</a> project handles this.
+    Specifically, it defines a separate <code>AdditiveSemigroup</code> and <code>MultiplicativeSemigroup</code> and goes from there.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">simulacrum</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="annotation">@typeclass</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">AdditiveSemigroup</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> +(</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span>
+}
+
+</span><span class="annotation">@typeclass</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">AdditiveMonoid</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">AdditiveSemigroup</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">zero</span><span>: </span><span class="type-name">A</span><span>
+}
+
+</span><span class="annotation">@typeclass</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">MultiplicativeSemigroup</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> *(</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="identifier">y</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span>
+}
+
+</span><span class="annotation">@typeclass</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">MultiplicativeMonoid</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">MultiplicativeSemigroup</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">one</span><span>: </span><span class="type-name">A</span><span>
+}</span></code></pre>
+    <p>A <code>Semiring</code> is then just an <code>AdditiveMonoid</code> coupled with a <code>MultiplicativeMonoid</code> with the following extra laws:</p>
+    <ol class="arabic">
+      <li>Additive commutativity, i.e. <code>x + y === y + x</code></li>
+      <li>Right distributivity, i.e. <code>(x + y) * z === (x * z) + (y * z)</code></li>
+      <li>Left distributivity, i.e. <code>x * (y + z) === (x * y) + (x * z)</code></li>
+      <li>Right absorption, i.e. <code>x * zero === zero</code></li>
+      <li>Left absorption, i.e. <code>zero * x === zero</code></li>
+    </ol>
+    <p>To define it as a type class, we simply extend from both additive and multiplicative monoid:</p>
+    <pre><code class="nohighlight"><span class="annotation">@typeclass</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Semiring</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">extends</span><span> </span><span class="type-name">MultiplicativeMonoid</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">with</span><span> </span><span class="type-name">AdditiveMonoid</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+    <p>Now we have a <code>Semiring</code> class, that we can use with the various numeric types like <code>Int</code>, <code>Long</code>, <code>BigDecimal</code> etc, but what else is a <code>Semiring</code> and why dedicate a whole blog post to it?</p>
+    <p>It turns out a lot of interesting things can be <code>Semiring</code>s, including <code>Boolean</code>s, <code>Set</code>s and <a href="https://bkase.github.io/slides/algebra-driven-design/#/">animations</a>.</p>
+    <p>One very interesting thing I&#39;d like to point out is that we can form a <code>Semiring</code> homomorphism from types to their number of possible inhabitants.
+    What the hell is that?
+    Well, bear with me for a while and I&#39;ll try to explain step by step.</p>
+    
+    <h3 id="cardinality" class="section"><a class="anchor-link" href="#cardinality"><code class="fas fa-link fa-sm"></code></a>Cardinality</h3>
+    <p>Okay, so let&#39;s start with what I mean by cardinality.
+    Every type has a specific number of values it can possibly have, e.g. a <code>Boolean</code> has cardinality of 2, because it has two possible values: <code>true</code> and <code>false</code>.</p>
+    <p>So <code>Boolean</code> has two, how many do other primitive types have?
+    <code>Byte</code> has 2^8, <code>Short</code> has 2^16, <code>Int</code> has 2^32 and <code>Long</code> has 2^64.
+    So far so good, that makes sense, what about something like <code>String</code>?
+    <code>String</code> is an unbounded type and therefore theoretically has infinite number of different inhabitants (practically of course, we don&#39;t have infinite memory, so the actual number may vary depending on your system).</p>
+    <p>For what other types can we determine their cardinality?
+    Well a couple of easy ones are <code>Unit</code>, which has exactly one value it can take and also <code>Nothing</code>, which is the &quot;bottom&quot; type in Scala, which means being a subtype of every possible other type and has 0 possible values. I.e you can never instantiate a value of <code>Nothing</code>, which gives it a cardinality of 0.</p>
+    <p>That&#39;s neat, maybe we can encode this in actual code.
+    We could create a type class that should be able to give us the number of inhabitants for any type we give it:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cardinality</span><span>: </span><span class="type-name">BigInt</span><span>
+}
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Cardinality</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">of</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Cardinality</span><span>]: </span><span class="type-name">BigInt</span><span> = </span><span class="identifier">apply</span><span>[</span><span class="type-name">A</span><span>].</span><span class="identifier">cardinality</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Cardinality</span><span>]: </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="identifier">implicitly</span><span>
+}</span></code></pre>
+    <p>Awesome!
+    Now let&#39;s try to define some instances for this type class:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">booleanCardinality</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">Boolean</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cardinality</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="type-name">BigInt</span><span>(</span><span class="number-literal">2</span><span>)
+}
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">longCardinality</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">Long</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cardinality</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="type-name">BigInt</span><span>(</span><span class="number-literal">2</span><span>).</span><span class="identifier">pow</span><span>(</span><span class="number-literal">64</span><span>)
+}
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">intCardinality</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">Int</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cardinality</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="type-name">BigInt</span><span>(</span><span class="number-literal">2</span><span>).</span><span class="identifier">pow</span><span>(</span><span class="number-literal">32</span><span>)
+}
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">shortCardinality</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">Short</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cardinality</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="type-name">BigInt</span><span>(</span><span class="number-literal">2</span><span>).</span><span class="identifier">pow</span><span>(</span><span class="number-literal">16</span><span>)
+}
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">byteCardinality</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">Byte</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cardinality</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="type-name">BigInt</span><span>(</span><span class="number-literal">2</span><span>).</span><span class="identifier">pow</span><span>(</span><span class="number-literal">8</span><span>)
+}
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">unitCardinality</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">Unit</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cardinality</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">1</span><span>
+}
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">nothingCardinality</span><span> = </span><span class="keyword">new</span><span> </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">Nothing</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">cardinality</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">0</span><span>
+}</span></code></pre>
+    <p>Alright, this is cool, let&#39;s try it out in the REPL!</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Int</span><span>]
+</span><span class="identifier">res11</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">4294967296</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Unit</span><span>]
+</span><span class="identifier">res12</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">1</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Long</span><span>]
+</span><span class="identifier">res13</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">18446744073709551616</span></code></pre>
+    <p>Cool, but this is all very simple, what about things like ADTs?
+    Can we encode them in this way as well?
+    Turns out, we can, we just have to figure out how to handle the basic product and sum types.
+    To do so, let&#39;s look at an example of both types.
+    First, we&#39;ll look at a simple product type: <code>(Boolean, Byte)</code>.</p>
+    <p>How many inhabitants does this type have? 
+    Well, we know <code>Boolean</code> has 2 and <code>Byte</code> has 256.
+    So we have the numbers from <code>-127</code> to <code>128</code> once with <code>true</code> and once again with <code>false</code>.
+    That gives us <code>512</code> unique instances.
+    Hmmm....</p>
+    <p><code>512</code> seems to be double <code>256</code>, so maybe the simple solution is to just multiply the number of inhabitants of the first type with the number of inhabitants of the second type.
+    If you try this with other examples, you&#39;ll see that it&#39;s exactly true, awesome!
+    Let&#39;s encode that fact in a type class instance:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">tupleCardinality</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Cardinality</span><span>, </span><span class="type-name">B</span><span>: </span><span class="type-name">Cardinality</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Cardinality</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>)] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">cardinality</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">A</span><span>].</span><span class="identifier">cardinality</span><span> * </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">B</span><span>].</span><span class="identifier">cardinality</span><span>
+  }</span></code></pre>
+    <p>Great, now let&#39;s look at an example of a simple sum type: <code>Either[Boolean, Byte]</code>.
+    Here the answer seems even more straight forward, since a value of this type can either be one or the other, we should just be able to add the number of inhabitants of one side with the number of inhabitants of the other side.
+    So <code>Either[Boolean, Byte]</code> should have <code>2 + 256 = 258</code> number of inhabitants. Cool!</p>
+    <p>Let&#39;s also code that up and try and confirm what we learned in the REPL:</p>
+    <pre><code class="nohighlight"><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">eitherCardinality</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Cardinality</span><span>, </span><span class="type-name">B</span><span>: </span><span class="type-name">Cardinality</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">cardinality</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">A</span><span>].</span><span class="identifier">cardinality</span><span> + </span><span class="type-name">Cardinality</span><span>[</span><span class="type-name">B</span><span>].</span><span class="identifier">cardinality</span><span>
+  }</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[(</span><span class="type-name">Boolean</span><span>, </span><span class="type-name">Byte</span><span>)]
+</span><span class="identifier">res14</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">512</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">Boolean</span><span>, </span><span class="type-name">Byte</span><span>]]
+</span><span class="identifier">res15</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">258</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">Int</span><span>, (</span><span class="type-name">Boolean</span><span>, </span><span class="type-name">Unit</span><span>)]]
+</span><span class="identifier">res16</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">4294967298</span></code></pre>
+    <p>So using sum types seem to add the number of inhabitants whereas product types seem to multiply the number of inhabitants.
+    That makes a lot of sense given their names!</p>
+    <p>So what about that homomorphism we talked about earlier? 
+    Well, a homomorphism is a structure-preserving mapping function between two algebraic structures of the same sort (in this case a semiring).</p>
+    <p>This means that for any two values <code>x</code> and <code>y</code> and the homomorphism <code>f</code>, we get 
+    1. <code>f(x * y) === f(x) * f(y)</code>
+    2. <code>f(x + y) === f(x) + f(y)</code></p>
+    <p>Now this might seem fairly abstract, but it applies exactly to what we just did.
+    If we <em>&quot;add&quot;</em> two types of <code>Byte</code> and <code>Boolean</code>, we get an <code>Either[Byte, Boolean]</code> and if we apply the homomorphism function, <code>number</code> to it, we get the value <code>258</code>.
+    This is the same as first calling <code>number</code> on <code>Byte</code> and then adding that to the result of calling <code>number</code> on <code>Boolean</code>.</p>
+    <p>And of course the same applies to multiplication and product types.
+    However, we&#39;re still missing something from a valid semiring, we only talked about multiplication and addition, but not about their respective identities.</p>
+    <p>What we did see, though is that <code>Unit</code> has exactly one inhabitant and <code>Nothing</code> has exactly zero.
+    So maybe we can use these two types to get a fully formed Semiring?</p>
+    <p>Let&#39;s try it out!
+    If <code>Unit</code> is <code>one</code> then a product type of any type with <code>Unit</code> should be equivalent to just the first type.</p>
+    <p>Turns out, it is, we can easily go from something like <code>(Int, Unit)</code> to <code>Int</code> and back without losing anything and the number of inhabitants also stay exactly the same.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Int</span><span>]
+</span><span class="identifier">res17</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">4294967296</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[(</span><span class="type-name">Unit</span><span>, </span><span class="type-name">Int</span><span>)]
+</span><span class="identifier">res18</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">4294967296</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[(</span><span class="type-name">Unit</span><span>, (</span><span class="type-name">Unit</span><span>, </span><span class="type-name">Int</span><span>))]
+</span><span class="identifier">res19</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">4294967296</span></code></pre>
+    <p>Okay, not bad, but how about <code>Nothing</code>?
+    Given that it is the identity for addition, any type summed with <code>Nothing</code> should be equivalent to that type. 
+    Is <code>Either[Nothing, A]</code> equivalent to <code>A</code>?
+    It is! Since <code>Nothing</code> doesn&#39;t have any values an <code>Either[Nothing, A]</code> can only be a <code>Right</code> and therefore only an <code>A</code>, so these are in fact equivalent types.</p>
+    <p>We also have to check for the absorption law that says that any value mutliplied with the additive identity <code>zero</code> should be equivalent to <code>zero</code>.
+    Since <code>Nothing</code> is our <code>zero</code> a product type like <code>(Int, Nothing)</code> should be equivalent to <code>Nothing</code>.
+    This also holds, given the fact that we can&#39;t construct a <code>Nothing</code> so we can never construct a tuple that expects a value of type <code>Nothing</code> either.</p>
+    <p>Let&#39;s see if this translates to the number of possible inhabitants as well:</p>
+    <p>Additive Identity:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">Nothing</span><span>, </span><span class="type-name">Boolean</span><span>]]
+</span><span class="identifier">res0</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">2</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">Nothing</span><span>, (</span><span class="type-name">Byte</span><span>, </span><span class="type-name">Boolean</span><span>)]]
+</span><span class="identifier">res1</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">258</span></code></pre>
+    <p>Absorption:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[(</span><span class="type-name">Nothing</span><span>, </span><span class="type-name">Boolean</span><span>)]
+</span><span class="identifier">res0</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">0</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[(</span><span class="type-name">Nothing</span><span>, </span><span class="type-name">Long</span><span>)]
+</span><span class="identifier">res1</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">0</span></code></pre>
+    <p>Nice! 
+    The only thing left now is distributivity. 
+    In type form this means that <code>(A, Either[B, C])</code> should be equal to <code>Either[(A, B), (A, C)]</code>.
+    If we think about it, these two types should also be exactly equivalent, woohoo!</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[(</span><span class="type-name">Boolean</span><span>, </span><span class="type-name">Either</span><span>[</span><span class="type-name">Byte</span><span>, </span><span class="type-name">Short</span><span>])]
+</span><span class="identifier">res20</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">131584</span><span>
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Cardinality</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Either</span><span>[(</span><span class="type-name">Boolean</span><span>, </span><span class="type-name">Byte</span><span>), (</span><span class="type-name">Boolean</span><span>, </span><span class="type-name">Short</span><span>)]]
+</span><span class="identifier">res21</span><span>: </span><span class="type-name">BigInt</span><span> = </span><span class="number-literal">131584</span></code></pre>
+    
+    <h2 id="higher-kinded-algebraic-structures" class="section"><a class="anchor-link" href="#higher-kinded-algebraic-structures"><code class="fas fa-link fa-sm"></code></a>Higher kinded algebraic structures</h2>
+    <p>Some of you might have heard of the <code>Semigroupal</code> type class. 
+    But why is it called that, and what is its relation to a <code>Semigroup</code>?
+    Let&#39;s find out!</p>
+    <p>First, let&#39;s have a look at <code>Semigroupal</code>:</p>
+    <pre><code class="nohighlight"><span class="annotation">@typeclass</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Semigroupal</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">product</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">F</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>)]
+}</span></code></pre>
+    <p>It seems to bear some similarity to <code>Semigroup</code>, we have two values which we somehow combine, and it also shares <code>Semigroup</code>s associativity requirement.</p>
+    <p>So far so good, but the name <code>product</code> seems a bit weird.
+    It makes sense given we combine the <code>A</code> and the <code>B</code> in a tuple, which is a product type, but if we&#39;re using products, maybe this isn&#39;t a generic <code>Semigroupal</code> but actually a multiplicative one? 
+    Let&#39;s fix this and rename it!</p>
+    <pre><code class="nohighlight"><span class="annotation">@typeclass</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">MultiplicativeSemigroupal</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">product</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">F</span><span>[(</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>)]
+}</span></code></pre>
+    <p>Next, let us have a look at what an additive <code>Semigroupal</code> might look like.
+    Surely, the only thing we&#39;d have to change is going from a product type to a sum type:</p>
+    <pre><code class="nohighlight"><span class="annotation">@typeclass</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">AdditiveSemigroupal</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">sum</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]]
+}</span></code></pre>
+    <p>Pretty interesting so far, can we top this and add identities to make <code>Monoidal</code>s?
+    Surely we can! For addition this should again be <code>Nothing</code> and <code>Unit</code> for multiplication:</p>
+    <pre><code class="nohighlight"><span class="annotation">@typeclass</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">AdditiveMonoidal</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">AdditiveSemigroupal</span><span>[</span><span class="type-name">F</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">nothing</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Nothing</span><span>]
+}
+
+</span><span class="annotation">@typeclass</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">MultiplicativeMonoidal</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">MultiplicativeSemigroupal</span><span>[</span><span class="type-name">F</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">unit</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+}</span></code></pre>
+    <p>So now we have these fancy type classes, but how are they actually useful?
+    Well, I&#39;m going to make the claim that these type classes already exist in cats today, just under different names.</p>
+    <p>Let&#39;s first look at the <code>AdditiveMonoidal</code>.
+    It is defined by two methods, <code>nothing</code> which returns an <code>F[Nothing]</code> and <code>sum</code> which takes an <code>F[A]</code> and an <code>F[B]</code> to create an <code>F[Either[A, B]]</code>.</p>
+    <p>What type class in Cats could be similar?
+    First, we&#39;ll look at the <code>sum</code> function and try to find a counterpart for <code>AdditiveSemigroupal</code>.
+    Since we gave the lower kinded versions of these type classes symbolic operators, why don&#39;t we do the same thing for <code>AdditiveSemigroupal</code>?</p>
+    <p>Since it is additive it should probably contain a <code>+</code> somewhere and it should also show that it&#39;s inside some context.</p>
+    <p>Optimally it&#39;d be something like <code>[+]</code>, but that&#39;s not a valid identifier so let&#39;s try <code>&lt;+&gt;</code> instead!</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> &lt;+&gt;[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]]</span></code></pre>
+    <p>Oh! The <code>&lt;+&gt;</code> function already exists in cats as an alias for <code>combineK</code> which can be found on <code>SemigroupK</code>, but it&#39;s sort of different, it takes two <code>F[A]</code>s and returns an <code>F[A]</code>, not quite what we have here.</p>
+    <p>Or is it?
+    These two functions are actually the same, and we can define them in terms of one another as long as we have a functor:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">sum</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]]
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">combineK</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">y</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] = {
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">feaa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">A</span><span>]] = </span><span class="identifier">sum</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
+  </span><span class="identifier">feaa</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">merge</span><span>)
+}</span></code></pre>
+    <p>So our <code>AdditiveSemigroupal</code> is equivalent to <code>SemigroupK</code>, so probably <code>AdditiveMonoidal</code> is equivalent to <code>MonoidK</code>, right?</p>
+    <p>Indeed, and we can show that quite easily.</p>
+    <p><code>MonoidK</code> adds an <code>empty</code> function with the following definition:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">empty</span><span>[</span><span class="type-name">A</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+    <p>This function uses a universal quantifier for <code>A</code>, which means that it works for any <code>A</code>, which then means that it cannot actually include any particular <code>A</code> and is therefore equivalent to <code>F[Nothing]</code> which is what we have for <code>AdditiveMonoidal</code>.</p>
+    <p>Excellent, so we found counterparts for the additive type classes, and we already now that <code>MultiplicativeSemigroupal</code> is equivalent to <code>cats.Semigroupal</code>.
+    So the only thing left to find out is the counterpart of <code>MultiplicativeMonoidal</code>.</p>
+    <p>I&#39;m going to spoil the fun and make the claim that <code>Applicative</code> is that counterpart.
+    <code>Applicative</code> adds <code>pure</code>, which takes an <code>A</code> and returns an <code>F[A]</code>.
+    <code>MultiplicativeMonoidal</code> adds <code>unit</code>, which takes no parameters and returns an <code>F[Unit]</code>.
+    So how can we go from one to another? 
+    Well the answer is again using a functor:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">unit</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">pure</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="identifier">unit</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span> =&gt; </span><span class="identifier">a</span><span>)</span></code></pre>
+    <p><code>Applicative</code> uses a covariant functor, but in general we could use invariant and contravariant structures as well.
+    <code>Applicative</code> also uses <code>&lt;*&gt;</code> as an alias for using <code>product</code> together with <code>map</code>, which seems like further evidence that our intuition that its a multiplicative type class is correct.</p>
+    <p>So in cats right now we have <code>&lt;+&gt;</code> and <code>&lt;*&gt;</code>, is there also a type class that combines both similar to how <code>Semiring</code> combines <code>+</code> and <code>*</code>?</p>
+    <p>There is, it is called <code>Alternative</code>, it extends <code>Applicative</code> and <code>MonoidK</code> and if we were super consistent we&#39;d call it a <code>Semiringal</code>:</p>
+    <pre><code class="nohighlight"><span class="annotation">@typeclass</span><span> 
+</span><span class="keyword">trait</span><span> </span><span class="type-name">Semiringal</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">MultiplicativeMonoidal</span><span>[</span><span class="type-name">F</span><span>] </span><span class="keyword">with</span><span> </span><span class="type-name">AdditiveMonoidal</span><span>[</span><span class="type-name">F</span><span>]</span></code></pre>
+    <p>Excellent, now we&#39;ve got both <code>Semiring</code> and a higher kinded version of it.
+    Unfortunately the lower kinded version can&#39;t be found in Cats yet, but hopefully in a future version it&#39;ll be available as well.</p>
+    <p>If it were available, we could derive a <code>Semiring</code> for any <code>Alternative</code> the same we can derive a <code>Monoid</code> for any <code>MonoidK</code> or <code>Applicative</code>.
+    We could also lift any <code>Semiring</code> back into <code>Alternative</code>, by using <code>Const</code>, just like we can lift <code>Monoid</code>s into <code>Applicative</code> using <code>Const</code>.</p>
+    <p>To end this blog post, we&#39;ll have a very quick look on how to do that.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="type-name">Semiring</span><span>.</span><span class="identifier">ops</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Const</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">getConst</span><span>: </span><span class="type-name">A</span><span>)
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">constSemiringal</span><span>[</span><span class="type-name">A</span><span>: </span><span class="type-name">Semiring</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">Semiringal</span><span>[</span><span class="type-name">Const</span><span>[</span><span class="type-name">A</span><span>, ?]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">sum</span><span>[</span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Const</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">Const</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">C</span><span>]): </span><span class="type-name">Const</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">Either</span><span>[</span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>]] =
+    </span><span class="type-name">Const</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">getConst</span><span> + </span><span class="identifier">fb</span><span>.</span><span class="identifier">getConst</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">product</span><span>[</span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Const</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">Const</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">C</span><span>]): </span><span class="type-name">Const</span><span>[</span><span class="type-name">A</span><span>, (</span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>)] =
+    </span><span class="type-name">Const</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">getConst</span><span> * </span><span class="identifier">fb</span><span>.</span><span class="identifier">getConst</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">unit</span><span>: </span><span class="type-name">Const</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">Unit</span><span>] =
+    </span><span class="type-name">Const</span><span>(</span><span class="type-name">Semiring</span><span>[</span><span class="type-name">A</span><span>].</span><span class="identifier">one</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">nothing</span><span>: </span><span class="type-name">Const</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">Nothing</span><span>] =
+    </span><span class="type-name">Const</span><span>(</span><span class="type-name">Semiring</span><span>[</span><span class="type-name">A</span><span>].</span><span class="identifier">zero</span><span>)
+}</span></code></pre>
+    
+    <h2 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h2>
+    <p>Rings and Semirings are very interesting algebraic structures and even if we didn&#39;t know about them we&#39;ve probably been using them for quite some time.
+    This blog post aimed to show how <code>Applicative</code> and <code>MonoidK</code> relate to <code>Monoid</code> and how algebraic data types form a semiring and how these algebraic structures are pervasive throughout Scala and other functional programming languages.
+    For me personally, realizing how all of this ties together and form some really satisfying symmetry was really mind blowing and I hope this blog post can give some good insight on recognizing these interesting similarities throughout Cats and other libraries based on different mathematical abstractions.
+    For further material on this topic, you can check out <a href="https://www.youtube.com/watch?v=YScIPA8RbVE">this talk</a>.</p>
+    
+    <h2 id="addendum" class="section"><a class="anchor-link" href="#addendum"><code class="fas fa-link fa-sm"></code></a>Addendum</h2>
+    <p>This article glossed over commutativity in the type class encodings.
+    Commutativity is very important law for semrings and the code should show that.
+    However, since this post already contained a lot of different type class definitions, adding extra commutative type class definitions that do nothing but add laws felt like it would distract from what is trying to be taught.</p>
+    <p>Moreover I focused on the cardinality of only the types we need, but for completeness&#39; sake, we could also add instances of <code>Cardinality</code> for things like <code>A =&gt; B</code> , <code>Option[A]</code> or <code>Ior[A, B]</code>.
+    These are:
+    1. <code>Cardinality.of[A =&gt; B] === Cardinality.of[B].pow(Cardinality.of[A])</code>
+    2. <code>Cardinality.of[Option[A]] === Cardinality.of[A] + 1</code>
+    3. <code>Cardinality.of[Ior[A, B]] === Cardinality.of[A] + Cardinality.of[B] + Cardinality.of[A] * Cardinality.of[B]</code></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/LukaJCB.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Luka Jacobowitz</strong>
+              
+              <br />
+              Luka is a functional programmer in love with finding great abstractions to engineering problems. He’s also a maintainer of several typelevel projects and seeks to make learning of pure functional programming as easy as possible.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/LukaJCB">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

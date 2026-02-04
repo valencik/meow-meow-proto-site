@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Equivalence versus Equality</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Equivalence versus Equality</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Tomas Mikula<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on April 2, 2017
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="equivalence-versus-equality" class="title">Equivalence versus Equality</h1>
+    <p><em>This is a guest post by Tomas Mikula. It was initially published as a <a href="https://github.com/TomasMikula/hasheq/blob/017f289caac398723501b194cd2b36c4584df638/Equivalence-Equality.md">document</a> in the <a href="https://github.com/TomasMikula/hasheq">hasheq</a>. It has been slightly edited and is being republished here with the permission of the original author.</em></p>
+    <p>This article describes what we mean when we say that the data structures in this library are <em>equivalence-aware</em> in a <em>type-safe</em> fashion.</p>
+    
+    <h2 id="equivalence" class="section"><a class="anchor-link" href="#equivalence"><code class="fas fa-link fa-sm"></code></a>Equivalence</h2>
+    <p><em>Set</em> is a data structure that doesn&#39;t contain <em>duplicate</em> elements. An implementation of <em>Set</em> must therefore have a way to compare elements for <em>&quot;sameness&quot;</em>.
+    A useful notion of sameness is <em>equivalence</em>, i.e. a binary relation that is <em>reflexive</em>, <em>symmetric</em> and <em>transitive</em>.
+    Any reasonable implementation of <em>Set</em> is equipped with <em>some</em> equivalence relation on its element type.</p>
+    <p>Here&#39;s the catch: For any type with more than one inhabitant there are <em>multiple</em> valid equivalence relations.
+    We cannot (in general) pick one that is suitable in all contexts.
+    For example, are these two binary trees <em>same</em>?</p>
+    <pre><code>  +            +
+ / \          / \
+1   +        +   3
+   / \      / \
+  2   3    1   2</code></pre>
+    <p>It depends on the context. They clearly have different structure, but they are both binary search trees containing the same elements.
+    For a balancing algorithm, they are different trees, but as an implementation of <em>Set</em>, they represent the same set of integers.</p>
+    
+    <h2 id="equality" class="section"><a class="anchor-link" href="#equality"><code class="fas fa-link fa-sm"></code></a>Equality</h2>
+    <p>Despite the non-uniqueness, there is one equivalence relation that stands out: <em>equality</em>.
+    Two objects are considered <em>equal</em> when they are <em>indistinguishable</em> to an observer.
+    Formally, equality is required to have the <em>substitution property:</em></p>
+    <p>&lt;p&gt;[ \forall a,b \in A, \forall f \in (A \to B): a=<em>A b \implies f(a)=</em>B f(b) ]&lt;/p&gt;</p>
+    <p>(Here, $=_A$ denotes equality on $A$, $=_B$ denotes equality on $B$.)</p>
+    <p>Equality is the finest equivalence: whenever two elements are <em>equal</em>, they are necessarily <em>equivalent</em> with respect to every equivalence.</p>
+    
+    <h2 id="choices-in-libraries" class="section"><a class="anchor-link" href="#choices-in-libraries"><code class="fas fa-link fa-sm"></code></a>Choices in libraries</h2>
+    <p>Popular Scala libraries take one of these two approaches when dealing with comparing elements for <em>&quot;sameness&quot;</em>.</p>
+    <p>The current approach of <a href="https://github.com/typelevel/cats/">cats</a> is <em>equality</em>.
+    Instances of the <code>cats.Eq[A]</code> typeclass are required to have all the properties of equality, including the substitution property above.
+    The problem with this approach is that for some types, such as <code>Set[Int]</code>, equality is too strict to be useful:
+    Are values <code>Set(1, 2)</code> and <code>Set(2, 1)</code> <em>equal</em>?
+    For that to be true, they have to be indistinguishable by any function.
+    Let&#39;s try <code>(_.toList)</code>:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Set</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>).</span><span class="identifier">toList</span><span> == </span><span class="type-name">Set</span><span>(</span><span class="number-literal">2</span><span>, </span><span class="number-literal">1</span><span>).</span><span class="identifier">toList</span><span>
+</span><span class="identifier">res0</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">false</span></code></pre>
+    <p>So, <code>Set(1, 2)</code> and <code>Set(2, 1)</code> are clearly <em>not</em> equal.
+    As a result, we cannot use <code>Set[Int]</code> in a context where equality is required (without cheating).</p>
+    <p>On the other hand, <a href="https://github.com/scalaz/scalaz/">scalaz</a> uses unspecified <em>equivalence</em>.
+    Although the name <code>scalaz.Equal[A]</code> might suggest <em>equality</em>, instances of this typeclass are only tested for properties of <em>equivalence</em>.
+    As mentioned above, there are multiple <em>valid</em> equivalence relations for virtually any type.
+    When there are also multiple <em>useful</em> equivalences for a type, we are at risk of mixing them up (and the fact that they are usually resolved as implicit arguments only makes things worse).</p>
+    
+    <h2 id="equivalence-aware-sets-a-k-a-setoids" class="section"><a class="anchor-link" href="#equivalence-aware-sets-a-k-a-setoids"><code class="fas fa-link fa-sm"></code></a>Equivalence-aware sets (a.k.a. setoids)</h2>
+    <p>Let&#39;s look at how <em>we</em> deal with this issue. We define typeclass <code>Equiv</code> with an extra type parameter that serves as a <em>&quot;tag&quot;</em> identifying the meaning of the equivalence.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">Equiv</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">Eq</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">equiv</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">Boolean</span><span>
+}
+</span><span class="comment">// defined trait Equiv</span></code></pre>
+    <p>For the compiler, the &quot;tag&quot; is an opaque type. It only has specific meaning for humans. The only meaning it has for the compiler is that different tags represent (intensionally) different equivalence relations.</p>
+    <p>An <em>equivalence-aware</em> data structure then carries in its <em>type</em> the tag of the equivalence it uses.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="comment">// import hasheq._
+</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="comment">// import hasheq.immutable._
+</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">std</span><span>.</span><span class="identifier">int</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="comment">// import hasheq.std.int._</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">HashSet</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>)
+</span><span class="identifier">res0</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSet</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">HashSetoid</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>)</span></code></pre>
+    <p>What on earth is <code>HashSetoid</code>?
+    A <a href="https://en.wikipedia.org/wiki/Setoid"><em>setoid</em></a> is an <em>equivalence-aware set</em>.
+    <code>HashSetoid</code> is then just a setoid implementated using hash-table.
+    Let&#39;s look at the definition of <code>HashSet</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">HashSet</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">HashSetoid</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">Equality</span><span>.</span><span class="keyword">type</span><span>]</span></code></pre>
+    <p>So <code>HashSet</code> is just a <code>HashSetoid</code> whose equivalence is <em>equality</em>.
+    To create an instance of <code>HashSet[Int]</code> above, we needed to have an implicit instance of <code>Equiv[Int, Equality.type]</code> in scope.</p>
+    <pre><code class="nohighlight"><span class="identifier">implicitly</span><span>[</span><span class="type-name">Equiv</span><span>[</span><span class="type-name">Int</span><span>, </span><span class="type-name">Equality</span><span>.</span><span class="keyword">type</span><span>]]</span></code></pre>
+    <p>For the compiler, <code>Equality</code> is just a rather arbitrary singleton object.
+    It only has the meaning of mathematical <em>equality</em> for us, humans.</p>
+    <p>There is a convenient type alias provided for <em>equality</em> relation:</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">Equal</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">Equiv</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">Equality</span><span>.</span><span class="keyword">type</span><span>]</span></code></pre>
+    <pre><code class="nohighlight"><span class="identifier">implicitly</span><span>[</span><span class="type-name">Equal</span><span>[</span><span class="type-name">Int</span><span>]]</span></code></pre>
+    <p>So how do we deal with the problem of set equality mentioned above, i.e. that <code>HashSet(1, 2)</code> and <code>HashSet(2, 1)</code> are not truly <em>equal</em>?
+    We just don&#39;t provide a definition of equality for <code>HashSet[Int]</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Equal</span><span>[</span><span class="type-name">HashSet</span><span>[</span><span class="type-name">Int</span><span>]]]
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">22</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">could</span><span> </span><span class="identifier">not</span><span> </span><span class="identifier">find</span><span> </span><span class="keyword">implicit</span><span> </span><span class="identifier">value</span><span> </span><span class="keyword">for</span><span> </span><span class="identifier">parameter</span><span> </span><span class="identifier">e</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="type-name">Equal</span><span>[</span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSet</span><span>[</span><span class="type-name">Int</span><span>]]
+       </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">Equal</span><span>[</span><span class="type-name">HashSet</span><span>[</span><span class="type-name">Int</span><span>]]]
+                 ^</span></code></pre>
+    <p>But that means we cannot have a <code>HashSet[HashSet[Int]]</code>!
+    (Remember, for a <code>HashSet[A]</code>, we need an instance of <code>Equal[A]</code>, and we just showed we don&#39;t have an instance of <code>Equal[HashSet[Int]]</code>.)</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">HashSet</span><span>(</span><span class="type-name">HashSet</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>))
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">22</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">could</span><span> </span><span class="identifier">not</span><span> </span><span class="identifier">find</span><span> </span><span class="keyword">implicit</span><span> </span><span class="identifier">value</span><span> </span><span class="keyword">for</span><span> </span><span class="identifier">parameter</span><span> </span><span class="type-name">A</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="type-name">Hash</span><span>[</span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSet</span><span>[</span><span class="type-name">Int</span><span>]]
+       </span><span class="type-name">HashSet</span><span>(</span><span class="type-name">HashSet</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>))
+              ^</span></code></pre>
+    <p>But we can have a <code>HashSetoid[HashSet[Int], E]</code>, where <code>E</code> is <em>some</em> equivalence on <code>HashSet[Int]</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">HashSet</span><span>.</span><span class="identifier">of</span><span>(</span><span class="type-name">HashSet</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>))
+</span><span class="identifier">res5</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSet</span><span>[</span><span class="type-name">Int</span><span>],</span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Setoid</span><span>.</span><span class="type-name">ContentEquiv</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="identifier">hasheq</span><span>.</span><span class="type-name">Equality</span><span>.</span><span class="keyword">type</span><span>]] = </span><span class="type-name">HashSetoid</span><span>(</span><span class="type-name">HashSetoid</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>))</span></code></pre>
+    <p><code>HashSet.of(elems)</code> is like <code>HashSet(elems)</code>, except it tries to infer the equivalence on the element type, instead of requiring it to be equality.</p>
+    <p>Notice the <em>equivalence tag</em>: <code>Setoid.ContentEquiv[Int, Equality.type]</code>.
+    Its meaning is (again, for humans only) that two setoids are equivalent when they contain the same elements (here, of type <code>Int</code>), as compared by the given equivalence of elements (here, <code>Equality</code>).</p>
+    <p>The remaining question is: How does this work in the presence of <em>multiple useful equivalences?</em></p>
+    <p>Let&#39;s define another equivalence on <code>Int</code> (in addition to the provided equality).</p>
+    <pre><code class="nohighlight"><span class="comment">// Our &quot;tag&quot; for equivalence modulo 10.
+// This trait will never be instantiated.
+</span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">Mod10</span><span>
+
+</span><span class="comment">// Provide equivalence tagged by Mod10.
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">EqMod10</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Equiv</span><span>[</span><span class="type-name">Int</span><span>, </span><span class="type-name">Mod10</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">mod10</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Int</span><span> = {
+    </span><span class="keyword">val</span><span> </span><span class="identifier">r</span><span> = </span><span class="identifier">i</span><span> % </span><span class="number-literal">10</span><span>
+    </span><span class="keyword">if</span><span> (</span><span class="identifier">r</span><span> &lt; </span><span class="number-literal">0</span><span>) </span><span class="identifier">r</span><span> + </span><span class="number-literal">10</span><span>
+    </span><span class="keyword">else</span><span> </span><span class="identifier">r</span><span>
+  }
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">equiv</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">b</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Boolean</span><span> = </span><span class="identifier">mod10</span><span>(</span><span class="identifier">a</span><span>) == </span><span class="identifier">mod10</span><span>(</span><span class="identifier">b</span><span>)
+}
+
+</span><span class="comment">// Provide hash function compatible with equivalence modulo 10.
+// Note that the HashEq typeclass is also tagged by Mod10.
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">HashMod10</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">HashEq</span><span>[</span><span class="type-name">Int</span><span>, </span><span class="type-name">Mod10</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">hash</span><span>(</span><span class="identifier">a</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Int</span><span> = </span><span class="type-name">EqMod10</span><span>.</span><span class="identifier">mod10</span><span>(</span><span class="identifier">a</span><span>)
+}</span></code></pre>
+    <p>Now let&#39;s create a &quot;setoid of sets of integers&quot;, as before.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">HashSet</span><span>.</span><span class="identifier">of</span><span>(</span><span class="type-name">HashSet</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>))
+</span><span class="identifier">res13</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSet</span><span>[</span><span class="type-name">Int</span><span>],</span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Setoid</span><span>.</span><span class="type-name">ContentEquiv</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="identifier">hasheq</span><span>.</span><span class="type-name">Equality</span><span>.</span><span class="keyword">type</span><span>]] = </span><span class="type-name">HashSetoid</span><span>(</span><span class="type-name">HashSetoid</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>))</span></code></pre>
+    <p>This still works, because <code>HashSet</code> requires an <em>equality</em> on <code>Int</code>, and there is only one in the implicit scope (the newly defined equivalence <code>EqMod10</code> is <em>not</em> equality).
+    Let&#39;s try to create a &quot;setoid of setoids of integers&quot;:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">HashSet</span><span>.</span><span class="identifier">of</span><span>(</span><span class="type-name">HashSet</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>))
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">24</span><span>: </span><span class="identifier">error</span><span>: </span><span class="identifier">ambiguous</span><span> </span><span class="keyword">implicit</span><span> </span><span class="identifier">values</span><span>:
+ </span><span class="identifier">both</span><span> </span><span class="identifier">method</span><span> </span><span class="identifier">hashInstance</span><span> </span><span class="identifier">in</span><span> </span><span class="keyword">object</span><span> </span><span class="identifier">int</span><span> </span><span class="identifier">of</span><span> </span><span class="keyword">type</span><span> =&gt; </span><span class="identifier">hasheq</span><span>.</span><span class="type-name">Hash</span><span>[</span><span class="type-name">Int</span><span>]
+ </span><span class="identifier">and</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">HashMod10</span><span> </span><span class="identifier">of</span><span> </span><span class="keyword">type</span><span> </span><span class="type-name">HashMod10</span><span>.</span><span class="keyword">type</span><span>
+ </span><span class="keyword">match</span><span> </span><span class="identifier">expected</span><span> </span><span class="keyword">type</span><span> </span><span class="identifier">hasheq</span><span>.</span><span class="type-name">HashEq</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="type-name">Eq</span><span>]
+       </span><span class="type-name">HashSet</span><span>.</span><span class="identifier">of</span><span>(</span><span class="type-name">HashSet</span><span>.</span><span class="identifier">of</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>))
+                            ^</span></code></pre>
+    <p>This fails, because there are now more equivalences on <code>Int</code> in scope.
+    (There are now also multiple hash functions, which is what the error message actually says.)
+    We need to be more specific:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">HashSet</span><span>.</span><span class="identifier">of</span><span>(</span><span class="type-name">HashSet</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Int</span><span>, </span><span class="type-name">Mod10</span><span>](</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>, </span><span class="number-literal">5</span><span>))
+</span><span class="identifier">res15</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="type-name">Mod10</span><span>],</span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">Setoid</span><span>.</span><span class="type-name">ContentEquiv</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="type-name">Mod10</span><span>]] = </span><span class="type-name">HashSetoid</span><span>(</span><span class="type-name">HashSetoid</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>))</span></code></pre>
+    <p>Finally, does it <strong>prevent mixing up equivalences</strong>? Let&#39;s see:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">s1</span><span> = </span><span class="type-name">HashSet</span><span>(</span><span class="number-literal">1</span><span>,  </span><span class="number-literal">2</span><span>,  </span><span class="number-literal">3</span><span>,         </span><span class="number-literal">11</span><span>, </span><span class="number-literal">12</span><span>, </span><span class="number-literal">13</span><span>    )
+</span><span class="identifier">s1</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSet</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">HashSetoid</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">13</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">12</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">11</span><span>)
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">s2</span><span> = </span><span class="type-name">HashSet</span><span>(    </span><span class="number-literal">2</span><span>,  </span><span class="number-literal">3</span><span>,  </span><span class="number-literal">4</span><span>,  </span><span class="number-literal">5</span><span>,         </span><span class="number-literal">13</span><span>, </span><span class="number-literal">14</span><span>)
+</span><span class="identifier">s2</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSet</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">HashSetoid</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="number-literal">14</span><span>, </span><span class="number-literal">13</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>)
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">t1</span><span> = </span><span class="type-name">HashSet</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Int</span><span>, </span><span class="type-name">Mod10</span><span>](</span><span class="number-literal">1</span><span>,  </span><span class="number-literal">2</span><span>,  </span><span class="number-literal">3</span><span>,         </span><span class="number-literal">11</span><span>, </span><span class="number-literal">12</span><span>, </span><span class="number-literal">13</span><span>    )
+</span><span class="identifier">t1</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="type-name">Mod10</span><span>] = </span><span class="type-name">HashSetoid</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>)
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="keyword">val</span><span> </span><span class="identifier">t2</span><span> = </span><span class="type-name">HashSet</span><span>.</span><span class="identifier">of</span><span>[</span><span class="type-name">Int</span><span>, </span><span class="type-name">Mod10</span><span>](    </span><span class="number-literal">2</span><span>,  </span><span class="number-literal">3</span><span>,  </span><span class="number-literal">4</span><span>,  </span><span class="number-literal">5</span><span>,         </span><span class="number-literal">13</span><span>, </span><span class="number-literal">14</span><span>)
+</span><span class="identifier">t2</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="type-name">Mod10</span><span>] = </span><span class="type-name">HashSetoid</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>)</span></code></pre>
+    <p>Combining compatible setoids:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">s1</span><span> </span><span class="identifier">union</span><span> </span><span class="identifier">s2</span><span>
+</span><span class="identifier">res16</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="identifier">hasheq</span><span>.</span><span class="type-name">Equality</span><span>.</span><span class="keyword">type</span><span>] = </span><span class="type-name">HashSetoid</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="number-literal">14</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">13</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">12</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">11</span><span>, </span><span class="number-literal">4</span><span>)
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">t1</span><span> </span><span class="identifier">union</span><span> </span><span class="identifier">t2</span><span>
+</span><span class="identifier">res17</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="type-name">Mod10</span><span>] = </span><span class="type-name">HashSetoid</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">3</span><span>, </span><span class="number-literal">4</span><span>)</span></code></pre>
+    <p>Combining incompatible setoids:</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="identifier">s1</span><span> </span><span class="identifier">union</span><span> </span><span class="identifier">t2</span><span>
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">26</span><span>: </span><span class="identifier">error</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="type-name">Mod10</span><span>]
+ </span><span class="identifier">required</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="identifier">hasheq</span><span>.</span><span class="type-name">Equality</span><span>.</span><span class="keyword">type</span><span>]
+       </span><span class="identifier">s1</span><span> </span><span class="identifier">union</span><span> </span><span class="identifier">t2</span><span>
+                ^
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="identifier">t1</span><span> </span><span class="identifier">union</span><span> </span><span class="identifier">s2</span><span>
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">26</span><span>: </span><span class="identifier">error</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSet</span><span>[</span><span class="type-name">Int</span><span>]
+    (</span><span class="identifier">which</span><span> </span><span class="identifier">expands</span><span> </span><span class="identifier">to</span><span>)  </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="identifier">hasheq</span><span>.</span><span class="type-name">Equality</span><span>.</span><span class="keyword">type</span><span>]
+ </span><span class="identifier">required</span><span>: </span><span class="identifier">hasheq</span><span>.</span><span class="identifier">immutable</span><span>.</span><span class="type-name">HashSetoid</span><span>[</span><span class="type-name">Int</span><span>,</span><span class="type-name">Mod10</span><span>]
+       </span><span class="identifier">t1</span><span> </span><span class="identifier">union</span><span> </span><span class="identifier">s2</span><span>
+                ^</span></code></pre>
+    
+    <h2 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h2>
+    <p>We went one step further in the direction of type-safe equivalence in Scala compared to what is typically seen out in the wild today.
+    There is nothing very sophisticated about this encoding.
+    I think the major win is that we can design APIs so that the extra type parameter (the &quot;equivalence tag&quot;) stays unnoticed by the user of the API as long as they only deal with <em>equalities</em>.
+    As soon as the equivalence tag starts requesting our attention (via an ambiguous implicit or a type error), it is likely that the attention is justified.</p>
+    <p><em>This article was tested with Scala 2.11.8 and hasheq version 0.3.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/TomasMikula.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Tomas Mikula</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/TomasMikula">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

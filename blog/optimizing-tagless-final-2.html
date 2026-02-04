@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Optimizing Tagless Final – Part 2 – Monadic programs</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Optimizing Tagless Final – Part 2 – Monadic programs</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Luka Jacobowitz<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on June 27, 2018
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="optimizing-tagless-final-part-2-monadic-programs" class="title">Optimizing Tagless Final – Part 2 – Monadic programs</h1>
+    <p>In our previous post on optimizing tagless final programs we learned how we could use the <a href="https://github.com/LukaJCB/sphynx">sphynx library</a> to derive some optimization schemes for your tagless final code. In case you missed it and want to read up on it, you can find it <a href="optimizing-final-tagless.html">right here</a> or you can watch my presentation on the topic <a href="https://www.youtube.com/watch?v=E9iRYNuTIYA">here</a>, but you should be able to follow this blog post without going through it all in detail.</p>
+    
+    <h2 id="optimizing-monadic-programs" class="section"><a class="anchor-link" href="#optimizing-monadic-programs"><code class="fas fa-link fa-sm"></code></a>Optimizing monadic programs</h2>
+    <p>One of the questions I&#39;ve been getting a lot, is if we can also do something like that for the monadic parts of our program.
+    The answer is yes, we can, however it will have to be quite a bit different.</p>
+    <p>I don&#39;t think the differences are quite obvious, so we&#39;ll go through them step by step.
+    With applicative programs, we&#39;re optimizing a bunch of independent instructions.
+    That means, we can look at all of them and extract information out of them statically (i.e. without running the interpreter).
+    They can be seen as a sequence of instructions that we can fold down to a single monoid <code>M</code>, that holds the information that we need to optimize.
+    We then used that monoid to recreate a new interpreter that can take this extra information into account.</p>
+    <p>With monadic programs, we do not have such luxury.
+    We can only step through each of our instructions one at a time, because every instruction depends on the results of the prior one.
+    This means that we cannot extract any information beyond the very first instruction we have.
+    That might seem like a deal breaker, but there&#39;s still a few things we can do.
+    We could, for example, build up our monoid <code>M</code> dynamically, after each monadic instruction.
+    Then, before invoking the next computation in the monadic sequence, we could take that monoid and recreate that next computation with that extra information.</p>
+    <p>Now, that might sound super abstract to you, and I wouldn&#39;t disagree, so let&#39;s look at a quick example.
+    Say, we&#39;re using the <code>KVStore</code> algebra again from last time:</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">put</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">value</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+}</span></code></pre>
+    <p>We could optimize programs with this algebra by caching the results of <code>get</code> and we could use that same cache to also cache key-value pairs we inserted using <code>put</code>.</p>
+    <p>So given this example program:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">program</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>](</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>)(</span><span class="type-name">F</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]] = </span><span class="keyword">for</span><span> {
+  </span><span class="identifier">_</span><span> &lt;- </span><span class="type-name">F</span><span>.</span><span class="identifier">put</span><span>(</span><span class="identifier">key</span><span>, </span><span class="string-literal">&quot;cat&quot;</span><span>)
+  </span><span class="identifier">dog</span><span> &lt;- </span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>)
+  </span><span class="identifier">cat</span><span> &lt;- </span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">dog</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="string-literal">&quot;dog&quot;</span><span>))
+  </span><span class="identifier">cat2</span><span> &lt;- </span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>(</span><span class="string-literal">&quot;cat&quot;</span><span>)
+} </span><span class="keyword">yield</span><span> </span><span class="type-name">List</span><span>(</span><span class="identifier">dog</span><span>, </span><span class="identifier">cat</span><span>, </span><span class="identifier">cat2</span><span>).</span><span class="identifier">flatten</span></code></pre>
+    <p>The naively interpreted program would be doing the following things:
+    1. put the value &quot;cat&quot; into the store with the <code>key</code> passed by the user
+    2. get the value &quot;cat&quot; back out of the store
+    3. access the key-value store and maybe return a value associated with the key &quot;cat&quot;
+    4. access the store again with the same &quot;cat&quot; key.</p>
+    <p>Now if accessing the key-value store means going through a network layer this is of course highly inefficient.
+    Ideally our fully optimized program should do the following things:
+    1. put the value &quot;cat&quot; into the store with the <code>key</code> parameter passed by the user and cache it.
+    2. access the cache to get the value &quot;cat&quot; associated with <code>key</code>
+    3. access the key-value-store and maybe return a value associated with the key &quot;cat&quot;
+    4. access the cache to return the previous result for the &quot;cat&quot; key.</p>
+    <p>Cool, next, let&#39;s look at how we might get there.
+    First the type of our cache, which for our case can just be a <code>Map[String, String]</code>, but generically could just be any monoid.</p>
+    <p>Now what we want to do is transform any interpreter for <code>KVStore</code> programs into interpreters that
+    1. Look in the cache before performing a <code>get</code> action with the actual interpreter
+    2. Write to the cache after performing either a <code>get</code> or <code>put</code> action.</p>
+    <p>So how can we get there? It seems like we want to thread a bunch of state through our program, that we want to both read and write to.
+    If you&#39;re familiar with FP folklore you might recognize that that description fits almost exactly to the <code>State</code> monad.
+    Furthermore, because we know that our <code>F[_]</code> is a monad, that means the <code>StateT</code> monad transformer over <code>F</code> will also be a monad.</p>
+    <p>Okay with that said, let&#39;s try to develop function that turns any interpreter <code>KVStore[F]</code> into an interpreter into <code>StateT[F, M, A]</code>, so an <code>KVStore[StateT[F, M, ?]]</code>, where <code>M</code> is the monoid we use to accumulate our extracted information.
+    We&#39;ll start with the <code>put</code> operation.
+    For <code>put</code>, we&#39;ll want to call the interpreter to perform the action and then modify the state by adding the retrieved value into our cache.
+    To make the code a bit more legible we&#39;ll also define a few type aliases.</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">Cache</span><span> = </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]
+</span><span class="keyword">type</span><span> </span><span class="type-name">CachedAction</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Cache</span><span>, </span><span class="type-name">A</span><span>]
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">transform</span><span>(</span><span class="identifier">interp</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">CachedAction</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">CachedAction</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">put</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">v</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">CachedAction</span><span>[</span><span class="type-name">Unit</span><span>] =
+    </span><span class="type-name">StateT</span><span>.</span><span class="identifier">liftF</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Cache</span><span>, </span><span class="type-name">Unit</span><span>](</span><span class="identifier">interp</span><span>.</span><span class="identifier">put</span><span>(</span><span class="identifier">key</span><span>, </span><span class="identifier">v</span><span>)) *&gt; </span><span class="type-name">StateT</span><span>.</span><span class="identifier">modify</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">updated</span><span>(</span><span class="identifier">key</span><span>, </span><span class="identifier">v</span><span>))
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">CachedAction</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]] = ???
+}</span></code></pre>
+    <p>So far, so good, now let&#39;s have a look at what to do with the <code>get</code> function.
+    It&#39;s a bit more complex, because we want to read from the cache, as well as write to it if the cache didn&#39;t include our key.
+    What we have to do is, get our current state, then check if the key is included, if so, just return it, otherwise call the interpreter to perform the <code>get</code> action and then write that into the cache.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">CachedAction</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]] = </span><span class="keyword">for</span><span> {
+  </span><span class="identifier">cache</span><span> &lt;- </span><span class="type-name">StateT</span><span>.</span><span class="identifier">get</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Cache</span><span>]
+  </span><span class="identifier">result</span><span> &lt;- </span><span class="identifier">cache</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>) </span><span class="keyword">match</span><span> {
+              </span><span class="keyword">case</span><span> </span><span class="identifier">s</span><span> @ </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>) =&gt; </span><span class="identifier">s</span><span>.</span><span class="identifier">pure</span><span>[</span><span class="type-name">CachedAction</span><span>]
+              </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="type-name">StateT</span><span>.</span><span class="identifier">liftF</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Cache</span><span>, </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]](</span><span class="identifier">interp</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>))
+                             .</span><span class="identifier">flatTap</span><span>(</span><span class="identifier">updateCache</span><span>(</span><span class="identifier">key</span><span>))
+            }
+} </span><span class="keyword">yield</span><span> </span><span class="identifier">result</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">updateCache</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>)(</span><span class="identifier">ov</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">CachedAction</span><span>[</span><span class="type-name">Unit</span><span>] = </span><span class="identifier">ov</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">v</span><span>) =&gt; </span><span class="type-name">StateT</span><span>.</span><span class="identifier">modify</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">updated</span><span>(</span><span class="identifier">key</span><span>, </span><span class="identifier">v</span><span>))
+  </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; ().</span><span class="identifier">pure</span><span>[</span><span class="type-name">CachedAction</span><span>]
+}</span></code></pre>
+    <p>This is quite something, so let&#39;s try to walk through it step by step.
+    First we get the cache using <code>StateT.get</code>, so far so good.
+    Now, we check if the key is in the cache using <code>cache.get(key)</code>.
+    The result of that is an <code>Option[String]</code>, which we can pattern match to see if it did include the key.
+    If it did, then we can just return that <code>Option[String]</code> by lifting it into <code>CachedAction</code> using <code>pure</code>.
+    If it wasn&#39;t in the cache, things are a bit more tricky.
+    First, we lift the interpreter action into <code>CachedAction</code> using <code>StateT.liftF</code>, that gives us a <code>CachedAction[Option[String]]</code>, which is already the return type we need and we could return it right there, but we still need to update the cache.
+    Because we already have the return type we need, we can use the <code>flatTap</code> combinator.
+    Then inside the <code>updateCache</code> function, we take the result of our interpreter, which is again an <code>Option[String]</code>, and update the cache if the value is present.
+    If it&#39;s empty, we don&#39;t want to do anything at all, so we just lift unit into <code>CachedAction</code>.</p>
+    <p>In case you&#39;re wondering <code>flatTap</code> works just like <code>flatMap</code>, but will then <code>map</code> the result type back to the original one, making it a bit similar to a monadic version of the left shark (<code>&lt;*</code>) operator, making it very useful for these &quot;fire-and-forget&quot; operations.
+    It&#39;s defined like this:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">flatTap</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>, </span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] =
+  </span><span class="identifier">fa</span><span>.</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">a</span><span> =&gt; </span><span class="identifier">f</span><span>(</span><span class="identifier">a</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">b</span><span> =&gt; </span><span class="identifier">a</span><span>))</span></code></pre>
+    <p>And with that we now have a working function to turn any interpreter into an optimized interpreter.
+    We can also generalize this fairly easily into a function that will do all of the wiring for us.
+    To do so, we&#39;ll generalize away from <code>KVStore</code> and <code>Cache</code> and instead use generic <code>Alg[_[_]]</code> and <code>M</code> parameters:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">optimize</span><span>[</span><span class="type-name">Alg</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]], </span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>, </span><span class="type-name">M</span><span>: </span><span class="type-name">Monoid</span><span>, </span><span class="type-name">A</span><span>]
+  (</span><span class="identifier">program</span><span>: </span><span class="type-name">MonadProgram</span><span>[</span><span class="type-name">Alg</span><span>, </span><span class="type-name">A</span><span>])
+  (</span><span class="identifier">withState</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>] =&gt; </span><span class="type-name">Alg</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, ?]]): </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>] =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="identifier">interpreter</span><span> =&gt;
+    </span><span class="identifier">program</span><span>(</span><span class="identifier">withState</span><span>(</span><span class="identifier">interpreter</span><span>)).</span><span class="identifier">runEmptyA</span></code></pre>
+    <p>Just like last time, we have to use a <code>MonadProgram</code> wrapper around <code>Alg[F] =&gt; F[A]</code>, because Scala lacks rank-N types which would allow us to define values that work over ALL type constructors <code>F[_]: Monad</code> (Fortunately however, this will very probably soon be fixed in dotty, PR <a href="https://github.com/lampepfl/dotty/pull/4672">here</a>).</p>
+    <p>Now let&#39;s see if we can actually use it, by checking it with a test interpreter that will print whenever we retrieve or insert values into the <code>KVStore</code>.</p>
+    <pre><code class="nohighlight"><span class="identifier">optimize</span><span>[</span><span class="type-name">KVStore</span><span>, </span><span class="type-name">IO</span><span>, </span><span class="type-name">Cache</span><span>, </span><span class="type-name">List</span><span>[</span><span class="type-name">String</span><span>]](</span><span class="identifier">program</span><span>(</span><span class="string-literal">&quot;mouse&quot;</span><span>))(</span><span class="identifier">transform</span><span>)
+  .</span><span class="identifier">apply</span><span>(</span><span class="identifier">printInterpreter</span><span>)
+  .</span><span class="identifier">unsafeRunSync</span><span>()
+
+</span><span class="comment">// Put key: mouse, value: cat
+// Get key: cat</span></code></pre>
+    <p>It works and does exactly what we want! 
+    Nice! We could end this blog post right here, but there&#39;s still a couple of things I&#39;d like to slightly alter.</p>
+    
+    <h3 id="refining-the-api" class="section"><a class="anchor-link" href="#refining-the-api"><code class="fas fa-link fa-sm"></code></a>Refining the API</h3>
+    <p>As you were able to tell the implementation of our transformation from the standard interpreter to the optimized interpreter is already quite complex and that is for a very very simple algebra that doesn&#39;t do a lot.
+    Even then, I initially wrote an implementation that packs everything in a single <code>StateT</code> constructor to avoid the overhead of multiple calls to <code>flatMap</code>, but considered the version I showed here more easily understandable.
+    For more involved algebras and more complex programs, all of this will become a lot more difficult to manage.
+    In our last blog post we were able to clearly separate the extraction of our information from the rebuilding of our interpreter with that information.
+    Let&#39;s have a look at if we can do the same thing here.</p>
+    <p>First we&#39;ll want to define an extraction method.
+    For applicative programs we used <code>Const[M, ?]</code>, however that cannot work here, as <code>Const</code> doesn&#39;t have a <code>Monad</code> instance and also, because for extraction with monadic programs, we need to actually take the result of the computation into account. 
+    That means, that for every operation in our algebra, we want a way to turn it into our monoid <code>M</code>.
+    With that said, it seems we want a function <code>A =&gt; M</code>, where <code>A</code> is the result type of the operations in our algebra.
+    So what we can do here is define an algebra for <code>? =&gt; M</code>, in types an <code>Alg[? =&gt; M]</code>.</p>
+    <p>Let&#39;s try to do define such an interpreter for our <code>KVStore</code> along with <code>Cache</code>/<code>Map[String, String</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">extract</span><span>: </span><span class="type-name">KVStore</span><span>[? =&gt; </span><span class="type-name">Cache</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">KVStore</span><span>[? =&gt; </span><span class="type-name">Cache</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] =&gt; </span><span class="type-name">Cache</span><span> = {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">s</span><span>) =&gt; </span><span class="type-name">Map</span><span>(</span><span class="identifier">key</span><span> -&gt; </span><span class="identifier">s</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="type-name">Map</span><span>.</span><span class="identifier">empty</span><span>
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">put</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Unit</span><span> =&gt; </span><span class="type-name">Cache</span><span> =
+    </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">Map</span><span>(</span><span class="identifier">key</span><span> -&gt; </span><span class="identifier">a</span><span>)
+}</span></code></pre>
+    <p>Just as before we want to extract the cache piece by piece with every monadic step.
+    Whenever we get an <code>Option[String]</code> after using <code>get</code>, we can then turn that into a <code>Cache</code> if it&#39;s non-empty.
+    The same goes for <code>put</code>, where we&#39;ll create a Map using the key-value pair.
+    We now have a way to turn the results of our algebra operations into our information <code>M</code>, so far so good!</p>
+    <p>Next, we&#39;ll need a way to rebuild our operations using that extracted information.
+    For that, let&#39;s consider what that actually means.
+    For applicative programs this meant a function that given a state <code>M</code> and an interpreter <code>Alg[F]</code>, gave a  reconstructed interpreter inside the <code>F</code> context <code>F[Alg[F]]</code>.
+    So a function <code>(M, Alg[F]) =&gt; F[Alg[F]]</code>.</p>
+    <p>For monadic programs, there&#39;s no need to precompute any values, as we&#39;re dealing with fully sequential computations that can potentially update the state after every evaluation.
+    So we&#39;re left with a function <code>(M, Alg[F]) =&gt; Alg[F]</code>.
+    Let&#39;s try building that for <code>KVStore</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">rebuild</span><span>(</span><span class="identifier">m</span><span>: </span><span class="type-name">M</span><span>, </span><span class="identifier">interp</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>] = </span><span class="keyword">new</span><span> </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]] = </span><span class="identifier">m</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>) </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">o</span><span> @ </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>) =&gt; </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="identifier">o</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="identifier">interp</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">put</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>] =
+    </span><span class="identifier">m</span><span> =&gt; </span><span class="identifier">interp</span><span>.</span><span class="identifier">put</span><span>(</span><span class="identifier">key</span><span>, </span><span class="identifier">a</span><span>)
+}</span></code></pre>
+    <p>Easy enough!
+    For <code>get</code> we look inside our cache and use the value if it&#39;s there, otherwise we call the original interpreter to do its job.
+    For <code>put</code>, there&#39;s nothing to gain from having access to our extracted information and the only thing we can do is call the interpreter and let it do what needs to be done.</p>
+    <p>Now we have a way to extract information and then also use that information, next up is finding a way to wire these two things together to get back to the behaviour we got using <code>StateT</code>.</p>
+    <p>And as a matter of fact, we&#39;ll wire them back together using exactly <code>StateT</code>, as it&#39;s monad instance does do exactly what we want.</p>
+    <p>Using our two functions <code>extract</code> and <code>rebuild</code> it&#39;s fairly easy to get back to <code>KVStore[StateT[F, Cache, ?]]</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">transform</span><span>(</span><span class="identifier">interp</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Cache</span><span>, ?]] = </span><span class="keyword">new</span><span> </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Cache</span><span>, ?]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">put</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">v</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Cache</span><span>, </span><span class="type-name">Unit</span><span>] =
+    </span><span class="type-name">StateT</span><span>(</span><span class="identifier">cache</span><span> =&gt; </span><span class="identifier">rebuild</span><span>(</span><span class="identifier">cache</span><span>, </span><span class="identifier">interp</span><span>).</span><span class="identifier">put</span><span>(</span><span class="identifier">key</span><span>, </span><span class="identifier">v</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">a</span><span> =&gt; 
+      (</span><span class="identifier">cache</span><span> |+|&nbsp;</span><span class="identifier">extract</span><span>.</span><span class="identifier">put</span><span>(</span><span class="identifier">key</span><span>, </span><span class="identifier">v</span><span>)) -&gt; </span><span class="identifier">a</span><span>))
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Cache</span><span>, </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]] =
+    </span><span class="type-name">StateT</span><span>(</span><span class="identifier">cache</span><span> =&gt; </span><span class="identifier">rebuild</span><span>(</span><span class="identifier">cache</span><span>, </span><span class="identifier">interp</span><span>).</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">a</span><span> =&gt; 
+      (</span><span class="identifier">cache</span><span> |+|&nbsp;</span><span class="identifier">extract</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>)) -&gt; </span><span class="identifier">a</span><span>))
+}</span></code></pre>
+    <p>This is fairly straightforward, we use rebuild with our cache and the interpreter to get a new interpreter that will run the operation.
+    Then, we use the result, which is just an <code>F[Unit]</code>/<code>F[Option[String]]</code> respectively, and map it 
+      using the extractor to get the newest <code>Cache</code> and using its <code>Monoid</code> instance to update the state and then we tuple it with the result, giving us an <code>F[(Cache, Unit)]</code> or <code>F[(Cache, Option[String])]</code>, which is exactly what the <code>StateT</code> constructor needs. </p>
+    <p>This is great, but can we generalize this to any algebra and any monoid?</p>
+    <p>The answer is yes, but it&#39;s not exactly easy.
+    First let&#39;s look at the actual problem.
+    We have two interpreters <code>extract</code> and <code>rebuild</code>, but we have no way to combine them, because <code>Alg</code>, is completely unconstrained and that means we can&#39;t call any functions on a generic <code>Alg[F]</code> at all.
+    So, okay, we need to constrain our <code>Alg</code> parameter to be able to combine values of <code>Alg[F]</code> with values of <code>Alg[G]</code> in some way, but what kind of type class could that be?
+    Are there even type classes that operate on the kind of <code>Alg</code>? </p>
+    
+    <h3 id="higher-kinded-things" class="section"><a class="anchor-link" href="#higher-kinded-things"><code class="fas fa-link fa-sm"></code></a>Higher kinded things</h3>
+    <p>There are, they&#39;re just hidden away in a small library called <code>Mainecoon</code>.
+    That library gives us higher kinded versions of things like functors and contravariant functors, called <code>FunctorK</code> and <code>ContravariantK</code> respectively.</p>
+    <p>Let&#39;s have a quick look at <code>FunctorK</code>:</p>
+    <pre><code class="nohighlight"><span class="annotation">@typeclass</span><span>
+</span><span class="keyword">trait</span><span> </span><span class="type-name">FunctorK</span><span>[</span><span class="type-name">A</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">mapK</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">af</span><span>: </span><span class="type-name">A</span><span>[</span><span class="type-name">F</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">F</span><span> ~&gt; </span><span class="type-name">G</span><span>): </span><span class="type-name">A</span><span>[</span><span class="type-name">G</span><span>]
+}</span></code></pre>
+    <p>Instead of mapping over type constructors <code>F[_]</code>, we map over algebras <code>A[_[_]]</code> and insteading of using functions <code>A =&gt; B</code>, we use natural transformations <code>F ~&gt; G</code>.
+    This is nice, but doesn&#39;t really get us that far. </p>
+    <p>What we really need is the equivalent of the <code>Applicative</code>/<code>Apply</code> <code>map2</code> operation.
+    <code>map2</code> looks like this:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">map2</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>, </span><span class="type-name">C</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">fb</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">B</span><span>])(</span><span class="identifier">f</span><span>: (</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>) =&gt; </span><span class="type-name">C</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">C</span><span>]</span></code></pre>
+    <p>And a higher kinded version would look like this:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">map2K</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">H</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">af</span><span>: </span><span class="type-name">A</span><span>[</span><span class="type-name">F</span><span>], </span><span class="identifier">ag</span><span>: </span><span class="type-name">A</span><span>[</span><span class="type-name">G</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">Tuple2K</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">G</span><span>, ?] ~&gt; </span><span class="type-name">H</span><span>): </span><span class="type-name">A</span><span>[</span><span class="type-name">H</span><span>]</span></code></pre>
+    <p>If you haven&#39;t guessed yet <code>Tuple2K</code> is just a higher kinded version of <code>Tuple2</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">Tuple2K</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">A</span><span>] = (</span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>], </span><span class="type-name">G</span><span>[</span><span class="type-name">A</span><span>])</span></code></pre>
+    <p>Unfortunately <code>Mainecoon</code> doesn&#39;t have an <code>ApplyK</code> type class that gives us this <code>map2K</code> operation, but it gives the next best thing! 
+    A higher-kinded <code>Semigroupal</code>, which when combined with the higher kinded <code>Functor</code> gives us that higher kinded <code>Apply</code> type class.
+    It&#39;s called <code>CartesianK</code> (because cats <code>Semigroupal</code> used to be called <code>Cartesian</code>, but is renamed to <code>SemigroupalK</code> in the next version) and looks like this:</p>
+    <pre><code class="nohighlight"><span class="annotation">@typeclass</span><span> 
+</span><span class="keyword">trait</span><span> </span><span class="type-name">CartesianK</span><span>[</span><span class="type-name">A</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">productK</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">af</span><span>: </span><span class="type-name">A</span><span>[</span><span class="type-name">F</span><span>], </span><span class="identifier">ag</span><span>: </span><span class="type-name">A</span><span>[</span><span class="type-name">G</span><span>]): </span><span class="type-name">A</span><span>[</span><span class="type-name">Tuple2K</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">G</span><span>, ?]]
+}</span></code></pre>
+    <p>Now just like you can define <code>map2</code> using <code>map</code> and <code>product</code> we can do the same for <code>map2K</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">map2K</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">G</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">H</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">af</span><span>: </span><span class="type-name">A</span><span>[</span><span class="type-name">F</span><span>], </span><span class="identifier">ag</span><span>: </span><span class="type-name">A</span><span>[</span><span class="type-name">G</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">Tuple2K</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">G</span><span>, ?] ~&gt; </span><span class="type-name">H</span><span>): </span><span class="type-name">A</span><span>[</span><span class="type-name">H</span><span>] =
+  </span><span class="identifier">productK</span><span>(</span><span class="identifier">af</span><span>, </span><span class="identifier">ag</span><span>).</span><span class="identifier">mapK</span><span>(</span><span class="identifier">f</span><span>)</span></code></pre>
+    
+    <h3 id="putting-it-all-together" class="section"><a class="anchor-link" href="#putting-it-all-together"><code class="fas fa-link fa-sm"></code></a>Putting it all together</h3>
+    <p>Okay, after that quick detour, let&#39;s have a look at how can make use of these type classes.</p>
+    <p>If we look at what we have and how we&#39;d like to use the <code>map2K</code> function, we can infer the rest that we need quite easily.</p>
+    <p>We have an <code>Alg[F]</code> and a <code>Alg[? =&gt; M]</code>, and we want an <code>Alg[StateT[F, M, ?]]</code>, so given those two as the inputs to <code>map2K</code>, all that seems to be missing is the natural transformation <code>Tuple2K[F, ? =&gt; M, ?] ~&gt; StateT[F, M, ?]</code>.
+    Nice! As so often, the types guide us and show us the way.</p>
+    <p>Well let&#39;s try to define just that:</p>
+    <pre><code class="nohighlight"><span class="keyword">new</span><span> (</span><span class="type-name">Tuple2K</span><span>[</span><span class="type-name">F</span><span>, ? =&gt; </span><span class="type-name">M</span><span>, ?] ~&gt; </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, ?]) {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Tuple2K</span><span>[</span><span class="type-name">F</span><span>, ? =&gt; </span><span class="type-name">M</span><span>, ?]): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">A</span><span>] =
+    </span><span class="type-name">StateT</span><span>(</span><span class="identifier">m</span><span> =&gt; </span><span class="type-name">F</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">first</span><span>)(</span><span class="identifier">a</span><span> =&gt; </span><span class="type-name">M</span><span>.</span><span class="identifier">combine</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">second</span><span>(</span><span class="identifier">a</span><span>), </span><span class="identifier">m</span><span>) -&gt; </span><span class="identifier">a</span><span>))
+}</span></code></pre>
+    <p>This looks good, but actually has a problem, to get an <code>Alg[F]</code> from <code>rebuild</code> we give it an <code>M</code> and an interpreter <code>Alg[F]</code>. 
+    The interpreter isn&#39;t really a problem, but the <code>M</code> can prove problematic as we need to give it to the <code>rebuild</code> function after each monadic step to always receive the latest state.
+    If we look at our natural transformation above, that function will never receive the newest state.
+    So what can we do about this?
+    Well, we could be a bit more honest about our types:</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">FunctionM</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">M</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">rebuild</span><span>(</span><span class="identifier">interp</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">Alg</span><span>[</span><span class="type-name">FunctionM</span><span>]</span></code></pre>
+    <p>Hey, now we&#39;re getting there. This works, but if we look into some of the data types provided by <code>Cats</code> we can acutally see that this is just <code>Kleisli</code> or <code>ReaderT</code>, so our <code>rebuild</code> should actually look like this:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">rebuild</span><span>(</span><span class="identifier">interp</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">Alg</span><span>[</span><span class="type-name">Kleisli</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, ?]]</span></code></pre>
+    <p>And now, we can easily implement a correct version of that natural transformation from earlier:</p>
+    <pre><code class="nohighlight"><span class="keyword">new</span><span> (</span><span class="type-name">Tuple2K</span><span>[</span><span class="type-name">Kleisli</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, ?], ? =&gt; </span><span class="type-name">M</span><span>, ?] ~&gt; </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, ?]) {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Tuple2K</span><span>[</span><span class="type-name">Kleisli</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">A</span><span>], ? =&gt; </span><span class="type-name">M</span><span>, ?]): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">A</span><span>] =
+    </span><span class="type-name">StateT</span><span>(</span><span class="identifier">m</span><span> =&gt; </span><span class="type-name">F</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">first</span><span>.</span><span class="identifier">run</span><span>(</span><span class="identifier">m</span><span>))(</span><span class="identifier">a</span><span> =&gt; (</span><span class="identifier">fa</span><span>.</span><span class="identifier">second</span><span>(</span><span class="identifier">a</span><span>) |+| </span><span class="identifier">m</span><span>) -&gt; </span><span class="identifier">a</span><span>))
+}</span></code></pre>
+    <p>Cool, then let us also adjust the rebuild function we created for <code>KVStore</code>:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">rebuild</span><span>(</span><span class="identifier">interp</span><span>: </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">Kleisli</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, ?]] = </span><span class="keyword">new</span><span> </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">Kleisli</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, ?]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Kleisli</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Cache</span><span>, </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>]] = </span><span class="type-name">Kleisli</span><span>(</span><span class="identifier">m</span><span> =&gt; </span><span class="identifier">m</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>) </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">o</span><span> @ </span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>) =&gt; </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>].</span><span class="identifier">pure</span><span>(</span><span class="identifier">o</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt; </span><span class="identifier">interp</span><span>.</span><span class="identifier">get</span><span>(</span><span class="identifier">key</span><span>)
+  })
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">put</span><span>(</span><span class="identifier">key</span><span>: </span><span class="type-name">String</span><span>, </span><span class="identifier">a</span><span>: </span><span class="type-name">String</span><span>): </span><span class="type-name">Kleisli</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Cache</span><span>, </span><span class="type-name">Unit</span><span>] =
+    </span><span class="type-name">Kleisli</span><span>(</span><span class="identifier">m</span><span> =&gt; </span><span class="identifier">interp</span><span>.</span><span class="identifier">put</span><span>(</span><span class="identifier">key</span><span>, </span><span class="identifier">a</span><span>))
+}</span></code></pre>
+    <p>It&#39;s stayed pretty much the same, we just needed to wrap the whole thing in a <code>Kleisli</code> and we&#39;re good!</p>
+    <p>Now we can go ahead and define the full function signature:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">optimize</span><span>[</span><span class="type-name">Alg</span><span>[</span><span class="identifier">_</span><span>[</span><span class="identifier">_</span><span>]]: </span><span class="type-name">FunctorK</span><span>: </span><span class="type-name">CartesianK</span><span>, </span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">Monad</span><span>, </span><span class="type-name">M</span><span>: </span><span class="type-name">Monoid</span><span>, </span><span class="type-name">A</span><span>]
+  (</span><span class="identifier">program</span><span>: </span><span class="type-name">MonadProgram</span><span>[</span><span class="type-name">Alg</span><span>, </span><span class="type-name">A</span><span>])
+  (</span><span class="identifier">extract</span><span>: </span><span class="type-name">Alg</span><span>[? =&gt; </span><span class="type-name">M</span><span>])
+  (</span><span class="identifier">rebuild</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>] =&gt; </span><span class="type-name">Alg</span><span>[</span><span class="type-name">Kleisli</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, ?]]): </span><span class="type-name">Alg</span><span>[</span><span class="type-name">F</span><span>] =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>] = { </span><span class="identifier">interpreter</span><span> =&gt;
+  
+    </span><span class="keyword">val</span><span> </span><span class="identifier">tupleToState</span><span> = </span><span class="keyword">new</span><span> (</span><span class="type-name">Tuple2K</span><span>[</span><span class="type-name">Kleisli</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, ?], ? =&gt; </span><span class="type-name">M</span><span>, ?] ~&gt; </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, ?]) {
+      </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">Tuple2K</span><span>[</span><span class="type-name">Kleisli</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">A</span><span>], ? =&gt; </span><span class="type-name">M</span><span>, </span><span class="type-name">A</span><span>]): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, </span><span class="type-name">A</span><span>] =
+        </span><span class="type-name">StateT</span><span>(</span><span class="identifier">m</span><span> =&gt; </span><span class="type-name">F</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">fa</span><span>.</span><span class="identifier">first</span><span>.</span><span class="identifier">run</span><span>(</span><span class="identifier">m</span><span>))(</span><span class="identifier">a</span><span> =&gt; (</span><span class="identifier">fa</span><span>.</span><span class="identifier">second</span><span>(</span><span class="identifier">a</span><span>) |+| </span><span class="identifier">m</span><span>) -&gt; </span><span class="identifier">a</span><span>))
+    }
+
+    </span><span class="keyword">val</span><span> </span><span class="identifier">withState</span><span>: </span><span class="type-name">Alg</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">M</span><span>, ?]] =
+      </span><span class="identifier">map2K</span><span>(</span><span class="identifier">extract</span><span>(</span><span class="identifier">interpreter</span><span>), </span><span class="identifier">rebuild</span><span>))(</span><span class="identifier">tupleToState</span><span>)
+
+    </span><span class="identifier">program</span><span>(</span><span class="identifier">withState</span><span>).</span><span class="identifier">runEmptyA</span><span>
+  
+  }</span></code></pre>
+    <p>That is all, we&#39;ve got a fully polymorphic function that can optimize monadic programs.</p>
+    <p>Let&#39;s use it!</p>
+    <pre><code class="nohighlight"><span class="identifier">optimize</span><span>(</span><span class="identifier">program</span><span>)(</span><span class="identifier">extract</span><span>)(</span><span class="identifier">rebuild</span><span>)
+  .</span><span class="identifier">apply</span><span>(</span><span class="identifier">printInterpreter</span><span>)
+  .</span><span class="identifier">unsafeRunSync</span><span>()</span></code></pre>
+    <p>Now, when we run this, it should be exactly the same result as when we ran it earlier using the direct <code>StateT</code> interpreter, but the resulting code is much cleaner.
+    However, it does have the drawback that you&#39;ll now need additional constraints for every algebra to use this function.
+    That said though, one of the cool features of <code>Mainecoon</code> is that it comes with auto-derivation.
+    Meaning we can just add an annotation to any of our algebras and it will automatically derive the <code>FunctorK</code> and <code>CartesianK</code> instances.</p>
+    <p>In fact, that is exactly how I defined those two instances for the <code>KVStore</code> algebra:</p>
+    <pre><code class="nohighlight"><span class="annotation">@autoFunctorK</span><span>
+</span><span class="annotation">@autoCartesianK</span><span>
+</span><span class="keyword">trait</span><span> </span><span class="type-name">KVStore</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] { ... }</span></code></pre>
+    <p>This makes it fairly easy to use these extra type classes and helpts mitigate the drawbacks I mentioned.</p>
+    
+    <h3 id="conclusions" class="section"><a class="anchor-link" href="#conclusions"><code class="fas fa-link fa-sm"></code></a>Conclusions</h3>
+    <p>Today we&#39;ve seen a way to make optimizing monadic tagless final programs easier and intuitive, all the code is taken from the sphynx library and can be found <a href="https://github.com/LukaJCB/sphynx">right here</a>, but might still be subject to change, because designing a good API is hard.</p>
+    <p>What do you think about this optimization scheme? Maybe you just prefer using <code>StateT</code> and being done with it, or maybe you like to use a typeclass based approach like the one we used last time?</p>
+    <p>Would love to hear from you all in the comments!</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/LukaJCB.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Luka Jacobowitz</strong>
+              
+              <br />
+              Luka is a functional programmer in love with finding great abstractions to engineering problems. He’s also a maintainer of several typelevel projects and seeks to make learning of pure functional programming as easy as possible.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/LukaJCB">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

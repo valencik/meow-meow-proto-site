@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>The singleton instance trick is unsafe</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">The singleton instance trick is unsafe</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on July 6, 2014
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="the-singleton-instance-trick-is-unsafe" class="title">The singleton instance trick is unsafe</h1>
+    <p><em>Also, the “fake covariance” trick.</em></p>
+    <p>Sometimes, Scala programmers notice a nice optimization they can use
+    in the case of a class that has an invariant type parameter, but in
+    which that type parameter
+    <a href="liskov_lifting.html">appears in variant or phantom position in the actual data involved</a>.
+    <a href="http://www.scala-lang.org/api/2.11.1/scala/Predef$$$eq$colon$eq.html"><code>=:=</code></a>
+    is an
+    <a href="https://github.com/scala/scala/blob/v2.11.1/src/library/scala/Predef.scala#L398">example of the phantom case</a>.</p>
+    <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> =:=[</span><span class="type-name">From</span><span>, </span><span class="type-name">To</span><span>] </span><span class="keyword">extends</span><span> (</span><span class="type-name">From</span><span> =&gt; </span><span class="type-name">To</span><span>) </span><span class="keyword">with</span><span> </span><span class="type-name">Serializable</span></code></pre>
+    <p><a href="http://www.scala-lang.org/api/2.11.1/scala/collection/immutable/Set.html"><code>scala.collection.immutable.Set</code></a>
+    is an example of the covariant case.</p>
+    <p>Here is the optimization, which is very similar to
+    <a href="liskov_lifting.html">the <code>Liskov</code>-lifting previously discussed</a>:
+    a “safe” cast of the invariant type
+    parameter can be made, because all operations on the casted result
+    remain sound.
+    <a href="https://github.com/scala/scala/blob/9fc098dd0dcf1825ec55501716b4f2a0a6d197ae/src/library/scala/collection/immutable/HashSet.scala#L170">Here it is for Set</a>,
+    an example of the “fake covariance” trick:</p>
+    <pre><code class="nohighlight"><span class="keyword">override</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">toSet</span><span>[</span><span class="type-name">B</span><span> &gt;: </span><span class="type-name">A</span><span>]: </span><span class="type-name">Set</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="keyword">this</span><span>.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">B</span><span>]]</span></code></pre>
+    <p>And
+    <a href="https://github.com/scala/scala/blob/v2.11.1/src/library/scala/Predef.scala#L399-L402">here it is for <code>=:=</code></a>,
+    an example of the “singleton instance” trick.</p>
+    <pre><code class="nohighlight"><span class="keyword">private</span><span>[</span><span class="keyword">this</span><span>] </span><span class="keyword">final</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">singleton_</span><span>=:= = </span><span class="keyword">new</span><span> =:=[</span><span class="type-name">Any</span><span>,</span><span class="type-name">Any</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Any</span><span>): </span><span class="type-name">Any</span><span> = </span><span class="identifier">x</span><span>
+}
+</span><span class="keyword">object</span><span> =:= {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">tpEquals</span><span>[</span><span class="type-name">A</span><span>]: </span><span class="type-name">A</span><span> =:= </span><span class="type-name">A</span><span> = </span><span class="identifier">singleton_</span><span>=:=.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">A</span><span> =:= </span><span class="type-name">A</span><span>]
+}</span></code></pre>
+    <p>Unless you are using
+    <a href="https://dl.dropboxusercontent.com/u/7810909/talks/parametricity/4985cb8e6d8d9a24e32d98204526c8e3b9319e33/parametricity.pdf">the Scalazzi safe Scala subset</a>,
+    which forbids referentially nontransparent and nonparametric
+    operations, <em>these tricks are unsafe</em>.</p>
+    
+    <h2 id="types-are-erased" class="section"><a class="anchor-link" href="#types-are-erased"><code class="fas fa-link fa-sm"></code></a>Types are erased</h2>
+    <p>Many people are confused that they cannot write functions like this:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">addone</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = </span><span class="identifier">x</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span> =&gt; </span><span class="identifier">s</span><span> + </span><span class="string-literal">&quot;one&quot;</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span> =&gt; </span><span class="identifier">i</span><span> + </span><span class="number-literal">1</span><span>
+}</span></code></pre>
+    <p>Being given an error as follows.</p>
+    <pre><code class="nohighlight"><span>&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">8</span><span>: </span><span class="identifier">error</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="type-name">String</span><span>
+ </span><span class="identifier">required</span><span>: </span><span class="type-name">A</span><span>
+         </span><span class="keyword">case</span><span> </span><span class="identifier">s</span><span>: </span><span class="type-name">String</span><span> =&gt; </span><span class="identifier">s</span><span> + </span><span class="string-literal">&quot;one&quot;</span><span>
+                             ^
+&lt;</span><span class="identifier">console</span><span>&gt;:</span><span class="number-literal">9</span><span>: </span><span class="identifier">error</span><span>: </span><span class="keyword">type</span><span> </span><span class="identifier">mismatch</span><span>;
+ </span><span class="identifier">found</span><span>   : </span><span class="type-name">Int</span><span>
+ </span><span class="identifier">required</span><span>: </span><span class="type-name">A</span><span>
+         </span><span class="keyword">case</span><span> </span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span> =&gt; </span><span class="identifier">i</span><span> + </span><span class="number-literal">1</span><span>
+                          ^</span></code></pre>
+    <p>Let’s consider only one case, the first. In the right-hand side (RHS)
+    of this case, you have not proved that <code>A</code> is <code>String</code> at all! You
+    have only proved that, in addition to definitely having type <code>A</code>, <code>x</code>
+    also definitely has type <code>String</code>. In type relationship language,</p>
+    <pre><code class="nohighlight"><span class="identifier">x</span><span>.</span><span class="keyword">type</span><span> &lt;: </span><span class="type-name">A</span><span>
+</span><span class="identifier">x</span><span>.</span><span class="keyword">type</span><span> &lt;: </span><span class="type-name">String</span></code></pre>
+    <p>All elephants are grey and are also animals, but it does not follow
+    that all grey things are animals or vice versa. If you use a cast to
+    “fix” this, you have produced type-incorrect code, period.</p>
+    
+    <h2 id="type-recovery" class="section"><a class="anchor-link" href="#type-recovery"><code class="fas fa-link fa-sm"></code></a>Type recovery</h2>
+    <p>Under special circumstances, however, information about a type
+    parameter can be recovered, safe and sound. Take this:</p>
+    <pre><code class="nohighlight"><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Box</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">SBox</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">Box</span><span>[</span><span class="type-name">String</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">IBox</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">Int</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">Box</span><span>[</span><span class="type-name">Int</span><span>]
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">addone2</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">b</span><span>: </span><span class="type-name">Box</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> = </span><span class="identifier">b</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">SBox</span><span>(</span><span class="identifier">s</span><span>) =&gt; </span><span class="identifier">s</span><span> + </span><span class="string-literal">&quot;one&quot;</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">IBox</span><span>(</span><span class="identifier">x</span><span>) =&gt; </span><span class="identifier">x</span><span> + </span><span class="number-literal">1</span><span>
+}</span></code></pre>
+    <p>This compiles, and I don’t even have to have data in the box to get at
+    the type information that <code>A&nbsp;~&nbsp;String</code> or <code>A&nbsp;~&nbsp;Int</code>.  Consider the
+    first case.  On the RHS, I have</p>
+    <pre><code class="nohighlight"><span class="identifier">b</span><span>.</span><span class="keyword">type</span><span> &lt;: </span><span class="type-name">SBox</span><span> &lt;: </span><span class="type-name">Box</span><span>[</span><span class="type-name">String</span><span>]
+</span><span class="identifier">b</span><span>.</span><span class="keyword">type</span><span> &lt;: </span><span class="type-name">Box</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+    <p>In addition, <strong>&lt;code&gt;A&lt;/code&gt; is invariant</strong>, so after going up to
+    <code>Box[String]</code>, <code>b</code> couldn’t have widened that type parameter, or
+    changed it in any way, without an unsafe cast.  Additionally, our
+    supertype tree cannot contain <code>Box</code> twice with different parameters.
+    So we have proved that <code>A</code> is <code>String</code>, because we proved that
+    <code>Box[A]</code> is <code>Box[String]</code>.</p>
+    <p>This is very useful when defining
+    <a href="http://www.haskell.org/haskellwiki/GADTs_for_dummies">GADTs</a>.</p>
+    
+    <h2 id="partial-type-recovery" class="section"><a class="anchor-link" href="#partial-type-recovery"><code class="fas fa-link fa-sm"></code></a>Partial type recovery</h2>
+    <p>Let’s consider a similar ADT with the type parameter marked variant.</p>
+    <pre><code class="nohighlight"><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">CovBox</span><span>[+</span><span class="type-name">A</span><span>]
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">CovSBox</span><span>(</span><span class="identifier">x</span><span>: </span><span class="type-name">String</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">CovBox</span><span>[</span><span class="type-name">String</span><span>]
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">addone3</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">b</span><span>: </span><span class="type-name">CovBox</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">A</span><span> = </span><span class="identifier">b</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">CovSBox</span><span>(</span><span class="identifier">s</span><span>) =&gt; </span><span class="identifier">s</span><span> + </span><span class="string-literal">&quot;one&quot;</span><span>
+}</span></code></pre>
+    <p>This works too, because in the RHS of the case, we proved that:</p>
+    <pre><code class="nohighlight"><span class="identifier">b</span><span>.</span><span class="keyword">type</span><span> &lt;: </span><span class="type-name">CovSBox</span><span> &lt;: </span><span class="type-name">CovBox</span><span>[</span><span class="type-name">String</span><span>] &lt;: </span><span class="type-name">CovBox</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="type-name">String</span><span> &lt;: </span><span class="type-name">A</span></code></pre>
+    <p>The only transform in type <code>A</code> could have possibly undergone is a
+    widening, which <em>must</em> have begun at <code>String</code>. A similar example can
+    be derived for contravariance.</p>
+    
+    <h2 id="singleton-surety" class="section"><a class="anchor-link" href="#singleton-surety"><code class="fas fa-link fa-sm"></code></a>Singleton surety</h2>
+    <p>In our first example, there is one type that we know must be a subtype
+    of <code>A</code>, no matter what!</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">addone</span><span>[</span><span class="type-name">A</span><span> &lt;: </span><span class="type-name">AnyRef</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">A</span><span> = </span><span class="identifier">x</span><span>: </span><span class="identifier">x</span><span>.</span><span class="keyword">type</span></code></pre>
+    <p>(Scala doesn’t like it when we talk about singleton types without an
+    <code>AnyRef</code> upper bound at least.  But the underlying principle holds for
+    all value types.)</p>
+    <p>Where <code>x</code> is an <code>A</code> of stable type, <code>x.type&nbsp;&lt;:&nbsp;A</code> for all possible <code>A</code>
+    types.  You might say, “that’s uninteresting; obviously <code>x</code> is an <code>A</code>
+    in this code.”  But that isn’t what we’re talking about; our premise
+    is that <strong>any</strong> value of type <code>x.type</code> is also an <code>A</code>!</p>
+    <p>So if we could prove that something else had the singleton type
+    <code>x.type</code>, we would also prove that it shared all of <code>x</code>’s types!  We
+    can do that with a singleton type pattern, which is implemented
+    (soundly in 2.11) with a reference comparison.  Scala lets us use
+    <em>some</em> of the resulting implications.</p>
+    <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">InvBox</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">b</span><span>: </span><span class="type-name">A</span><span>)
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">maybeeq</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">InvBox</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">y</span><span>: </span><span class="type-name">InvBox</span><span>[</span><span class="type-name">B</span><span>]): </span><span class="type-name">A</span><span> = </span><span class="identifier">y</span><span> </span><span class="keyword">match</span><span> {
+  </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="identifier">x</span><span>.</span><span class="keyword">type</span><span> =&gt; </span><span class="identifier">y</span><span>.</span><span class="identifier">b</span><span>
+}</span></code></pre>
+    
+    <h2 id="unsafety" class="section"><a class="anchor-link" href="#unsafety"><code class="fas fa-link fa-sm"></code></a>Unsafety</h2>
+    <p>To which you might protest, “there’s only one value of any singleton
+    type!”  Well, yes.  And here’s where our seemingly innocent
+    optimization turns nasty.  If you&#39;ll recall, it depends upon treating
+    a value with multiple types via an unsafe cast.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">unsafeCoerce</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span> = {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">a</span><span> = </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">A</span><span> =:= </span><span class="type-name">A</span><span>]
+  </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">B</span><span> =:= </span><span class="type-name">B</span><span>] </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="identifier">a</span><span>.</span><span class="keyword">type</span><span> =&gt; </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">A</span><span> =:= </span><span class="type-name">B</span><span>]
+  }
+}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">unsafeCoerce2</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span> = {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">n</span><span> = </span><span class="type-name">Set</span><span>[</span><span class="type-name">Nothing</span><span>]()
+  </span><span class="keyword">val</span><span> </span><span class="identifier">b</span><span> = </span><span class="identifier">n</span><span>.</span><span class="identifier">toSet</span><span>[</span><span class="type-name">B</span><span>]
+  </span><span class="identifier">n</span><span>.</span><span class="identifier">toSet</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>: </span><span class="identifier">b</span><span>.</span><span class="keyword">type</span><span> =&gt; </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">A</span><span> =:= </span><span class="type-name">B</span><span>]
+  }
+}</span></code></pre>
+    <p>Both of these compile to what is in essence an identity function.</p>
+    <pre><code class="nohighlight"><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">unsafeCoerce</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>](</span><span class="string-literal">&quot;hi&quot;</span><span>))
+</span><span class="identifier">res0</span><span>: </span><span class="type-name">Some</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Some</span><span>(</span><span class="identifier">hi</span><span>)
+
+</span><span class="identifier">scala</span><span>&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">unsafeCoerce2</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">Int</span><span>](</span><span class="string-literal">&quot;hi&quot;</span><span>))
+</span><span class="identifier">res1</span><span>: </span><span class="type-name">Some</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Some</span><span>(</span><span class="identifier">hi</span><span>)</span></code></pre>
+    <p>In our invariant <code>Box</code> example we decided that, as it was impossible
+    to change the type parameter without an unsafe cast, we could use that
+    knowledge in the consequent types. In <code>unsafeCoerce</code>, where <code>?</code>
+    represents the value before the match keyword:</p>
+    <pre><code class="nohighlight"><span>?.</span><span class="keyword">type</span><span> &lt;: </span><span class="identifier">a</span><span>.</span><span class="keyword">type</span><span> &lt;: (</span><span class="type-name">A</span><span> =:= </span><span class="type-name">A</span><span>)
+?.</span><span class="keyword">type</span><span> &lt;: (</span><span class="type-name">B</span><span> =:= </span><span class="type-name">B</span><span>)
+</span><span class="type-name">A</span><span> ~ </span><span class="type-name">B</span></code></pre>
+    <p>In <code>unsafeCoerce2</code>,</p>
+    <pre><code class="nohighlight"><span>?.</span><span class="keyword">type</span><span> &lt;: </span><span class="identifier">b</span><span>.</span><span class="keyword">type</span><span> &lt;: </span><span class="type-name">Set</span><span>[</span><span class="type-name">B</span><span>]
+?.</span><span class="keyword">type</span><span> &lt;: </span><span class="type-name">Set</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="type-name">A</span><span> ~ </span><span class="type-name">B</span></code></pre>
+    <p><strong>There is nothing wrong with Scala making this logical inference. The
+    “optimization” of that cast is not safe.</strong></p>
+    <p>Let me reiterate: <strong>Scala’s type inference surrounding pattern
+    matching should not be “fixed” to make unsafe casts “safer” and steal
+    our GADTs. Unsafe code is unsafe.</strong></p>
+    
+    <h2 id="scalazzi-safe-scala-subset-saves-us" class="section"><a class="anchor-link" href="#scalazzi-safe-scala-subset-saves-us"><code class="fas fa-link fa-sm"></code></a>Scalazzi safe Scala subset saves us</h2>
+    <p>For types like these, it is not possible to exploit this unsafety
+    without a reference check, which is what a singleton type pattern
+    compiles to.  As the Scalazzi safe subset forbids referentially
+    nontransparent operations, if you follow its rules, these
+    optimizations become safe again.</p>
+    <p>This is just yet another of countless ways in which following the
+    Scalazzi rules makes your code safer and easier to reason about.</p>
+    <p>That isn’t to say it’s impossible to derive a situation where the
+    optimization exposes an <code>unsafeCoerce</code> in Scalazzi code.  However, you
+    must specially craft a type in order to do so.</p>
+    <pre><code class="nohighlight"><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Oops</span><span>[</span><span class="type-name">A</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">widen</span><span>[</span><span class="type-name">B</span><span>&gt;:</span><span class="type-name">A</span><span>]: </span><span class="type-name">Oops</span><span>[</span><span class="type-name">B</span><span>] = </span><span class="keyword">this</span><span>.</span><span class="identifier">asInstanceOf</span><span>[</span><span class="type-name">Oops</span><span>[</span><span class="type-name">B</span><span>]]
+}
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Bot</span><span>() </span><span class="keyword">extends</span><span> </span><span class="type-name">Oops</span><span>[</span><span class="type-name">Nothing</span><span>]
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">unsafeCoerce3</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">B</span><span> = {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">x</span><span> = </span><span class="type-name">Bot</span><span>()
+  </span><span class="identifier">x</span><span>.</span><span class="identifier">widen</span><span>[</span><span class="type-name">A</span><span>] </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Bot</span><span>() =&gt; </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">A</span><span> &lt;:&lt; </span><span class="type-name">B</span><span>]
+  }
+}</span></code></pre>
+    <p>The implication being</p>
+    <pre><code class="nohighlight"><span>?.</span><span class="keyword">type</span><span> &lt;: </span><span class="type-name">Bot</span><span> &lt;: </span><span class="type-name">Oops</span><span>[</span><span class="type-name">Nothing</span><span>]
+?.</span><span class="keyword">type</span><span> &lt;: </span><span class="type-name">Oops</span><span>[</span><span class="type-name">A</span><span>]
+</span><span class="type-name">Nothing</span><span> ~ </span><span class="type-name">A</span></code></pre>
+    <p>Scalaz
+    <a href="https://github.com/scalaz/scalaz/blob/v7.0.6/core/src/main/scala/scalaz/IList.scala#L436-L437">uses the optimization under consideration in <code>scalaz.IList</code></a>.
+    So would generalized <code>Functor</code>-based <code>Liskov</code>-lifting, as discussed at
+    the end of <a href="liskov_lifting.html">“When can Liskov be lifted?”</a>,
+    were it to be implemented.  However, these cases do not fit the bill
+    for exploitation from Scalazzi-safe code.</p>
+    <p>On the other hand, the singleton type pattern approach may be used in
+    <em>all</em> cases where the optimization may be invoked by a caller,
+    including standard library code where some well-meaning contributor
+    might add such a harmless-seeming avoidance of memory allocation
+    without your knowledge.  Purity pays, and often in very nonobvious
+    ways.</p>
+    <p><em>This article was tested with Scala 2.11.1.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

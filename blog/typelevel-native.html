@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Typelevel Native</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Typelevel Native</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Arman Bilge<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on September 19, 2022
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="typelevel-native" class="title">Typelevel Native</h1>
+    <p>We recently published several major Typelevel projects for the <a href="https://scala-native.org/">Scala Native</a> platform, most notably <a href="https://typelevel.org/cats-effect/">Cats Effect</a>, <a href="https://fs2.io/">FS2</a>, and <a href="https://http4s.org/">http4s</a>. This blog post explores what this new platform means for the Typelevel ecosystem as well as how it works under-the-hood.</p>
+    
+    <h3 id="what-is-scala-native" class="section"><a class="anchor-link" href="#what-is-scala-native"><code class="fas fa-link fa-sm"></code></a>What is Scala Native?</h3>
+    <p><a href="https://scala-native.org/">Scala Native</a> is an optimizing ahead-of-time compiler for the Scala language. Put simply: it enables you to <strong>compile Scala code directly to native executables</strong>.</p>
+    <p>It is an ambitious project following in the steps of <a href="https://www.scala-js.org/">Scala.js</a>. Instead of targeting JavaScript, the Scala Native compiler targets the <a href="https://llvm.org/">LLVM</a> IR and uses its toolchain to generate native executables for a range of architectures, including x86, ARM, and in the near future <a href="https://twitter.com/ShadajL/status/1548020571597811719">web assembly</a>.</p>
+    
+    <h3 id="why-is-this-exciting" class="section"><a class="anchor-link" href="#why-is-this-exciting"><code class="fas fa-link fa-sm"></code></a>Why is this exciting?</h3>
+    <p><strong>For Scala in general</strong>, funnily enough I think <a href="https://www.graalvm.org/22.2/reference-manual/native-image/">GraalVM Native Image</a> does a great job summarizing the advantages of native executables, namely:</p>
+    <ul>
+      <li>instant startup that immediately achieves peak performance, without requiring warmup or the heavy footprint of the JVM</li>
+      <li>packagable into small, self-contained binaries for easy deployment and distribution</li>
+    </ul>
+    <p>It is worth mentioning that in benchmarks Scala Native handily beats GraalVM Native Image on startup time, runtime footprint, and binary size.</p>
+    <p>Moreover, breaking free from the JVM is an opportunity to design a runtime specifically optimized for the Scala language itself. This is the true potential of the Scala Native project.</p>
+    <p><strong>For Typelevel in particular</strong>, Scala Native opens new doors for leveling up our ecosystem. Our flagship libraries are largely designed for deploying high performance I/O-bounded microservices and for the first time ever <strong>we now have direct access to kernel I/O APIs</strong>.</p>
+    <p>I am also enthusiastic to use Cats Effect with (non-Scala) native libraries that expose a C API. <a href="https://typelevel.org/cats-effect/docs/std/resource"><code>Resource</code></a> and more generally <a href="https://typelevel.org/cats-effect/docs/typeclasses/monadcancel"><code>MonadCancel</code></a> are powerful tools for safely navigating manual memory management with all the goodness of error-handling and cancelation.</p>
+    
+    <h3 id="how-can-i-try-it" class="section"><a class="anchor-link" href="#how-can-i-try-it"><code class="fas fa-link fa-sm"></code></a>How can I try it?</h3>
+    <p>Christopher Davenport has put up a <a href="https://github.com/ChristopherDavenport/scala-native-ember-example">scala-native-ember-example</a> and reported some <a href="#ember-native-benchmark">benchmark results</a>!</p>
+    
+    <h3 id="how-does-it-work" class="section"><a class="anchor-link" href="#how-does-it-work"><code class="fas fa-link fa-sm"></code></a>How does it work?</h3>
+    <p>The burden of cross-building the Typelevel ecosystem for Scala Native fell almost entirely to <a href="https://typelevel.org/cats-effect/">Cats Effect</a> and <a href="https://fs2.io/">FS2</a>.</p>
+    
+    <h4 id="event-loop-runtime" class="section"><a class="anchor-link" href="#event-loop-runtime"><code class="fas fa-link fa-sm"></code></a>Event loop runtime</h4>
+    <p><strong>To cross-build Cats Effect for Native we had to get creative</strong> because Scala Native currently does not support multithreading (although it will in the next major release). This is a similar situation to the JavaScript runtime, which is also fundamentally single-threaded. But an important difference is that JS runtimes are implemented with an <a href="https://javascript.info/event-loop">event loop</a> and offer callback-based APIs for scheduling timers and performing non-blocking I/O. An <em>event loop</em> is a type of runtime that enables compute tasks, timers, and non-blocking I/O to be interleaved on a single thread (although not every event loop does all these things).</p>
+    <p>Meanwhile, Scala Native core does not implement an event loop nor offer such APIs. There is the <a href="https://github.com/scala-native/scala-native-loop/">scala-native-loop</a> project, which wraps the <a href="https://github.com/libuv/libuv/">libuv</a> event loop runtime, but we did not want to bake such an opinionated dependency into Cats Effect core.</p>
+    <p>Fortunately Daniel Spiewak had the fantastic insight that the “dummy runtime” which I created to initially cross-build Cats Effect for Native could be reformulated into a legitimate event loop implementation by extending it with the capability to “poll” for I/O events: a <code>PollingExecutorScheduler</code>.</p>
+    <p>The <a href="https://github.com/typelevel/cats-effect/blob/7ca03db50342773a79a01ecf137d953408ac6b1d/core/native/src/main/scala/cats/effect/unsafe/PollingExecutorScheduler.scala"><code>PollingExecutorScheduler</code></a> implements both <a href="https://www.scala-lang.org/api/2.13.8/scala/concurrent/ExecutionContext.html"><code>ExecutionContext</code></a> and <a href="https://github.com/typelevel/cats-effect/blob/236a0db0e95be829de34d7a8e3c06914738b7b06/core/shared/src/main/scala/cats/effect/unsafe/Scheduler.scala"><code>Scheduler</code></a> and maintains two queues:</p>
+    <ul>
+      <li>a queue of tasks (read: fibers) to execute </li>
+      <li>a priority queue of timers (read: <code>IO.sleep(...)</code>), sorted by expiration</li>
+    </ul>
+    <p>It also defines an abstract method:</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">poll</span><span>(</span><span class="identifier">timeout</span><span>: </span><span class="type-name">Duration</span><span>): </span><span class="type-name">Boolean</span></code></pre>
+    <p>The idea of this method is very similar to <code>Thread.sleep()</code> except that besides sleeping it may also “poll” for I/O events. It turns out that APIs like this are ubiquitous in C libraries that perform I/O.</p>
+    <p>To demonstrate the API contract, consider invoking <code>poll(3.seconds)</code>:</p>
+    <p><em>I have nothing to do for the next 3 seconds. So wake me up then, or earlier if there is an incoming I/O event that I should handle. But wake me up no later!</em></p>
+    <p><em>Oh, and don’t forget to tell me whether there are still outstanding I/O events (<code>true</code>) or not (<code>false</code>) so I know if I need to call you again. Thanks!</em></p>
+    <p>With tasks, timers, and the capability to poll for I/O, we can express the event loop algorithm. A single iteration of the loop looks like this:</p>
+    <ol class="arabic">
+      <li>
+        <p>Check the current time and execute any expired timers.</p>
+      </li>
+      <li>
+        <p>Execute up to 64 tasks, or until there are none left. We limit to 64 to ensure we are fair to timers and I/O.</p>
+      </li>
+      <li>
+        <p>Poll for I/O events. There are three cases to consider:</p>
+        <ul>
+          <li><strong>There is at least one task to do.</strong> Call <code>poll(0.nanos)</code>, so it will process any available I/O events and then immediately return control.</li>
+          <li><strong>There is at least one outstanding timer</strong>. Call <code>poll(durationToNextTimer)</code>, so it will sleep until the next I/O event arrives or the timeout expires, whichever comes first.</li>
+          <li><strong>There are no tasks to do and no outstanding timers.</strong>  Call <code>poll(Duration.Infinite)</code>, so it will sleep until the next I/O event arrives.</li>
+        </ul>
+      </li>
+    </ol>
+    <p>This algorithm is not a Cats Effect original: the <a href="https://docs.libuv.org/en/v1.x/design.html#the-i-o-loop">libuv event loop</a> works in essentially the same way. It is however a first step toward the much grander Cats Effect <a href="https://github.com/typelevel/cats-effect/discussions/3070">I/O Integrated Runtime Concept</a>. The big idea is that every <code>WorkerThread</code> in the <code>WorkStealingThreadPool</code> that underpins the Cats Effect JVM runtime can run an event loop exactly like the one described above, for exceptionally high-performance I/O.</p>
+    
+    <h4 id="non-blocking-i-o" class="section"><a class="anchor-link" href="#non-blocking-i-o"><code class="fas fa-link fa-sm"></code></a>Non-blocking I/O</h4>
+    <p><strong>So, how do we implement <code>poll</code>?</strong> The bad news is that the answer is OS-specific, which is a large reason why projects such as libuv exist. Furthermore, the entire purpose of polling is to support non-blocking I/O, which falls outside of the scope of Cats Effect. This brings us to FS2, and specifically the <a href="https://fs2.io/#/io"><code>fs2-io</code></a> module where we want to implement non-blocking TCP <a href="https://www.javadoc.io/doc/co.fs2/fs2-docs_2.13/latest/fs2/io/net/Socket.html"><code>Socket</code></a>s.</p>
+    <p>One such polling API is <a href="https://man7.org/linux/man-pages/man7/epoll.7.html">epoll</a>, available only on Linux:</p>
+    <pre><code class="c">#include &lt;sys/epoll.h&gt;
+
+int epoll_create1(int flags);
+
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+
+int epoll_wait(int epfd, struct epoll_event *events,
+                      int maxevents, int timeout);</code></pre>
+    <p>After creating an epoll instance (identified by a file descriptor) we can register sockets (also identified by file descriptors) with <code>epoll_ctl</code>. Typically we will register to be notified of the “read-ready” (<code>EPOLLIN</code>) and “write-ready” (<code>EPOLLOUT</code>) events on that socket. Finally, the actual polling is implemented with <code>epoll_wait</code>, which sleeps until the next I/O event is ready or the <code>timeout</code> expires. Thus we can use it to implement a  <code>PollingExecutorScheduler</code>.</p>
+    <p>As previously mentioned, these sorts of polling APIs are ubiquitous and not just for working directly with sockets. For example, <a href="https://curl.se/libcurl/">libcurl</a> (the C library behind the well-known CLI) exposes a function for polling for I/O on all ongoing HTTP requests.</p>
+    <pre><code class="c">#include &lt;curl/curl.h&gt;
+ 
+CURLMcode curl_multi_poll(CURLM *multi_handle,
+                          struct curl_waitfd extra_fds[],
+                          unsigned int extra_nfds,
+                          int timeout_ms,
+                          int *numfds);</code></pre>
+    <p>Indeed, this function underpins the <code>CurlExecutorScheduler</code> in <a href="https://github.com/http4s/http4s-curl/">http4s-curl</a>.</p>
+    <p>On macOS and BSDs the <a href="https://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2">kqueue</a> API plays an analogous role to epoll. We will not talk about Windows today :)</p>
+    <p><strong>Long story short, I did not want the FS2 codebase to absorb all of this cross-OS complexity.</strong> So in collaboration with Lee Tibbert we repurposed my cheeky <a href="https://github.com/armanbilge/epollcat">epollcat</a> experiment into an actual library implementing JDK NIO APIs (specifically, <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/channels/AsynchronousSocketChannel.html"><code>AsynchronousSocketChannel</code></a> and friends). Since these are the same APIs used by the JVM implementation of <code>fs2-io</code>, it actually enables the <code>Socket</code> code to be completely shared with Native.</p>
+    <p><a href="https://github.com/armanbilge/epollcat">epollcat</a> implements an <code>EpollExecutorScheduler</code> for Linux and a <code>KqueueExecutorScheduler</code> for macOS. They additionally provide an API for monitoring a socket file descriptor for read-ready and write-ready events.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">monitor</span><span>(</span><span class="identifier">fd</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">reads</span><span>: </span><span class="type-name">Boolean</span><span>, </span><span class="identifier">writes</span><span>: </span><span class="type-name">Boolean</span><span>)(
+  </span><span class="identifier">cb</span><span>: </span><span class="type-name">EventNotificationCallback</span><span>
+): </span><span class="type-name">Runnable</span><span> </span><span class="comment">// returns a `Runnable` to un-monitor the file descriptor
+</span><span>
+</span><span class="keyword">trait</span><span> </span><span class="type-name">EventNotificationCallback</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">notifyEvents</span><span>(</span><span class="identifier">readReady</span><span>: </span><span class="type-name">Boolean</span><span>, </span><span class="identifier">writeReady</span><span>: </span><span class="type-name">Boolean</span><span>): </span><span class="type-name">Unit</span><span>
+}</span></code></pre>
+    <p>These are then used to implement the callback-based <code>read</code> and <code>write</code> methods of the JDK <code>AsynchronousSocketChannel</code>.</p>
+    <p>It is worth pointing out that the JVM actually implements <code>AsynchronousSocketChannel</code> with an event loop as well. The difference is that on the JVM, this event loop is used only for I/O and runs on a separate thread from the compute pool used for fibers and the scheduler thread used for timers. Meanwhile, epollcat is an example of an <a href="https://github.com/typelevel/cats-effect/discussions/3070">I/O integrated runtime</a> where fibers, timers, and I/O are all interleaved on a single thread.</p>
+    
+    <h4 id="tls" class="section"><a class="anchor-link" href="#tls"><code class="fas fa-link fa-sm"></code></a>TLS</h4>
+    <p><strong>The last critical piece of the cross-build puzzle was a <a href="https://en.wikipedia.org/wiki/Transport_Layer_Security\">TLS</a> implementation</strong> for <a href="https://www.javadoc.io/doc/co.fs2/fs2-docs_2.13/latest/fs2/io/net/tls/TLSSocket.html"><code>TLSSocket</code></a> and related APIs in FS2. Although the prospect of this was daunting, in the end it was actually fairly straightforward to directly integrate with <a href="https://github.com/aws/s2n-tls">s2n-tls</a>, which exposes a well-designed and well-documented C API. This is effectively the only non-Scala dependency required to use the Typelevel stack on Native.</p>
+    <p>Finally, special thanks to Ondra Pelech and Lorenzo Gabriele for cross-building <a href="https://github.com/cquiroz/scala-java-time">scala-java-time</a> and <a href="https://github.com/cquiroz/scala-java-locales">scala-java-locales</a> for Native and David Strawn for developing <a href="https://github.com/typelevel/idna4s">idna4s</a>. These projects fill important gaps in the Scala Native re-implementation of the JDK and were essential to seamless cross-building.</p>
+    <p>And ... that is pretty much it. <strong>From here, any library or application that is built using Cats Effect and FS2 cross-builds for Scala Native effectively for free.</strong> Three spectacular examples of this are:</p>
+    <ul>
+      <li><a href="https://http4s.org/">http4s</a> Ember, a server+client duo with HTTP/2 support</li>
+      <li><a href="https://github.com/tpolecat/skunk">Skunk</a>, a Postgres client</li>
+      <li><a href="https://github.com/davenverse/rediculous">rediculous</a>, a Redis client</li>
+    </ul>
+    <p>These libraries in turn unlock projects such as <a href="https://github.com/typelevel/feral">feral</a>, <a href="https://github.com/gemini-hlsw/gsp-graphql">Grackle</a>, and <a href="https://disneystreaming.github.io/smithy4s/">smithy4s</a>.</p>
+    
+    <h3 id="what-s-next-and-how-can-i-get-involved" class="section"><a class="anchor-link" href="#what-s-next-and-how-can-i-get-involved"><code class="fas fa-link fa-sm"></code></a>What’s next and how can I get involved?</h3>
+    <p>Please try the Typelevel Native stack! And even better deploy it, and do so loudly!</p>
+    <p>Besides that, here is a brain-dump of project ideas and existing projects that would love contributors. I am happy to help folks get started on any of these, or ideas of your own!</p>
+    <ul>
+      <li>Creating example applications, templates, and tutorials:</li>
+    </ul>
+    <ul>
+      <li>If you are short on inspiration, try cross-building existing examples such as <a href="https://github.com/typelevel/fs2-chat/">fs2-chat</a>, <a href="https://github.com/djspiewak/kitteh-redis">kitteh-redis</a>, <a href="https://github.com/keynmol/jobby/">Jobby</a>.</li>
+    </ul>
+    <ul>
+      <li>
+        <p>Spread the word: <a href="https://youforgotapercentagesignoracolon.com/">you-forgot-a-percentage-sign-or-a-colon</a>.</p>
+      </li>
+      <li>
+        <p>Cross-building existing libraries and developing new, Typelevel-stack ones:</p>
+      </li>
+    </ul>
+    <ul>
+      <li>Go <a href="https://github.com/typelevel/feral">feral</a> and implement a pure Scala <a href="https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html">custom AWS Lambda runtime</a> that cross-builds for Native.</li>
+    </ul>
+    <ul>
+      <li>A pure Scala <a href="https://grpc.io/">gRPC</a> implementation built on http4s would be fantastic, even for the JVM. Christopher Davenport has published a <a href="https://github.com/ChristopherDavenport/grpc-playground">proof-of-concept</a>.</li>
+    </ul>
+    <ul>
+      <li><a href="https://github.com/satabin/fs2-data/">fs2-data</a> has pure Scala support for a plethora of data formats. The <a href="https://github.com/http4s/http4s-fs2-data">http4s-fs2-data</a> integration needs your help to get off the ground!</li>
+    </ul>
+    <ul>
+      <li>
+        <p>Lack of cross-platform cryptography is one of the remaining sore points in cross-building. I started the <a href="https://github.com/typelevel/bobcats">bobcats</a> project to fill the gap but I am afraid it needs love from a more dedicated maintainer.</p>
+      </li>
+      <li>
+        <p>Integrations with native libraries:</p>
+      </li>
+    </ul>
+    <ul>
+      <li>I kick-started <a href="https://github.com/http4s/http4s-curl/">http4s-curl</a> and would love to see someone take the reigns!</li>
+    </ul>
+    <ul>
+      <li>An <a href="https://unit.nginx.org/">NGINX Unit</a> server backend for http4s promises exceptional performance. <a href="https://github.com/lolgab/snunit">snunit</a> pioneered this approach.</li>
+    </ul>
+    <ul>
+      <li>Using <a href="https://github.com/cloudflare/quiche">quiche</a> for HTTP/3 looks yummy!</li>
+    </ul>
+    <ul>
+      <li>
+        <p>An idiomatic wrapper for <a href="https://www.sqlite.org/index.html">SQLite</a>. See also <a href="https://github.com/davenverse/sqlite-sjs/pull/1">davenverse/sqlite-sjs#1</a> which proposes cross-platform API backed by Doobie on the JVM.</p>
+      </li>
+      <li>
+        <p>Developing I/O-integrated runtimes:</p>
+      </li>
+    </ul>
+    <ul>
+      <li><a href="https://github.com/armanbilge/epollcat">epollcat</a> supports Linux and macOS and has plenty of opportunity for optimization and development.</li>
+    </ul>
+    <ul>
+      <li>A <a href="https://github.com/libuv/libuv/">libuv</a>-based runtime would have solid cross-OS support, including Windows. Prior art in <a href="https://github.com/scala-native/scala-native-loop/">scala-native-loop</a>.</li>
+    </ul>
+    <ul>
+      <li>
+        <p>Personally I am excited to work on an <a href="https://en.wikipedia.org/wiki/Io_uring">io_uring</a> runtime.</p>
+      </li>
+      <li>
+        <p>Tooling. Anton Sviridov has spear-headed two major projects in this area:</p>
+      </li>
+    </ul>
+    <ul>
+      <li><a href="https://github.com/indoorvivants/sbt-vcpkg/">sbt-vcpkg</a> is working hard to solve the native dependency problem.</li>
+    </ul>
+    <ul>
+      <li><a href="https://github.com/indoorvivants/sn-bindgen">sn-bindgen</a> generates Scala Native bindings to native libraries directly from <code>*.h</code> header files. I found it immensely useful while working on http4s-curl, epollcat, and the s2n-tls integration in FS2.</li>
+    </ul>
+    <ul>
+      <li>
+        <p>Also: we are <em>badly</em> in need of a pure Scala port of the <a href="https://github.com/openjdk/jmh">Java Microbenchmark Harness</a>. Not the whole thing obviously, but just enough to run the existing Cats Effect benchmarks for example.</p>
+      </li>
+      <li>
+        <p>Scala Native itself. Lots to do there!</p>
+      </li>
+    </ul>
+    
+    <h3 id="ember-native-benchmark" class="section"><a class="anchor-link" href="#ember-native-benchmark"><code class="fas fa-link fa-sm"></code></a>Ember native benchmark</h3>
+    <pre><code class="console">$ hey -z 30s http://localhost:8080
+
+Summary:
+  Total:    30.0160 secs
+  Slowest:    0.3971 secs
+  Fastest:    0.0012 secs
+  Average:    0.0131 secs
+  Requests/sec:    3815.4647
+
+  Total data:    1145250 bytes
+  Size/request:    10 bytes
+
+Response time histogram:
+  0.001 [1]    |
+  0.041 [114486]    |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+  0.080 [7]    |
+  0.120 [5]    |
+  0.160 [5]    |
+  0.199 [3]    |
+  0.239 [5]    |
+  0.278 [3]    |
+  0.318 [4]    |
+  0.357 [3]    |
+  0.397 [3]    |
+
+
+Latency distribution:
+  10% in 0.0119 secs
+  25% in 0.0121 secs
+  50% in 0.0122 secs
+  75% in 0.0125 secs
+  90% in 0.0133 secs
+  95% in 0.0224 secs
+  99% in 0.0234 secs
+
+Details (average, fastest, slowest):
+  DNS+dialup:    0.0000 secs, 0.0012 secs, 0.3971 secs
+  DNS-lookup:    0.0000 secs, 0.0000 secs, 0.0011 secs
+  req write:    0.0000 secs, 0.0000 secs, 0.0013 secs
+  resp wait:    0.0131 secs, 0.0011 secs, 0.3941 secs
+  resp read:    0.0000 secs, 0.0000 secs, 0.0010 secs
+
+Status code distribution:
+  [200]    114525 responses</code></pre>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/armanbilge.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Arman Bilge</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/armanbilge">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

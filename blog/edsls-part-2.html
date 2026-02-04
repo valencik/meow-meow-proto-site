@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>EDSLs as functions</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">EDSLs as functions</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Adelbert Chang<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on October 26, 2016
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="edsls-as-functions" class="title">EDSLs as functions</h1>
+    <p><em>This is the second of a series of articles on &quot;Monadic EDSLs in Scala.&quot;</em></p>
+    <p>Perhaps the most direct way to start writing an EDSL is to start writing
+    functions. Let&#39;s say we want a language for talking about sets of integers.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">SetLang</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">set</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>]): </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">set</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>]): </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">exists</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">set</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>]): </span><span class="type-name">Boolean</span><span>
+}</span></code></pre>
+    <p>This works... to the extent that we want only to work with
+    <code>scala.collection.Set</code>s. As it stands we cannot talk about
+    other sets such as bloom filters or sets controlled by other threads.
+    Our language isn&#39;t <em>abstract</em> enough, so let&#39;s remove
+    all traces of <code>Set</code>.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">SetLang</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">set</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">set</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">exists</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">set</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>]): </span><span class="type-name">Boolean</span><span>
+
+  </span><span class="comment">// Given unknown F we no longer know how to create an empty set
+</span><span>  </span><span class="comment">// so we add the capability to our language
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">empty</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>]
+}</span></code></pre>
+    <p>We&#39;ve parameterized our language with a <a href="hkts-moving-forward.html" title="Higher-kinded types: the difference between giving up, and moving forward">higher-kinded type</a> which
+    represents the context of our set. A similar parameterization could be
+    done with a *-kinded type (e.g. <code>SetLang[A]</code>) but since this series
+    focuses on <strong>monadic</strong> EDSLs, the choice is made for us.</p>
+    <p>Now we can write mini-programs which talk about some abstract set
+    yet to be determined.</p>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">program</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">lang</span><span>: </span><span class="type-name">SetLang</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">Boolean</span><span> = {
+  </span><span class="keyword">import</span><span> </span><span class="identifier">lang</span><span>.</span><span class="identifier">_</span><span>
+  </span><span class="identifier">exists</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="identifier">remove</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="identifier">add</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="identifier">add</span><span>(</span><span class="number-literal">5</span><span>, </span><span class="identifier">empty</span><span>))))
+}</span></code></pre>
+    <p>Interpretation of our program is done by implementing <code>SetLang</code> and
+    passing an instance into <code>program</code>.</p>
+    <p>However, our language is still not abstract enough. Replacing <code>Set</code>
+    with <code>F</code> allows us to swap in implementations of sets, but doesn&#39;t
+    allow us to talk about the context. Consider the behavior of <code>exists</code> if <code>F</code>
+    represents some remote set. Since <code>exists</code> returns a <code>Boolean</code>,
+    checking membership must be a synchronous operation despite the set living
+    on another node.</p>
+    <p>It&#39;s also tedious to thread the set through each method manually.</p>
+    <p>We can solve both problems by generalizing the use of <code>F</code> to some
+    context that is able to read and write to some set
+    (think <code>Set[Int] =&gt; (Set[Int], A)</code>).</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">SetLang</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">exists</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Boolean</span><span>]
+
+  </span><span class="comment">// No longer need `empty` since the &quot;context&quot; has it already
+</span><span>}</span></code></pre>
+    <p><code>SetLang</code> can now talk about the <strong>effects</strong> around interpretation, such as
+    asynchronity.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.</span><span class="type-name">Future</span><span>
+
+</span><span class="keyword">type</span><span> </span><span class="type-name">AsyncSet</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>] =&gt; </span><span class="type-name">Future</span><span>[(</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">A</span><span>)]
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">AsyncSet</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">SetLang</span><span>[</span><span class="type-name">AsyncSet</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>] =&gt; </span><span class="type-name">Future</span><span>[(</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Unit</span><span>)] = ???
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>] =&gt; </span><span class="type-name">Future</span><span>[(</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Unit</span><span>)] = ???
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">exists</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>] =&gt; </span><span class="type-name">Future</span><span>[(</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Boolean</span><span>)] = ???
+}</span></code></pre>
+    <p>This new encoding introduces a new but important problem: how do we
+    combine the results of multiple calls to <code>SetLang</code> methods? In the previous
+    encoding we could add and remove by threading the set from one call to
+    the next. With this change to represent a context, it&#39;s not clear how to do
+    that.</p>
+    <p>Fortunately we are now in a position to leverage a powerful tool:
+    <a href="http://homepages.inf.ed.ac.uk/wadler/papers/marktoberdorf/baastad.pdf" title="Monads for functional programming">monads</a>. By extending our set language to be monadic
+    we recover composition in an elegant way. The <a href="https://github.com/typelevel/cats" title="Typelevel Cats">Cats</a> library is used
+    for demonstration purposes, but the discussion applies equally to
+    <a href="https://github.com/scalaz/scalaz/tree/series/7.3.x" title="Scalaz 7">Scalaz</a>.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Monad</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">SetLang</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="comment">// See: subtype-typeclasses.md
+</span><span>  </span><span class="comment">// for why the `Monad` instance is defined as a member as opposed to inherited
+</span><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">monad</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">exists</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Boolean</span><span>]
+}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">program</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="identifier">lang</span><span>: </span><span class="type-name">SetLang</span><span>[</span><span class="type-name">F</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Boolean</span><span>] = {
+  </span><span class="keyword">import</span><span> </span><span class="identifier">lang</span><span>.</span><span class="identifier">_</span><span>
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">monadInstance</span><span> = </span><span class="identifier">monad</span><span>
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">add</span><span>(</span><span class="number-literal">5</span><span>)
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">add</span><span>(</span><span class="number-literal">10</span><span>)
+    </span><span class="identifier">_</span><span> &lt;- </span><span class="identifier">remove</span><span>(</span><span class="number-literal">5</span><span>)
+    </span><span class="identifier">b</span><span> &lt;- </span><span class="identifier">exists</span><span>(</span><span class="number-literal">10</span><span>)
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">b</span><span>
+}</span></code></pre>
+    <p>Defining an interpreter starts by identifying a target context. Since the context
+    computes values while updating state, this suggests the state monad.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">data</span><span>.</span><span class="type-name">State</span><span>
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">ScalaSet</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">SetLang</span><span>[</span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]] {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">monad</span><span> = </span><span class="type-name">Monad</span><span>[</span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Unit</span><span>] =
+    </span><span class="type-name">State</span><span>.</span><span class="identifier">modify</span><span>(</span><span class="identifier">_</span><span> + </span><span class="identifier">i</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Unit</span><span>] =
+    </span><span class="type-name">State</span><span>.</span><span class="identifier">modify</span><span>(</span><span class="identifier">_</span><span> - </span><span class="identifier">i</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">exists</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Boolean</span><span>] =
+    </span><span class="type-name">State</span><span>.</span><span class="identifier">inspect</span><span>(</span><span class="identifier">_</span><span>(</span><span class="identifier">i</span><span>))
+}</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">state</span><span> = </span><span class="identifier">program</span><span>[</span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]](</span><span class="type-name">ScalaSet</span><span>)
+</span><span class="comment">// state: cats.data.StateT[cats.Eval,scala.collection.immutable.Set[Int],Boolean] = cats.data.StateT@ce9f626
+</span><span>
+</span><span class="identifier">state</span><span>.</span><span class="identifier">run</span><span>(</span><span class="type-name">Set</span><span>.</span><span class="identifier">empty</span><span>).</span><span class="identifier">value</span><span>
+</span><span class="comment">// res5: (scala.collection.immutable.Set[Int], Boolean) = (Set(10),true)</span></code></pre>
+    <p>Note that calling <code>program</code> did not require any context-specific knowledge -
+    we could define another interpreter, perhaps one that talks to a set
+    concurrently.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">data</span><span>.</span><span class="type-name">StateT</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">concurrent</span><span>.{</span><span class="type-name">ExecutionContext</span><span>, </span><span class="type-name">Future</span><span>}
+
+</span><span class="comment">// Asynchronous state
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">AsyncSet</span><span>(</span><span class="keyword">implicit</span><span> </span><span class="identifier">ec</span><span>: </span><span class="type-name">ExecutionContext</span><span>): </span><span class="type-name">SetLang</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">Future</span><span>, </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">SetLang</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">Future</span><span>, </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]] {
+    </span><span class="keyword">val</span><span> </span><span class="identifier">monad</span><span> = </span><span class="type-name">Monad</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">Future</span><span>, </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]]
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">Future</span><span>, </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Unit</span><span>] =
+      </span><span class="type-name">StateT</span><span>.</span><span class="identifier">modify</span><span>(</span><span class="identifier">_</span><span> + </span><span class="identifier">i</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">Future</span><span>, </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Unit</span><span>] =
+      </span><span class="type-name">StateT</span><span>.</span><span class="identifier">modify</span><span>(</span><span class="identifier">_</span><span> - </span><span class="identifier">i</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">exists</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">Future</span><span>, </span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Boolean</span><span>] =
+      </span><span class="type-name">StateT</span><span>.</span><span class="identifier">inspect</span><span>(</span><span class="identifier">_</span><span>(</span><span class="identifier">i</span><span>))
+  }</span></code></pre>
+    <pre><code class="nohighlight"><span class="comment">// No changes to `program` required
+</span><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> = </span><span class="identifier">program</span><span>(</span><span class="type-name">AsyncSet</span><span>(</span><span class="type-name">ExecutionContext</span><span>.</span><span class="identifier">global</span><span>))
+</span><span class="comment">// result: cats.data.StateT[scala.concurrent.Future,scala.collection.immutable.Set[Int],Boolean] = cats.data.StateT@1c029382</span></code></pre>
+    <p><code>SetLang</code> captures the <em>structure</em> of a computation, but leaves open
+    its <em>interpretation</em>.</p>
+    
+    <h1 id="monad-transformers-and-classes" class="section"><a class="anchor-link" href="#monad-transformers-and-classes"><code class="fas fa-link fa-sm"></code></a>Monad transformers and classes</h1>
+    <p>As it turns out, <code>SetLang</code> is an example of an encoding often referred to as
+    <a href="https://hackage.haskell.org/package/mtl" title="Monad classes">MTL-style</a>.</p>
+    
+    <h2 id="monads-in-monads" class="section"><a class="anchor-link" href="#monads-in-monads"><code class="fas fa-link fa-sm"></code></a>Monads in monads</h2>
+    <p>Among the motivations for monad classes is to remove the need to specify
+    monad transformer stacks. The following example is adapted from
+    <a href="http://web.cecs.pdx.edu/~mpj/pubs/springschool.html" title="Functional Programming with Overloading and Higher-Order Polymorphism">Functional Programming with Overloading and Higher-Order Polymorphism</a>
+    by Professor Mark P. Jones.</p>
+    <p>Consider a program that is open to failure and computes with some state. This
+    suggests a combinator of <code>Either</code> and <code>State</code>, both of which have
+    monad transformers. All that is left is to decide which transformer to use.</p>
+    <pre><code class="nohighlight"><span class="keyword">type</span><span> </span><span class="type-name">App1</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">State</span><span>[</span><span class="type-name">S</span><span>, ?], </span><span class="type-name">Error</span><span>, </span><span class="type-name">A</span><span>]
+            </span><span class="comment">// State[S, Either[Error, A]]
+</span><span>            </span><span class="comment">// S =&gt; (S, Either[Error, A])
+</span><span>
+</span><span class="keyword">type</span><span> </span><span class="type-name">App2</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">StateT</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">Error</span><span>, ?], </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>]
+            </span><span class="comment">// S =&gt; Either[Error, (S, A)]</span></code></pre>
+    <p>While <code>App1</code> and <code>App2</code> are both valid compositions, the
+    semantics of the compositions differ. <code>App1</code> describes a program where
+    the computation of a <em>value</em> at each transition may fail - but any changes
+    are preserved - whereas <code>App2</code> describes a program where the <em>entire</em>
+    transition may fail.</p>
+    <p>We can abstract away the difference by creating a type class which provides
+    the relevant operations we need.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">monad</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">raiseError</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">e</span><span>: </span><span class="type-name">E</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleErrorWith</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>]
+}
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">MonadState</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">S</span><span>] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">monad</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">S</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">set</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+}</span></code></pre>
+    <p>Similar type classes exist for the <code>Reader</code> and <code>Writer</code> data types.
+    These type classes are provided in both <a href="https://github.com/typelevel/cats" title="Typelevel Cats">Cats</a> and <a href="https://github.com/scalaz/scalaz/tree/series/7.3.x" title="Scalaz 7">Scalaz</a>,
+    <a href="subtype-typeclasses.html" title="Subtype type classes don&#39;t work">with some caveats</a>.</p>
+    <p>With these type classes in place we can write functions against these as
+    opposed to specific transformer stacks. Furthermore our functions can specify
+    exactly what operations they need which helps correctness and
+    <a href="https://www.mpi-sws.org/~dreyer/tor/papers/wadler.pdf" title="Theorems for free!">parametricity</a>.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.{</span><span class="type-name">MonadError</span><span>, </span><span class="type-name">MonadState</span><span>}
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">data</span><span>.{</span><span class="type-name">EitherT</span><span>, </span><span class="type-name">State</span><span>, </span><span class="type-name">StateT</span><span>}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">program</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]](</span><span class="keyword">implicit</span><span> </span><span class="type-name">F0</span><span>: </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">String</span><span>],
+                           </span><span class="type-name">F1</span><span>: </span><span class="type-name">MonadState</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">Int</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] =
+  </span><span class="type-name">F0</span><span>.</span><span class="identifier">flatMap</span><span>(</span><span class="type-name">F1</span><span>.</span><span class="identifier">get</span><span>) { </span><span class="identifier">i</span><span> =&gt;
+    </span><span class="type-name">F0</span><span>.</span><span class="identifier">raiseError</span><span>[</span><span class="type-name">Int</span><span>](</span><span class="string-literal">&quot;fail&quot;</span><span>)
+  }</span></code></pre>
+    <p>Our program can then be instantiated with either transformer stack.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="comment">// At the time of this writing Cats does not have these instances
+// so they are defined here.
+//
+// Additionally, both Cats and Scalaz 7 have encoding issues
+// with these MTL type classes which requires us to redefine Monad when
+// defining MonadState instances, despite there already being one.
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">eitherTMonadState</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>, </span><span class="type-name">S</span><span>](</span><span class="keyword">implicit</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">MonadState</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>]): </span><span class="type-name">MonadState</span><span>[</span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, ?], </span><span class="type-name">S</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">MonadState</span><span>[</span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, ?], </span><span class="type-name">S</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">get</span><span>: </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">S</span><span>] =
+      </span><span class="type-name">EitherT</span><span>(</span><span class="type-name">F</span><span>.</span><span class="identifier">get</span><span>.</span><span class="identifier">map</span><span>(</span><span class="type-name">Right</span><span>(</span><span class="identifier">_</span><span>)))
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">set</span><span>(</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>): </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">Unit</span><span>] =
+      </span><span class="type-name">EitherT</span><span>(</span><span class="type-name">F</span><span>.</span><span class="identifier">set</span><span>(</span><span class="identifier">s</span><span>).</span><span class="identifier">map</span><span>(</span><span class="type-name">Right</span><span>(</span><span class="identifier">_</span><span>)))
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">flatMap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>])
+                     (</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">B</span><span>]): </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">B</span><span>] =
+      </span><span class="identifier">fa</span><span>.</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">f</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">pure</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">A</span><span>] =
+      </span><span class="type-name">EitherT</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="identifier">x</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">tailRecM</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">Either</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]]): </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>, </span><span class="type-name">B</span><span>] =
+      </span><span class="type-name">EitherT</span><span>.</span><span class="identifier">catsDataMonadErrorForEitherT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>].</span><span class="identifier">tailRecM</span><span>(</span><span class="identifier">a</span><span>)(</span><span class="identifier">f</span><span>)
+  }
+
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">def</span><span> </span><span class="declaration-name">stateTMonadError</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>], </span><span class="type-name">E</span><span>, </span><span class="type-name">S</span><span>](</span><span class="keyword">implicit</span><span> </span><span class="type-name">F</span><span>: </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">E</span><span>]): </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, ?], </span><span class="type-name">E</span><span>] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">MonadError</span><span>[</span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, ?], </span><span class="type-name">E</span><span>] {
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">handleErrorWith</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">E</span><span> =&gt; </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>]): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>] =
+      </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>] { (</span><span class="identifier">s</span><span>: </span><span class="type-name">S</span><span>) =&gt;
+        </span><span class="keyword">val</span><span> </span><span class="identifier">state</span><span>: </span><span class="type-name">F</span><span>[(</span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>)] = </span><span class="identifier">fa</span><span>.</span><span class="identifier">run</span><span>(</span><span class="identifier">s</span><span>)
+        </span><span class="type-name">F</span><span>.</span><span class="identifier">handleErrorWith</span><span>(</span><span class="identifier">state</span><span>)(</span><span class="identifier">e</span><span> =&gt; </span><span class="identifier">f</span><span>(</span><span class="identifier">e</span><span>).</span><span class="identifier">run</span><span>(</span><span class="identifier">s</span><span>))
+      }
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">raiseError</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">e</span><span>: </span><span class="type-name">E</span><span>): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>] =
+      </span><span class="type-name">StateT</span><span>.</span><span class="identifier">lift</span><span>(</span><span class="type-name">F</span><span>.</span><span class="identifier">raiseError</span><span>(</span><span class="identifier">e</span><span>))
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">flatMap</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>])(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">B</span><span>]): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">B</span><span>] =
+      </span><span class="identifier">fa</span><span>.</span><span class="identifier">flatMap</span><span>(</span><span class="identifier">f</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">pure</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">x</span><span>: </span><span class="type-name">A</span><span>): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">A</span><span>] = </span><span class="type-name">StateT</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="identifier">x</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">tailRecM</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>](</span><span class="identifier">a</span><span>: </span><span class="type-name">A</span><span>)(</span><span class="identifier">f</span><span>: </span><span class="type-name">A</span><span> =&gt; </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">Either</span><span>[</span><span class="type-name">A</span><span>, </span><span class="type-name">B</span><span>]]): </span><span class="type-name">StateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>, </span><span class="type-name">B</span><span>] =
+      </span><span class="type-name">StateT</span><span>.</span><span class="identifier">catsDataMonadStateForStateT</span><span>[</span><span class="type-name">F</span><span>, </span><span class="type-name">S</span><span>].</span><span class="identifier">tailRecM</span><span>(</span><span class="identifier">a</span><span>)(</span><span class="identifier">f</span><span>)
+  }
+
+</span><span class="keyword">type</span><span> </span><span class="type-name">App1</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">EitherT</span><span>[</span><span class="type-name">State</span><span>[</span><span class="type-name">Int</span><span>, ?], </span><span class="type-name">String</span><span>, </span><span class="type-name">A</span><span>]
+
+</span><span class="keyword">type</span><span> </span><span class="type-name">App2</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="type-name">StateT</span><span>[</span><span class="type-name">Either</span><span>[</span><span class="type-name">String</span><span>, ?], </span><span class="type-name">Int</span><span>, </span><span class="type-name">A</span><span>]</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">app1</span><span> = </span><span class="identifier">program</span><span>[</span><span class="type-name">App1</span><span>]
+</span><span class="comment">// app1: App1[Int] = EitherT(cats.data.StateT@5fdc056d)
+</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">app2</span><span> = </span><span class="identifier">program</span><span>[</span><span class="type-name">App2</span><span>]
+</span><span class="comment">// app2: App2[Int] = cats.data.StateT@72493a33</span></code></pre>
+    
+    <h1 id="composing-languages" class="section"><a class="anchor-link" href="#composing-languages"><code class="fas fa-link fa-sm"></code></a>Composing languages</h1>
+    <p>From one angle we can view our set language, or more generally any EDSL
+    in MTL-style, as an effect like <code>MonadError</code> and <code>MonadState</code>. From another
+    angle we can view <code>MonadError</code> and <code>MonadState</code> as EDSLs that talk about errors
+    and stateful computations. We can eliminate the distinctions by renaming
+    <code>SetLang</code> to <code>MonadSet</code> and treating it as a type class.</p>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Monad</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">implicits</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">trait</span><span> </span><span class="type-name">MonadSet</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">monad</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Unit</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">exists</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Boolean</span><span>]
+}</span></code></pre>
+    <p>Composing multiple languages then becomes adding constraints to functions, and
+    interpretation becomes instantiating type parameters that satisfy the
+    constraints.</p>
+    <pre><code class="nohighlight"><span class="keyword">trait</span><span> </span><span class="type-name">MonadCalc</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">monad</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>]
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">lit</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>]
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">plus</span><span>(</span><span class="identifier">l</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="identifier">r</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>]): </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>]
+}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">setProgram</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">MonadSet</span><span>](</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">F</span><span>[</span><span class="type-name">Boolean</span><span>] =
+  </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">MonadSet</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">exists</span><span>(</span><span class="identifier">i</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">calcProgram</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">MonadCalc</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Int</span><span>] = {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">calc</span><span> = </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">MonadCalc</span><span>[</span><span class="type-name">F</span><span>]]
+  </span><span class="identifier">calc</span><span>.</span><span class="identifier">plus</span><span>(</span><span class="identifier">calc</span><span>.</span><span class="identifier">lit</span><span>(</span><span class="number-literal">1</span><span>), </span><span class="identifier">calc</span><span>.</span><span class="identifier">lit</span><span>(</span><span class="number-literal">2</span><span>))
+}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">composedProgram</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]: </span><span class="type-name">MonadCalc</span><span>: </span><span class="type-name">MonadSet</span><span>]: </span><span class="type-name">F</span><span>[</span><span class="type-name">Boolean</span><span>] = {
+  </span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">monad</span><span>: </span><span class="type-name">Monad</span><span>[</span><span class="type-name">F</span><span>] = </span><span class="identifier">implicitly</span><span>[</span><span class="type-name">MonadCalc</span><span>[</span><span class="type-name">F</span><span>]].</span><span class="identifier">monad</span><span>
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">i</span><span> &lt;- </span><span class="identifier">calcProgram</span><span>[</span><span class="type-name">F</span><span>]
+    </span><span class="identifier">b</span><span> &lt;- </span><span class="identifier">setProgram</span><span>(</span><span class="identifier">i</span><span>)
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">b</span><span>
+}
+
+</span><span class="comment">// Instance
+</span><span>
+</span><span class="comment">// Instances are defined together but nothing is stopping us from defining
+// these separately, perhaps one in the MonadSet object and another in the
+// SetState object.
+</span><span class="keyword">implicit</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">stateInstance</span><span>: </span><span class="type-name">MonadSet</span><span>[</span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]] </span><span class="keyword">with</span><span> </span><span class="type-name">MonadCalc</span><span>[</span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]] =
+  </span><span class="keyword">new</span><span> </span><span class="type-name">MonadSet</span><span>[</span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]] </span><span class="keyword">with</span><span> </span><span class="type-name">MonadCalc</span><span>[</span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]] {
+    </span><span class="keyword">val</span><span> </span><span class="identifier">monad</span><span> = </span><span class="type-name">Monad</span><span>[</span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]]
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">add</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Unit</span><span>] = </span><span class="type-name">State</span><span>.</span><span class="identifier">modify</span><span>(</span><span class="identifier">_</span><span> + </span><span class="identifier">i</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">remove</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Unit</span><span>] = </span><span class="type-name">State</span><span>.</span><span class="identifier">modify</span><span>(</span><span class="identifier">_</span><span> - </span><span class="identifier">i</span><span>)
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">exists</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Boolean</span><span>] = </span><span class="type-name">State</span><span>.</span><span class="identifier">inspect</span><span>(</span><span class="identifier">_</span><span>(</span><span class="identifier">i</span><span>))
+
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">lit</span><span>(</span><span class="identifier">i</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Int</span><span>] = </span><span class="type-name">State</span><span>.</span><span class="identifier">pure</span><span>(</span><span class="identifier">i</span><span>)
+    </span><span class="keyword">def</span><span> </span><span class="declaration-name">plus</span><span>(</span><span class="identifier">l</span><span>: </span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Int</span><span>], </span><span class="identifier">r</span><span>: </span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Int</span><span>]): </span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], </span><span class="type-name">Int</span><span>] =
+      (</span><span class="identifier">l</span><span> |@| </span><span class="identifier">r</span><span>).</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span> + </span><span class="identifier">_</span><span>)
+  }</span></code></pre>
+    <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">result</span><span> = </span><span class="identifier">composedProgram</span><span>[</span><span class="type-name">State</span><span>[</span><span class="type-name">Set</span><span>[</span><span class="type-name">Int</span><span>], ?]].</span><span class="identifier">run</span><span>(</span><span class="type-name">Set</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">Int</span><span>]).</span><span class="identifier">value</span><span>
+</span><span class="comment">// result: (scala.collection.immutable.Set[Int], Boolean) = (Set(),false)</span></code></pre>
+    <p>As before, <code>composedProgram</code>, <code>calcProgram</code>, and <code>setProgram</code> are defined
+    independent of interpretation, so alternative interpretations simply require
+    defining appropriate instances.</p>
+    
+    <h1 id="a-note-about-laws" class="section"><a class="anchor-link" href="#a-note-about-laws"><code class="fas fa-link fa-sm"></code></a>A note about laws</h1>
+    <p>Type classes should come with laws - this lets us give meaning to their use.
+    The <code>Monoid</code> type class requires data types to have an <strong>associative</strong> binary
+    operation and a corresponding identity element. These laws allow us to
+    parallelize batch operations, such as partitioning a <code>List[A]</code> into
+    multiple chunks to be scattered across threads or machines and gathered
+    back.</p>
+    <p>Since our EDSLs are type classes, we should think about what laws we expect
+    to hold. Below are some possible candidates for laws:</p>
+    <pre><code>// MonadSet
+set *&gt; add(i)    *&gt; remove(i) = set
+set *&gt; remove(i) *&gt; exists(i) = false
+set *&gt; add(i)    *&gt; exists(i) = true
+
+// MonadCalc - these are just the Monoid laws
+plus(lit(0), x) = plus(x, lit(0)) = x
+plus(x, plus(y, z)) = plus(plus(x, y), z)</code></pre>
+    <p>Next up we&#39;ll take a look at some pitfalls of this approach, and a modified
+    encoding that solves some of them.</p>
+    <p><em>This article was tested with Scala 2.11.8, Cats 0.7.2, kind-projector 0.9.0,
+    and si2712fix-plugin 1.2.0 using <a href="https://github.com/tpolecat/tut" title="tut: doc/tutorial generator for scala">tut</a>.</em></p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/adelbertc.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Adelbert Chang</strong>
+              
+              <br />
+              Adelbert is an engineer at Box where he attempts to reliably copy bytes from one machine to another. He enjoys writing pure functional programs, teaching functional programming, and learning more about computing.
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/adelbertc">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

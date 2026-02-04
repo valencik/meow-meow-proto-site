@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>First batch of talks at the Philadelphia Summit</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">First batch of talks at the Philadelphia Summit</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Lars Hupel<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on January 28, 2016
+    </p>
+     
+      <span class="bulma-tag">summits</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="first-batch-of-talks-at-the-philadelphia-summit" class="title">First batch of talks at the Philadelphia Summit</h1>
+    <p>The work on the programme for the <a href="../todo/">Philadelphia Summit</a> is in full swing!
+    As announced earlier, we&#39;re happy to share with you the first batch of accepted talks.
+    Don&#39;t worry though, there&#39;s still time until the end of the week to <a href="http://goo.gl/forms/SX3plxsOKb">submit a proposal</a>.</p>
+    
+    <h3 id="becoming-a-cat-s-person" class="section"><a class="anchor-link" href="#becoming-a-cat-s-person"><code class="fas fa-link fa-sm"></code></a>Becoming a cat(s) person</h3>
+    <p>Want to contribute to Cats?
+    Let&#39;s head over to the Cats Issues list and do some live coding!
+    Along the way we will see how the codebase is organized, the various bits of automation provided, and how you can use our various channels to get feedback on your work.</p>
+    <p>&lt;img src=&quot;/img/media/speakers/adelbertchang.jpeg&quot; class=&quot;portrait&quot;&gt;
+    <em>Adelbert Chang is a Software Engineer at Box and a recent graduate from UC Santa Barbara where he studied Computer Science and researched graph querying and modeling. He enjoys helping with functional programming education and learning more about programming.</em>
+    &lt;br style=&quot;clear: both;&quot;&gt;</p>
+    
+    <h3 id="direct-syntax-for-monad-comprehensions" class="section"><a class="anchor-link" href="#direct-syntax-for-monad-comprehensions"><code class="fas fa-link fa-sm"></code></a>Direct syntax for monad comprehensions</h3>
+    <p>Easy, intuitive, direct-style syntax for monad comprehensions!
+    Like Scala <code>async</code> or SBT <code>.value</code>, but generalized to any monad.
+    Implemented, ready to be used and requiring only vanilla Scala 2.10/2.11 and blackbox macros.
+    Future extensions could include automatic use of Applicative where possible, support for more embedded control-flow operations, comprehensions over multiple compatible monads at once for user-defined notions of compatible and compiler tweaks for syntactic improvements.</p>
+    <p>&lt;img src=&quot;/img/media/speakers/chrisvogt.jpg&quot; class=&quot;portrait&quot;&gt;
+    <em>Chris Vogt. Slick co-author, Compossible records author, frequent Scala conference/user group speaker, former member of Martin&#39;s team at LAMP/EPFL, based in NYC, Senior Software Engineer at x.ai</em>
+    &lt;br style=&quot;clear: both;&quot;&gt;</p>
+    <p>&lt;img src=&quot;/img/media/speakers/chrishodapp.jpg&quot; class=&quot;portrait&quot;&gt;
+    <em>Chris Hodapp. Several-time Scala GSOC student and eventually mentor, author of the ill-fated Comprehensive Comprehensions project. He&#39;s hoping to see tooling and techniques from the FP/Typelevel community improve the leverage of the average developer. Based in the SF Bay Area.</em>
+    &lt;br style=&quot;clear: both;&quot;&gt;</p>
+    
+    <h3 id="scala-exercises" class="section"><a class="anchor-link" href="#scala-exercises"><code class="fas fa-link fa-sm"></code></a>Scala Exercises</h3>
+    <p>Scala Exercises is a web based community tool open sourced by 47 Degrees.
+    It contains multiple koan and free form style exercises maintained by library authors and maintainers to help you master some of the most important tools in the Scala Ecosystem.
+    Version 2 comes with a brand new backend and exercise tracking where you can login simply using your Github account and track your progress throughout exercises and libraries.
+    Version 2 will launch with exercises for the stdlib, Cats, Shapeless and other well known libraries and frameworks part of the Scala ecosystem.</p>
+    <p>&lt;img src=&quot;/img/media/speakers/raulraja.jpg&quot; class=&quot;portrait&quot;&gt;
+    <em>Raul Raja. Functional programming enthusiast, CTO and Co-founder at 47 Degrees, a functional programming consultancy specialized in Scala.</em>
+    &lt;br style=&quot;clear: both;&quot;&gt;</p>
+    
+    <h3 id="probabilistic-programming-what-it-is-and-how-it-works" class="section"><a class="anchor-link" href="#probabilistic-programming-what-it-is-and-how-it-works"><code class="fas fa-link fa-sm"></code></a>Probabilistic Programming: What It Is and How It Works</h3>
+    <p>Probabilistic programming is the other Big Thing to happen in machine learning alongside deep learning.
+    It is also closely tied to functional programming. In this talk I will explain the goals of probabilistic programming and how we can implement a probabilistic programming language in Scala.
+    Probabilistic models are one of the main approaches in machine learning.
+    Probabilistic programming aims to make expressive probabilistic models cheaper to develop.
+    This is achieved by expressing the model within an embedded DSL, and then compiling learning (inference) algorithms from the model description.
+    This automates one of the main tasks in building a probabilistic model, and provides the same benefits as a compiler for a traditional high-level language.
+    With the close tie of functional programming to mathematics, and the use of techniques like the free monad, functional programming languages are an ideal platform for embedding probabilistic programming.</p>
+    <p>&lt;img src=&quot;/img/media/speakers/noelwelsh.png&quot; class=&quot;portrait&quot;&gt;
+    <em>Noel Welsh is a partner at Underscore, a consultancy that specializes in Scala. He&#39;s been using Scala for 6 years in all sorts of applications. He&#39;s the author of Advanced Scala, which is in the process of being rewritten to use Cats.</em>
+    &lt;br style=&quot;clear: both;&quot;&gt;</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/larsrh.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Lars Hupel</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/larsrh">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

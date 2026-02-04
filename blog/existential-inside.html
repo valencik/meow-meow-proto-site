@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>It’s existential on the inside</title>
+</head>
+
+<body>
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
+      </div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main>
+    
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">It’s existential on the inside</p>
+    <p class="blog-post-byline bulma-subtitle">
+      by
+      
+        Stephen Compall<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+      
+      on January 28, 2016
+    </p>
+     
+      <span class="bulma-tag">technical</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="it-s-existential-on-the-inside" class="title">It’s existential on the inside</h1>
+    <p><em>This is the eighth of a series of articles on “Type Parameters and
+    Type Members”.  You may wish to
+    <a href="type-members-parameters.html">check out the beginning</a>,
+    which introduces the <code>PList</code> type we refer to throughout this article
+    without further ado.</em></p>
+    <p>When you start working with type parameters, nothing makes it
+    immediately apparent that you are working with universal and
+    existential types at the same time. It is literally a matter of
+    perspective.</p>
+    <p>I will momentarily set aside a lengthy explanation of what this means,
+    in favor of some diagrams.</p>
+    
+    <h2 id="universal-outside-existential-inside-1" class="section"><a class="anchor-link" href="#universal-outside-existential-inside-1"><code class="fas fa-link fa-sm"></code></a>Universal outside, existential inside</h2>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">fizzle</span><span>[</span><span class="type-name">A</span><span>]: </span><span class="type-name">PList</span><span>[</span><span class="type-name">A</span><span>] =&gt; </span><span class="type-name">PList</span><span>[</span><span class="type-name">A</span><span>] = {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">rec</span><span>(</span><span class="identifier">pl</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">A</span><span>], </span><span class="identifier">tl</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="type-name">A</span><span>]): </span><span class="type-name">PList</span><span>[</span><span class="type-name">A</span><span>] = </span><span class="identifier">tl</span><span> </span><span class="keyword">match</span><span> {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PNil</span><span>() =&gt; </span><span class="identifier">pl</span><span>
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">xs</span><span>) =&gt; </span><span class="identifier">rec</span><span>(</span><span class="type-name">PCons</span><span>(</span><span class="identifier">x</span><span>, </span><span class="identifier">pl</span><span>), </span><span class="identifier">xs</span><span>)
+  }
+  </span><span class="identifier">xs</span><span> =&gt; </span><span class="identifier">rec</span><span>(</span><span class="type-name">PNil</span><span>(), </span><span class="identifier">xs</span><span>)
+}</span></code></pre>
+    <p><img src="../img/media/ieoti-fizzle.png" alt="Universal outside existential inside"></p>
+    <p>The caller can select any <code>A</code>, but the implementation must work with
+    whatever <code>A</code> the caller chooses. So <code>fizzle</code> is universal in <code>A</code> from
+    the outside, but existential in <code>A</code> from the inside.</p>
+    <p>So what happens when the caller and callee ‘trade places’?</p>
+    
+    <h2 id="existential-outside-universal-inside" class="section"><a class="anchor-link" href="#existential-outside-universal-inside"><code class="fas fa-link fa-sm"></code></a>Existential outside, universal inside</h2>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">wazzle</span><span>: </span><span class="type-name">Int</span><span> =&gt; </span><span class="type-name">PList</span><span>[</span><span class="identifier">_</span><span>] =
+  </span><span class="identifier">n</span><span> =&gt; </span><span class="keyword">if</span><span> (</span><span class="identifier">n</span><span> &lt;= </span><span class="number-literal">0</span><span>) </span><span class="type-name">PCons</span><span>(</span><span class="number-literal">42</span><span>, </span><span class="type-name">PNil</span><span>())
+       </span><span class="keyword">else</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="string-literal">&quot;hi&quot;</span><span>, </span><span class="type-name">PNil</span><span>())</span></code></pre>
+    <p><img src="../img/media/ieoti-wazzle.png" alt="Existential outside universal inside"></p>
+    <p>Now the implementation gets to choose an <code>A</code>, and the caller must work
+    with whatever <code>A</code> the implementation chooses. So <code>wazzle</code> is universal
+    in <code>A</code> from the inside, but existential in <code>A</code> from the outside.</p>
+    <p>A good way to think about these two, <code>fizzle</code> and <code>wazzle</code>, is that
+    <code>fizzle</code> takes a type <em>argument</em> from the caller, but <code>wazzle</code>
+    <em>returns</em> a type (alongside the list) to the caller.</p>
+    
+    <h2 id="universal-outside-existential-inside-2" class="section"><a class="anchor-link" href="#universal-outside-existential-inside-2"><code class="fas fa-link fa-sm"></code></a>Universal (!) outside, existential inside</h2>
+    <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">duzzle</span><span>[</span><span class="type-name">A</span><span>]: </span><span class="type-name">PList</span><span>[</span><span class="type-name">A</span><span>] =&gt; </span><span class="type-name">Int</span><span> = {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">PNil</span><span>() =&gt; </span><span class="number-literal">0</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">xs</span><span>) =&gt; </span><span class="number-literal">1</span><span> + </span><span class="identifier">duzzle</span><span>(</span><span class="identifier">xs</span><span>)
+}
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">duzzle2</span><span>: </span><span class="type-name">PList</span><span>[</span><span class="identifier">_</span><span>] =&gt; </span><span class="type-name">Int</span><span> = {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">PNil</span><span>() =&gt; </span><span class="number-literal">0</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">PCons</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">xs</span><span>) =&gt; </span><span class="number-literal">1</span><span> + </span><span class="identifier">duzzle2</span><span>(</span><span class="identifier">xs</span><span>)
+}</span></code></pre>
+    <p><img src="../img/media/ieoti-duzzle.png" alt="Universal outside existential inside"></p>
+    <p><code>wazzle</code> “returns” a type, alongside the list, because the existential
+    appears as part of the return type. However, <code>duzzle2</code> places the
+    existential in argument position. So, as with all type-parameterized
+    cases, <code>duzzle</code> among them, this is one where the caller determines
+    the type.</p>
+    <p>We’ve <a href="method-equiv.html">discussed</a> how you can
+    prove that <code>duzzle</code>&nbsp;≡<em>&lt;sub&gt;&lt;small&gt;m&lt;/small&gt;&lt;/sub&gt;</em>&nbsp;<code>duzzle2</code>, in a
+    previous post. Now, it’s time to see why.</p>
+    
+    <h2 id="type-parameters-are-parameters" class="section"><a class="anchor-link" href="#type-parameters-are-parameters"><code class="fas fa-link fa-sm"></code></a>Type parameters are parameters</h2>
+    <p>The caller chooses the value of a type parameter. It also chooses the
+    value of normal parameters. So, it makes sense to treat them the same.</p>
+    <p>Let’s try to look at <code>fizzle</code>’s type this way.</p>
+    <pre><code class="nohighlight"><span>[</span><span class="type-name">A</span><span>] =&gt; </span><span class="type-name">PList</span><span>[</span><span class="type-name">A</span><span>] =&gt; </span><span class="type-name">PList</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+    
+    <h2 id="existential-types-are-pairs" class="section"><a class="anchor-link" href="#existential-types-are-pairs"><code class="fas fa-link fa-sm"></code></a>Existential types are pairs</h2>
+    <p>If <code>wazzle</code> returns a type and a value, it makes sense to treat them
+    as a returned pair.</p>
+    <p>Let’s look at <code>wazzle</code>’s type this way.</p>
+    <pre><code class="nohighlight"><span class="type-name">Int</span><span> =&gt; ([</span><span class="type-name">A</span><span>], </span><span class="type-name">PList</span><span>[</span><span class="type-name">A</span><span>])</span></code></pre>
+    <p>This corresponds exactly to the <code>forSome</code> scope
+    <a href="nested-existentials.html">we have explored previously</a>.
+    So we can interpret <code>PList[PList[_]]</code> as follows.</p>
+    <pre><code class="nohighlight"><span class="type-name">PList</span><span>[</span><span class="type-name">PList</span><span>[</span><span class="type-name">A</span><span>] </span><span class="identifier">forSome</span><span> {</span><span class="keyword">type</span><span> </span><span class="type-name">A</span><span>}]  </span><span class="comment">// explicitly scoped
+</span><span class="type-name">PList</span><span>[([</span><span class="type-name">A</span><span>], </span><span class="type-name">PList</span><span>[</span><span class="type-name">A</span><span>])]            </span><span class="comment">// “paired”</span></code></pre>
+    
+    <h2 id="the-duzzles-are-currying" class="section"><a class="anchor-link" href="#the-duzzles-are-currying"><code class="fas fa-link fa-sm"></code></a>The <code>duzzle</code>s are currying</h2>
+    <p>With these two models, we can finally get to the bottom of
+    <code>duzzle</code>&nbsp;≡<em>&lt;sub&gt;&lt;small&gt;m&lt;/small&gt;&lt;/sub&gt;</em>&nbsp;<code>duzzle2</code>. Here are their
+    types, rewritten in the forms we’ve just seen.</p>
+    <pre><code class="nohighlight"><span>[</span><span class="type-name">A</span><span>] =&gt; </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>] =&gt; </span><span class="type-name">Int</span><span>
+([</span><span class="type-name">A</span><span>], </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]) =&gt; </span><span class="type-name">Int</span></code></pre>
+    <p>Recognize that? They’re just the curried and uncurried forms of the
+    same function type.</p>
+    <p>You can also see why the same type change will not work for <code>wazzle</code>.</p>
+    <pre><code class="nohighlight"><span class="type-name">Int</span><span> =&gt; ([</span><span class="type-name">A</span><span>], </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>])
+[</span><span class="type-name">A</span><span>] =&gt; </span><span class="type-name">Int</span><span> =&gt; </span><span class="type-name">List</span><span>[</span><span class="type-name">A</span><span>]</span></code></pre>
+    <p>We’ve moved part of the return type into an argument, which is…not the
+    same.</p>
+    
+    <h2 id="the-future-of-types" class="section"><a class="anchor-link" href="#the-future-of-types"><code class="fas fa-link fa-sm"></code></a>The future of types?</h2>
+    <p>This formulation of universal and existential types is due to
+    dependently-typed systems, in which they are “dependent&nbsp;functions” and
+    “dependent&nbsp;pairs”, respectively, though with significantly more
+    expressive power than we’re working with here. They come by way of the
+    description of the Quest programming language in
+    <a href="http://www.lucacardelli.name/Papers/TypefulProg.pdf">“Typeful Programming” by Luca Cardelli</a>,
+    which shows in a clear, syntactic way that the dependent view of
+    universal and existential types is perfectly cromulent to
+    non-dependent type systems like Scala’s.</p>
+    <p>It is also the root of my frustration that Scala doesn’t support a
+    <code>forAll</code>, like <code>forSome</code> but for universally-quantified types. After
+    all, you can’t work with one without the other.</p>
+    <p>Now we have enough groundwork for
+    <a href="internal-state.html">“Making internal state functional”</a>,
+    the next part of this series. I suspect it will be a little prosaic at
+    this point, though.</p>
+  </div>
+</div>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="bulma-columns">
+    
+    <div class="bulma-column">
+      <article class="bulma-media">
+        
+        <figure class="bulma-media-left">
+          <p class="bulma-image bulma-is-64x64">
+            <img class="bulma-is-rounded" src="https://github.com/S11001001.png" />
+          </p>
+        </figure>
+        
+        <div class="bulma-media-content">
+          <div class="bulma-content">
+            <p>
+              <strong>Stephen Compall</strong>
+              
+            </p>
+          </div>
+          <nav class="bulma-level">
+            <div class="bulma-level-left bulma-is-flex-direction-row">
+              
+              <a class="bulma-level-item" href="http://github.com/S11001001">
+                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+              </a>
+              
+              
+              
+              
+            </div>
+          </nav>
+        </div>
+      </article>
+    </div>
+    
+  </div>
+</div>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column">
+      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="#">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+
