@@ -1,10 +1,12 @@
-{%
-  author: ${typelevel}
-  date: "2022-01-19"
-  tags: [governance]
-%}
+---
+layout: post
+title: Governing Documents
+category: governance
 
-# Governing Documents
+meta:
+  nav: blog
+  author: typelevel
+---
 
 As a first step in our effort to increase transparency in the Typelevel organization, the [Steering Commitee](https://github.com/typelevel/governance/blob/main/STEERING-COMMITTEE.md) have approved and released an initial set of [Governing Documents](https://github.com/typelevel/governance).
 

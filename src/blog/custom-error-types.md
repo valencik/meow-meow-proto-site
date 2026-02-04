@@ -1,10 +1,12 @@
-{%
-  author: ${djspiewak}
-  date: "2025-09-02"
-  tags: [technical, cats-effect]
-%}
+---
+layout: post
+title: Custom Error Types Using Cats Effect and MTL
+category: technical
 
-# Custom Error Types Using Cats Effect and MTL
+meta:
+  nav: blog
+  author: djspiewak
+---
 
 **tl;dr** Cats MTL 1.6.0 introduces a brand new lightweight syntax for managing user-defined error types in the Cats ecosystem without requiring complex monad transformers.
 
