@@ -64,13 +64,13 @@ object Main extends CommandIOApp("build", "builds the site") {
 
 object LaikaBuild {
   import java.net.{URI, URL}
-  import laika.api.MarkupParser
-  import laika.api.Renderer
-  import laika.api.format.TagFormatter
+  import laika.api.*
+  import laika.api.format.*
   import laika.ast.*
-  import laika.config.SyntaxHighlighting
-  import laika.format.{HTML, Markdown}
-  import laika.io.model.{FilePath, InputTree}
+  import laika.config.*
+  import laika.format.*
+  import laika.io.config.*
+  import laika.io.model.*
   import laika.io.syntax.*
   import laika.parse.code.languages.ScalaSyntax
   import laika.theme.*
@@ -110,13 +110,27 @@ object LaikaBuild {
     .using(
       Markdown.GitHubFlavor,
       SyntaxHighlighting.withSyntaxBinding("scala", ScalaSyntax.Scala3),
-      LaikaCustomizations.Directives
+      LaikaCustomizations.Directives,
+      LaikaCustomizations.RssExtensions
     )
+    .withConfigValue(LaikaKeys.siteBaseURL, "https://typelevel.org/")
     .parallel[IO]
     .withTheme(theme)
     .build
 
-  val binaryRenderers = List(IndexRendererConfig(true))
+  val binaryRenderers = List(
+    IndexRendererConfig(true),
+    BinaryRendererConfig(
+      "rss",
+      LaikaCustomizations.Rss,
+      artifact = Artifact(
+        basePath = Path.Root / "blog" / "feed",
+        suffix = "rss"
+      ),
+      false,
+      false
+    )
+  )
 
   def build(destination: FilePath) = parser.use { parser =>
     val html = Renderer
@@ -125,12 +139,18 @@ object LaikaBuild {
       .parallel[IO]
       .withTheme(theme)
       .build
+    val rss = Renderer
+      .of(LaikaCustomizations.Rss)
+      .withConfig(parser.config)
+      .parallel[IO]
+      .build
     val index =
       Renderer.of(IndexFormat).withConfig(parser.config).parallel[IO].build
 
-    html.product(index).use { (html, index) =>
+    (html, rss, index).tupled.use { (html, rss, index) =>
       parser.fromInput(input).parse.flatMap { tree =>
         html.from(tree).toDirectory(destination).render *>
+          rss.from(tree).toFile(destination / "blog" / "feed.rss").render *>
           index
             .from(tree)
             .toFile(destination / "search" / "searchIndex.idx")
@@ -142,11 +162,14 @@ object LaikaBuild {
 
 object LaikaCustomizations {
   import java.time.OffsetDateTime
-  import laika.api.bundle.{DirectiveRegistry, TemplateDirectives}
+  import java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME
+  import laika.config.*
+  import laika.api.bundle.*
   import laika.api.config.*
-  import laika.api.format.TagFormatter
+  import laika.api.format.*
   import laika.ast.*
-  import laika.format.HTML
+  import laika.format.*
+  import laika.theme.*
 
   def addAnchorLinks(fmt: TagFormatter, h: Header) = {
     val link = h.options.id.map { id =>
@@ -167,6 +190,34 @@ object LaikaCustomizations {
 
   val overrides = HTML.Overrides { case (fmt, h: Header) =>
     addAnchorLinks(fmt, h)
+  }
+
+  object RssExtensions extends ExtensionBundle {
+    def description = "RSS-specific extensions"
+
+    override def extendPathTranslator =
+      ctx => ExtendedTranslator(ctx.baseTranslator)
+
+    private final class ExtendedTranslator(delegate: PathTranslator)
+        extends PathTranslator {
+      export delegate.{translate, getAttributes}
+
+      def forReferencePath(path: Path) =
+        ExtendedTranslator(delegate.forReferencePath(path))
+
+      override def translate(target: Target) = target match {
+        case InternalTarget.Resolved(absolutePath, relativePath, formats) =>
+          delegate.translate(
+            InternalTarget.Resolved(
+              absolutePath,
+              relativePath,
+              TargetFormats.Selected("html") // force HTML links in RSS feed
+            )
+          )
+        case target =>
+          delegate.translate(target)
+      }
+    }
   }
 
   object Directives extends DirectiveRegistry {
@@ -197,5 +248,58 @@ object LaikaCustomizations {
     val linkDirectives = Seq.empty
     val spanDirectives = Seq.empty
     val blockDirectives = Seq.empty
+  }
+
+  object Rss
+      extends TwoPhaseRenderFormat[TagFormatter, BinaryPostProcessor.Builder] {
+
+    def interimFormat = new {
+      def fileSuffix = "rss"
+
+      val defaultRenderer = {
+        case (fmt, Title(_, _)) =>
+          "" // don't render title b/c it is in the RSS metadata
+        case (fmt, elem) => HTML.defaultRenderer(fmt, elem)
+      }
+
+      export HTML.formatterFactory
+    }
+
+    def prepareTree(tree: DocumentTreeRoot) = Right(tree)
+
+    def postProcessor: BinaryPostProcessor.Builder = new {
+      def build[F[_]: Async](config: Config, theme: Theme[F]) =
+        Resource.pure { (result, output, config) =>
+          val posts = result.allDocuments
+            .flatMap { d =>
+              d.config.get[OffsetDateTime]("date").toList.tupleLeft(d)
+            }
+            .sortBy(_._2)(using summon[Ordering[OffsetDateTime]].reverse)
+
+          output.resource.use { os =>
+            Async[F].blocking {
+              val pw = new java.io.PrintWriter(os)
+              pw.print("""|<?xml version="1.0" encoding="UTF-8" ?>
+                          |<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
+                          |<channel>
+                          |<title>Typelevel Blog</title>
+                          |<link>https://typelevel.org/blog/</link>
+                          |<description>The Typelevel Blog RSS Feed</description>
+                          |""".stripMargin)
+
+              posts
+                .takeWhile(_._2.isAfter(OffsetDateTime.now().minusYears(1)))
+                .foreach { (doc, _) =>
+                  pw.print(doc.content)
+                }
+
+              pw.print("""|</channel>
+                          |</rss>
+                          |""".stripMargin)
+              pw.flush()
+            }
+          }
+        }
+    }
   }
 }
