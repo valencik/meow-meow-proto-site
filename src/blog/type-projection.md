@@ -13,7 +13,7 @@ which introduces code we refer to throughout this article without
 further ado.*
 
 In the absence of the `Aux` trick presented at the end of
-[the previous article](forget-refinement-aux.md#why-t0-what%E2%80%99s-aux),
+[the previous article](forget-refinement-aux.md),
 the continuous use of structural refinement to accomplish basic tasks
 admittedly imposes a high cognitive load.  That is to say, it’s a lot
 of work to say something that ought to be very simple.

@@ -28,4 +28,4 @@ Days amongst many others. And now Typelevel and the Typelevel Summits.
 
 We'd love you to join us.
 
-[scoc]: /code-of-conduct.md
+[scoc]: /todo/README.md

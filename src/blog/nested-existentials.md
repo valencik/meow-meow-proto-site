@@ -393,3 +393,5 @@ full of compiler errors, especially when allowing for mutation and
 impure functions.
 
 *This article was tested with Scala 2.11.7 and Java 1.8.0_45.*
+
+[e]: /todo/README.md

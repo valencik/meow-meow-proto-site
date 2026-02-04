@@ -16,5 +16,5 @@ Stephanie Weirich is a Professor at the University of Pennsylvania. Her research
 Stephanie will join the Summit on March 2nd to talk about _Dependently-Typed Haskell_.
 We hope this will give us an exciting opportunity to exchange knowledge between the Haskell and Scala communities.
 
-[philadelphia]: /event/2016-03-summit-philadelphia/
+[philadelphia]: /todo/README.md
 [cfp]: http://goo.gl/forms/SX3plxsOKb
