@@ -1,3 +1,3 @@
 {%
-  laika.template: project.template.html
+  laika.html.template: project.template.html
 %}
