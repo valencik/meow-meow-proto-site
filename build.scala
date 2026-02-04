@@ -280,7 +280,7 @@ object LaikaCustomizations {
             Async[F].blocking {
               val pw = new java.io.PrintWriter(os)
               pw.print("""|<?xml version="1.0" encoding="UTF-8" ?>
-                          |<rss version="2.0">
+                          |<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/">
                           |<channel>
                           |<title>Typelevel Blog</title>
                           |<link>https://typelevel.org/blog/</link>
