@@ -1,7 +1,7 @@
 {%
   author: ${djspiewak}
   date: "2025-09-02"
-  tags: [technical, cats-effect]
+  tags: [technical]
 %}
 
 # Custom Error Types Using Cats Effect and MTL

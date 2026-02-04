@@ -1,5 +1,5 @@
 {%
-  author: [${typelevel}, ${foundation}]
+  author: ${typelevel}
   date: "2025-08-19"
   tags: [governance]
 %}

@@ -24,17 +24,21 @@
     @:for(author)
     <div class="bulma-column">
       <article class="bulma-media">
+        @:for(_.avatar)
         <figure class="bulma-media-left">
           <p class="bulma-image bulma-is-64x64">
             <img class="bulma-is-rounded" src="${_.avatar}" />
           </p>
         </figure>
+        @:@
         <div class="bulma-media-content">
           <div class="bulma-content">
             <p>
               <strong>${_.name}</strong>
+              @:for(_.bio)
               <br />
               ${_.bio}
+              @:@
             </p>
           </div>
           <nav class="bulma-level">
