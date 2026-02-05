@@ -12,8 +12,8 @@ import scala.jdk.CollectionConverters.*
 case class ScheduleItem(
     time: String,
     title: String,
-    speakers: Option[List[String]] = None,
-    summary: Option[String] = None
+    speakers: Option[List[String]],
+    summary: Option[String]
 ) derives YamlCodec
 
 case class Sponsor(
@@ -21,29 +21,27 @@ case class Sponsor(
     logo: String,
     link: String,
     `type`: String,
-    height: Option[Int] = None
+    height: Option[Int]
 ) derives YamlCodec
 
-case class Meta(
-    meetup: Option[String] = None
-) derives YamlCodec
+case class Meta(meetup: Option[String]) derives YamlCodec
 
 case class EventConfig(
     title: String,
-    short_title: Option[String] = None,
+    short_title: Option[String],
     date_string: String,
     location: String,
     description: String,
-    poster_hero: Option[String] = None,
-    poster_thumb: Option[String] = None,
-    schedule: Option[List[ScheduleItem]] = None,
-    sponsors: Option[List[Sponsor]] = None,
-    meta: Option[Meta] = None
+    poster_hero: Option[String],
+    poster_thumb: Option[String],
+    schedule: Option[List[ScheduleItem]],
+    sponsors: Option[List[Sponsor]],
+    meta: Option[Meta]
 ) derives YamlCodec
 
 case class Event(conf: EventConfig, content: String, originalYaml: String) {
 
-  def loadSpeakerDirectory(): Map[String, String] = {
+  def loadSpeakerDirectory(): Map[String, String] =
     try {
       val config = ConfigFactory.parseFile(
         Path("src/blog/directory.conf").toNioPath.toFile
@@ -61,26 +59,24 @@ case class Event(conf: EventConfig, content: String, originalYaml: String) {
     } catch {
       case _: Exception => Map.empty[String, String]
     }
-  }
 
   def cleanOtherLinks(markdown: String): String = {
     var cleaned = markdown
 
-    // Replace absolute typelevel.org blog URLs: https://typelevel.org/blog/YYYY/MM/DD/post-name.html with post-name.md
+    // https://typelevel.org/blog/YYYY/MM/DD/post-name.html -> post-name.md
     val typelevelBlogPattern =
       """https://typelevel\.org/blog/\d{4}/\d{2}/\d{2}/([^)\s]+)\.html""".r
     cleaned = typelevelBlogPattern.replaceAllIn(cleaned, "$1.md")
 
-    // Replace relative blog URLs: /blog/YYYY/MM/DD/post-name.html with post-name.md
+    // /blog/YYYY/MM/DD/post-name.html -> post-name.md
     val relativeBlogPattern =
       """(?<![a-z])/blog/\d{4}/\d{2}/\d{2}/([^)\s]+)\.html""".r
     cleaned = relativeBlogPattern.replaceAllIn(cleaned, "$1.md")
 
-    // Replace Jekyll site.url variables: {{ site.url }}/... with /...
     val siteUrlPattern = """\{\{\s*site\.url\s*\}\}""".r
     cleaned = siteUrlPattern.replaceAllIn(cleaned, "")
 
-    // Replace {{ page.meta.meetup }} with just the URL (existing markdown link syntax will handle the formatting)
+    // Replace {{ page.meta.meetup }} with just the URL
     val meetupPattern = """\{\{\s*page\.meta\.meetup\s*\}\}""".r
     cleaned = conf.meta.flatMap(_.meetup) match {
       case Some(meetupUrl) => meetupPattern.replaceAllIn(cleaned, meetupUrl)
@@ -91,64 +87,52 @@ case class Event(conf: EventConfig, content: String, originalYaml: String) {
     val htmlToMdPattern = """(?<!https?://[^\s)]*)(\\.html)""".r
     cleaned = htmlToMdPattern.replaceAllIn(cleaned, ".md")
 
-    // Fix code of conduct link
+    cleaned = cleaned.replace("/projects", "/projects/README.md")
     cleaned = cleaned.replace("/conduct.html", "/code-of-conduct/README.md")
     cleaned =
       cleaned.replace("/code-of-conduct.html", "/code-of-conduct/README.md")
 
-    // Fix projects link
-    cleaned = cleaned.replace("/projects", "/projects/README.md")
-
     cleaned
   }
 
-  def buildHoconMetadata(date: String): String = {
-    s"""{%
-  date: "$date"
-  tags: [summits, events]
-%}"""
-  }
+  def buildHoconMetadata(date: String): String =
+    s"""|{%
+        |  date: "$date"
+        |  tags: [summits, events]
+        |%}""".stripMargin
 
-  def generateScheduleMarkdown(): String = {
-    conf.schedule
-      .map { scheduleItems =>
-        val tableRows = scheduleItems
-          .map { item =>
-            val timeColumn = item.time
+  def generateScheduleMarkdown(): String = conf.schedule
+    .map { scheduleItems =>
+      val tableRows = scheduleItems
+        .map { item =>
+          val timeColumn = item.time
 
-            val talkColumn = if (item.speakers.isEmpty) {
-              item.title
-            } else {
-              item.speakers
-                .map { speakers =>
-                  val speakerDirectory = loadSpeakerDirectory()
-                  val speakerNames = speakers
-                    .map { shortname =>
-                      speakerDirectory.getOrElse(shortname, shortname)
-                    }
-                    .mkString(", ")
-
-                  val summary = item.summary.getOrElse("")
-
-                  if (summary.nonEmpty) {
-                    s"**${item.title}**<br/>${speakerNames}<br/>${summary}"
-                  } else {
-                    s"**${item.title}**<br/>${speakerNames}"
-                  }
-                }
-                .getOrElse(item.title)
-            }
-
-            s"| ${timeColumn} | ${talkColumn} |"
+          val talkColumn = if (item.speakers.isEmpty) {
+            item.title
+          } else {
+            item.speakers
+              .map { speakers =>
+                val speakerDirectory = loadSpeakerDirectory()
+                val speakerNames = speakers
+                  .map(s => speakerDirectory.getOrElse(s, s))
+                  .mkString(", ")
+                item.summary match
+                  case Some(value) =>
+                    s"**${item.title}**<br/>${speakerNames}<br/>${value}"
+                  case None => s"**${item.title}**<br/>${speakerNames}"
+              }
+              .getOrElse(item.title)
           }
-          .mkString("\n")
 
-        s"""| Time | Talk |
-|------|------|
-$tableRows"""
-      }
-      .getOrElse("")
-  }
+          s"| ${timeColumn} | ${talkColumn} |"
+        }
+        .mkString("\n")
+
+      s"""|| Time | Talk |
+        ||------|------|
+        |$tableRows""".stripMargin
+    }
+    .getOrElse("")
 
   def generateSponsorsHtml(): String = {
     conf.sponsors
