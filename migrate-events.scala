@@ -10,50 +10,57 @@ import com.typesafe.config.{Config, ConfigFactory}
 import scala.jdk.CollectionConverters.*
 
 case class ScheduleItem(
-  time: String,
-  title: String,
-  speakers: Option[List[String]] = None,
-  summary: Option[String] = None
+    time: String,
+    title: String,
+    speakers: Option[List[String]] = None,
+    summary: Option[String] = None
 ) derives YamlCodec
 
 case class Sponsor(
-  name: String,
-  logo: String,
-  link: String,
-  `type`: String,
-  height: Option[Int] = None
+    name: String,
+    logo: String,
+    link: String,
+    `type`: String,
+    height: Option[Int] = None
+) derives YamlCodec
+
+case class Meta(
+    meetup: Option[String] = None
 ) derives YamlCodec
 
 case class EventConfig(
-  title: String,
-  short_title: Option[String] = None,
-  date_string: String,
-  location: String,
-  description: String,
-  poster_hero: Option[String] = None,
-  poster_thumb: Option[String] = None,
-  schedule: Option[List[ScheduleItem]] = None,
-  sponsors: Option[List[Sponsor]] = None
+    title: String,
+    short_title: Option[String] = None,
+    date_string: String,
+    location: String,
+    description: String,
+    poster_hero: Option[String] = None,
+    poster_thumb: Option[String] = None,
+    schedule: Option[List[ScheduleItem]] = None,
+    sponsors: Option[List[Sponsor]] = None,
+    meta: Option[Meta] = None
 ) derives YamlCodec
 
 case class Event(conf: EventConfig, content: String, originalYaml: String) {
 
   def loadSpeakerDirectory(): Map[String, String] = {
     try {
-      val config = ConfigFactory.parseFile(Path("src/blog/directory.conf").toNioPath.toFile)
-      val speakerNames = config.root().keySet().asScala.toList.map { key =>
-        key -> config.getConfig(key).getString("name")
-      }.toMap
+      val config = ConfigFactory.parseFile(
+        Path("src/blog/directory.conf").toNioPath.toFile
+      )
+      val speakerNames = config
+        .root()
+        .keySet()
+        .asScala
+        .toList
+        .map { key =>
+          key -> config.getConfig(key).getString("name")
+        }
+        .toMap
       speakerNames
     } catch {
       case _: Exception => Map.empty[String, String]
     }
-  }
-
-  def cleanPostUrl(markdown: String): String = {
-    // Replace {% post_url YYYY-MM-DD-filename %} with filename.md
-    val postUrlPattern = """\{\%\s*post_url\s+\d{4}-\d{2}-\d{2}-(.+?)\s*%\}""".r
-    postUrlPattern.replaceAllIn(markdown, "$1.md")
   }
 
   def cleanOtherLinks(markdown: String): String = {
@@ -73,12 +80,24 @@ case class Event(conf: EventConfig, content: String, originalYaml: String) {
     val siteUrlPattern = """\{\{\s*site\.url\s*\}\}""".r
     cleaned = siteUrlPattern.replaceAllIn(cleaned, "")
 
+    // Replace {{ page.meta.meetup }} with just the URL (existing markdown link syntax will handle the formatting)
+    val meetupPattern = """\{\{\s*page\.meta\.meetup\s*\}\}""".r
+    cleaned = conf.meta.flatMap(_.meetup) match {
+      case Some(meetupUrl) => meetupPattern.replaceAllIn(cleaned, meetupUrl)
+      case None            => meetupPattern.replaceAllIn(cleaned, "")
+    }
+
     // Replace .html extensions with .md in relative links (but not absolute URLs starting with http)
     val htmlToMdPattern = """(?<!https?://[^\s)]*)(\\.html)""".r
     cleaned = htmlToMdPattern.replaceAllIn(cleaned, ".md")
 
     // Fix code of conduct link
     cleaned = cleaned.replace("/conduct.html", "/code-of-conduct/README.md")
+    cleaned =
+      cleaned.replace("/code-of-conduct.html", "/code-of-conduct/README.md")
+
+    // Fix projects link
+    cleaned = cleaned.replace("/projects", "/projects/README.md")
 
     cleaned
   }
@@ -90,80 +109,78 @@ case class Event(conf: EventConfig, content: String, originalYaml: String) {
 %}"""
   }
 
-  def generateScheduleHtml(): String = {
-    conf.schedule.map { scheduleItems =>
-      val tableRows = scheduleItems.map { item =>
-        val timeCell = s"""        <td><strong>${item.time}</strong></td>"""
+  def generateScheduleMarkdown(): String = {
+    conf.schedule
+      .map { scheduleItems =>
+        val tableRows = scheduleItems
+          .map { item =>
+            val timeColumn = item.time
 
-        val titleCell = if (item.speakers.isEmpty) {
-          s"""        <td>${item.title}</td>"""
-        } else {
-          item.speakers.map { speakers =>
-            val speakerDirectory = loadSpeakerDirectory()
-            val speakerNames = speakers.map { shortname =>
-              speakerDirectory.getOrElse(shortname, shortname)
-            }.mkString(", ")
+            val talkColumn = if (item.speakers.isEmpty) {
+              item.title
+            } else {
+              item.speakers
+                .map { speakers =>
+                  val speakerDirectory = loadSpeakerDirectory()
+                  val speakerNames = speakers
+                    .map { shortname =>
+                      speakerDirectory.getOrElse(shortname, shortname)
+                    }
+                    .mkString(", ")
 
-            val summary = item.summary.getOrElse("")
+                  val summary = item.summary.getOrElse("")
 
-            s"""        <td>
-          <div class="bulma-content">
-            <h5 class="bulma-title bulma-is-6">${item.title}</h5>
-            <p class="bulma-subtitle bulma-is-6">$speakerNames</p>
-            <p>$summary</p>
-          </div>
-        </td>"""
-          }.getOrElse(s"""        <td>${item.title}</td>""")
-        }
+                  if (summary.nonEmpty) {
+                    s"**${item.title}**<br/>${speakerNames}<br/>${summary}"
+                  } else {
+                    s"**${item.title}**<br/>${speakerNames}"
+                  }
+                }
+                .getOrElse(item.title)
+            }
 
-        s"""      <tr>
-$timeCell
-$titleCell
-      </tr>"""
-      }.mkString("\n")
+            s"| ${timeColumn} | ${talkColumn} |"
+          }
+          .mkString("\n")
 
-      s"""<div class="bulma-table-container">
-  <table class="bulma-table bulma-is-striped bulma-is-hoverable bulma-is-fullwidth">
-    <thead>
-      <tr>
-        <th>Time</th>
-        <th>Talk</th>
-      </tr>
-    </thead>
-    <tbody>
-$tableRows
-    </tbody>
-  </table>
-</div>"""
-    }.getOrElse("")
+        s"""| Time | Talk |
+|------|------|
+$tableRows"""
+      }
+      .getOrElse("")
   }
 
   def generateSponsorsHtml(): String = {
-    conf.sponsors.map { sponsors =>
-      val sponsorsByType = sponsors.groupBy(_.`type`)
+    conf.sponsors
+      .map { sponsors =>
+        val sponsorsByType = sponsors.groupBy(_.`type`)
 
-      val sections = List("platinum", "gold", "silver").flatMap { sponsorType =>
-        sponsorsByType.get(sponsorType).map { typeSponsors =>
-          val sponsorCells = typeSponsors.map { sponsor =>
-            s"""  <div class="bulma-cell">
+        val sections = List("platinum", "gold", "silver").flatMap {
+          sponsorType =>
+            sponsorsByType.get(sponsorType).map { typeSponsors =>
+              val sponsorCells = typeSponsors
+                .map { sponsor =>
+                  s"""  <div class="bulma-cell">
     <div class="bulma-has-text-centered">
       <a href="${sponsor.link}">
         <img src="${sponsor.logo}" alt="${sponsor.name}" title="${sponsor.name}" style="height:60px" />
       </a>
     </div>
   </div>"""
-          }.mkString("\n")
+                }
+                .mkString("\n")
 
-          s"""### ${sponsorType.capitalize}
+              s"""### ${sponsorType.capitalize}
 
 <div class="bulma-grid bulma-is-col-min-12">
 $sponsorCells
 </div>"""
+            }
         }
-      }
 
-      sections.mkString("\n\n")
-    }.getOrElse("")
+        sections.mkString("\n\n")
+      }
+      .getOrElse("")
   }
 
   def toLaika(date: String, stage: Int): String = {
@@ -171,7 +188,8 @@ $sponsorCells
     val title = s"# ${conf.title}"
     val header = s"**${conf.date_string}** • **${conf.location}**"
     val description = conf.description
-    val image = conf.poster_hero.map(img => s"![${conf.title}]($img)").getOrElse("")
+    val image =
+      conf.poster_hero.map(img => s"![${conf.title}]($img)").getOrElse("")
 
     stage match {
       case 1 =>
@@ -184,28 +202,34 @@ $sponsorCells
 
       case 3 =>
         // Stage 3: Stage 2 + link cleaning
-        val transformedContent = cleanOtherLinks(cleanPostUrl(content))
+        val transformedContent = cleanOtherLinks(content)
         s"$metadata\n\n$title\n\n$header\n\n$description\n\n$image\n\n$transformedContent\n"
 
       case _ =>
         // Stage 4+: Use original content and replace Jekyll includes with generated HTML
-        val transformedContent = cleanOtherLinks(cleanPostUrl(content))
+        val transformedContent = cleanOtherLinks(content)
 
         // Replace Jekyll includes with generated HTML
         var processedContent = transformedContent
 
         // Remove schedule assign and replace schedule include
-        val scheduleAssignPattern = """\{\%\s*assign\s+schedule\s*=\s*page\.schedule\s*%\}\s*""".r
-        processedContent = scheduleAssignPattern.replaceAllIn(processedContent, "")
+        val scheduleAssignPattern =
+          """\{\%\s*assign\s+schedule\s*=\s*page\.schedule\s*%\}\s*""".r
+        processedContent =
+          scheduleAssignPattern.replaceAllIn(processedContent, "")
 
         val schedulePattern = """\{\%\s*include\s+schedule\.html\s*%\}""".r
-        val scheduleReplacement = if (conf.schedule.isDefined) generateScheduleHtml() else ""
-        processedContent = schedulePattern.replaceAllIn(processedContent, scheduleReplacement)
+        val scheduleReplacement =
+          if (conf.schedule.isDefined) generateScheduleMarkdown() else ""
+        processedContent =
+          schedulePattern.replaceAllIn(processedContent, scheduleReplacement)
 
         // Replace sponsors include
         val sponsorsPattern = """\{\%\s*include\s+sponsors\.html\s*%\}""".r
-        val sponsorsReplacement = if (conf.sponsors.isDefined) generateSponsorsHtml() else ""
-        processedContent = sponsorsPattern.replaceAllIn(processedContent, sponsorsReplacement)
+        val sponsorsReplacement =
+          if (conf.sponsors.isDefined) generateSponsorsHtml() else ""
+        processedContent =
+          sponsorsPattern.replaceAllIn(processedContent, sponsorsReplacement)
 
         // Remove venue_map includes (not supported)
         val venueMapPattern = """\{\%\s*include\s+venue_map\.html\s*%\}""".r
@@ -227,7 +251,9 @@ object EventParser {
     } else {
       val yamlContent = parts(1)
       val markdownContent = parts(2).trim
-      yamlContent.as[EventConfig].map(conf => Event(conf, markdownContent, yamlContent))
+      yamlContent
+        .as[EventConfig]
+        .map(conf => Event(conf, markdownContent, yamlContent))
     }
   }
 }
@@ -240,7 +266,8 @@ object MigrateEvents extends IOApp {
     val filename = path.fileName.toString
     val datePattern = """(\d{4}-\d{2}-\d{2})-(.+)""".r
     filename match {
-      case datePattern(date, rest) => Right((date, filename)) // Keep full filename
+      case datePattern(date, rest) =>
+        Right((date, filename)) // Keep full filename
       case _ =>
         Left(new Exception(s"Filename doesn't match pattern: $filename"))
     }
