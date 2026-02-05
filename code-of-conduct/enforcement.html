@@ -22,7 +22,7 @@
   <title>Typelevel Code of Conduct Committee Enforcement Procedures</title>
 </head>
 
-<body>
+<body class="bulma-is-flex bulma-is-flex-direction-column">
   <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
   <div class="bulma-navbar-brand">
     <a class="bulma-navbar-item" href="../">
@@ -43,13 +43,12 @@
     </div>
     <div class="bulma-navbar-end">
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="../blog/">Blog</a>
-      </div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../blog/">Blog</a></div>
       <div class="bulma-navbar-item">
-        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+        <a id="search-top-bar" class="bulma-button bulma-is-text" aria-label="Search" onclick="showSearchModal()">
           <span class="bulma-icon bulma-is-small">
             <i class="fas fa-magnifying-glass"></i>
           </span>
@@ -65,8 +64,8 @@
   <div class="bulma-modal-card">
     <header class="bulma-modal-card-head">
       <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
-        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
-        <span class="bulma-icon bulma-is-left">
+        <input id="search-input" class="bulma-input bulma-is-medium bulma-is-primary" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left bulma-has-text-primary">
           <i class="fas fa-magnifying-glass"></i>
         </span>
       </p>
@@ -82,7 +81,7 @@
   </div>
 </div>
 
-  <main>
+  <main class="bulma-is-flex-grow-1">
     
   <div class="bulma-section bulma-content bulma-container bulma-is-max-desktop">
     <h1 id="typelevel-code-of-conduct-committee-enforcement-procedures" class="title">Typelevel Code of Conduct Committee Enforcement Procedures</h1>
@@ -186,9 +185,9 @@
     <p>Some committee members may have a conflict of interest and may be excluded from discussions of a particular incident report. Excluding those members, decisions on the behavioral adjustment and consequences will be determined by a two-thirds majority vote of the Typelevel Code of Conduct Committee.</p>
     
     <h2 id="administrators-moderators-communication" class="section"><a class="anchor-link" href="#administrators-moderators-communication"><code class="fas fa-link fa-sm"></code></a>Administrators/moderators Communication</h2>
-    <p>Once the committee has approved the proposed behavioral adjustment and consequences, they will communicate the recommended response to the Typelevel Steering Committee, and any specific administrators/moderators of the related community space (ex. Discord moderators, GitHub organization administrators, etc.) The committee should not state who reported this incident. They should attempt to anonymize any identifying information from the report.</p>
+    <p>Once the committee has approved the proposed behavioral adjustment and consequences, they will communicate the recommended response to the Typelevel Foundation Board of Directors, and any specific administrators/moderators of the related community space (ex. Discord moderators, GitHub organization administrators, etc.) The committee should not state who reported this incident. They should attempt to anonymize any identifying information from the report.</p>
     <p>Administrators/moderators are required to respond back with whether they accept the recommended response to the report. If they disagree with the recommended response, they should provide a detailed response or additional context as to why they disagree. Administrators/moderators are encouraged to respond within a week.</p>
-    <p>In cases where the administrators/moderators disagree on the suggested resolution for a report, the Typelevel Code of Conduct Committee shall notify the Typelevel Steering Committee.</p>
+    <p>In cases where the administrators/moderators disagree on the suggested resolution for a report, the Typelevel Code of Conduct Committee shall notify the Typelevel Foundation Board of Directors.</p>
     
     <h2 id="initial-follow-up-with-the-reported-person" class="section"><a class="anchor-link" href="#initial-follow-up-with-the-reported-person"><code class="fas fa-link fa-sm"></code></a>Initial follow-up with the reported person</h2>
     <p>The Typelevel Code of Conduct Committee will draft a response to the reported person.
@@ -241,7 +240,7 @@
     <p>When discussing a change to the Typelevel Code of Conduct or enforcement policies, the Typelevel Code of Conduct Committee will follow this decision-making process:</p>
     <ul>
       <li>Brainstorm options. Code of Conduct committee members should discuss any relevant context and brainstorm a set of possible options. It is important to provide constructive feedback without getting side-tracked from the main question. Brainstorming should be limited to 3-7 days maximum.</li>
-      <li>Vote. Once a working draft is in place for the Code of Conduct and procedures, the Code of Conduct committee shall provide the Typelevel Steering Committee with a PR of the changes. The Steering Committee will vote on the changes, following the usual process and requiring at least ⅔ affirmative vote for the changes to be accepted.</li>
+      <li>Vote. Once a working draft is in place for the Code of Conduct and procedures, the Code of Conduct committee shall provide the Typelevel Foundation Board of Directors with a PR of the changes. The Board will vote on the changes, following the Bylaws and requiring at least ⅔ affirmative vote for the changes to be accepted.</li>
     </ul>
     
     <h3 id="current-list-of-code-of-conduct-committee-members" class="section"><a class="anchor-link" href="#current-list-of-code-of-conduct-committee-members"><code class="fas fa-link fa-sm"></code></a>Current list of Code of Conduct Committee members</h3>
@@ -260,8 +259,9 @@
   </main>
   <footer class="bulma-footer">
   <div class="bulma-columns">
-    <div class="bulma-column">
-      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    <div class="bulma-column bulma-is-half">
+      Copyright 2026 Typelevel Foundation and <a href="https://github.com/typelevel/typelevel.github.com/graphs/contributors">contributors</a>.
+      Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> unless <a href="../colophon.html#license">noted otherwise</a>.
     </div>
     <div class="bulma-column">
       <ul>
@@ -274,7 +274,7 @@
       <ul>
         <li><a href="index.html">Code of Conduct</a></li>
         <li><a href="../security.html">Security Policy</a></li>
-        <li><a href="#">Colophon</a></li>
+        <li><a href="../colophon.html">Colophon</a></li>
       </ul>
     </div>
   </div>

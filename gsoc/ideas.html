@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Google Summer of Code</title>
+</head>
+
+<body class="bulma-is-flex bulma-is-flex-direction-column">
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../blog/">Blog</a></div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-text" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium bulma-is-primary" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left bulma-has-text-primary">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main class="bulma-is-flex-grow-1">
+    
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <h1 class="bulma-title bulma-is-1">Google Summer of Code</h1>
+
+<div class="bulma-tabs">
+  <ul>
+    <li ><a href="index.html">Guidance</a></li>
+    <li class="bulma-is-active"><a href="#">Ideas</a></li>
+  </ul>
+</div>
+
+  <div class="bulma-content">
+    <p>Our community has identified project ideas that we believe will significantly enhance the Typelevel ecosystem. Nothing is set in stone: we may be able to adjust a project’s length and difficulty to make it the right fit for you. So if you see something here that interests you or have an idea of your own, please <a href="mailto:gsoc@typelevel.org">get in touch</a>!</p>
+  </div>
+
+  <div class="bulma-grid bulma-is-col-min-12">
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <div class="bulma-card-content">
+          <div class="bulma-content">
+            <p class="bulma-title bulma-is-5">Serverless integrations for Feral</p>
+            <p>Feral is a Typelevel library for building serverless functions that currently supports AWS Lambda and Google Cloud Run Functions. We want to add support for more types of serverless events and more cloud providers.</p>
+            <p class="bulma-mb-0"><strong>Prerequisites</strong><br />Scala, ideally experience with serverless</p>
+            <p class="bulma-mb-0"><strong>Expected Difficulty</strong><br />Medium.</p>
+            <p class="bulma-mb-0"><strong>Expected Length</strong><br />Medium (~ 175 hours)</p>
+            <p class="bulma-mb-0"><strong>Mentors</strong><br /> <a
+                href="https://github.com/armanbilge">@armanbilge</a> <a
+                href="https://github.com/bpholt">@bpholt</a> <a
+                href="https://github.com/Chingles2404">@Chingles2404</a></p>
+            <p><strong>Related Repositories</strong><br /> <a href="https://github.com/typelevel/feral">feral</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <div class="bulma-card-content">
+          <div class="bulma-content">
+            <p class="bulma-title bulma-is-5">Native I/O backend for FS2 JVM</p>
+            <p>FS2 on the JVM currently implements its networking API using JDK NIO. Unfortunately this indirection incurs a non-trivial performance penalty. We want to replace the use of JDK NIO with direct calls to system I/O APIs such as epoll and kqueue.</p>
+            <p class="bulma-mb-0"><strong>Prerequisites</strong><br />Scala, ability to read C</p>
+            <p class="bulma-mb-0"><strong>Expected Difficulty</strong><br />Medium.</p>
+            <p class="bulma-mb-0"><strong>Expected Length</strong><br />Long (~ 350 hours)</p>
+            <p class="bulma-mb-0"><strong>Mentors</strong><br /> <a
+                href="https://github.com/antoniojimeneznieto">@antoniojimeneznieto</a> <a
+                href="https://github.com/djspiewak">@djspiewak</a> <a
+                href="https://github.com/mpilquist">@mpilquist</a> <a
+                href="https://github.com/armanbilge">@armanbilge</a></p>
+            <p><strong>Related Repositories</strong><br /> <a href="https://github.com/typelevel/fs2">fs2</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <div class="bulma-card-content">
+          <div class="bulma-content">
+            <p class="bulma-title bulma-is-5">FS2 Connection API</p>
+            <p>TCP-based protocols are common (e.g. HTTP, Postgres, Redis) and are implemented by clients to interface with these services (e.g. Ember, Skunk, Rediculous). The goal of this project is to create a connection API that supports pooling, error conditions, and metrics and can be shared by all of our client libraries.</p>
+            <p class="bulma-mb-0"><strong>Prerequisites</strong><br />Scala, ideally some knowledge of networking</p>
+            <p class="bulma-mb-0"><strong>Expected Difficulty</strong><br />Hard.</p>
+            <p class="bulma-mb-0"><strong>Expected Length</strong><br />Long (~ 350 hours)</p>
+            <p class="bulma-mb-0"><strong>Mentors</strong><br /> <a
+                href="https://github.com/mpilquist">@mpilquist</a> <a
+                href="https://github.com/armanbilge">@armanbilge</a></p>
+            <p><strong>Related Repositories</strong><br /> <a href="https://github.com/typelevel/fs2">fs2</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <div class="bulma-card-content">
+          <div class="bulma-content">
+            <p class="bulma-title bulma-is-5">Web Components for Calico</p>
+            <p>Calico is a reactive UI library built with Cats Effect and FS2. Web Components are a standard for creating framework-agnostic, reusable UI elements. The goal of this project is to enable Calico users to access the vast array of web components available by improving its DSL and code-generation.</p>
+            <p class="bulma-mb-0"><strong>Prerequisites</strong><br />Scala, ideally experience with Web APIs</p>
+            <p class="bulma-mb-0"><strong>Expected Difficulty</strong><br />Medium.</p>
+            <p class="bulma-mb-0"><strong>Expected Length</strong><br />Long (~ 350 hours)</p>
+            <p class="bulma-mb-0"><strong>Mentors</strong><br /> <a
+                href="https://github.com/armanbilge">@armanbilge</a></p>
+            <p><strong>Related Repositories</strong><br /> <a href="https://github.com/armanbilge/calico">calico</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <div class="bulma-card-content">
+          <div class="bulma-content">
+            <p class="bulma-title bulma-is-5">Upgrade sbt-typelevel to sbt 2</p>
+            <p>sbt-typelevel is a plugin for sbt, the Scala build tool, used by hundreds of open source and enterprise projects. sbt 2 is in the final stages of development. We want to upgrade sbt-typelevel to sbt 2 and adopt its new features, such as project matrix for cross-building.</p>
+            <p class="bulma-mb-0"><strong>Prerequisites</strong><br />Scala</p>
+            <p class="bulma-mb-0"><strong>Expected Difficulty</strong><br />Medium.</p>
+            <p class="bulma-mb-0"><strong>Expected Length</strong><br />Long (~ 350 hours)</p>
+            <p class="bulma-mb-0"><strong>Mentors</strong><br /> <a
+                href="https://github.com/mzuehlke">@mzuehlke</a> <a
+                href="https://github.com/armanbilge">@armanbilge</a></p>
+            <p><strong>Related Repositories</strong><br /> <a href="https://github.com/typelevel/sbt-typelevel">sbt-typelevel</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <div class="bulma-card-content">
+          <div class="bulma-content">
+            <p class="bulma-title bulma-is-5">Refresh Davenverse projects</p>
+            <p>The Davenverse is a collection of several popular Typelevel libraries, including Mules and cats-scalacheck. Unfortunately, we have fallen behind on their maintenance. We want to move these libraries under the Typelevel org, refresh their build tooling, and bring them up-to-date to ensure their longevity.</p>
+            <p class="bulma-mb-0"><strong>Prerequisites</strong><br />Scala</p>
+            <p class="bulma-mb-0"><strong>Expected Difficulty</strong><br />Medium.</p>
+            <p class="bulma-mb-0"><strong>Expected Length</strong><br />Medium (~ 175 hours)</p>
+            <p class="bulma-mb-0"><strong>Mentors</strong><br /> <a
+                href="https://github.com/armanbilge">@armanbilge</a> <a
+                href="https://github.com/valencik">@valencik</a></p>
+            <p><strong>Related Repositories</strong><br /> <a href="https://github.com/davenverse">davenverse</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <div class="bulma-card-content">
+          <div class="bulma-content">
+            <p class="bulma-title bulma-is-5">Cats Effect & FS2 on Wasm/WASI</p>
+            <p>Web Assembly and its System Interface are emerging technologies for deploying secure, modular applications. The goal of this project is to prototype porting the Cats Effect runtime and FS2 streaming I/O to the Wasm/WASI platform, also possibly generating feedback for the Scala WASM and WASI teams.</p>
+            <p class="bulma-mb-0"><strong>Prerequisites</strong><br />Scala, ideally some experience with Wasm/WASI</p>
+            <p class="bulma-mb-0"><strong>Expected Difficulty</strong><br />Hard. Wasm/WASI support in Scala is experimental.</p>
+            <p class="bulma-mb-0"><strong>Expected Length</strong><br />Long (~ 350 hours)</p>
+            <p class="bulma-mb-0"><strong>Mentors</strong><br /> <a
+                href="https://github.com/armanbilge">@armanbilge</a> <a
+                href="https://github.com/tanishiking">@tanishiking</a> <a
+                href="https://github.com/valencik">@valencik</a></p>
+            <p><strong>Related Repositories</strong><br /> <a href="https://github.com/typelevel/cats-effect">cats-effect</a> <a href="https://github.com/typelevel/fs2">fs2</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <div class="bulma-card-content">
+          <div class="bulma-content">
+            <p class="bulma-title bulma-is-5">Laika enhancements for typelevel.org</p>
+            <p>Laika is a purely functional site and e-book generator and customizable text markup transformer. We recently migrated the Typelevel website from Jekyll to Laika. The goal of this project is improve and streamline Laika's support for generating non-documentation websites, such as blogs.</p>
+            <p class="bulma-mb-0"><strong>Prerequisites</strong><br />Scala</p>
+            <p class="bulma-mb-0"><strong>Expected Difficulty</strong><br />Medium.</p>
+            <p class="bulma-mb-0"><strong>Expected Length</strong><br />Medium (~ 175 hours)</p>
+            <p class="bulma-mb-0"><strong>Mentors</strong><br /> <a
+                href="https://github.com/armanbilge">@armanbilge</a> <a
+                href="https://github.com/valencik">@valencik</a></p>
+            <p><strong>Related Repositories</strong><br /> <a href="https://github.com/typelevel/Laika">Laika</a> <a href="https://github.com/typelevel/typelevel.github.com">typelevel.org</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bulma-cell">
+      <div class="bulma-card">
+        <div class="bulma-card-content">
+          <div class="bulma-content">
+            <p class="bulma-title bulma-is-5">A faster immutable list datatype</p>
+            <p>Immutable linked lists are a core datatype in functional programming languages. The goal of this project is to explore implementing a list-like datatype with enhanced performance. Along the way, you will learn about algebraic datatypes, Cats typeclasses, and mechanical sympathy.</p>
+            <p class="bulma-mb-0"><strong>Prerequisites</strong><br />Interest in functional programming</p>
+            <p class="bulma-mb-0"><strong>Expected Difficulty</strong><br />Medium. This is a good project for beginners!</p>
+            <p class="bulma-mb-0"><strong>Expected Length</strong><br />Long (~ 350 hours)</p>
+            <p class="bulma-mb-0"><strong>Mentors</strong><br /> <a
+                href="https://github.com/armanbilge">@armanbilge</a> <a
+                href="https://github.com/johnynek">@johnynek</a></p>
+            <p><strong>Related Repositories</strong><br /> <a href="https://github.com/typelevel/cats-collections">Cats Collections</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<section class="bulma-hero bulma-is-link">
+  <div class="bulma-hero-body">
+    what
+  </div>
+</section>
+
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column bulma-is-half">
+      Copyright 2026 Typelevel Foundation and <a href="https://github.com/typelevel/typelevel.github.com/graphs/contributors">contributors</a>.
+      Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> unless <a href="../colophon.html#license">noted otherwise</a>.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Contributing</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="../colophon.html">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

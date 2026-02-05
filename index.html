@@ -23,7 +23,7 @@
   <title>Typelevel</title>
 </head>
 
-<body>
+<body class="bulma-is-flex bulma-is-flex-direction-column">
   <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
   <div class="bulma-navbar-brand">
     <a class="bulma-navbar-item" href="#">
@@ -44,13 +44,12 @@
     </div>
     <div class="bulma-navbar-end">
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="blog/">Blog</a>
-      </div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="foundation/">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="blog/">Blog</a></div>
       <div class="bulma-navbar-item">
-        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+        <a id="search-top-bar" class="bulma-button bulma-is-text" aria-label="Search" onclick="showSearchModal()">
           <span class="bulma-icon bulma-is-small">
             <i class="fas fa-magnifying-glass"></i>
           </span>
@@ -66,8 +65,8 @@
   <div class="bulma-modal-card">
     <header class="bulma-modal-card-head">
       <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
-        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
-        <span class="bulma-icon bulma-is-left">
+        <input id="search-input" class="bulma-input bulma-is-medium bulma-is-primary" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left bulma-has-text-primary">
           <i class="fas fa-magnifying-glass"></i>
         </span>
       </p>
@@ -83,15 +82,31 @@
   </div>
 </div>
 
-  <main>
+  <main class="bulma-is-flex-grow-1">
     
-<div class="bulma-section bulma-is-centered">
-  <h1 class="bulma-title bulma-is-1"></h1>
-  <h4 class="bulma-subtitle bulma-is-4">We do functional programming</h4>
-</div>
 <div class="bulma-section">
-  <h4 class="bulma-subtitle bulma-is-4">Typelevel is built by a vibrant community and supported by a nonprofit
-    Foundation.</h4>
+  <div class="bulma-container bulma-is-max-desktop">
+    <h1 class="bulma-title bulma-is-1">
+      We develop industry-proven, <br class="bulma-is-hidden-mobile">
+      state-of-the-art libraries for <br class="bulma-is-hidden-mobile">
+      functional programming.
+    </h1>
+    <h3 class="bulma-subtitle bulma-is-3">
+      Learn to build scalable, performant applications <br class="bulma-is-hidden-mobile">
+      that you can grow and maintain
+      with confidence.
+    </h3>
+  </div>
+</div>
+<section class="bulma-hero bulma-is-link">
+  <div class="bulma-hero-body">
+    <p class="bulma-is-size-3">Hero title</p>
+  </div>
+</section>
+<div class="bulma-section bulma-container">
+  <h4 class="bulma-subtitle bulma-is-4 bulma-has-text-centered">
+    Typelevel is built by a vibrant community and supported by a nonprofit Foundation.
+  </h4>
   <div class="bulma-columns bulma-is-vcentered">
     
     <div class="bulma-column bulma-has-text-centered">
@@ -111,13 +126,17 @@
     </div>
     
   </div>
+  <h4 class="bulma-subtitle bulma-is-4 bulma-has-text-centered">
+    Typelevel is built by a vibrant community and supported by a nonprofit Foundation.
+  </h4>
 </div>
 
   </main>
   <footer class="bulma-footer">
   <div class="bulma-columns">
-    <div class="bulma-column">
-      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    <div class="bulma-column bulma-is-half">
+      Copyright 2026 Typelevel Foundation and <a href="https://github.com/typelevel/typelevel.github.com/graphs/contributors">contributors</a>.
+      Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> unless <a href="colophon.html#license">noted otherwise</a>.
     </div>
     <div class="bulma-column">
       <ul>
@@ -130,7 +149,7 @@
       <ul>
         <li><a href="code-of-conduct/">Code of Conduct</a></li>
         <li><a href="security.html">Security Policy</a></li>
-        <li><a href="#">Colophon</a></li>
+        <li><a href="colophon.html">Colophon</a></li>
       </ul>
     </div>
   </div>

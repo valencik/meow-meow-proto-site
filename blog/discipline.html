@@ -22,7 +22,7 @@
   <title>Law Enforcement using Discipline</title>
 </head>
 
-<body>
+<body class="bulma-is-flex bulma-is-flex-direction-column">
   <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
   <div class="bulma-navbar-brand">
     <a class="bulma-navbar-item" href="../">
@@ -43,13 +43,12 @@
     </div>
     <div class="bulma-navbar-end">
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Learn</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Community</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white">Foundation</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-white" href="index.html">Blog</a>
-      </div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="index.html">Blog</a></div>
       <div class="bulma-navbar-item">
-        <a id="search-top-bar" class="bulma-button bulma-is-white" aria-label="Search" onclick="showSearchModal()">
+        <a id="search-top-bar" class="bulma-button bulma-is-text" aria-label="Search" onclick="showSearchModal()">
           <span class="bulma-icon bulma-is-small">
             <i class="fas fa-magnifying-glass"></i>
           </span>
@@ -65,8 +64,8 @@
   <div class="bulma-modal-card">
     <header class="bulma-modal-card-head">
       <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
-        <input id="search-input" class="bulma-input bulma-is-medium" type="search" autocomplete="off" oninput="onSearchInput(event)">
-        <span class="bulma-icon bulma-is-left">
+        <input id="search-input" class="bulma-input bulma-is-medium bulma-is-primary" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left bulma-has-text-primary">
           <i class="fas fa-magnifying-glass"></i>
         </span>
       </p>
@@ -82,12 +81,12 @@
   </div>
 </div>
 
-  <main>
+  <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-primary bulma-is-bold">
+<section class="bulma-hero bulma-is-link bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
     <p class="bulma-title">Law Enforcement using Discipline</p>
-    <p class="blog-post-byline bulma-subtitle">
+    <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
         Lars Hupel<span class="delimiter">,</span><span class="last-delimiter"> &</span>
@@ -240,34 +239,36 @@
     
     <div class="bulma-column">
       <article class="bulma-media">
+  
+  <figure class="bulma-media-left">
+    <p class="bulma-image bulma-is-64x64">
+      <img class="bulma-is-rounded" src="https://github.com/larsrh.png" />
+    </p>
+  </figure>
+  
+  <div class="bulma-media-content">
+    <div class="bulma-content">
+      <p>
+        <strong>Lars Hupel</strong>
         
-        <figure class="bulma-media-left">
-          <p class="bulma-image bulma-is-64x64">
-            <img class="bulma-is-rounded" src="https://github.com/larsrh.png" />
-          </p>
-        </figure>
+      </p>
+    </div>
+    <nav class="bulma-level bulma-is-align-items-start">
+      <div class="bulma-level-left bulma-is-flex-direction-row">
         
-        <div class="bulma-media-content">
-          <div class="bulma-content">
-            <p>
-              <strong>Lars Hupel</strong>
-              
-            </p>
-          </div>
-          <nav class="bulma-level">
-            <div class="bulma-level-left bulma-is-flex-direction-row">
-              
-              <a class="bulma-level-item" href="http://github.com/larsrh">
-                <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
-              </a>
-              
-              
-              
-              
-            </div>
-          </nav>
-        </div>
-      </article>
+        
+        <a class="bulma-level-item" href="http://github.com/larsrh">
+          <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
+        </a>
+        
+        
+        
+        
+      </div>
+    </nav>
+  </div>
+</article>
+
     </div>
     
   </div>
@@ -277,8 +278,9 @@
   </main>
   <footer class="bulma-footer">
   <div class="bulma-columns">
-    <div class="bulma-column">
-      Copyright <i class="fab fa-creative-commons"></i> Typelevel Foundation and contributors.
+    <div class="bulma-column bulma-is-half">
+      Copyright 2026 Typelevel Foundation and <a href="https://github.com/typelevel/typelevel.github.com/graphs/contributors">contributors</a>.
+      Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> unless <a href="../colophon.html#license">noted otherwise</a>.
     </div>
     <div class="bulma-column">
       <ul>
@@ -291,7 +293,7 @@
       <ul>
         <li><a href="../code-of-conduct/">Code of Conduct</a></li>
         <li><a href="../security.html">Security Policy</a></li>
-        <li><a href="#">Colophon</a></li>
+        <li><a href="../colophon.html">Colophon</a></li>
       </ul>
     </div>
   </div>
