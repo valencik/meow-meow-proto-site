@@ -114,6 +114,7 @@ object LaikaBuild {
       LaikaCustomizations.RssExtensions
     )
     .withConfigValue(LaikaKeys.siteBaseURL, "https://typelevel.org/")
+    .withRawContent
     .parallel[IO]
     .withTheme(theme)
     .build
