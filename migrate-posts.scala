@@ -40,6 +40,12 @@ case class Post(conf: Conf, content: String, originalYaml: String) {
     val htmlToMdPattern = """(?<!https?://[^\s)]*)(\.html)""".r
     cleaned = htmlToMdPattern.replaceAllIn(cleaned, ".md")
 
+    // Fix links
+    cleaned = cleaned.replace("/conduct.md", "/code-of-conduct/README.md")
+    cleaned = cleaned.replace("/code-of-conduct.md", "/code-of-conduct/README.md")
+    cleaned = cleaned.replace("/projects", "/projects/README.md")
+    cleaned = cleaned.replace("/gsoc/ideas", "/gsoc/ideas.md")
+
     cleaned
   }
 
@@ -103,12 +109,21 @@ object MigratePosts extends IOApp {
   val oldPostsDir = Path("../typelevel.github.com/collections/_posts")
   val newBlogDir = Path("src/blog")
 
+  // Manual renaming map for files that would collide after date stripping
+  val renameMap: Map[String, String] = Map(
+    "2023-02-23-gsoc.md" -> "gsoc-2023.md",
+    "2024-03-02-gsoc.md" -> "gsoc-2024.md",
+    "2025-02-27-gsoc.md" -> "gsoc-2025.md",
+  )
+
   def getDateAndName(path: Path): Either[Throwable, (String, String)] = {
     val filename = path.fileName.toString
     val datePattern = """(\d{4}-\d{2}-\d{2})-(.+)""".r
     filename match {
-      case datePattern(date, rest) => Right((date, rest))
-      case _                       =>
+      case datePattern(date, rest) =>
+        val newName = renameMap.getOrElse(filename, rest)
+        Right((date, newName))
+      case _ =>
         Left(new Exception(s"Filename doesn't match pattern: $filename"))
     }
   }
