@@ -1,3 +1,3 @@
 {%
-  laika.html.template: project.template.html
+  laika.title: Project Index
 %}

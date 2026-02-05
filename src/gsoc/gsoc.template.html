@@ -1,16 +1,8 @@
-@:embed(/templates/main.template.html)
-
-<div class="bulma-container bulma-is-max-desktop">
 <h1 class="bulma-title bulma-is-1">Google Summer of Code</h1>
 
 <div class="bulma-tabs">
   <ul>
-    <li class="bulma-is-active"><a>Guidance</a></li>
-    <li><a>Ideas</a></li>
-    <li><a>Past Projects</a></li>
+    <li @:attribute(class, guidance-tab.class)><a href="@:target(README.md)">Guidance</a></li>
+    <li @:attribute(class, ideas-tab.class)><a href="@:target(ideas.md)">Ideas</a></li>
   </ul>
 </div>
-
-</div>
-
-@:@
