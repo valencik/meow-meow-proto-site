@@ -1,5 +1,5 @@
 {%
-  laika.template: about.template.html
+  laika.html.template: about.template.html
   laika.title: Typelevel Foundation
   board: [${armanbilge}, ${djspiewak}, ${jducoeur}, ${valencik}]
   sponsors: [${spotify}, ${aruna}, ${shopify}, ${famly}]
