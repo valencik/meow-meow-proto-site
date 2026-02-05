@@ -21,10 +21,51 @@ On Friday, September 30th, [Lambda World](http://www.lambda.world) hosted a Type
 
 This event took place at the Palacio de Congresos de Cádiz.
 
-{% include venue_map.html %}
+
 
 ## Sponsors
 
 We'd like to thank all our sponsors who helped to make the conference happen:
 
-{% include sponsors.html %}
+### Platinum
+
+<div class="bulma-grid bulma-is-col-min-12">
+  <div class="bulma-cell">
+    <div class="bulma-has-text-centered">
+      <a href="http://www.47deg.com/">
+        <img src="/img/media/sponsors/47_degrees.png" alt="47 Degrees" title="47 Degrees" style="height:60px" />
+      </a>
+    </div>
+  </div>
+</div>
+
+### Gold
+
+<div class="bulma-grid bulma-is-col-min-12">
+  <div class="bulma-cell">
+    <div class="bulma-has-text-centered">
+      <a href="http://www.theworkshop.com/">
+        <img src="http://www.lambda.world/img/partners/logo-TheWorkshop.png" alt="The Workshop" title="The Workshop" style="height:60px" />
+      </a>
+    </div>
+  </div>
+</div>
+
+### Silver
+
+<div class="bulma-grid bulma-is-col-min-12">
+  <div class="bulma-cell">
+    <div class="bulma-has-text-centered">
+      <a href="https://www.ciklum.com/">
+        <img src="http://www.lambda.world/img/partners/logo-Ciklum.png" alt="Ciklum" title="Ciklum" style="height:60px" />
+      </a>
+    </div>
+  </div>
+  <div class="bulma-cell">
+    <div class="bulma-has-text-centered">
+      <a href="https://www.workday.com/">
+        <img src="http://www.lambda.world/img/partners/logo-workday.svg" alt="Workday" title="Workday" style="height:60px" />
+      </a>
+    </div>
+  </div>
+</div>
