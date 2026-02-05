@@ -6,7 +6,7 @@
 <description>The Typelevel Blog RSS Feed</description>
 <item>
   <title>Custom Error Types Using Cats Effect and MTL</title>
-  <pubDate>Tue, 2 Sep 2025 00:00:00 -0400</pubDate>
+  <pubDate>Tue, 2 Sep 2025 00:00:00 GMT</pubDate>
   
     <dc:creator>Daniel Spiewak</dc:creator>
   
@@ -127,7 +127,7 @@
 </item>
 <item>
   <title>Evolving Typelevel</title>
-  <pubDate>Tue, 19 Aug 2025 00:00:00 -0400</pubDate>
+  <pubDate>Tue, 19 Aug 2025 00:00:00 GMT</pubDate>
   
     <dc:creator>Typelevel Steering Committee</dc:creator>
   
@@ -168,7 +168,7 @@ opportunities to become involved.</p>]]></description>
 </item>
 <item>
   <title>Typelevel Weaver released</title>
-  <pubDate>Tue, 10 Jun 2025 00:00:00 -0400</pubDate>
+  <pubDate>Tue, 10 Jun 2025 00:00:00 GMT</pubDate>
   
     <dc:creator>Zainab Ali</dc:creator>
   
@@ -198,7 +198,7 @@ opportunities to become involved.</p>]]></description>
 </item>
 <item>
   <title>Spotify FOSS Fund 2024</title>
-  <pubDate>Fri, 21 Feb 2025 00:00:00 -0500</pubDate>
+  <pubDate>Fri, 21 Feb 2025 00:00:00 GMT</pubDate>
   
     <dc:creator>Andrew Valencik</dc:creator>
   

@@ -46,7 +46,7 @@ function renderHit(hit) {
   `
 }
 
-const searchWorker = new Worker("search/worker.js");
+const searchWorker = new Worker("/search/worker.js");
 
 searchWorker.onmessage = function (e) {
   const fallback = `<p class="bulma-has-text-grey bulma-has-text-centered">No results found</p>`
