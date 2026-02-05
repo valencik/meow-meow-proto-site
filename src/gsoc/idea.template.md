@@ -1,2 +1,0 @@
-
-embedded: ${_.embeddedBody}
