@@ -5,4 +5,8 @@
 
 # Blog
 
-who
+The page lists our announcements, events, and community contributed blog posts.
+
+It is also available as a [RSS feed]
+
+[RSS feed]: /blog/feed.rss

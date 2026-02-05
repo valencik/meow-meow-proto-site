@@ -113,6 +113,7 @@ object LaikaBuild {
       LaikaCustomizations.Directives,
       LaikaCustomizations.RssExtensions
     )
+    .withConfigValue(LinkValidation.Global(excluded = Seq(Path.Root / "blog" / "feed.rss")))
     .withConfigValue(LaikaKeys.siteBaseURL, "https://typelevel.org/")
     .parallel[IO]
     .withTheme(theme)
