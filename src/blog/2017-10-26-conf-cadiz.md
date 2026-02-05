@@ -1,26 +1,15 @@
----
-layout: event
+{%
+  date: "2017-10-26"
+  tags: [summits, events]
+%}
 
-title: "Typelevel UnConference - Lambda World Cadiz 2017"
-short_title: "Cádiz Unconference"
-date_string: "October 26th, 2017"
-location: "Palacio de Congresos de Cádiz"
-description: "Co-located with Lambda World."
+# Typelevel UnConference - Lambda World Cadiz 2017
 
-poster_hero: "/img/media/cadiz.jpg"
-poster_thumb: "/img/media/cadiz-thumb.jpg"
+**October 26th, 2017** • **Palacio de Congresos de Cádiz**
 
-location_section: true
-sponsors_section: true
+Co-located with Lambda World.
 
-sponsors:
-  - name: "47 Degrees"
-    logo: "/img/media/sponsors/47_degrees.png"
-    link: "http://www.47deg.com/"
-    type: "platinum"
-    height: 100
-    
----
+![Typelevel UnConference - Lambda World Cadiz 2017](/img/media/cadiz.jpg)
 
 ## About the Conference
 

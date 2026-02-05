@@ -1,18 +1,15 @@
----
-layout: event
+{%
+  date: "2016-09-14"
+  tags: [summits, events]
+%}
 
-title: "Typelevel Workshop in the Lake District"
-short_title: "Penrith Workshop"
-date_string: "September 14, 2016"
-location: "Rheged Centre, Penrith"
-description: "Talks in the morning & unconference in the afternoon, co-located with Scala World."
+# Typelevel Workshop in the Lake District
 
-poster_hero: "/img/media/lakedistrict.jpg"
-poster_thumb: "/img/media/lakedistrict-thumb.jpg"
+**September 14, 2016** • **Rheged Centre, Penrith**
 
-location_section: true
+Talks in the morning & unconference in the afternoon, co-located with Scala World.
 
----
+![Typelevel Workshop in the Lake District](/img/media/lakedistrict.jpg)
 
 ## About the Workshop
 

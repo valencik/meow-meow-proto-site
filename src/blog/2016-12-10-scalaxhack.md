@@ -1,16 +1,15 @@
----
-layout: event
+{%
+  date: "2016-12-10"
+  tags: [summits, events]
+%}
 
-title: "Scala Exchange Hack Day and Unconference"
-short_title: "ScalaxHack"
-date_string: "December 10, 2016"
-location: "CodeNode, London"
-description: "Free unconference and hack day, co-located with Scala Exchange."
+# Scala Exchange Hack Day and Unconference
 
-poster_hero: "/img/media/london.jpg"
-poster_thumb: "/img/media/london-thumb.jpg"
+**December 10, 2016** • **CodeNode, London**
 
----
+Free unconference and hack day, co-located with Scala Exchange.
+
+![Scala Exchange Hack Day and Unconference](/img/media/london.jpg)
 
 We're partnering with [Skills Matter][skillsmatter]
 and the [London Scala User Group][lsug]

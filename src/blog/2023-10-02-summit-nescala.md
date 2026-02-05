@@ -1,17 +1,15 @@
----
-layout: event
+{%
+  date: "2023-10-02"
+  tags: [summits, events]
+%}
 
-title: "Typelevel Summit NEScala"
-short_title: "Typelevel Summit"
-date_string: "October 26, 2023"
-location: "Online"
-description: "One day of talks and one day of unconference, co-located with NE Scala."
+# Typelevel Summit NEScala
 
-poster_hero: "/img/media/nescala-hero.jpg"
-poster_thumb: "/img/media/nescala-hero-thumb.jpg"
+**October 26, 2023** • **Online**
 
-sponsors_section: false
----
+One day of talks and one day of unconference, co-located with NE Scala.
+
+![Typelevel Summit NEScala](/img/media/nescala-hero.jpg)
 
 ## About the Summit
 

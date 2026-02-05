@@ -1,41 +1,15 @@
----
-layout: event
+{%
+  date: "2016-09-30"
+  tags: [summits, events]
+%}
 
-title: "Typelevel Community Conference Cádiz"
-short_title: "Cádiz Community Conference"
-date_string: "September 30, 2016"
-location: "Palacio de Congresos de Cádiz"
-description: "Co-located with Lambda World."
+# Typelevel Community Conference Cádiz
 
-poster_hero: "/img/media/cadiz.jpg"
-poster_thumb: "/img/media/cadiz-thumb.jpg"
+**September 30, 2016** • **Palacio de Congresos de Cádiz**
 
-location_section: true
-sponsors_section: true
+Co-located with Lambda World.
 
-sponsors:
-  - name: "47 Degrees"
-    logo: "/img/media/sponsors/47_degrees.png"
-    link: "http://www.47deg.com/"
-    type: "platinum"
-    height: 100
-  - name: "The Workshop"
-    logo: "http://www.lambda.world/img/partners/logo-TheWorkshop.png"
-    link: "http://www.theworkshop.com/"
-    type: "gold"
-    height: 50
-  - name: "Ciklum"
-    logo: "http://www.lambda.world/img/partners/logo-Ciklum.png"
-    link: "https://www.ciklum.com/"
-    type: "silver"
-    height: 50
-  - name: "Workday"
-    logo: "http://www.lambda.world/img/partners/logo-workday.svg"
-    link: "https://www.workday.com/"
-    type: "silver"
-    height: 50
-    
----
+![Typelevel Community Conference Cádiz](/img/media/cadiz.jpg)
 
 ## About the Conference
 

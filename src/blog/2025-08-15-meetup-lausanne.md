@@ -1,17 +1,15 @@
----
-layout: event
+{%
+  date: "2025-08-15"
+  tags: [summits, events]
+%}
 
-title: "Typelevel Meetup Lausanne"
-short_title: "Lausanne Meetup"
-date_string: "August 22, 2025"
-location: "École Polytechnique Fédérale de Lausanne"
-description: "Learn more about Typelevel at an in-person, community meetup"
+# Typelevel Meetup Lausanne
 
-poster_hero: "/img/media/lausanne.jpg"
-poster_thumb: "/img/media/lausanne-thumb.jpg"
+**August 22, 2025** • **École Polytechnique Fédérale de Lausanne**
 
-sponsors_section: false
----
+Learn more about Typelevel at an in-person, community meetup
+
+![Typelevel Meetup Lausanne](/img/media/lausanne.jpg)
 
 ## About the Meetup
 
