@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="../search/docs.css">
   <script src="../main.js"></script>
 
-  <title>Typelevel Switches to the Scala Code of Conduct</title>
+  <title>Typelevel Summer of Code 2024</title>
 </head>
 
 <body class="bulma-is-flex bulma-is-flex-direction-column">
@@ -85,39 +85,35 @@
     
 <section class="bulma-hero bulma-is-link bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">Typelevel Switches to the Scala Code of Conduct</p>
+    <p class="bulma-title">Typelevel Summer of Code 2024</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
-        Typelevel Steering Committee<span class="delimiter">,</span><span class="last-delimiter"> &</span>
+        Arman Bilge<span class="delimiter">,</span><span class="last-delimiter"> &</span>
       
-      on May 1, 2019
+      on March 2, 2024
     </p>
      
-      <span class="bulma-tag">governance</span>
+      <span class="bulma-tag">technical</span>
      
   </div>
 </section>
 <div class="bulma-section bulma-container bulma-is-max-desktop">
   <div class="blog-post bulma-content">
-    <h1 id="typelevel-switches-to-the-scala-code-of-conduct" class="title">Typelevel Switches to the Scala Code of Conduct</h1>
-    <p>Typelevel is pleased to announce that we are retiring the Typelevel Code of
-    Conduct in favour of the <a href="../code-of-conduct/">Scala Code of Conduct</a>. Many of the major projects
-    under the Typelevel umbrella have already made the switch and we will be asking
-    new projects that join Typelevel to adopt the new code.</p>
-    <p>The Scala Code of Conduct was developed by the Scala Center with input from
-    Typelevel and Lightbend, and improves on Typelevel&#39;s original in several ways.
-    It can be thought of as the &quot;Typelevel code of conduct 2.0&quot;. We <a href="scala-coc.html">endorsed it
-    from the outset</a> and have
-    decided that now the time is right to simplify things and move to the new code
-    wholesale.</p>
-    <p>A shared code of conduct means a shared standard of good behaviour. Having a
-    single code smooths the path for participants moving between different
-    organizations, projects, and events in the Scala ecosystem.</p>
-    <p>The Scala Code of Conduct is supported by key Scala organizations and events,
-    both community and commercial: the Scala Center, Lightbend, ScalaBridge, Scala
-    Days amongst many others. And now Typelevel and the Typelevel Summits.</p>
-    <p>We&#39;d love you to join us.</p>
+    <h1 id="typelevel-summer-of-code-2024" class="title">Typelevel Summer of Code 2024</h1>
+    <p>We are excited to share that Typelevel will be participating in <a href="https://summerofcode.withgoogle.com/">Google Summer of Code 2024</a>, thanks to the gracious support of the <a href="https://scala.epfl.ch/">Scala Center</a>! If you are a student, this is a wonderful opportunity to spend your summer working on Scala open source projects with mentorship from Typelevel maintainers, while earning a stipend.</p>
+    <p>This year we have <a href="../gsoc/ideas.html">several project ideas and mentors lined up</a> spanning AI/ML, serverless, data streaming, observability, systems programming, and more. We will continue adding ideas, so please keep checking back! Also, if you have an idea of your own, we would love to hear it: Typelevel members have a wide range of interests and a special fondness for building “at the cutting edge of some incredibly bizarre stuff.”</p>
+    <p>We look forward to welcoming you to the Typelevel community and we hope that this program will be only the beginning of your open source journey. <a href="https://summerofcode.withgoogle.com/get-started">Applications open on March 18!</a> Until then, please join us on <a href="https://discord.gg/hAKabfGjUw">Discord</a> or email us at <a href="mailto:gsoc@typelevel.org"><a href="mailto:gsoc@typelevel.org">gsoc@typelevel.org</a></a>; we look forward to getting to know you :)</p>
+    
+    <h2 id="_2023-recap" class="section"><a class="anchor-link" href="#_2023-recap"><code class="fas fa-link fa-sm"></code></a>2023 recap</h2>
+    <p>We are proud of our GSoC contributors&#39; accomplishments last year:</p>
+    <ul>
+      <li><a href="https://github.com/danghieutrung">Hieu</a> implemented a pure FP Scala <a href="https://github.com/http4s/http4s/pull/7261">WebSocket client</a> in <a href="https://http4s.org/v0.23/docs/integrations.html#ember">http4s Ember</a> that supports JVM, Node.js, and Scala Native. His work is being adopted across the ecosystem, such as by the <a href="https://github.com/joan38/kubernetes-client/pull/239">Kubernetes client</a>.</li>
+      <li><a href="https://github.com/sherriesyt">Sherrie</a> carefully reviewed <a href="https://github.com/typelevel/otel4s">otel4s</a> and <a href="https://github.com/typelevel/otel4s/pull/236">designed new APIs</a> that better follow the <a href="https://opentelemetry.io/">Open Telemetry</a> specification. Her enhancements shipped as part of the <a href="https://github.com/typelevel/otel4s/releases/tag/v0.3.0">v0.3.0 release</a>.</li>
+      <li><a href="https://github.com/antoniojimeneznieto">Antonio</a> demonstrated the awesome potential of <a href="https://en.wikipedia.org/wiki/Io_uring">io_uring</a> when <a href="https://http4s.org/v0.23/docs/integrations.html#ember">http4s Ember</a> performed <a href="https://github.com/typelevel/cats-effect/issues/3692#issuecomment-1697974751">more than 3x faster in benchmarks</a> thanks to his <a href="https://github.com/armanbilge/fs2-io_uring/pull/78">I/O integrated runtime</a>. He is returning this year as a mentor on multiple follow-up projects.</li>
+    </ul>
+    <p>To learn more about their projects, check out the <a href="https://youtu.be/3HAStrljVwY">lightning talks</a> they gave at the <a href="https://nescalas.github.io/">2023 Northeast Scala Symposium</a>. Their success would not have been possible without the support and mentorship of our community, especially Diego Alonso, Ross Baker, Chris Davenport, Brian Holt, Maksym Ochenashko, and Daniel Spiewak. Thank you for your enthusiasm and generosity; it made an impression on our students, and it made an impression on me :)</p>
+    <p>Lastly, we were surprised by the breadth of the response we got to our announcement last year: there are many people eager to contribute. Even if you are not eligible to participate in GSoC, you are <em>always</em> welcome to join the Typelevel community and contribute to our projects!</p>
   </div>
 </div>
 <div class="bulma-section bulma-container bulma-is-max-desktop">
@@ -128,38 +124,46 @@
   
   <figure class="bulma-media-left">
     <p class="bulma-image bulma-is-64x64">
-      <img class="bulma-is-rounded" src="https://github.com/typelevel-bot.png" />
+      <img class="bulma-is-rounded" src="https://github.com/armanbilge.png" />
     </p>
   </figure>
   
   <div class="bulma-media-content">
     <div class="bulma-content">
       <p>
-        <strong>Typelevel Steering Committee</strong>
+        <strong>Arman Bilge</strong>
         
         <br />
-        The Typelevel Steering Committee was the former governing body of Typelevel, until the Foundation was established in 2025.
+        Executive Director of Typelevel Foundation.
         
       </p>
     </div>
     <nav class="bulma-level bulma-is-align-items-start">
       <div class="bulma-level-left bulma-is-flex-direction-row">
         
+        <a class="bulma-level-item" href="mailto:arman@typelevel.org">
+          <span class="bulma-icon bulma-is-small"><i class="fas fa-envelope"></i></span>
+        </a>
         
-        <a class="bulma-level-item" href="http://github.com/typelevel">
+        
+        <a class="bulma-level-item" href="http://github.com/armanbilge">
           <span class="bulma-icon bulma-is-small"><i class="fab fa-github"></i></span>
         </a>
         
         
-        <a class="bulma-level-item" href="http://bsky.app/profile/typelevel.org">
+        <a class="bulma-level-item" href="http://bsky.app/profile/armanbil.ge">
           <span class="bulma-icon bulma-is-small"><i class="fab fa-bluesky"></i></span>
         </a>
         
         
-        <a class="bulma-level-item" href="https://fosstodon.org/@typelevel">
+        <a class="bulma-level-item" href="https://fosstodon.org/@armanbilge">
           <span class="bulma-icon bulma-is-small"><i class="fab fa-mastodon"></i></span>
         </a>
         
+        
+        <a class="bulma-level-item" href="https://www.linkedin.com/in/armanbilge/">
+          <span class="bulma-icon bulma-is-small"><i class="fab fa-linkedin"></i></span>
+        </a>
         
       </div>
     </nav>

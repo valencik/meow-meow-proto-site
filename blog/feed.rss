@@ -30,8 +30,11 @@
 
 <h2 id="scoped-error-capabilities" class="section">Scoped Error Capabilities</h2>
 <p>The problem has been to find a way to blend all of these constructs together in a way that practically <em>works</em> with the ecosystem, is syntactically lightweight, has pleasant type inference and errors, and doesn&#39;t confuse the heck out of anyone who touches it. That is a problem we feel we have now solved, at least with errors.</p>
-<pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+<pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Monad</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">mtl</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
 </span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">mtl</span><span>.{</span><span class="type-name">Handle</span><span>, </span><span class="type-name">Raise</span><span>}
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
 
 </span><span class="comment">// define a domain error type
 </span><span class="keyword">enum</span><span> </span><span class="type-name">ParseError</span><span>:
@@ -72,8 +75,11 @@
 
 <h3 id="scala-2" class="section">Scala 2</h3>
 <p>Oh, and just in case you were wondering, this syntax <em>does</em> work on Scala 2 as well, it&#39;s just a bit less fancy! Here&#39;s the same snippet from above, but with 100% more braces and a lot more explicit types:</p>
-<pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+<pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Monad</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">mtl</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.</span><span class="identifier">_</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">mtl</span><span>.{</span><span class="type-name">Handle</span><span>, </span><span class="type-name">Raise</span><span>}
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.</span><span class="identifier">_</span><span>
 
 </span><span class="comment">// define a domain error type
 </span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">ParseError</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Product</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">Serializable</span><span>
@@ -195,6 +201,29 @@ opportunities to become involved.</p>]]></description>
 
 <h1 id="migrating-to-the-0-9-0-release" class="section">Migrating to the <code>0.9.0</code> release</h1>
 <p>If you use <a href="https://github.com/scala-steward-org/scala-steward">Scala Steward</a>, you will migrate automatically. If not, read the <a href="https://github.com/typelevel/weaver-test/releases/tag/v0.9.0"><code>0.9.0</code> migration guide</a>.</p>]]></description>
+</item>
+<item>
+  <title>Typelevel Summer of Code 2025</title>
+  <pubDate>Thu, 27 Feb 2025 00:00:00 GMT</pubDate>
+  
+    <dc:creator>Arman Bilge</dc:creator>
+  
+  <link>https://typelevel.org/blog/gsoc-2025.html</link>
+  <guid isPermaLink="true">https://typelevel.org/blog/gsoc-2025.html</guid>
+  <description><![CDATA[
+<p>We are proud to announce that Typelevel is a Mentoring Organization for <a href="https://summerofcode.withgoogle.com/">Google Summer of Code 2025</a>! If you are a student, this is a wonderful opportunity to spend your summer working on Scala open source projects with mentorship from Typelevel maintainers, while earning a stipend. You can learn more about what the experience is like in <a href="https://typelevel.org/blog/gsoc24-going-feral-on-the-cloud.html">this blog post</a> by our 2024 contributor Ching Hian Chew.</p>
+<p>Please check out <a href="https://typelevel.org/gsoc/ideas.html">our project ideas and mentors</a> spanning AI/ML, serverless, build tooling, frontend/UIs, systems programming, web assembly, and more. Furthermore, if you have an idea of your own, we would love to hear it: Typelevel members have a wide range of interests and a special fondness for building “at the cutting edge of some incredibly bizarre stuff.”</p>
+<p>We look forward to welcoming you to the Typelevel community and we hope that this program will be only the beginning of your open source journey. <a href="https://summerofcode.withgoogle.com/get-started">Applications open on March 24!</a> Until then, please join us on <a href="https://discord.gg/hAKabfGjUw">Discord</a> or email us at <a href="mailto:gsoc@typelevel.org"><a href="mailto:gsoc@typelevel.org">gsoc@typelevel.org</a></a>; we are excited to get to know you :)</p>
+
+<h2 id="_2024-recap" class="section">2024 recap</h2>
+<p>Congratulations to our GSoC contributors last year:</p>
+<ul>
+  <li><a href="https://github.com/Chingles2404">Ching</a> expanded Feral’s serverless integrations, in particular adding support for Google Cloud Run HTTP Functions. Her work landed in the <a href="https://github.com/typelevel/feral/releases/tag/v0.3.1">v0.3.1</a> release. <a href="https://typelevel.org/blog/gsoc24-going-feral-on-the-cloud.html">Read her blog post!</a></li>
+  <li><a href="https://github.com/Hombre-x">Gaby</a> designed and implemented <a href="https://github.com/typelevel/governance/issues/149">Catscript</a>, a new library for beginner-friendly scripting with Cats Effect, complete with tutorials and documentation. It will become an essential part of the <a href="https://typelevel.org/toolkit/">Typelevel Toolkit</a>.</li>
+  <li><a href="https://github.com/golden-skipper03">Abhi</a> integrated <a href="https://github.com/cozydev-pink/protosearch/pull/241">Protosearch with Scaladoc</a>, enabling a unified search experience across written and API documentation. It will roll out to all Typelevel libraries in a forthcoming sbt-typelevel release.</li>
+</ul>
+<p>Our program culminated in a <a href="https://github.com/orgs/typelevel/discussions/151">virtual meetup</a> where each of them gave a lighting talk about their project. Thank you to everyone in our community who showed up for our contributors, especially our mentors Tonio Gela, Thanh Le, Michael Pilquist, Rishad Sewnarain, and Andrew Valencik!</p>
+<p>Finally, we are making a broad call for any and all new contributors. Even if you are not eligible to participate in GSoC, you are <em>always</em> welcome to join the Typelevel community and contribute to our projects!</p>]]></description>
 </item>
 <item>
   <title>Spotify FOSS Fund 2024</title>

@@ -118,8 +118,11 @@
     
     <h2 id="scoped-error-capabilities" class="section"><a class="anchor-link" href="#scoped-error-capabilities"><code class="fas fa-link fa-sm"></code></a>Scoped Error Capabilities</h2>
     <p>The problem has been to find a way to blend all of these constructs together in a way that practically <em>works</em> with the ecosystem, is syntactically lightweight, has pleasant type inference and errors, and doesn&#39;t confuse the heck out of anyone who touches it. That is a problem we feel we have now solved, at least with errors.</p>
-    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Monad</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">mtl</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
 </span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">mtl</span><span>.{</span><span class="type-name">Handle</span><span>, </span><span class="type-name">Raise</span><span>}
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.*
 
 </span><span class="comment">// define a domain error type
 </span><span class="keyword">enum</span><span> </span><span class="type-name">ParseError</span><span>:
@@ -160,8 +163,11 @@
     
     <h3 id="scala-2" class="section"><a class="anchor-link" href="#scala-2"><code class="fas fa-link fa-sm"></code></a>Scala 2</h3>
     <p>Oh, and just in case you were wondering, this syntax <em>does</em> work on Scala 2 as well, it&#39;s just a bit less fancy! Here&#39;s the same snippet from above, but with 100% more braces and a lot more explicit types:</p>
-    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+    <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="type-name">Monad</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">mtl</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.</span><span class="identifier">_</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">mtl</span><span>.{</span><span class="type-name">Handle</span><span>, </span><span class="type-name">Raise</span><span>}
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">syntax</span><span>.</span><span class="identifier">all</span><span>.</span><span class="identifier">_</span><span>
 
 </span><span class="comment">// define a domain error type
 </span><span class="keyword">sealed</span><span> </span><span class="keyword">trait</span><span> </span><span class="type-name">ParseError</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Product</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">Serializable</span><span>
