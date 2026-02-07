@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2018-05-18"
+  event-date: "May 18, 2018"
+  event-location: "Zalando, Zeughofstraße 1, Berlin"
   tags: [summits, events]
 %}
 
 # Typelevel Summit Berlin
-
-**May 18, 2018** • **Zalando, Zeughofstraße 1, Berlin**
-
-One day of recorded talks after Scala Days.
 
 ![Typelevel Summit Berlin](/img/media/berlin.jpg)
 

@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2017-03-23"
+  event-date: "March 23, 2017"
+  event-location: "26 Bridge Street, Brooklyn"
   tags: [summits, events]
 %}
 
 # Typelevel Summit NYC
-
-**March 23, 2017** • **26 Bridge Street, Brooklyn**
-
-One day of recorded talks and one day of unconference, co-located with NE Scala.
 
 ![Typelevel Summit NYC](/img/media/nyc.jpg)
 

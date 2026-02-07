@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2019-06-14"
+  event-date: "June 14, 2019"
+  event-location: "École Polytechnique Fédérale de Lausanne"
   tags: [summits, events]
 %}
 
 # Typelevel Summit Lausanne
-
-**June 14, 2019** • **École Polytechnique Fédérale de Lausanne**
-
-One day of talks, co-located with the anniversary Scala Days.
 
 ![Typelevel Summit Lausanne](/img/media/lausanne.jpg)
 

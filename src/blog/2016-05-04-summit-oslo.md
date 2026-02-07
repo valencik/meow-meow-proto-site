@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2016-05-04"
+  event-date: "May 4, 2016"
+  event-location: "Teknologihuset"
   tags: [summits, events]
 %}
 
 # Typelevel Summit Oslo
-
-**May 4, 2016** • **Teknologihuset**
-
-One day of talks, co-located with flatMap(Oslo).
 
 ![Typelevel Summit Oslo](/img/media/oslo.jpg)
 

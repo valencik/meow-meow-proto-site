@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2017-10-26"
+  event-date: "October 26th, 2017"
+  event-location: "Palacio de Congresos de Cádiz"
   tags: [events]
 %}
 
 # Typelevel UnConference - Lambda World Cadiz 2017
-
-**October 26th, 2017** • **Palacio de Congresos de Cádiz**
-
-Co-located with Lambda World.
 
 ![Typelevel UnConference - Lambda World Cadiz 2017](/img/media/cadiz.jpg)
 

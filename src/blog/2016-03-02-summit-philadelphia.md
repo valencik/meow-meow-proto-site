@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2016-03-02"
+  event-date: "March 2-3, 2016"
+  event-location: "Hub's Cira Centre"
   tags: [summits, events]
 %}
 
 # Typelevel Summit Philadelphia
-
-**March 2-3, 2016** • **Hub's Cira Centre**
-
-One day of recorded talks and one day of unconference, co-located with NE Scala.
 
 ![Typelevel Summit Philadelphia](/img/media/philly.jpg)
 

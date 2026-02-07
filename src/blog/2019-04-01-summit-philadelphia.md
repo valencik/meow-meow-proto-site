@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2019-04-01"
+  event-date: "April 1, 2019"
+  event-location: "Science History Institute, Philadelphia"
   tags: [summits, events]
 %}
 
 # Typelevel Summit Philadelphia
-
-**April 1, 2019** • **Science History Institute, Philadelphia**
-
-One day of recorded talks and one day of unconference, co-located with NE Scala.
 
 ![Typelevel Summit Philadelphia](/img/media/philly.jpg)
 

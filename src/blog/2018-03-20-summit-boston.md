@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2018-03-20"
+  event-date: "March 20, 2018"
+  event-location: "Broad Institute, Cambridge, Massachusetts"
   tags: [summits, events]
 %}
 
 # Typelevel Summit Boston
-
-**March 20, 2018** • **Broad Institute, Cambridge, Massachusetts**
-
-One day of recorded talks and one day of unconference, co-located with NE Scala.
 
 ![Typelevel Summit Boston](/img/media/cambridge.jpg)
 

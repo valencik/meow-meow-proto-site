@@ -7,6 +7,7 @@ import cats.syntax.all.*
 import fs2.io.file.{Files, Path}
 import org.virtuslab.yaml.*
 import com.typesafe.config.{Config, ConfigFactory}
+import java.time.LocalDate
 import scala.jdk.CollectionConverters.*
 
 case class ScheduleItem(
@@ -95,9 +96,12 @@ case class Event(conf: EventConfig, content: String, originalYaml: String) {
     cleaned
   }
 
-  def buildHoconMetadata(date: String, tags: List[String]): String =
+  def buildHoconMetadata(date: String, eventDate: String, eventLocation: String, tags: List[String]): String =
     s"""|{%
+        |  laika.html.template: event.template.html
         |  date: "$date"
+        |  event-date: "$eventDate"
+        |  event-location: "$eventLocation"
         |  tags: ${tags.mkString("[", ", ", "]")}
         |%}""".stripMargin
 
@@ -162,10 +166,8 @@ case class Event(conf: EventConfig, content: String, originalYaml: String) {
 
   def toLaika(date: String, stage: Int): String = {
     val tags = Option.when(conf.title.contains("Summit"))("summits").toList ::: "events" :: Nil
-    val metadata = buildHoconMetadata(date, tags)
+    val metadata = buildHoconMetadata(date, conf.date_string, conf.location, tags)
     val title = s"# ${conf.title}"
-    val header = s"**${conf.date_string}** • **${conf.location}**"
-    val description = conf.description
     val image =
       conf.poster_hero.map(img => s"![${conf.title}]($img)").getOrElse("")
 
@@ -176,12 +178,12 @@ case class Event(conf: EventConfig, content: String, originalYaml: String) {
 
       case 2 =>
         // Stage 2: HOCON metadata + title, no content changes
-        s"$metadata\n\n$title\n\n$header\n\n$description\n\n$image\n\n$content\n"
+        s"$metadata\n\n$title\n\n$image\n\n$content\n"
 
       case 3 =>
         // Stage 3: Stage 2 + link cleaning
         val transformedContent = cleanOtherLinks(content)
-        s"$metadata\n\n$title\n\n$header\n\n$description\n\n$image\n\n$transformedContent\n"
+        s"$metadata\n\n$title\n\n$image\n\n$transformedContent\n"
 
       case _ =>
         // Stage 4+: Use original content and replace Jekyll includes with generated HTML
@@ -213,7 +215,7 @@ case class Event(conf: EventConfig, content: String, originalYaml: String) {
         val venueMapPattern = """\{\%\s*include\s+venue_map\.html\s*%\}""".r
         processedContent = venueMapPattern.replaceAllIn(processedContent, "")
 
-        s"$metadata\n\n$title\n\n$header\n\n$description\n\n$image\n\n$processedContent\n"
+        s"$metadata\n\n$title\n\n$image\n\n$processedContent\n"
     }
   }
 }

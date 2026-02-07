@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2016-12-10"
+  event-date: "December 10, 2016"
+  event-location: "CodeNode, London"
   tags: [events]
 %}
 
 # Scala Exchange Hack Day and Unconference
-
-**December 10, 2016** • **CodeNode, London**
-
-Free unconference and hack day, co-located with Scala Exchange.
 
 ![Scala Exchange Hack Day and Unconference](/img/media/london.jpg)
 

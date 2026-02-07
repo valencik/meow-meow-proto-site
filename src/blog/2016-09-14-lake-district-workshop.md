@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2016-09-14"
+  event-date: "September 14, 2016"
+  event-location: "Rheged Centre, Penrith"
   tags: [events]
 %}
 
 # Typelevel Workshop in the Lake District
-
-**September 14, 2016** • **Rheged Centre, Penrith**
-
-Talks in the morning & unconference in the afternoon, co-located with Scala World.
 
 ![Typelevel Workshop in the Lake District](/img/media/lakedistrict.jpg)
 

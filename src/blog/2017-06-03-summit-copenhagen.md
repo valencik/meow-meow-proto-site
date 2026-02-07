@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2017-06-03"
+  event-date: "June 3, 2017"
+  event-location: "Comwell Conference Center Copenhagen, Denmark"
   tags: [summits, events]
 %}
 
 # Typelevel Summit Copenhagen
-
-**June 3, 2017** • **Comwell Conference Center Copenhagen, Denmark**
-
-One day of talks, co-located with Scala Days.
 
 ![Typelevel Summit Copenhagen](/img/media/copenhagen.jpg)
 

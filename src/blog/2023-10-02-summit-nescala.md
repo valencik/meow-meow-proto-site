@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2023-10-02"
+  event-date: "October 26, 2023"
+  event-location: "Online"
   tags: [summits, events]
 %}
 
 # Typelevel Summit NEScala
-
-**October 26, 2023** • **Online**
-
-One day of talks and one day of unconference, co-located with NE Scala.
 
 ![Typelevel Summit NEScala](/img/media/nescala-hero.jpg)
 

@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2016-09-30"
+  event-date: "September 30, 2016"
+  event-location: "Palacio de Congresos de Cádiz"
   tags: [events]
 %}
 
 # Typelevel Community Conference Cádiz
-
-**September 30, 2016** • **Palacio de Congresos de Cádiz**
-
-Co-located with Lambda World.
 
 ![Typelevel Community Conference Cádiz](/img/media/cadiz.jpg)
 

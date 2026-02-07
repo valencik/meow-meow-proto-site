@@ -1,13 +1,12 @@
 {%
+  laika.html.template: event.template.html
   date: "2025-08-15"
+  event-date: "August 22, 2025"
+  event-location: "École Polytechnique Fédérale de Lausanne"
   tags: [events]
 %}
 
 # Typelevel Meetup Lausanne
-
-**August 22, 2025** • **École Polytechnique Fédérale de Lausanne**
-
-Learn more about Typelevel at an in-person, community meetup
 
 ![Typelevel Meetup Lausanne](/img/media/lausanne.jpg)
 
