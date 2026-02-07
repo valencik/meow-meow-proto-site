@@ -235,7 +235,7 @@ To check these laws, Scalaz provides [ScalaCheck](https://github.com/scalaz/scal
 bindings to help you, but that is a topic for another day.
 
 Note that a particular type can have several `Semigroup` or `Monoid`s that make sense.
-For instance, `Int` has a `Monoid` on @:math (+, 0) @:@ as well as on @:math (*, 1) @:@. Convince yourself
+For instance, `Int` has a `Monoid` on @:math() (+, 0) @:@ as well as on @:math() (*, 1) @:@. Convince yourself
 (using the above laws) that this makes sense.
 
 This raises the question of how we get both @:math + @:@ and @:math * @:@ `Monoid`s for `Int` without
