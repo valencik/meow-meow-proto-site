@@ -13,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
 
   <link rel="stylesheet" href="../main.css">
   <link rel="stylesheet" href="../css/code.css">
@@ -42,7 +43,7 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
@@ -83,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">Towards Scalaz (Part 1)</p>
+    <p class="bulma-title bulma-has-text-light">Towards Scalaz (Part 1)</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
@@ -239,35 +240,28 @@
     instance where the <code>zero</code> is the tuple <code>(A.zero, B.zero, C.zero)</code> and the <code>plus</code> is
     appending corresponding pairs between the two tuples. Look for instances that may already
     be defined before defining your own on existing types.</p>
-    <p>&lt;div class=&quot;side-note&quot;&gt;
-      If you are interested in learning more about numeric programming, check out
-      the &lt;a href=&quot;https://github.com/non/spire&quot;&gt;spire&lt;/a&gt; library, as well as the
-      accompanying post about &lt;a href=&quot;generic-numeric-programming.md&quot;&gt;
-      generic numeric programming&lt;/a&gt;.
-    &lt;/div&gt;</p>
+    <p class="bulma-notification">If you are interested in learning more about numeric programming, check out
+      the <a href="https://github.com/non/spire">spire</a> library, as well as the
+      accompanying post about <a href="generic-numeric-programming.html">generic numeric programming</a>.</p>
     
     <h3 id="law-abiding-citizen" class="section"><a class="anchor-link" href="#law-abiding-citizen"><code class="fas fa-link fa-sm"></code></a>Law-Abiding Citizen</h3>
     <p>To close this post off, I confess one thing: defining a <code>Monoid</code> (and <code>Semigroup</code>) instance
     should not be done without some thought. It is not enough that you simply have a zero and
     a binary operation – to truly have a <code>Monoid</code> or <code>Semigroup</code> certain laws must be obeyed.
     These laws are as follows:</p>
-    <p>Call the <code>plus</code> operation $+$ and the <code>zero</code> value $0$. Arbitrary values of type <code>A</code> will be
-    referred to as $a$, $b$, etc.</p>
-    <p>The <code>Semigroup</code> law requires $+$ to be associative. That is:</p>
-    <p>&lt;div style=&quot;text-align:center;&quot;&gt;
-    	$(a + b) + c = a + (b + c)$
-    &lt;/div&gt;</p>
+    <p>Call the <code>plus</code> operation <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex"> + </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span> and the <code>zero</code> value <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex"> 0 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span>. Arbitrary values of type <code>A</code> will be
+    referred to as <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi></mrow><annotation encoding="application/x-tex"> a </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span></span></span></span>, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi></mrow><annotation encoding="application/x-tex"> b </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span></span></span></span>, etc.</p>
+    <p>The <code>Semigroup</code> law requires <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex"> + </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span> to be associative. That is:</p>
+    <span class="bulma-has-text-centered"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><mi>a</mi><mo>+</mo><mi>b</mi><mo stretchy="false">)</mo><mo>+</mo><mi>c</mi><mo>=</mo><mi>a</mi><mo>+</mo><mo stretchy="false">(</mo><mi>b</mi><mo>+</mo><mi>c</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex"> (a + b) + c = a + (b + c)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">b</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">c</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">c</span><span class="mclose">)</span></span></span></span></span></span>
     <p>In addition to the <code>Semigroup</code> law for the binary operation, the <code>Monoid</code> law relates
-    $+$ and $0$:</p>
-    <p>&lt;div style=&quot;text-align:center;&quot;&gt;
-      $(a + 0) = (0 + a) = a$
-    &lt;/div&gt;</p>
+    <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex"> + </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex"> 0 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span>:</p>
+    <span class="bulma-has-text-centered"><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><mi>a</mi><mo>+</mo><mn>0</mn><mo stretchy="false">)</mo><mo>=</mo><mo stretchy="false">(</mo><mn>0</mn><mo>+</mo><mi>a</mi><mo stretchy="false">)</mo><mo>=</mo><mi>a</mi></mrow><annotation encoding="application/x-tex">  (a + 0) = (0 + a) = a</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">0</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">a</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span></span></span></span></span></span>
     <p>To check these laws, Scalaz provides <a href="https://github.com/scalaz/scalaz/tree/v7.0.4/scalacheck-binding">ScalaCheck</a>
     bindings to help you, but that is a topic for another day.</p>
     <p>Note that a particular type can have several <code>Semigroup</code> or <code>Monoid</code>s that make sense.
-    For instance, <code>Int</code> has a <code>Monoid</code> on $(+, 0)$ as well as on $(*, 1)$. Convince yourself
+    For instance, <code>Int</code> has a <code>Monoid</code> on <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow></mrow><annotation encoding="application/x-tex"> </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"></span></span> as well as on <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow></mrow><annotation encoding="application/x-tex"> </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"></span></span>. Convince yourself
     (using the above laws) that this makes sense.</p>
-    <p>This raises the question of how we get both $+$ and $*$ <code>Monoid</code>s for <code>Int</code> without
+    <p>This raises the question of how we get both <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo></mrow><annotation encoding="application/x-tex"> + </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">+</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∗</mo></mrow><annotation encoding="application/x-tex"> * </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4653em;"></span><span class="mord">∗</span></span></span></span> <code>Monoid</code>s for <code>Int</code> without
     making <code>scalac</code> freak out about ambiguous implicit values. The answer is &quot;tagged types&quot;,
     again a topic for another day.</p>
     

@@ -13,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
 
   <link rel="stylesheet" href="../main.css">
   <link rel="stylesheet" href="../css/code.css">
@@ -42,7 +43,7 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
@@ -83,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">Symbolic operators and type classes for Cats</p>
+    <p class="bulma-title bulma-has-text-light">Symbolic operators and type classes for Cats</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
@@ -106,11 +107,9 @@
     <p>One of the simplest and most recognizable type classes is the semigroup.
     This type class abstracts over the ability to combine values of a certain
     type in an associative manner.</p>
-    <p>&lt;div class=&quot;side-note&quot;&gt;
-      What does &lt;em&gt;associativity&lt;/em&gt; mean?
-      We call an operation $\oplus$ associative, if for all $a$, $b$ and $c$, $a \oplus (b \oplus c) = (a \oplus b) \oplus c$ holds.
-      Read more about this in the &lt;a href=&quot;https://github.com/non/algebra#algebraic-properties-and-terminology&quot;&gt;README of the algebra repository&lt;/a&gt;.
-    &lt;/div&gt;</p>
+    <p class="bulma-notification">What does <em>associativity</em> mean?
+      We call an operation <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⊕</mo></mrow><annotation encoding="application/x-tex"> \oplus </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">⊕</span></span></span></span> associative, if for all <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi></mrow><annotation encoding="application/x-tex"> a </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">a</span></span></span></span>, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi></mrow><annotation encoding="application/x-tex"> b </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal">b</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi></mrow><annotation encoding="application/x-tex"> c </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">c</span></span></span></span>, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>⊕</mo><mo stretchy="false">(</mo><mi>b</mi><mo>⊕</mo><mi>c</mi><mo stretchy="false">)</mo><mo>=</mo><mo stretchy="false">(</mo><mi>a</mi><mo>⊕</mo><mi>b</mi><mo stretchy="false">)</mo><mo>⊕</mo><mi>c</mi></mrow><annotation encoding="application/x-tex"> a \oplus (b \oplus c) = (a \oplus b) \oplus c </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⊕</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⊕</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">c</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">a</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⊕</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">b</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">⊕</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">c</span></span></span></span> holds.
+      Read more about this in the <a href="https://github.com/non/algebra#algebraic-properties-and-terminology">README of the algebra repository</a>.</p>
     <p>Cats provides <code>cats.Semigroup[A]</code> to model semigroups.
     The <code>combine</code> method takes two values of the type <code>A</code> and returns an <code>A</code> value.</p>
     <p>In addition, Cats defines syntax allowing the binary operator <code>|+|</code> to be

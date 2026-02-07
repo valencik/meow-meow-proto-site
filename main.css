@@ -1,58 +1,21 @@
 @import "https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/versions/bulma-prefixed.min.css";
 
-/* :root {
-  --bulma-scheme-h: 25.26deg;
-  --bulma-scheme-s: 70.37%;
-  --bulma-scheme-l: 94.71%;
-  --bulma-link-h: 344.69deg;
-  --bulma-link-s: 92.36%;
-  --bulma-link-l: 69.22%;
-  --bulma-text-h: 278.82deg;
-  --bulma-text-s: 10.56%;
-  --bulma-text-l: 31.57%;
-  --bulma-primary-h: 0deg;
-  --bulma-primary-s: 84.31%;
-  --bulma-primary-l: 90.00%;
-} */
-
-/* :root {
-  --bulma-primary-h: 270deg;
-  --bulma-primary-s: 30%;
-  --bulma-primary-l: 61%;
-
-  --bulma-link-h: 340deg;
-  --bulma-link-s: 52%;
-  --bulma-link-l: 76%;
-
-  --bulma-scheme-h: 320deg;
-  --bulma-scheme-s: 40%;
-
-  --bulma-text-h: 270deg;
-  --bulma-text-s: 35%;
-  --bulma-text-l: 30%;
-} */
-
-
 :root {
-  --bulma-primary-h: 296deg;
-  --bulma-primary-s: 17%;
-  --bulma-primary-l: 45%;
+  --bulma-link-h: 283.33deg;
+  --bulma-link-s: 96.10%;
+  --bulma-link-l: 67.45%;
 
-  --bulma-link-h: 345deg;
-  --bulma-link-s: 93%;
-  --bulma-link-l: 53%;
+  --bulma-scheme-h: 283.33deg;
+  --bulma-scheme-s: 68.75%;
+  --bulma-scheme-l: 92.35%;
 
-  --bulma-scheme-h: 270deg;
-  --bulma-scheme-s: 43%;
-  --bulma-scheme-main-l: 98%;
-  --bulma-scheme-main-bis-l: 96%;
-  --bulma-scheme-main-ter-l: 94%;
+  --bulma-text-h: 195.00deg;
+  --bulma-text-s: 13.70%;
+  --bulma-text-l: 22.75%;
 
-  --bulma-text-h: 260deg;
-  --bulma-text-s: 26%;
-  --bulma-text-l: 25%;
-  --bulma-text-strong-l: 20%;
-  --bulma-text-soft-l: 45%;
+  --bulma-primary-h: 272.97deg;
+  --bulma-primary-s: 34.49%;
+  --bulma-primary-l: 48.04%;
 }
 
 :root {
@@ -143,4 +106,8 @@ img.sponsor {
 /* Equal height cards in grid */
 .bulma-cell > .bulma-card {
   height: 100%;
+}
+
+.nowrap {
+  white-space: nowrap;
 }

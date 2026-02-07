@@ -13,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
 
   <link rel="stylesheet" href="../main.css">
   <link rel="stylesheet" href="../css/code.css">
@@ -42,7 +43,7 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
@@ -83,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">First batch of talks at the Philadelphia Summit</p>
+    <p class="bulma-title bulma-has-text-light">First batch of talks at the Philadelphia Summit</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
@@ -109,30 +110,26 @@
     <p>Want to contribute to Cats?
     Let&#39;s head over to the Cats Issues list and do some live coding!
     Along the way we will see how the codebase is organized, the various bits of automation provided, and how you can use our various channels to get feedback on your work.</p>
-    <p>&lt;img src=&quot;/img/media/speakers/adelbertchang.jpeg&quot; class=&quot;portrait&quot;&gt;
-    <em>Adelbert Chang is a Software Engineer at Box and a recent graduate from UC Santa Barbara where he studied Computer Science and researched graph querying and modeling. He enjoys helping with functional programming education and learning more about programming.</em>
-    &lt;br style=&quot;clear: both;&quot;&gt;</p>
+    <p class="bulma-media"><span class="bulma-media-left"> <span class="bulma-figure bulma-image bulma-is-64x64"> <img class="bulma-is-rounded" src="../img/media/speakers/adelbertchang.jpeg"> </span> </span>
+    <span class="bulma-media-content"> <em>Adelbert Chang is a Software Engineer at Box and a recent graduate from UC Santa Barbara where he studied Computer Science and researched graph querying and modeling. He enjoys helping with functional programming education and learning more about programming.</em></span></p>
     
     <h3 id="direct-syntax-for-monad-comprehensions" class="section"><a class="anchor-link" href="#direct-syntax-for-monad-comprehensions"><code class="fas fa-link fa-sm"></code></a>Direct syntax for monad comprehensions</h3>
     <p>Easy, intuitive, direct-style syntax for monad comprehensions!
     Like Scala <code>async</code> or SBT <code>.value</code>, but generalized to any monad.
     Implemented, ready to be used and requiring only vanilla Scala 2.10/2.11 and blackbox macros.
     Future extensions could include automatic use of Applicative where possible, support for more embedded control-flow operations, comprehensions over multiple compatible monads at once for user-defined notions of compatible and compiler tweaks for syntactic improvements.</p>
-    <p>&lt;img src=&quot;/img/media/speakers/chrisvogt.jpg&quot; class=&quot;portrait&quot;&gt;
-    <em>Chris Vogt. Slick co-author, Compossible records author, frequent Scala conference/user group speaker, former member of Martin&#39;s team at LAMP/EPFL, based in NYC, Senior Software Engineer at x.ai</em>
-    &lt;br style=&quot;clear: both;&quot;&gt;</p>
-    <p>&lt;img src=&quot;/img/media/speakers/chrishodapp.jpg&quot; class=&quot;portrait&quot;&gt;
-    <em>Chris Hodapp. Several-time Scala GSOC student and eventually mentor, author of the ill-fated Comprehensive Comprehensions project. He&#39;s hoping to see tooling and techniques from the FP/Typelevel community improve the leverage of the average developer. Based in the SF Bay Area.</em>
-    &lt;br style=&quot;clear: both;&quot;&gt;</p>
+    <p class="bulma-media"><span class="bulma-media-left"> <span class="bulma-figure bulma-image bulma-is-64x64"> <img class="bulma-is-rounded" src="../img/media/speakers/chrisvogt.jpg"> </span> </span>
+    <span class="bulma-media-content"> <em>Chris Vogt. Slick co-author, Compossible records author, frequent Scala conference/user group speaker, former member of Martin&#39;s team at LAMP/EPFL, based in NYC, Senior Software Engineer at x.ai</em></span></p>
+    <p class="bulma-media"><span class="bulma-media-left"> <span class="bulma-figure bulma-image bulma-is-64x64"> <img class="bulma-is-rounded" src="../img/media/speakers/chrishodapp.jpg"> </span> </span>
+    <span class="bulma-media-content"> <em>Chris Hodapp. Several-time Scala GSOC student and eventually mentor, author of the ill-fated Comprehensive Comprehensions project. He&#39;s hoping to see tooling and techniques from the FP/Typelevel community improve the leverage of the average developer. Based in the SF Bay Area.</em></span></p>
     
     <h3 id="scala-exercises" class="section"><a class="anchor-link" href="#scala-exercises"><code class="fas fa-link fa-sm"></code></a>Scala Exercises</h3>
     <p>Scala Exercises is a web based community tool open sourced by 47 Degrees.
     It contains multiple koan and free form style exercises maintained by library authors and maintainers to help you master some of the most important tools in the Scala Ecosystem.
     Version 2 comes with a brand new backend and exercise tracking where you can login simply using your Github account and track your progress throughout exercises and libraries.
     Version 2 will launch with exercises for the stdlib, Cats, Shapeless and other well known libraries and frameworks part of the Scala ecosystem.</p>
-    <p>&lt;img src=&quot;/img/media/speakers/raulraja.jpg&quot; class=&quot;portrait&quot;&gt;
-    <em>Raul Raja. Functional programming enthusiast, CTO and Co-founder at 47 Degrees, a functional programming consultancy specialized in Scala.</em>
-    &lt;br style=&quot;clear: both;&quot;&gt;</p>
+    <p class="bulma-media"><span class="bulma-media-left"> <span class="bulma-figure bulma-image bulma-is-64x64"> <img class="bulma-is-rounded" src="../img/media/speakers/raulraja.jpg"> </span> </span>
+    <span class="bulma-media-content"> <em>Raul Raja. Functional programming enthusiast, CTO and Co-founder at 47 Degrees, a functional programming consultancy specialized in Scala.</em></span></p>
     
     <h3 id="probabilistic-programming-what-it-is-and-how-it-works" class="section"><a class="anchor-link" href="#probabilistic-programming-what-it-is-and-how-it-works"><code class="fas fa-link fa-sm"></code></a>Probabilistic Programming: What It Is and How It Works</h3>
     <p>Probabilistic programming is the other Big Thing to happen in machine learning alongside deep learning.
@@ -142,9 +139,8 @@
     This is achieved by expressing the model within an embedded DSL, and then compiling learning (inference) algorithms from the model description.
     This automates one of the main tasks in building a probabilistic model, and provides the same benefits as a compiler for a traditional high-level language.
     With the close tie of functional programming to mathematics, and the use of techniques like the free monad, functional programming languages are an ideal platform for embedding probabilistic programming.</p>
-    <p>&lt;img src=&quot;/img/media/speakers/noelwelsh.png&quot; class=&quot;portrait&quot;&gt;
-    <em>Noel Welsh is a partner at Underscore, a consultancy that specializes in Scala. He&#39;s been using Scala for 6 years in all sorts of applications. He&#39;s the author of Advanced Scala, which is in the process of being rewritten to use Cats.</em>
-    &lt;br style=&quot;clear: both;&quot;&gt;</p>
+    <p class="bulma-media"><span class="bulma-media-left"> <span class="bulma-figure bulma-image bulma-is-64x64"> <img class="bulma-is-rounded" src="../img/media/speakers/noelwelsh.png"> </span> </span>
+    <span class="bulma-media-content"> <em>Noel Welsh is a partner at Underscore, a consultancy that specializes in Scala. He&#39;s been using Scala for 6 years in all sorts of applications. He&#39;s the author of Advanced Scala, which is in the process of being rewritten to use Cats.</em></span></p>
   </div>
 </div>
 <div class="bulma-section bulma-container bulma-is-max-desktop">

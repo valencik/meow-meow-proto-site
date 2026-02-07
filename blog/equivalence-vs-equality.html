@@ -13,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
 
   <link rel="stylesheet" href="../main.css">
   <link rel="stylesheet" href="../css/code.css">
@@ -42,7 +43,7 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
@@ -83,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">Equivalence versus Equality</p>
+    <p class="bulma-title bulma-has-text-light">Equivalence versus Equality</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
@@ -124,7 +125,7 @@
     Two objects are considered <em>equal</em> when they are <em>indistinguishable</em> to an observer.
     Formally, equality is required to have the <em>substitution property:</em></p>
     <p>&lt;p&gt;[ \forall a,b \in A, \forall f \in (A \to B): a=<em>A b \implies f(a)=</em>B f(b) ]&lt;/p&gt;</p>
-    <p>(Here, $=_A$ denotes equality on $A$, $=_B$ denotes equality on $B$.)</p>
+    <p>(Here, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mi mathvariant="normal">_</mi><mi>A</mi></mrow><annotation encoding="application/x-tex"> =\_A </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.9933em;vertical-align:-0.31em;"></span><span class="mord" style="margin-right:0.02778em;">_</span><span class="mord mathnormal">A</span></span></span></span> denotes equality on <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex"> A </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span></span></span></span>, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mi mathvariant="normal">_</mi><mi>B</mi></mrow><annotation encoding="application/x-tex"> =\_B </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.3669em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.9933em;vertical-align:-0.31em;"></span><span class="mord" style="margin-right:0.02778em;">_</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span> denotes equality on <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi></mrow><annotation encoding="application/x-tex"> B </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>.)</p>
     <p>Equality is the finest equivalence: whenever two elements are <em>equal</em>, they are necessarily <em>equivalent</em> with respect to every equivalence.</p>
     
     <h2 id="choices-in-libraries" class="section"><a class="anchor-link" href="#choices-in-libraries"><code class="fas fa-link fa-sm"></code></a>Choices in libraries</h2>

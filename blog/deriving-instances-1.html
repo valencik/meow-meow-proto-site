@@ -13,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
 
   <link rel="stylesheet" href="../main.css">
   <link rel="stylesheet" href="../css/code.css">
@@ -42,7 +43,7 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
@@ -83,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">Deriving Type Class Instances</p>
+    <p class="bulma-title bulma-has-text-light">Deriving Type Class Instances</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
@@ -127,29 +128,25 @@
     <p>But first, let us introduce all the related concepts properly.</p>
     
     <h2 id="abstracting-all-the-things" class="section"><a class="anchor-link" href="#abstracting-all-the-things"><code class="fas fa-link fa-sm"></code></a>Abstracting all the things</h2>
-    <p>&lt;div class=&quot;side-note&quot;&gt;
-      If you are already familiar with type classes in general and algebraic structures in particular, you can safely skip this and the next section.
-      Keep in mind though that we are dealing with classes for types of kind $<em>$ only. Type classes for $</em> \rightarrow *$ are different and not supported.
-    &lt;/div&gt;</p>
+    <p class="bulma-notification">If you are already familiar with type classes in general and algebraic structures in particular, you can safely skip this and the next section.
+      Keep in mind though that we are dealing with classes for types of kind <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∗</mo></mrow><annotation encoding="application/x-tex"> * </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4653em;"></span><span class="mord">∗</span></span></span></span> only. Type classes for <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∗</mo><mo>→</mo><mo>∗</mo></mrow><annotation encoding="application/x-tex"> * \rightarrow * </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4653em;"></span><span class="mord">∗</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4653em;"></span><span class="mord">∗</span></span></span></span> are different and not supported.</p>
     <p>Type classes are an incredibly useful abstraction mechanism, originally introduced in Haskell.
     If you have been using some of the typelevel.scala libraries already, you probably know how type classes and their instances are represented in Scala: as traits and implicits.
     In the following section, we will get started with an example type class from abstract algebra, which is implemented in <em>spire</em>.</p>
     
     <h2 id="group-theory" class="section"><a class="anchor-link" href="#group-theory"><code class="fas fa-link fa-sm"></code></a>Group theory</h2>
     <p>Group theory is a very important field of research in mathematics and has a very broad range of applications, especially in computer science.
-    One of the most fundamental structures is a <em>semigroup</em>, which consists of a set of elements equipped with one operation (often called <em>append</em>, <em>mplus</em>, or similarly; in textbooks you will often find $\circ$ or $\oplus$).
-    Additionally, the operation has to obey the <em>law of associativity</em>, meaning that for any three values $s_1, s_2,$ and $s_3$, it does not matter if you append $s_1$ and $s_2$ first and then append $s_3$, or append $s_2$ and $s_3$ first and then append $s_1$ and the result of that.
+    One of the most fundamental structures is a <em>semigroup</em>, which consists of a set of elements equipped with one operation (often called <em>append</em>, <em>mplus</em>, or similarly; in textbooks you will often find <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>∘</mo></mrow><annotation encoding="application/x-tex"> \circ </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4445em;"></span><span class="mord">∘</span></span></span></span> or <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⊕</mo></mrow><annotation encoding="application/x-tex"> \oplus </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">⊕</span></span></span></span>).
+    Additionally, the operation has to obey the <em>law of associativity</em>, meaning that for any three values <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>s</mi><mn>2</mn></msub><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex"> s_1, s_2, </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex"> s_3 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>, it does not matter if you append <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex"> s_1 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex"> s_2 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> first and then append <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex"> s_3 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>, or append <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex"> s_2 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex"> s_3 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> first and then append <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex"> s_1 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> and the result of that.
     In other words, the precise order in which the steps of a larger operation are executed does not matter.
     A good analogy here is when flattening a list:
     On the surface, you just do not care if it proceeds by splitting the list recursively or if the concatenation is done sequentially by folding.</p>
-    <p>&lt;div class=&quot;side-note&quot;&gt;
-      In fact, some list operations actually require associativity. From the Scaladoc of the &lt;code&gt;fold&lt;/code&gt; method on &lt;code&gt;Seq&lt;/code&gt;:
-      &lt;blockquote&gt;
-        Folds the elements of this collection or iterator using the specified associative binary operator.
-        The order in which operations are performed on elements is unspecified and may be nondeterministic. 
-      &lt;/blockquote&gt;
-      This allows a particular collection implementation to use whichever order is most efficient.
-    &lt;/div&gt;</p>
+    <div class="bulma-notification">
+      <p>In fact, some list operations actually require associativity. From the Scaladoc of the <code>fold</code> method on <code>Seq</code>:</p>
+      <blockquote>Folds the elements of this collection or iterator using the specified associative binary operator.
+      The order in which operations are performed on elements is unspecified and may be nondeterministic.</blockquote>
+      <p>This allows a particular collection implementation to use whichever order is most efficient.</p>
+    </div>
     <p>Lists are already a good example for a semigroup: Any <code>List[T]</code> is a semigroup, with the semigroup operation being list concatenation!
     A <code>Map[K, V]</code> is a semigroup too, given that <code>V</code> is a semigroup.
     The operation is just &quot;merging&quot; two maps, and if you have two duplicate keys, you can use the semigroup operation for <code>V</code>.</p>
@@ -162,7 +159,7 @@
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">append</span><span>(</span><span class="identifier">s1</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">s2</span><span>: </span><span class="type-name">Int</span><span>) = </span><span class="identifier">s1</span><span> + </span><span class="identifier">s2</span><span>
 }</span></code></pre>
     <p>In other words, we just use the built-in addition function.</p>
-    <p>&lt;div class=&quot;side-note&quot;&gt;If you want to know more about applications of abstract algebra in programming, especially in &lt;em&gt;spire&lt;/em&gt;, head over to YouTube and watch &lt;a href=&quot;http://www.youtube.com/watch?v=xO9AoZNSOH4&quot;&gt;an introduction by Tom Switzer&lt;/a&gt;.&lt;/div&gt;</p>
+    <p class="bulma-notification">If you want to know more about applications of abstract algebra in programming, especially in <em>spire</em>, head over to YouTube and watch <a href="http://www.youtube.com/watch?v=xO9AoZNSOH4">an introduction by Tom Switzer</a>.</p>
     
     <h2 id="composing-instances" class="section"><a class="anchor-link" href="#composing-instances"><code class="fas fa-link fa-sm"></code></a>Composing instances</h2>
     <p>Now suppose you are working with three-dimensional images.
@@ -193,11 +190,9 @@
       <li>This is still a lie. We actually have an instance for <code>(Int, (Int, Int))</code>.</li>
     </ol>
     <p>Let us address these problems now. The following sections assume familiarity with <code>HList</code>s, as implemented in <em>shapeless</em>.</p>
-    <p>&lt;div class=&quot;side-note&quot;&gt;
-      If you are not familiar with &lt;code&gt;HList&lt;/code&gt;s yet,
-      watch Miles Sabin&#39;s &lt;a href=&quot;http://www.youtube.com/watch?v=GDbNxL8bqkY&quot;&gt;talk about &lt;em&gt;shapeless&lt;/em&gt;&lt;/a&gt; at the Northeast Scala Symposium 2012.
-      There&#39;s also a &lt;a href=&quot;http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/&quot;&gt;blog series&lt;/a&gt; exploring type-level programming in general by Mark Harrah.
-    &lt;/div&gt;</p>
+    <p class="bulma-notification">If you are not familiar with <code>HList</code>s yet,
+      watch Miles Sabin&#39;s <a href="http://www.youtube.com/watch?v=GDbNxL8bqkY">talk about <em>shapeless</em></a> at the Northeast Scala Symposium 2012.
+      There&#39;s also a <a href="http://apocalisp.wordpress.com/2010/06/08/type-level-programming-in-scala/">blog series</a> exploring type-level programming in general by Mark Harrah.</p>
     <p>Now, we want to generate an instance for <code>Vector3D</code> and countless other data types.
     That means that we cannot just special-case for every possible data type, but we have to abstract over them.
     The trick is actually quite simple:
@@ -288,7 +283,7 @@
         <p>The library author, who defines type classes, fundamental instances thereof, and of course the necessary <code>TypeClass</code> instances.</p>
         <p>These are usually contained in the libraries you use, but the last part will additionally require a bridge library.
         But fear not, those bridge libraries already exist, at least for the typelevel.scala libraries, and can be readily added as dependency for your build.
-        Head over to the &lt;a href=&quot;https://github.com/typelevel/shapeless-contrib#readme&quot;&gt;GitHub project&lt;/a&gt;, we will keep you posted for when a new version comes out.
+        Head over to the <a href="https://github.com/typelevel/shapeless-contrib#readme">GitHub project</a>, we will keep you posted for when a new version comes out.
         We also plan to put a compatibility chart on this site.</p>
       </li>
       <li>

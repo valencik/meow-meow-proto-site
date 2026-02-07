@@ -13,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
 
   <link rel="stylesheet" href="../main.css">
   <link rel="stylesheet" href="../css/code.css">
@@ -42,7 +43,7 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
@@ -83,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">To change types, change values</p>
+    <p class="bulma-title bulma-has-text-light">To change types, change values</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
@@ -203,12 +204,10 @@
     <a href="https://github.com/facebook/flow/releases/tag/v0.14.0">variable refinement</a>
     in the type system.  By initializing in a different way, we can
     recover type safety.</p>
-    <p>&lt;div class=&quot;side-note&quot;&gt;
-      The implications of refinement, linked above, are much less severe
+    <p class="bulma-notification">The implications of refinement, linked above, are much less severe
       than those of unrestricted type-changing of a variable.  So Flow did
       not solve, nor did it aim to solve, those difficulties by
-      introducing the refinement feature.
-    &lt;/div&gt;</p>
+      introducing the refinement feature.</p>
     
     <h2 id="the-four-types-of-document" class="section"><a class="anchor-link" href="#the-four-types-of-document"><code class="fas fa-link fa-sm"></code></a>The four types of <code>Document</code></h2>
     <p>If we consider <code>Document</code> as the simple product of its three state
@@ -382,13 +381,11 @@ initWordIndex andThen initMostPopular: Path&nbsp;=&gt;&nbsp;Doc</code>.  But tha
     <p>With the increase in the number of explicit concepts in the code comes
     a greater need for an automatic method of keeping track of all these
     connections.  The type system is ideally suited to this role.</p>
-    <p>&lt;div class=&quot;side-note&quot;&gt;
-      We induced more &lt;em&gt;explicit&lt;/em&gt; data representation, not more
-      representations overall.  The imperative &lt;code&gt;Document&lt;/code&gt; has
+    <p class="bulma-notification">We induced more <em>explicit</em> data representation, not more
+      representations overall.  The imperative <code>Document</code> has
       four stages of initialization, at each of which it exhibits
       different behavior.  All we have done is expose this fact to the
-      type system level, at which our usage can be checked.
-    &lt;/div&gt;</p>
+      type system level, at which our usage can be checked.</p>
     
     <h2 id="don-t-miss-one" class="section"><a class="anchor-link" href="#don-t-miss-one"><code class="fas fa-link fa-sm"></code></a>Don’t miss one!</h2>
     <p>As it is declared, the type-changing <code>DocTree#map</code> has another

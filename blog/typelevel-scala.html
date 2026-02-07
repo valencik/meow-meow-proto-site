@@ -13,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
 
   <link rel="stylesheet" href="../main.css">
   <link rel="stylesheet" href="../css/code.css">
@@ -42,7 +43,7 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
@@ -83,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">Typelevel Scala and the future of the Scala ecosystem</p>
+    <p class="bulma-title bulma-has-text-light">Typelevel Scala and the future of the Scala ecosystem</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
@@ -103,9 +104,8 @@
     <h1 id="typelevel-scala-and-the-future-of-the-scala-ecosystem" class="title">Typelevel Scala and the future of the Scala ecosystem</h1>
     <p><strong>tl;dr</strong> Typelevel is forking Scala; we call on all stakeholders in the Scala ecosystem to collaborate on the creation of an independent, non-profit, open source foundation to safeguard the interests of the entire Scala community.</p>
     <p>Last week I tweeted the following question:</p>
-    <p>&lt;div&gt;
-      &lt;blockquote&gt;&lt;p&gt;How much interest would there be in a community sponsored fork of the &lt;a href=&quot;https://twitter.com/hashtag/Scala?src=hash&quot;&gt;#Scala&lt;/a&gt; toolchain? RTs and fav&#39;s please.&lt;/p&gt;&amp;mdash; Miles Sabin (@milessabin) &lt;a href=&quot;https://twitter.com/milessabin/status/503929023635161088&quot;&gt;August 25, 2014&lt;/a&gt;&lt;/blockquote&gt;
-    &lt;/div&gt;</p>
+    <blockquote>How much interest would there be in a community sponsored fork of the <a href="https://twitter.com/hashtag/Scala?src=hash">#Scala</a> toolchain? RTs and fav&#39;s please.
+    <span class="nowrap"> —&nbsp;Miles Sabin (@milessabin) <a href="https://twitter.com/milessabin/status/503929023635161088">August 25, 2014</a></span></blockquote>
     <p>It generated a lively response, both on Twitter and privately. The responses were sometimes perplexed, but typically excited and invariably positive. What I want to do here is provide some background to the question and sketch out the directions that positive answers lead.</p>
     <p>As the Scala community has matured, a number of different strands of development of the language have emerged,</p>
     <ul>
@@ -124,7 +124,7 @@
     <p>What makes this all the more frustrating is that many of these limitations are comparatively easy to remove. Fixes for some of them are purely syntactic – for instance type constructor partial application, of huge importance to Scalaz and its users, has a clunky encoding (&quot;type lambdas&quot;) which could be given first class syntactic support without any impact on Scala&#39;s semantics and in a completely binary compatible way. Similarly, syntactic support for singleton types for literal values (see SIP-23) would be of enormous value to shapeless and Spire and their users. And the addition of literals for Bytes and Shorts would be welcomed by Spire, Scodec and many others. Other fixes, whilst affecting semantics, would do so only in a conservative way – programs which are valid when compiled with the Typesafe Scala compiler would have the same meaning and binary representation when compiled with the fixes in place.</p>
     <p>With this in mind, we intend to create a new Scala distribution, as a conservative fork of the Typesafe Scala compiler, with a focus on meeting the needs of the part of the Scala community which has coalesced around the Typelevel stack. As a conservative fork, our aim is to be merge compatible from the Typesafe Scala compiler, and a key objective is to feed pull requests (many of which will resolve long standing Scala bugs or feature requests) back to the Typesafe Scala compiler. Our goal is to have a language which continues to evolve at the pace we saw until a couple of years ago, but with the difference that this will now be an opt-in process and the priorities will be set by the community.</p>
     <p>Of course the devil is in the details. Forking a compiler is only a small part of the story – in many ways more important is the surrounding ecosystem of libraries. As part of this initiative we intend to publish compatible builds of at least the Typelevel libraries – taking our lead from the Typesafe community build (which attempts to track ecosystem coherence over time by building a selection of community libraries against the development Scala compiler as it evolves) and Scala.js (which has ported a selection of important community libraries to its compiler).</p>
-    <p>We welcome the participation of all other parties, individuals or organizations, who share our general goals – both those who want to contribute to the development of the compiler and those who would like their libraries and frameworks to be part of a Typelevel community build. It&#39;s early days, but we hope that with enough enthusiastic participation we will be able to produce useful binaries well before the end of the year. </p>
+    <p>We welcome the participation of all other parties, individuals or organizations, who share our general goals – both those who want to contribute to the development of the compiler and those who would like their libraries and frameworks to be part of a Typelevel community build. It&#39;s early days, but we hope that with enough enthusiastic participation we will be able to produce useful binaries well before the end of the year.</p>
     <p>We anticipate a number of objections to this initiative,</p>
     <ul>
       <li>
@@ -133,7 +133,7 @@
       </li>
       <li>
         <p>That we don&#39;t have the resources or the expertise to pull this off.</p>
-        <p>We disagree – the community around the Typelevel projects contains many of the most able Scala programmers on the planet. Between us we have a deep understanding of Scala&#39;s type system and other semantics (both as specified and as implemented), of compiler construction in general and of Typesafe Scala compiler internals in particular. We are intimately familiar with the Scala toolchain, which many of us have been using at scale for years in our day jobs. We are also intimately familiar with the issues that we seek to address – they are ones we face daily. </p>
+        <p>We disagree – the community around the Typelevel projects contains many of the most able Scala programmers on the planet. Between us we have a deep understanding of Scala&#39;s type system and other semantics (both as specified and as implemented), of compiler construction in general and of Typesafe Scala compiler internals in particular. We are intimately familiar with the Scala toolchain, which many of us have been using at scale for years in our day jobs. We are also intimately familiar with the issues that we seek to address – they are ones we face daily.</p>
         <p>We also have the existence proof of the other Scala compiler variants. The number of full-time-equivalent people working on these projects is really very small – we believe that in practice this can be matched or exceeded by an open, inclusive and enthusiastic open source project.</p>
       </li>
       <li>

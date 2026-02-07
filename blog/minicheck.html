@@ -13,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
 
   <link rel="stylesheet" href="../main.css">
   <link rel="stylesheet" href="../css/code.css">
@@ -42,7 +43,7 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
@@ -83,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">Let&#39;s build ourselves a small ScalaCheck</p>
+    <p class="bulma-title bulma-has-text-light">Let&#39;s build ourselves a small ScalaCheck</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
@@ -208,7 +209,7 @@
   </span><span class="identifier">y</span><span> &lt;- </span><span class="type-name">Random</span><span>.</span><span class="identifier">int</span><span>(-</span><span class="number-literal">3</span><span>, </span><span class="number-literal">3</span><span>)
 } </span><span class="keyword">yield</span><span> (</span><span class="identifier">x</span><span>, </span><span class="identifier">y</span><span>)
 </span><span class="comment">// res2: Random[(Int, Int)] = &lt;random&gt;</span></code></pre>
-    <p>The tradeoffs here are the usual when we&#39;re talking about functional programming in Scala: Reasoning ability, convenience, performance, … 
+    <p>The tradeoffs here are the usual when we&#39;re talking about functional programming in Scala: Reasoning ability, convenience, performance, …
     In the pure case, there are also multiple other possible encodings, including free monads.
     Luckily, this blog covers that topic in another <a href="edsls-part-1.html">post</a>.</p>
     <p>How do other libraries fare here?</p>
@@ -288,7 +289,7 @@
 }</span></code></pre>
     <p>But we still have a problem:
     There is currently no way to talk about the <em>size</em> of the generated inputs.
-    Let&#39;s say we want to check an expensive algorithm over lists, for example with a complexity of $\mathcal O(n^3)$ over lists.
+    Let&#39;s say we want to check an expensive algorithm over lists, for example with a complexity of <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">O</mi><mo stretchy="false">(</mo><msup><mi>n</mi><mn>3</mn></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex"> \mathcal O(n^3) </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0641em;vertical-align:-0.25em;"></span><span class="mord mathcal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">n</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span> over lists.
     A naive implemenation of a list generator would take a a random size, and then give you some generator for lists.
     The problem arises at the use site: Whenver you want to change the size of the generated inputs, you need to change the expression constructing the generator.</p>
     <p>But we&#39;d like to do better here:</p>
@@ -364,7 +365,7 @@
     For example, in <code>Gen.list</code>, we&#39;re just passing the size through to the child generator.</p>
     <p>SmallCheck does that differently: The “size” is defined to be the total number of constructors in the generated value.
     For integer numbers, the “number of constructors” is basically the number itself.
-    For example, the value <code>List(1, 2)</code> has size $2$ in our framework (length of the list), but size $1 + 2 + 2 = 5$ in SmallCheck (roughly: size of all elements plus length of list).</p>
+    For example, the value <code>List(1, 2)</code> has size <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn></mrow><annotation encoding="application/x-tex"> 2 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span></span></span></span> in our framework (length of the list), but size <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>2</mn><mo>=</mo><mn>5</mn></mrow><annotation encoding="application/x-tex"> 1 + 2 + 2 = 5 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">5</span></span></span></span> in SmallCheck (roughly: size of all elements plus length of list).</p>
     <p>Of course, our design decision might mean that stuff grows too fast.
     The explicit size parameter can be used to alleviate that, especially for writing recursive generators:</p>
     <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">recList</span><span>[</span><span class="type-name">T</span><span>](</span><span class="identifier">genT</span><span>: </span><span class="type-name">Gen</span><span>[</span><span class="type-name">T</span><span>]): </span><span class="type-name">Gen</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">T</span><span>]] = </span><span class="keyword">new</span><span> </span><span class="type-name">Gen</span><span>[</span><span class="type-name">List</span><span>[</span><span class="type-name">T</span><span>]] {

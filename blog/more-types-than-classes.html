@@ -13,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
 
   <link rel="stylesheet" href="../main.css">
   <link rel="stylesheet" href="../css/code.css">
@@ -42,7 +43,7 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
@@ -83,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">There are more types than classes</p>
+    <p class="bulma-title bulma-has-text-light">There are more types than classes</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
@@ -257,20 +258,18 @@
     if you find information-hiding a useful tool for implementing correct
     programs, you will find the same of the fresh, unique, and mysterious
     types induced by each introduction of a type parameter.</p>
-    <p>&lt;div class=&quot;side-note&quot;&gt;
-      Each operation a language permits by default, not via an argument,
+    <p class="bulma-notification">Each operation a language permits by default, not via an argument,
       on values of a type parameter is a leak in this abstraction. This
       includes testing the value’s class, converting to string, and
       comparing to other values of supposedly utter mystery for
       equality. The ability to create a “default” value is also a leak. A
       function is always permitted to ask only that of these that it needs
       from the caller; make them default, and this design choice is taken
-      away. That is why &lt;code&gt;Object#equals&lt;/code&gt; is little better for
+      away. That is why <code>Object#equals</code> is little better for
       type-safety than reflection-based calls, and why total type erasure
       is a desirable feature rather than a design flaw—plugging these
       leaks gives the programmer as much freedom to abstract by
-      information-hiding as she wishes.
-    &lt;/div&gt;</p>
+      information-hiding as she wishes.</p>
     
     <h3 id="how-many-calls-are-there" class="section"><a class="anchor-link" href="#how-many-calls-are-there"><code class="fas fa-link fa-sm"></code></a>How many calls are there?</h3>
     <p>Put another way, when implementing the code in the scope of a type
@@ -405,12 +404,10 @@ greeting</code> comes into scope, it induces a separate singleton type. It
     working with two incompatible <code>I</code> types.</p>
     <p>Since the number of references to a variable in a program is also
     unbounded...you get the picture.</p>
-    <p>&lt;div class=&quot;side-note&quot;&gt;
-      This also occurs with existential type parameters, which are equally
-      expressive to type members. Accordingly, Java &lt;em&gt;also&lt;/em&gt;
+    <p class="bulma-notification">This also occurs with existential type parameters, which are equally
+      expressive to type members. Accordingly, Java <em>also</em>
       generates new types from occurrences of expressions of existential
-      type.
-    &lt;/div&gt;</p>
+      type.</p>
     
     <h2 id="how-do-we-tell-the-two-apart" class="section"><a class="anchor-link" href="#how-do-we-tell-the-two-apart"><code class="fas fa-link fa-sm"></code></a>How do we tell the two apart?</h2>
     <p>All of this is simply to say that we must be working with two separate

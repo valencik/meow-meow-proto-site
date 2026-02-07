@@ -13,6 +13,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
     rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
 
   <link rel="stylesheet" href="../main.css">
   <link rel="stylesheet" href="../css/code.css">
@@ -42,7 +43,7 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-link">Get Started</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
@@ -83,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">Inaugurating the typelevel.scala blog</p>
+    <p class="bulma-title bulma-has-text-light">Inaugurating the typelevel.scala blog</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       
@@ -102,11 +103,14 @@
   <div class="blog-post bulma-content">
     <h1 id="inaugurating-the-typelevel-scala-blog" class="title">Inaugurating the typelevel.scala blog</h1>
     <p>This Twitter conversation happened today:</p>
-    <p>&lt;div&gt;
-      &lt;blockquote&gt;&lt;p&gt;@&lt;a href=&quot;https://twitter.com/d6&quot;&gt;d6&lt;/a&gt; do you have a blog on numerics, marcos, and performance?&lt;/p&gt;&amp;mdash; eugene yokota (@eed3si9n) &lt;a href=&quot;https://twitter.com/eed3si9n/status/319711014620897280&quot;&gt;April 4, 2013&lt;/a&gt;&lt;/blockquote&gt;
-      &lt;blockquote&gt;&lt;p&gt;@&lt;a href=&quot;https://twitter.com/eed3si9n&quot;&gt;eed3si9n&lt;/a&gt; Not currently. Maybe I should start one?&lt;/p&gt;&amp;mdash; Eiríkr Åsheim (@d6) &lt;a href=&quot;https://twitter.com/d6/status/319804225607585794&quot;&gt;April 4, 2013&lt;/a&gt;&lt;/blockquote&gt;
-      &lt;blockquote&gt;&lt;p&gt;@&lt;a href=&quot;https://twitter.com/d6&quot;&gt;d6&lt;/a&gt; @&lt;a href=&quot;https://twitter.com/eed3si9n&quot;&gt;eed3si9n&lt;/a&gt; <em>cough</em> &lt;a href=&quot;http://t.co/07ye9z78Qc&quot; title=&quot;http://typelevel.org/blog/&quot;&gt;typelevel.org/blog/&lt;/a&gt; <em>cough</em>&lt;/p&gt;&amp;mdash; Tom Switzer (@tixxit) &lt;a href=&quot;https://twitter.com/tixxit/status/319805809586495489&quot;&gt;April 4, 2013&lt;/a&gt;&lt;/blockquote&gt;
-    &lt;/div&gt;</p>
+    <blockquote>
+      <p><a href="https://twitter.com/d6">@d6</a> do you have a blog on numerics, marcos, and performance?
+      <span class="nowrap">— eugene yokota (@eed3si9n) <a href="https://twitter.com/eed3si9n/status/319711014620897280">April 4, 2013</a></span></p>
+      <p><a href="https://twitter.com/eed3si9n">@eed3si9n</a> Not currently. Maybe I should start one?
+      <span class="nowrap">— Eiríkr Åsheim (@d6) <a href="https://twitter.com/d6/status/319804225607585794">April 4, 2013</a></span></p>
+      <p><a href="https://twitter.com/eed3si9n">@d6</a> *cough* <a href="index.html">typelevel.org/blog/</a> *cough*
+      <span class="nowrap">— Tom Switzer (@tixxit) <a href="https://web.archive.org/web/20131123034904/https://twitter.com/tixxit/status/319805809586495489">April 4, 2013</a></span></p>
+    </blockquote>
     <p>So, here it is, the typelevel.scala blog!</p>
     
     <h2 id="what-is-it-about" class="section"><a class="anchor-link" href="#what-is-it-about"><code class="fas fa-link fa-sm"></code></a>What is it about?</h2>
@@ -116,11 +120,11 @@
     <h2 id="who-writes-here" class="section"><a class="anchor-link" href="#who-writes-here"><code class="fas fa-link fa-sm"></code></a>Who writes here?</h2>
     <p>Everyone who would like to! Contributions are welcome.
     If you want to share something about Scalaz, Shapeless, Spire, or Scala topics in general (e.g. type classes), case studies, examples, or other related content, please do not hesitate to contact us.
-    This blog (and in fact, the whole web site) is built using Jekyll on GitHub pages, so you can just fork the &lt;a href=&quot;https://github.com/typelevel/typelevel.github.com&quot;&gt;repository&lt;/a&gt;, add a post, and create a pull request.</p>
+    This blog (and in fact, the whole web site) is built using Jekyll on GitHub pages, so you can just fork the <a href="https://github.com/typelevel/typelevel.github.com">repository</a>, add a post, and create a pull request.</p>
     
     <h2 id="stay-tuned" class="section"><a class="anchor-link" href="#stay-tuned"><code class="fas fa-link fa-sm"></code></a>Stay tuned!</h2>
     <p>We hope that this blog will be filled with content soon.
-    To make sure that you don&#39;t miss anything, follow &lt;a href=&quot;https://twitter.com/typelevel&quot;&gt;@typelevel&lt;/a&gt; on Twitter or subscribe to the &lt;a href=&quot;/blog/feed.rss&quot;&gt;RSS feed&lt;/a&gt;.</p>
+    To make sure that you don&#39;t miss anything, follow <a href="https://twitter.com/typelevel">@typelevel</a> on Twitter or subscribe to the <a href="feed.rss">RSS feed</a>.</p>
   </div>
 </div>
 <div class="bulma-section bulma-container bulma-is-max-desktop">
