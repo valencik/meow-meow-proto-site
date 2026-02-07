@@ -1,6 +1,6 @@
 {%
   date: "2017-10-26"
-  tags: [summits, events]
+  tags: [events]
 %}
 
 # Typelevel UnConference - Lambda World Cadiz 2017
@@ -30,13 +30,6 @@ This event will take place at the Palacio de Congresos de Cádiz.
 We'd like to thank all our sponsors who are helping to make the conference happen:
 
 ### Platinum
-
-<div class="bulma-grid bulma-is-col-min-12">
-  <div class="bulma-cell">
-    <div class="bulma-has-text-centered">
-      <a href="http://www.47deg.com/">
-        <img src="/img/media/sponsors/47_degrees.png" alt="47 Degrees" title="47 Degrees" style="height:60px" />
-      </a>
-    </div>
-  </div>
-</div>
+@:style(bulma-grid bulma-is-col-min-12)
+@:style(bulma-cell bulma-has-text-centered)[@:image(/img/media/sponsors/47_degrees.png) { alt: 47 Degrees, title: 47 Degrees, style: legacy-event-sponsor }](http://www.47deg.com/)@:@
+@:@

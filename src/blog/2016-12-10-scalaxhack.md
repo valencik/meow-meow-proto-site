@@ -1,6 +1,6 @@
 {%
   date: "2016-12-10"
-  tags: [summits, events]
+  tags: [events]
 %}
 
 # Scala Exchange Hack Day and Unconference

@@ -1,6 +1,6 @@
 {%
   date: "2016-09-14"
-  tags: [summits, events]
+  tags: [events]
 %}
 
 # Typelevel Workshop in the Lake District

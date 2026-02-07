@@ -26,7 +26,7 @@ The schedule for this year is as follows:
 |------|------|
 | 8:15 | Registration & Breakfast sponsored by Coatue |
  8:55 | Opening Remarks |
- 9:00 | **Keynote: Shared Session Types for Safe, Practical Concurrency**<br/>Stephanie Balzer<br/><p>Message-passing concurrency abstracts over the details of how programs are compiled to machine
+ 9:00 | @:style(schedule-title)Keynote: Shared Session Types for Safe, Practical Concurrency@:@ @:style(schedule-byline)Stephanie Balzer@:@ <p>Message-passing concurrency abstracts over the details of how programs are compiled to machine
 instructions and has been adopted by various practical languages, such as Erlang, Go, and Rust.
 For example, Mozilla's Servo, a next-generation browser engine being written in Rust, exploits
 message-passing concurrency to parallelize loading and rendering of webpage elements, done
@@ -50,8 +50,8 @@ deadlock-free by construction.  Finally, I give an overview of my current and fu
 plans.</p>
 
  9:55 | Break |
- 10:10 | **Systematic Software with Scala**<br/>Adam Rosien<br/>Scala is a very flexible language, and this flexibility can make it difficult to know how to effectively design Scala code. In the nearly ten years I've been using Scala, my approach to using the language has coalesced around a ten or so strategies, which are similar to OO design patterns but broader in scope and borrow many ideas from functional programming. Using these strategies I can create code in a systematic and repeatable way. In this talk I will present the majority of my strategies, and illustrate their use by live coding a simple graphics system where the majority of the code is systematically derived by applying strategies. The strategies allow me to work at a higher-level of abstraction, and the coding itself becomes formulaic. This means I can get more work done and my code is simpler to read and use. I hope that my strategies will also enable you to design better code in Scala. |
- 10:45 | **Journey to an FP Test Harness**<br/>Justin du Coeur (Mark Waks)<br/><p>The hardest part of the pure-FP journey for many people is taking that first real step. Even after you’ve read all the books and done all the exercises, you need to start committing real code to truly grok the FP mindset.</p>
+ 10:10 | @:style(schedule-title)Systematic Software with Scala@:@ @:style(schedule-byline)Adam Rosien@:@ Scala is a very flexible language, and this flexibility can make it difficult to know how to effectively design Scala code. In the nearly ten years I've been using Scala, my approach to using the language has coalesced around a ten or so strategies, which are similar to OO design patterns but broader in scope and borrow many ideas from functional programming. Using these strategies I can create code in a systematic and repeatable way. In this talk I will present the majority of my strategies, and illustrate their use by live coding a simple graphics system where the majority of the code is systematically derived by applying strategies. The strategies allow me to work at a higher-level of abstraction, and the coding itself becomes formulaic. This means I can get more work done and my code is simpler to read and use. I hope that my strategies will also enable you to design better code in Scala. |
+ 10:45 | @:style(schedule-title)Journey to an FP Test Harness@:@ @:style(schedule-byline)Justin du Coeur (Mark Waks)@:@ <p>The hardest part of the pure-FP journey for many people is taking that first real step. Even after you’ve read all the books and done all the exercises, you need to start committing real code to truly grok the FP mindset.</p>
 
 <p>This little case study will trace my journey over that line, in building a new test harness to an existing Play application. In the course of it, we’ll explore how my assumptions evolved:
 <ul>
@@ -65,11 +65,11 @@ plans.</p>
 <p>The goal here is to show that, while there are a bunch of parts, none of this is rocket science. In the end, the resulting code is delightfully elegant, and the general approach should work for many Play applications.</p>
 
  11:20 | Break |
- 11:35 | **The Monoiad: an epic poem on monoids**<br/>Greg Pfeil<br/>Monoids provide a vast landscape of concepts that we rely on in FP. Applicatives, monads, categories – all of them are monoids, as is much else. The epic takes us on a journey with this fundamental structure. We’ll move between everyday Scala, some niche areas of the language, and category theory. |
+ 11:35 | @:style(schedule-title)The Monoiad: an epic poem on monoids@:@ @:style(schedule-byline)Greg Pfeil@:@ Monoids provide a vast landscape of concepts that we rely on in FP. Applicatives, monads, categories – all of them are monoids, as is much else. The epic takes us on a journey with this fundamental structure. We’ll move between everyday Scala, some niche areas of the language, and category theory. |
  12:10 | Lunch sponsored by Simple |
- 13:45 | **Keynote: Higher Inductive Types in Homotopy Type Theory**<br/>Kristina Sojakova<br/>Homotopy type theory is a new field of mathematics based on the recently-discovered correspondence between constructive type theory and abstract homotopy theory. Higher inductive types, which form a crucial part of this new system, generalize ordinary inductive types such as the natural numbers to higher dimensions. We will look at a few different examples of higher inductive types such as the integers, circles, and the torus, and indicate how we can use their associated induction principles to reason about them, e.g., to prove that the torus is equivalent to the product of two circles. |
+ 13:45 | @:style(schedule-title)Keynote: Higher Inductive Types in Homotopy Type Theory@:@ @:style(schedule-byline)Kristina Sojakova@:@ Homotopy type theory is a new field of mathematics based on the recently-discovered correspondence between constructive type theory and abstract homotopy theory. Higher inductive types, which form a crucial part of this new system, generalize ordinary inductive types such as the natural numbers to higher dimensions. We will look at a few different examples of higher inductive types such as the integers, circles, and the torus, and indicate how we can use their associated induction principles to reason about them, e.g., to prove that the torus is equivalent to the product of two circles. |
  14:40 | Break |
- 14:55 | **Telling the Truth with Types**<br/>Christopher Davenport<br/><p>There are many problems one faces when building effective solutions.
+ 14:55 | @:style(schedule-title)Telling the Truth with Types@:@ @:style(schedule-byline)Christopher Davenport@:@ <p>There are many problems one faces when building effective solutions.
 
 <ol>
   <li>Outlining proper behavior, such that desired outcomes are achieved.</li>
@@ -81,15 +81,15 @@ plans.</p>
 
 <p>Whether you are just starting out, or an experienced functional programmer this talk will deliver a set of tools to approach the next set of challenges.</p>
 
- 15:30 | **Composable concurrency with Ref + Deferred**<br/>Fabio Labella<br/><p>fs2 offers a very powerful and composable set of concurrent combinators and data structures, which are all built out of two deceptively simple primitives: Ref and Deferred.</p>
+ 15:30 | @:style(schedule-title)Composable concurrency with Ref + Deferred@:@ @:style(schedule-byline)Fabio Labella@:@ <p>fs2 offers a very powerful and composable set of concurrent combinators and data structures, which are all built out of two deceptively simple primitives: Ref and Deferred.</p>
 
 <p>This talk will explain what they are, the design principles behind them, and how to use them to build your own business logic abstractions. In the process, we will discover a general pattern in the form of concurrent state machines, and see how it integrates with final tagless on one hand, and streaming control flow on the other.</p>
 
 <p>If you have ever wondered how to translate that complicated piece of actor logic in pure FP, or how fs2’s Queues, Topics and Signals work under the hood, this is the talk for you.</p>
 
  16:05 | Break |
- 16:20 | **Extending your HTTP library with monad transformers**<br/>Ross Baker<br/>A tour of monad transformers and how stacking various effects onto IO can extend our HTTP library in new and interesting ways. We’ll review OptionT from last year’s talk, derive something akka-http like with EitherT, and demonstrating tracing with TraceT. |
- 16:55 | **Portable, type-fancy multidimensional arrays**<br/>Ryan Williams<br/>Zarr is a multidimensional-array container format that's gaining momentum in several scientific domains. It hails from the Python world, and primarily caters to numpy- and xarray-wielding scientists. It shines as a more remote- and parallel-processing-friendly HDF5 replacement. I implemented the Zarr spec in portable Scala, leveraging dependent- and higher-kinded-types. The resulting arrays have a unique type-safety profile. In this talk I'll: contextualize Zarr's use in the single-cell-sequencing domain, examine the freewheeling DSLs that scientific-Python exposes for array processing (including remote and distributed), discuss possibilities for Scala (and types!) to make inroads in these ecosystems, and show what worked well and poorly about my attempt. |
+ 16:20 | @:style(schedule-title)Extending your HTTP library with monad transformers@:@ @:style(schedule-byline)Ross Baker@:@ A tour of monad transformers and how stacking various effects onto IO can extend our HTTP library in new and interesting ways. We’ll review OptionT from last year’s talk, derive something akka-http like with EitherT, and demonstrating tracing with TraceT. |
+ 16:55 | @:style(schedule-title)Portable, type-fancy multidimensional arrays@:@ @:style(schedule-byline)Ryan Williams@:@ Zarr is a multidimensional-array container format that's gaining momentum in several scientific domains. It hails from the Python world, and primarily caters to numpy- and xarray-wielding scientists. It shines as a more remote- and parallel-processing-friendly HDF5 replacement. I implemented the Zarr spec in portable Scala, leveraging dependent- and higher-kinded-types. The resulting arrays have a unique type-safety profile. In this talk I'll: contextualize Zarr's use in the single-cell-sequencing domain, examine the freewheeling DSLs that scientific-Python exposes for array processing (including remote and distributed), discuss possibilities for Scala (and types!) to make inroads in these ecosystems, and show what worked well and poorly about my attempt. |
  17:30 | Closing |
 
 ## Venue
@@ -112,53 +112,15 @@ The list of organizers can be found <a href="https://nescala.io/organizers.html"
 We'd like to thank all our sponsors who help to make the Summit happen:
 
 ### Platinum
-
-<div class="bulma-grid bulma-is-col-min-12">
-  <div class="bulma-cell">
-    <div class="bulma-has-text-centered">
-      <a href="http://www.bridgewater.com/">
-        <img src="/img/media/sponsors/bridgewater.png" alt="Bridgewater" title="Bridgewater" style="height:60px" />
-      </a>
-    </div>
-  </div>
-</div>
+@:style(bulma-grid bulma-is-col-min-12)
+@:style(bulma-cell bulma-has-text-centered)[@:image(/img/media/sponsors/bridgewater.png) { alt: Bridgewater, title: Bridgewater, style: legacy-event-sponsor }](http://www.bridgewater.com/)@:@
+@:@
 
 ### Gold
-
-<div class="bulma-grid bulma-is-col-min-12">
-  <div class="bulma-cell">
-    <div class="bulma-has-text-centered">
-      <a href="http://www.comcast.com/">
-        <img src="/img/media/sponsors/comcast.png" alt="Comcast" title="Comcast" style="height:60px" />
-      </a>
-    </div>
-  </div>
-  <div class="bulma-cell">
-    <div class="bulma-has-text-centered">
-      <a href="http://www.azavea.com/">
-        <img src="/img/media/sponsors/azavea.png" alt="Azavea" title="Azavea" style="height:60px" />
-      </a>
-    </div>
-  </div>
-  <div class="bulma-cell">
-    <div class="bulma-has-text-centered">
-      <a href="http://www.chariotsolutions.com/">
-        <img src="/img/media/sponsors/chariot.png" alt="Chariot Solutions" title="Chariot Solutions" style="height:60px" />
-      </a>
-    </div>
-  </div>
-  <div class="bulma-cell">
-    <div class="bulma-has-text-centered">
-      <a href="http://www.simple.com/">
-        <img src="/img/media/sponsors/simple.png" alt="Simple" title="Simple" style="height:60px" />
-      </a>
-    </div>
-  </div>
-  <div class="bulma-cell">
-    <div class="bulma-has-text-centered">
-      <a href="http://www.coatue.com/">
-        <img src="/img/media/sponsors/coatue.png" alt="Coatue" title="Coatue" style="height:60px" />
-      </a>
-    </div>
-  </div>
-</div>
+@:style(bulma-grid bulma-is-col-min-12)
+@:style(bulma-cell bulma-has-text-centered)[@:image(/img/media/sponsors/comcast.png) { alt: Comcast, title: Comcast, style: legacy-event-sponsor }](http://www.comcast.com/)@:@
+@:style(bulma-cell bulma-has-text-centered)[@:image(/img/media/sponsors/azavea.png) { alt: Azavea, title: Azavea, style: legacy-event-sponsor }](http://www.azavea.com/)@:@
+@:style(bulma-cell bulma-has-text-centered)[@:image(/img/media/sponsors/chariot.png) { alt: Chariot Solutions, title: Chariot Solutions, style: legacy-event-sponsor }](http://www.chariotsolutions.com/)@:@
+@:style(bulma-cell bulma-has-text-centered)[@:image(/img/media/sponsors/simple.png) { alt: Simple, title: Simple, style: legacy-event-sponsor }](http://www.simple.com/)@:@
+@:style(bulma-cell bulma-has-text-centered)[@:image(/img/media/sponsors/coatue.png) { alt: Coatue, title: Coatue, style: legacy-event-sponsor }](http://www.coatue.com/)@:@
+@:@

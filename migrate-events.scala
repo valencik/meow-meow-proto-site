@@ -95,10 +95,10 @@ case class Event(conf: EventConfig, content: String, originalYaml: String) {
     cleaned
   }
 
-  def buildHoconMetadata(date: String): String =
+  def buildHoconMetadata(date: String, tags: List[String]): String =
     s"""|{%
         |  date: "$date"
-        |  tags: [summits, events]
+        |  tags: ${tags.mkString("[", ", ", "]")}
         |%}""".stripMargin
 
   def generateScheduleMarkdown(): String = conf.schedule
@@ -118,7 +118,7 @@ case class Event(conf: EventConfig, content: String, originalYaml: String) {
                   .mkString(", ")
                 item.summary match
                   case Some(value) =>
-                    s"**${item.title}**<br/>${speakerNames}<br/>${value}"
+                    s"@:style(schedule-title)${item.title}@:@ @:style(schedule-byline)${speakerNames}@:@ ${value}"
                   case None => s"**${item.title}**<br/>${speakerNames}"
               }
               .getOrElse(item.title)
@@ -144,21 +144,14 @@ case class Event(conf: EventConfig, content: String, originalYaml: String) {
             sponsorsByType.get(sponsorType).map { typeSponsors =>
               val sponsorCells = typeSponsors
                 .map { sponsor =>
-                  s"""  <div class="bulma-cell">
-    <div class="bulma-has-text-centered">
-      <a href="${sponsor.link}">
-        <img src="${sponsor.logo}" alt="${sponsor.name}" title="${sponsor.name}" style="height:60px" />
-      </a>
-    </div>
-  </div>"""
+                  s"@:style(bulma-cell bulma-has-text-centered)[@:image(${sponsor.logo}) { alt: ${sponsor.name}, title: ${sponsor.name}, style: legacy-event-sponsor }](${sponsor.link})@:@"
                 }
                 .mkString("\n")
 
-              s"""### ${sponsorType.capitalize}
-
-<div class="bulma-grid bulma-is-col-min-12">
-$sponsorCells
-</div>"""
+              s"""|### ${sponsorType.capitalize}
+                  |@:style(bulma-grid bulma-is-col-min-12)
+                  |$sponsorCells
+                  |@:@""".stripMargin
             }
         }
 
@@ -168,7 +161,8 @@ $sponsorCells
   }
 
   def toLaika(date: String, stage: Int): String = {
-    val metadata = buildHoconMetadata(date)
+    val tags = Option.when(conf.title.contains("Summit"))("summits").toList ::: "events" :: Nil
+    val metadata = buildHoconMetadata(date, tags)
     val title = s"# ${conf.title}"
     val header = s"**${conf.date_string}** • **${conf.location}**"
     val description = conf.description

@@ -144,3 +144,15 @@ img.sponsor {
 .bulma-cell > .bulma-card {
   height: 100%;
 }
+
+img.legacy-event-sponsor {
+  height: 60px;
+}
+
+.schedule-title {
+  display: block;
+  font-weight: bold;
+}
+.schedule-byline {
+  display: block;
+}
