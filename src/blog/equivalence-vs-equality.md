@@ -39,7 +39,7 @@ Formally, equality is required to have the _substitution property:_
 
 <p>\[ \forall a,b \in A, \forall f \in (A \to B): a=_A b \implies f(a)=_B f(b) \]</p>
 
-(Here, $=\_A$ denotes equality on $A$, $=\_B$ denotes equality on $B$.)
+(Here, @:math =\_A @:@ denotes equality on @:math A @:@, @:math =\_B @:@ denotes equality on @:math B @:@.)
 
 Equality is the finest equivalence: whenever two elements are _equal_, they are necessarily _equivalent_ with respect to every equivalence.
 
