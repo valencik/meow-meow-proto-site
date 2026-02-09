@@ -3,6 +3,7 @@
 //> using dep com.monovore::decline-effect::2.6.0
 //> using dep org.graalvm.js:js:25.0.2
 //> using dep org.webjars.npm:katex:0.16.28
+//> using dep org.webjars.npm:fortawesome__fontawesome-free:7.1.0
 //> using dep pink.cozydev::protosearch-laika:0.0-fdae301-SNAPSHOT
 //> using repository https://central.sonatype.com/repository/maven-snapshots
 //> using option -deprecation
@@ -11,6 +12,7 @@ import cats.effect.*
 import cats.syntax.all.*
 import com.monovore.decline.Opts
 import com.monovore.decline.effect.CommandIOApp
+import java.io.FileNotFoundException
 
 // Welcome to the typelevel.org build script!
 // This script builds the site and can serve it locally for previewing.
@@ -117,6 +119,7 @@ object LaikaBuild {
     )
     .withConfigValue(LinkValidation.Global(excluded = Seq(Path.Root / "blog" / "feed.rss")))
     .withConfigValue(LaikaKeys.siteBaseURL, "https://typelevel.org/")
+    .withConfigValue(LaikaCustomizations.Icons)
     .parallel[IO]
     .withTheme(theme)
     .build
@@ -328,6 +331,24 @@ object LaikaCustomizations {
         }
     }
   }
+
+  val Icons = {
+    def loadFaIcon(prefix: String, name: String): Icon = {
+      val resourcePath = "/META-INF/resources/webjars/fortawesome__fontawesome-free/7.1.0"
+      val inputStream = getClass.getResourceAsStream(s"$resourcePath/svgs-full/$prefix/$name.svg")
+      InlineSVGIcon(String(inputStream.readAllBytes()), Some(name), Styles("bulma-icon"))
+    }
+
+    IconRegistry(
+      "fa-github" -> loadFaIcon("brands", "github"),
+      "fa-discord" -> loadFaIcon("brands", "discord"),
+      "fa-bluesky" -> loadFaIcon("brands", "bluesky"),
+      "fa-mastodon" -> loadFaIcon("brands", "mastodon"),
+      "fa-youtube" -> loadFaIcon("brands", "youtube"),
+      "fa-linkedin" -> loadFaIcon("brands", "linkedin"),
+      "fa-magnifying-glass" -> loadFaIcon("solid", "magnifying-glass")
+    )
+  }
 }
 
 object KaTeX {
@@ -337,7 +358,7 @@ object KaTeX {
   private def loadKaTeX(): String = {
     val resourcePath = "/META-INF/resources/webjars/katex/0.16.28/dist/katex.js"
     val inputStream = getClass.getResourceAsStream(resourcePath)
-    new String(inputStream.readAllBytes())
+    String(inputStream.readAllBytes())
   }
 
   private lazy val katex = {
