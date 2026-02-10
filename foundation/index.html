@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-bulma-theme="light">
+<html lang="en" data-bulma-theme="light">
 
 <head>
   <meta charset="utf-8">
@@ -43,9 +43,9 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div> -->
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div> -->
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../community/">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="#">Foundation</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../blog/">Blog</a></div>
       <div class="bulma-navbar-item">
@@ -86,14 +86,36 @@
     
 <div class="bulma-section bulma-content bulma-container bulma-is-max-desktop">
 
-  <h1>About the Typelevel Foundation</h1>
+  <h1 id="about-the-typelevel-foundation" class="title">About the Typelevel Foundation</h1>
+  <p>The Typelevel Foundation is a <strong>nonprofit 501(c)(3) public charity</strong>. Our mission is to:</p>
+  <ul>
+    <li>ensure the <strong>long-term sustainability</strong> of the Typelevel ecosystem;</li>
+    <li>advance <strong>research and education</strong> in functional programming; and</li>
+    <li>grow our <strong>community</strong> of curious and passionate developers.</li>
+  </ul>
+  <p>We are committed to transparency and publish our <a href="https://github.com/typelevel/foundation">governing documents</a>, <a href="https://github.com/typelevel/foundation/tree/main/minutes">meeting minutes</a>, and <a href="https://opencollective.com/typelevel-foundation/transactions">financial records</a>.</p>
+  
+  <h4 id="supporting-the-foundation" class="section"><a class="anchor-link" href="#supporting-the-foundation"><code class="fas fa-link fa-sm"></code></a>Supporting the Foundation</h4>
+  <p>If your organization relies on Typelevel projects, please consider financially sponsoring the Foundation to support our work. 100% of your donation is tax-deductible to the extent allowed by US law.</p>
 
-  <div class="about">
-    <p>The Typelevel Foundation is a nonprofit dedicated to</p>
-    <p>The Typelevel Foundation is a 501(c)(3) public charity incorporated in the state of California.</p>
+  <div class="bulma-mb-4 bulma-is-flex bulma-is-justify-content-center">
+    <div id="every-donate-btn">
+      <a data-every-style href="https://www.every.org/typelevel-foundation#/donate">Donate</a>
+      <script async defer src="https://embeds.every.org/0.4/button.js"></script>
+    </div>
   </div>
 
-  <h2>Board of Directors</h2>
+  <div class="platforms">
+    <p>We also accept donations on <a href="https://github.com/sponsors/typelevel">GitHub Sponsors</a> and <a href="https://opencollective.com/typelevel-foundation">Open Collective</a>.</p>
+    <p>Have questions or specific needs? Please email us at <a href="mailto:donate@typelevel.org">donate@typelevel.org</a>.</p>
+  </div>
+
+  <h2 id="board-of-directors">
+    <a class="anchor-link" href="#board-of-directors">
+      <i class="fas fa-link fa-sm"></i>
+    </a>
+    Board of Directors
+  </h2>
   <div class="bulma-grid bulma-is-col-min-12">
     
     <div class="bulma-cell">
@@ -101,17 +123,20 @@
   
   <figure class="bulma-media-left">
     <p class="bulma-image bulma-is-64x64">
-      <img class="bulma-is-rounded" src="https://github.com/armanbilge.png" />
+      <img class="bulma-is-rounded" src="/img/authors/arman.jpg" />
     </p>
   </figure>
   
   <div class="bulma-media-content">
     <div class="bulma-content">
       <p>
-        <strong>Arman Bilge</strong>
+        <strong>Arman Bilge</strong>  <small>he/him</small> 
+        
+        
         
         <br />
-        Executive Director of Typelevel Foundation.
+        Executive Director
+        
         
       </p>
     </div>
@@ -121,6 +146,7 @@
         <a class="bulma-level-item" href="mailto:arman@typelevel.org">
           <span class="bulma-icon bulma-is-small"><i class="fas fa-envelope"></i></span>
         </a>
+        
         
         
         <a class="bulma-level-item" href="http://github.com/armanbilge">
@@ -161,15 +187,19 @@
   <div class="bulma-media-content">
     <div class="bulma-content">
       <p>
-        <strong>Daniel Spiewak</strong>
+        <strong>Daniel Spiewak</strong> 
+        
+        
         
         <br />
-        I write code, read papers, and think thoughts. Broadly, I'm interested in: type theory, parser theory, functional abstractions, data structures, performance.
+        Director
+        
         
       </p>
     </div>
     <nav class="bulma-level bulma-is-align-items-start">
       <div class="bulma-level-left bulma-is-flex-direction-row">
+        
         
         
         <a class="bulma-level-item" href="http://github.com/djspiewak">
@@ -206,15 +236,19 @@
   <div class="bulma-media-content">
     <div class="bulma-content">
       <p>
-        <strong>Mark Waks aka Justin du Coeur</strong>
+        <strong>Justin du Coeur (aka Mark Waks)</strong> 
+        
+        
         
         <br />
-        Treasurer of the Typelevel Foundation.
+        Treasurer
+        
         
       </p>
     </div>
     <nav class="bulma-level bulma-is-align-items-start">
       <div class="bulma-level-left bulma-is-flex-direction-row">
+        
         
         
         <a class="bulma-level-item" href="http://github.com/jducoeur">
@@ -251,15 +285,23 @@
   <div class="bulma-media-content">
     <div class="bulma-content">
       <p>
-        <strong>Andrew Valencik</strong>
+        <strong>Andrew Valencik</strong> 
+        
+        
         
         <br />
-        Secretary of the Typelevel Foundation.
+        Secretary
+        
         
       </p>
     </div>
     <nav class="bulma-level bulma-is-align-items-start">
       <div class="bulma-level-left bulma-is-flex-direction-row">
+        
+        <a class="bulma-level-item" href="mailto:andrew.valencik@gmail.com">
+          <span class="bulma-icon bulma-is-small"><i class="fas fa-envelope"></i></span>
+        </a>
+        
         
         
         <a class="bulma-level-item" href="http://github.com/valencik">
@@ -286,27 +328,31 @@
     
   </div>
 
-  <h2>Sponsors</h2>
+  <h2 id="foundation-sponsors">
+    <a class="anchor-link" href="#foundation-sponsors">
+      <i class="fas fa-link fa-sm"></i>
+    </a>
+    Foundation Sponsors
+  </h2>
   <div class="bulma-grid bulma-is-col-min-6 bulma-is-align-items-center">
     
     <div class="bulma-cell bulma-has-text-centered">
-      <a href="https://engineering.atspotify.com/2024/11/congratulations-to-the-recipients-of-the-2024-spotify-foss-fund"><img class="sponsor" src="../sponsors/spotify.png" /></a>
+      <a href="https://engineering.atspotify.com/2024/11/congratulations-to-the-recipients-of-the-2024-spotify-foss-fund"><img class="sponsor" src="../img/sponsors/spotify.png" /></a>
     </div>
     
     <div class="bulma-cell bulma-has-text-centered">
-      <a href="https://aruna.de"><img class="sponsor" src="../sponsors/aruna.webp" /></a>
+      <a href="https://aruna.de"><img class="sponsor" src="../img/sponsors/aruna.webp" /></a>
     </div>
     
     <div class="bulma-cell bulma-has-text-centered">
-      <a href="https://shopify.engineering"><img class="sponsor" src="../sponsors/shopify.svg" /></a>
+      <a href="https://shopify.engineering"><img class="sponsor" src="../img/sponsors/shopify.svg" /></a>
     </div>
     
     <div class="bulma-cell bulma-has-text-centered">
-      <a href="https://famly.co"><img class="sponsor" src="../sponsors/famly.svg" /></a>
+      <a href="https://famly.co"><img class="sponsor" src="../img/sponsors/famly.svg" /></a>
     </div>
     
   </div>
-
 </div>
 
   </main>
@@ -319,8 +365,8 @@
     <div class="bulma-column">
       <ul>
         <li><a href="../projects/">Project Index</a></li>
-        <li><a href="#">Documentation</a></li>
-        <li><a href="#">Contributing</a></li>
+        <li><a href="../community/meetups.html">Meetup Calendar</a></li>
+        <li><a href="people.html">Leadership</a></li>
       </ul>
     </div>
     <div class="bulma-column">
@@ -337,7 +383,7 @@
       <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
         <i class="fab fa-github fa-2x"></i>
       </a>
-      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/typelevel-632277896739946517">
         <i class="fab fa-discord fa-2x"></i>
       </a>
       <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">

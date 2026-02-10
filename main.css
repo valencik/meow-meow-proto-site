@@ -108,6 +108,15 @@ img.sponsor {
   height: 100%;
 }
 
+/* Equal height cards in column */
+.bulma-column > .bulma-card {
+  height: 100%;
+}
+
 .nowrap {
   white-space: nowrap;
+}
+
+.hyphenate {
+  hyphens: auto;
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-bulma-theme="light">
+<html lang="en" data-bulma-theme="light">
 
 <head>
   <meta charset="utf-8">
@@ -43,9 +43,9 @@
 
     </div>
     <div class="bulma-navbar-end">
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div>
-      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Community</a></div>
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div> -->
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div> -->
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../community/">Community</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
       <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="index.html">Blog</a></div>
       <div class="bulma-navbar-item">
@@ -348,20 +348,13 @@
 </span><span class="keyword">trait</span><span> </span><span class="type-name">Effect</span><span>[</span><span class="type-name">F</span><span>[</span><span class="identifier">_</span><span>]] </span><span class="keyword">extends</span><span> </span><span class="type-name">Sync</span><span>[</span><span class="type-name">F</span><span>] </span><span class="keyword">with</span><span> </span><span class="type-name">Async</span><span>[</span><span class="type-name">F</span><span>] </span><span class="keyword">with</span><span> </span><span class="type-name">LiftIO</span><span>[</span><span class="type-name">F</span><span>] {
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">runAsync</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">fa</span><span>: </span><span class="type-name">F</span><span>[</span><span class="type-name">A</span><span>])(</span><span class="identifier">cb</span><span>: </span><span class="type-name">Either</span><span>[</span><span class="type-name">Throwable</span><span>, </span><span class="type-name">A</span><span>] =&gt; </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>]): </span><span class="type-name">IO</span><span>[</span><span class="type-name">Unit</span><span>]
 }</span></code></pre>
-    <p>&lt;!--    please don&#39;t remove; my editor is glitchy :-(</p>
-    <pre><code>--&gt;
-
-What this is saying is that any `Effect` must define the ability to evaluate as a side-effect, but of course, we don&#39;t want to have side-effects in our pure and reasonable code.  So how are side-effects *purely* represented?  With `IO`!
-
-From a parametric reasoning standpoint, `IO` means &quot;here be effects&quot;, and so any type signature which involves `IO` thus also involves side-effects (well, *effects* anyway), and any type signature which requires side-effects must also involve `IO`.  This bit of trickery allows us to reason about `Effect` in a way that would have been much harder if we had defined `unsafeRunAsync` as a member, and it ensures that downstream projects which write code abstracting over `Effect` types can do so without using any `unsafe` functions if they so choose (especially when taken together with the `liftIO` function).
-
-## Conclusion
-
-The lack of a production-ready `Task`-like type fully integrated into the cats ecosystem has been a sticking point for a lot of people considering adopting cats.  With the introduction of [cats-effect](https://github.com/typelevel/cats-effect), this should no longer be a problem!  As of right now, the only releases are snapshots with hash-based versions, the latest of which can be found in the maven badge at the top of the readme.  These snapshots are stable versions (in the repeatable-build sense), but they should not be considered stable, production-ready, future-proof software.  We are quickly moving towards a final 0.1 release, which will depend on cats-core and will represent the stable, finalized API.
-
-Once cats releases a final 1.0 version, cats-effect will also release version 1.0 which will depend on the corresponding version of cats-core.  Changes to cats-effect are expected to be extremely rare, and thus the dependency should be considered quite stable for the purposes of upstream compatibility.  Nevertheless, the release and versioning cycle is decoupled from cats-core to account for the possibility that breaking changes may need to be made independent of the cats-core release cycle.
-
-Check out the sources!  Check out the documentation.  Play around with the snapshots, and let us know what you think!  Now is the time to make your opinion heard.  If `IO` in its current form doesn&#39;t meet your needs, we want to hear about it!</code></pre>
+    <p>What this is saying is that any <code>Effect</code> must define the ability to evaluate as a side-effect, but of course, we don&#39;t want to have side-effects in our pure and reasonable code.  So how are side-effects <em>purely</em> represented?  With <code>IO</code>!</p>
+    <p>From a parametric reasoning standpoint, <code>IO</code> means &quot;here be effects&quot;, and so any type signature which involves <code>IO</code> thus also involves side-effects (well, <em>effects</em> anyway), and any type signature which requires side-effects must also involve <code>IO</code>.  This bit of trickery allows us to reason about <code>Effect</code> in a way that would have been much harder if we had defined <code>unsafeRunAsync</code> as a member, and it ensures that downstream projects which write code abstracting over <code>Effect</code> types can do so without using any <code>unsafe</code> functions if they so choose (especially when taken together with the <code>liftIO</code> function).</p>
+    
+    <h2 id="conclusion" class="section"><a class="anchor-link" href="#conclusion"><code class="fas fa-link fa-sm"></code></a>Conclusion</h2>
+    <p>The lack of a production-ready <code>Task</code>-like type fully integrated into the cats ecosystem has been a sticking point for a lot of people considering adopting cats.  With the introduction of <a href="https://github.com/typelevel/cats-effect">cats-effect</a>, this should no longer be a problem!  As of right now, the only releases are snapshots with hash-based versions, the latest of which can be found in the maven badge at the top of the readme.  These snapshots are stable versions (in the repeatable-build sense), but they should not be considered stable, production-ready, future-proof software.  We are quickly moving towards a final 0.1 release, which will depend on cats-core and will represent the stable, finalized API.</p>
+    <p>Once cats releases a final 1.0 version, cats-effect will also release version 1.0 which will depend on the corresponding version of cats-core.  Changes to cats-effect are expected to be extremely rare, and thus the dependency should be considered quite stable for the purposes of upstream compatibility.  Nevertheless, the release and versioning cycle is decoupled from cats-core to account for the possibility that breaking changes may need to be made independent of the cats-core release cycle.</p>
+    <p>Check out the sources!  Check out the documentation.  Play around with the snapshots, and let us know what you think!  Now is the time to make your opinion heard.  If <code>IO</code> in its current form doesn&#39;t meet your needs, we want to hear about it!</p>
   </div>
 </div>
 <div class="bulma-section bulma-container bulma-is-max-desktop">
@@ -379,15 +372,19 @@ Check out the sources!  Check out the documentation.  Play around with the snaps
   <div class="bulma-media-content">
     <div class="bulma-content">
       <p>
-        <strong>Daniel Spiewak</strong>
+        <strong>Daniel Spiewak</strong> 
+        
         
         <br />
         I write code, read papers, and think thoughts. Broadly, I'm interested in: type theory, parser theory, functional abstractions, data structures, performance.
+        
+        
         
       </p>
     </div>
     <nav class="bulma-level bulma-is-align-items-start">
       <div class="bulma-level-left bulma-is-flex-direction-row">
+        
         
         
         <a class="bulma-level-item" href="http://github.com/djspiewak">
@@ -426,8 +423,8 @@ Check out the sources!  Check out the documentation.  Play around with the snaps
     <div class="bulma-column">
       <ul>
         <li><a href="../projects/">Project Index</a></li>
-        <li><a href="#">Documentation</a></li>
-        <li><a href="#">Contributing</a></li>
+        <li><a href="../community/meetups.html">Meetup Calendar</a></li>
+        <li><a href="../foundation/people.html">Leadership</a></li>
       </ul>
     </div>
     <div class="bulma-column">
@@ -444,7 +441,7 @@ Check out the sources!  Check out the documentation.  Play around with the snaps
       <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
         <i class="fab fa-github fa-2x"></i>
       </a>
-      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/pey2hnSQGS">
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/typelevel-632277896739946517">
         <i class="fab fa-discord fa-2x"></i>
       </a>
       <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
