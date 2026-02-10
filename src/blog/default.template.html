@@ -23,7 +23,7 @@
   <div class="bulma-columns">
     @:for(author)
     <div class="bulma-column">
-      @:include(/templates/bio.template.html)
+      @:include(/templates/bio.template.html) { render-bio = true }
     </div>
     @:@
   </div>

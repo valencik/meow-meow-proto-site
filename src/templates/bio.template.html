@@ -9,10 +9,18 @@
   <div class="bulma-media-content">
     <div class="bulma-content">
       <p>
-        <strong>${_.name}</strong>
+        <strong>${_.name}</strong> @:for(_.pronouns) <small>${_.pronouns}</small> @:@
+        @:if(_.render-bio)
         @:for(_.bio)
         <br />
         ${_.bio}
+        @:@
+        @:@
+        @:if(_.render-title)
+        @:for(_.title)
+        <br />
+        ${_.title}
+        @:@
         @:@
       </p>
     </div>
@@ -21,6 +29,11 @@
         @:for(_.email)
         <a class="bulma-level-item" href="mailto:${_.email}">
           <span class="bulma-icon bulma-is-small"><i class="fas fa-envelope"></i></span>
+        </a>
+        @:@
+        @:for(_.url)
+        <a class="bulma-level-item" href="${_.url}">
+          <span class="bulma-icon bulma-is-small"><i class="fas fa-globe"></i></span>
         </a>
         @:@
         @:for(_.github)

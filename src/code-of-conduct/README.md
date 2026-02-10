@@ -74,7 +74,7 @@ For questions related to our code of conduct, or to report possible violations, 
 * [Sam Pillsworth](mailto:sam@blerf.ca)
 * [Andrew Valencik](mailto:andrew.valencik@gmail.com)
 * [Kateu Herbert](mailto:hkateu@gmail.com)
-* [Arman Bilge](mailto:armanbilge@gmail.com)
+* [Arman Bilge](mailto:arman@typelevel.org)
 * [Lucas Satabin](mailto:lucas.satabin@gnieh.org)
 
 ## Attribution
