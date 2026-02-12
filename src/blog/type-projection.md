@@ -91,15 +91,15 @@ strong enough to be workable without cheating by casting—the reality
 *sounds* so close to the above that it is understandable that type
 projection is often confused with something useful.
 
-<div class="side-note">
-  There <em>are</em> uses for type projection.  But they are so rare, so
+@:style(bulma-notification)
+  There *are* uses for type projection.  But they are so rare, so
   exotic (they look
-  <a href="https://github.com/scalaz/scalaz/blob/bdd6d5653313b10af08efdc6884cbbefe41051a2/core/src/main/scala/scalaz/Unapply.scala#L404-L409">like this</a>),
+  [like this](https://github.com/scalaz/scalaz/blob/bdd6d5653313b10af08efdc6884cbbefe41051a2/core/src/main/scala/scalaz/Unapply.scala#L404-L409)),
   and even the legitimate ones better off rewritten to avoid them,
   that the safer assumption is that you’ve gone down the wrong path if
   you’re trying to use them at all.  My suggestion can usually be
   phrased something like “move it to a companion object”.
-</div>
+@:@
 
 In reality, `StSource[A]#S` means *some* `StSource`’s `S`.  Not the
 one you gave, just any particular one.  It’s the supertype of all

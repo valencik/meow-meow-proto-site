@@ -1,7 +1,7 @@
 @:embed(/templates/main.template.html)
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">${cursor.currentDocument.title}</p>
+    <p class="bulma-title bulma-has-text-light">${cursor.currentDocument.title}</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       by
       @:for(author)
@@ -23,7 +23,7 @@
   <div class="bulma-columns">
     @:for(author)
     <div class="bulma-column">
-      @:include(/templates/bio.template.html)
+      @:include(/templates/bio.template.html) { render-bio = true }
     </div>
     @:@
   </div>

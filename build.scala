@@ -1,6 +1,8 @@
 //> using dep org.http4s::http4s-ember-server::0.23.33
 //> using dep org.typelevel::laika-preview::1.3.2
-//> using dep com.monovore::decline-effect::2.5.0
+//> using dep com.monovore::decline-effect::2.6.0
+//> using dep org.graalvm.js:js:25.0.2
+//> using dep org.webjars.npm:katex:0.16.28
 //> using dep pink.cozydev::protosearch-laika:0.0-fdae301-SNAPSHOT
 //> using repository https://central.sonatype.com/repository/maven-snapshots
 //> using option -deprecation
@@ -113,6 +115,7 @@ object LaikaBuild {
       LaikaCustomizations.Directives,
       LaikaCustomizations.RssExtensions
     )
+    .withConfigValue(LinkValidation.Global(excluded = Seq(Path.Root / "blog" / "feed.rss")))
     .withConfigValue(LaikaKeys.siteBaseURL, "https://typelevel.org/")
     .parallel[IO]
     .withTheme(theme)
@@ -161,6 +164,7 @@ object LaikaBuild {
 }
 
 object LaikaCustomizations {
+  import cats.data.NonEmptySet
   import java.time.OffsetDateTime
   import java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME
   import laika.config.*
@@ -221,11 +225,12 @@ object LaikaCustomizations {
   }
 
   object Directives extends DirectiveRegistry {
-    import TemplateDirectives.dsl.*
 
     val templateDirectives = Seq(
       // custom Laika template directive for listing blog posts
       TemplateDirectives.eval("forBlogPosts") {
+        import TemplateDirectives.dsl.*
+
         (cursor, parsedBody, source).mapN { (c, b, s) =>
           def contentScope(value: ConfigValue) =
             TemplateScope(TemplateSpanSequence(b), value, s)
@@ -246,8 +251,29 @@ object LaikaCustomizations {
     )
 
     val linkDirectives = Seq.empty
-    val spanDirectives = Seq.empty
-    val blockDirectives = Seq.empty
+    val spanDirectives = Seq(
+      SpanDirectives.create("math") {
+        import SpanDirectives.dsl.*
+        rawBody.map { body =>
+          RawContent(
+            NonEmptySet.of("html", "rss"),
+            KaTeX(body, false)
+          )
+        }
+      }
+    )
+    val blockDirectives = Seq(
+      BlockDirectives.create("math") {
+        import BlockDirectives.dsl.*
+        rawBody.map { body =>
+          RawContent(
+            NonEmptySet.of("html", "rss"),
+            KaTeX(body, true),
+            Styles("bulma-has-text-centered")
+          )
+        }
+      }
+    )
   }
 
   object Rss
@@ -302,4 +328,31 @@ object LaikaCustomizations {
         }
     }
   }
+}
+
+object KaTeX {
+  import org.graalvm.polyglot.*
+  import scala.jdk.CollectionConverters.*
+
+  private def loadKaTeX(): String = {
+    val resourcePath = "/META-INF/resources/webjars/katex/0.16.28/dist/katex.js"
+    val inputStream = getClass.getResourceAsStream(resourcePath)
+    new String(inputStream.readAllBytes())
+  }
+
+  private lazy val katex = {
+    val ctx = Context
+      .newBuilder("js")
+      .allowAllAccess(true)
+      .build()
+    ctx.eval("js", loadKaTeX())
+    ctx.getBindings("js").getMember("katex")
+  }
+
+  def apply(latex: String, displayMode: Boolean = false): String =
+    synchronized {
+      val options = Map("throwOnError" -> true, "strict" -> true, "displayMode" -> displayMode)
+      katex.invokeMember("renderToString", latex, options.asJava).asString
+    }
+
 }
