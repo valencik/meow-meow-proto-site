@@ -6,7 +6,7 @@
 
 # About the Typelevel Foundation
 
-The Typelevel Foundation is a **nonprofit 501(c)(3) public charity**. Our mission is to:
+The Typelevel Foundation is a **nonprofit 501(c)(3) public charity** (EIN: 39-3611111). Our mission is to:
 * ensure the **long-term sustainability** of the Typelevel ecosystem;
 * advance **research and education** in functional programming; and
 * grow our **community** of curious and passionate developers.
@@ -23,6 +23,8 @@ If your organization relies on Typelevel projects, please consider financially s
 
 @:fragment(platforms)
 We also accept donations on [GitHub Sponsors](https://github.com/sponsors/typelevel) and [Open Collective](https://opencollective.com/typelevel-foundation).
+
+We have partnered with the [Swiss Philanthropy Foundation](https://www.swissphilanthropy.ch/) to accept tax-deductible donations from Switzerland. Please contact them directly at international@swissphilanthropy.ch to start the process.
 
 Have questions or specific needs? Please email us at donate@typelevel.org.
 @:@

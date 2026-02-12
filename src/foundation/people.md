@@ -5,11 +5,11 @@
 # Leadership
 
 @:fragment(about-board)
-The Board of Directors oversees the Typelevel Foundation
+The Board of Directors of the Typelevel Foundation is the governing body of Typelevel. Their primary responsibility is to provide oversight for the Foundation's operations, especially legal and financial matters.
 @:@
 
 @:fragment(about-tsc)
-The Technical Steering Committee supports the day-to-day work of Typelevel. They advise the Board on overall technical priorities for the Foundation, especially the designation and stewardship of Organization Projects, and are also responsible for curating the portfolio of Typelevel Affiliate Projects.
+The Technical Steering Committee supports the day-to-day open source work of Typelevel. They advise the Board on overall technical priorities for the Foundation, especially the designation and stewardship of Organization Projects, and are also responsible for curating the portfolio of Typelevel Affiliate Projects.
 @:@
 
 @:fragment(about-coc)
