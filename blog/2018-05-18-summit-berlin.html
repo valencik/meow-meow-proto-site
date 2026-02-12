@@ -84,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">Typelevel Summit Berlin</p>
+    <p class="bulma-title bulma-has-text-light">Typelevel Summit Berlin</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       on May 18, 2018 at Zalando, Zeughofstraße 1, Berlin
     </p>
@@ -103,7 +103,7 @@
     <p><img src="../img/media/berlin.jpg" alt="Typelevel Summit Berlin"></p>
     
     <h2 id="about-the-summit" class="section"><a class="anchor-link" href="#about-the-summit"><code class="fas fa-link fa-sm"></code></a>About the Summit</h2>
-    <p>The sixth Typelevel Summit will once again happen after <strong>the</strong> Scala conference: &lt;a href=&quot;https://eu.scaladays.org/&quot;&gt;Scala Days&lt;/a&gt;, in the same city!</p>
+    <p>The sixth Typelevel Summit will once again happen after <strong>the</strong> Scala conference: <a href="https://eu.scaladays.org/">Scala Days</a>, in the same city!</p>
     <p>The Summits are open to all, not just current contributors to and users of the Typelevel projects, and we are especially keen to encourage participation from people who are new to them.
     Whilst many of the Typelevel projects use somewhat &quot;advanced&quot; Scala, they are a lot more approachable than many people think, and a major part of Typelevel&#39;s mission is to make the ideas they embody much more widely accessible.
     If you&#39;re interested in types and pure functional programming we&#39;d love to see you here!</p>
@@ -153,28 +153,50 @@
         </tr>
         <tr>
           <td>12:10</td>
-          <td><span class="schedule-title">Introducing namespaces into SQL result sets using nested structural types</span> <span class="schedule-byline">Keiko Nakata</span> &lt;p&gt;Many modern programming languages support decent namespaces. Namespaces are commonly structured hierarchies.  We bring this power to a database query language, using nested structural types.&lt;/p&gt;</td>
+          <td><span class="schedule-title">Introducing namespaces into SQL result sets using nested structural types</span> <span class="schedule-byline">Keiko Nakata</span> Many modern programming languages support decent namespaces. Namespaces are commonly structured hierarchies.  We bring this power to a database query language, using nested structural types. For this purpose, we hijack table aliases: given a table T containing two columns C of type String and D of type Int, a table <code>T as S</code> is a new table containing two columns S.C of type String and S.D of type Int. In Scala, this is neatly expressed as <code>T : AnyRef { def C : String, def D: Int }</code> <code>T as S : AnyRef { def S: { def C: String, def D: Int } }</code>. We implement the above as operation using the whitebox macro. We rely on Scala&#39;s type system&#39;s ability to compute Greatest Lower Bounds (GLBs) and Least Upper Bounds (LUBs) of structural types, to enable polymorphic and compositional query creation. To enable GLB and LUB computation for nested structured types, we have patched the Scala compiler.</td>
+        </tr>
+        <tr>
+          <td>12:45</td>
+          <td>Lunch Break</td>
+        </tr>
+        <tr>
+          <td>14:15</td>
+          <td><span class="schedule-title">Healthy Minds in a Healthy Community</span> <span class="schedule-byline">Sasha Romijn</span> Open source communities attract and boast passionate, idealistic people, and many of us invest copious amounts of time and effort to contribute to our projects and support our communities. This underlying emotional attachment can make us more vulnerable to elevated stress, burnout and conflicts. And then there are those of us who also manage mental illness. More often than not, we suffer these struggles in silence, feeling (and fearing) that we&#39;re alone in our trouble. Here, our communities can make a huge difference, by building a positive and safe environment where we can blossom and support ourselves and our peers, and feel included. This talk will take a look at open-source communities through the eyes of various mental well-being issues and struggles, and show various things that some communities already do. With this, we hope to support and inspire more communities to help foster healthy minds in a healthy environment.</td>
+        </tr>
+        <tr>
+          <td>14:50</td>
+          <td><span class="schedule-title">Typedapi: Define your API on the type level</span> <span class="schedule-byline">Paul Heymann</span> Have you ever thought “I really like Haskell’s Servant. Why don’t we have something like that in Scala?” or “Why can&#39;t I just define my APIs as types and Scala does the heavy lifting?”? If so, this talk is made for you. I will tell you a short story about excitement, pain and hate peaking in a climax of type-driven enlightenment. I will tell you my journey of developing Typedapi, a library for building typesafe APIs which moves as many computations to the type level as possible. We will fight many a beast on our way from Scala’s desugaring to folds working just on types. But eventually, we will arrive at our destination, exhausted, with scars but also able to make our code a bit safer again.</td>
+        </tr>
+        <tr>
+          <td>15:10</td>
+          <td>Break</td>
+        </tr>
+        <tr>
+          <td>15:30</td>
+          <td><span class="schedule-title">An Intuitive Guide to Combining Free Monad and Free Applicative</span> <span class="schedule-byline">Cameron Joannidis</span> The usage of Free Monads is becoming more well understood, however the lesser known Free Applicative is still somewhat of a mystery to the average Scala developer. In this talk I will explain how you can combine the power of both these constructs in an intuitive and visual manner. You will learn the motivations for using Free Structures in the first place, how we can build up a complex domain, how we can introduce parallelism into our domain and a bunch of other practical tips for designing programs with these structures. This will also give you a deeper understanding of what libraries like Freestyle are doing under the hood and why it is so powerful.</td>
+        </tr>
+        <tr>
+          <td>16:05</td>
+          <td><span class="schedule-title">Laws for Free</span> <span class="schedule-byline">Alistair Johnson</span> Everyone that uses a functional programming library like cats is aware of the methods that each type class adds and also the properties that the methods need to abide by. But in practice, the properties are not always proved, rather testing that the methods behave as expected. This is a problem waiting to happen, as the algebraic properties are not “optional extras” – if your semigroup&#39;s combine is not associative ... then it ain&#39;t a semigroup, sorry! So in this talk we will quickly review what we mean by a property and a law and show how to use the cats laws that are available. We&#39;ll see that they are simple to use and add literally hundreds of scalacheck tests for free. And impress your boss as well, the tests can be “seen” on the screen!</td>
+        </tr>
+        <tr>
+          <td>16:25</td>
+          <td>Break</td>
+        </tr>
+        <tr>
+          <td>16:45</td>
+          <td><span class="schedule-title">Lifting Data Structures to the Type-level</span> <span class="schedule-byline">Jon Pretty</span> In this talk, I will give a fast-paced tour of how various features of the Scala type system, many of them under-explored, can be harnessed to construct type-level representations of a number of different datatypes in Scala. The type system offers a limited number of “tools”, such as subtyping, least-upper-bound inference, type unification, singleton types and dependent types and (of course) implicit search, which we can compose in interesting ways to implement type-level operations on these type-level data structures. Value-level operations follow naturally from the types, but this is much less interesting.</td>
+        </tr>
+        <tr>
+          <td>17:20</td>
+          <td><span class="schedule-title">Non-academic functional Workflows</span> <span class="schedule-byline">Stefan Schneider</span> In this talk I want to report about how we used cats to build a domain specific language that enables us to compile workflows into later executable programs. We started with the idea of having a possibility to combine the multiple unconnected tools that are typically used to analyze an image acquired by our microscopes. The Free Monad in cats looked to us as the perfect fit to write a domain specific language that provides a lot of the advantages of an a modern functional compiler plus enforcing stack safety of the program, which would ultimately provided by third party users. We started developing with a team that had only very little experience in Scala and none with cats. Thanks to the good documentation, Scala Exercises and the straightforward mapping to functional principles, known to us from the university, we were able to get a prototype running for a trade show in 6 weeks.</td>
+        </tr>
+        <tr>
+          <td>17:40</td>
+          <td>Closing Remarks</td>
         </tr>
       </tbody>
     </table>
-    <p>&lt;p&gt;For this purpose, we hijack table aliases: given a table T containing two columns C of type String and D of type Int, a table &amp;quot;T as S&amp;quot; is a new table containing two columns S.C of type String and S.D of type Int. In Scala, this is neatly expressed as
-    &lt;pre&gt;
-      T : AnyRef { def C : String, def D: Int }</p>
-    <p>T as S : AnyRef { def S: { def C: String, def D: Int } }
-    &lt;/pre&gt;&lt;/p&gt;</p>
-    <p>&lt;p&gt;We implement the above as operation using the whitebox macro. We rely on Scala&#39;s type system&#39;s ability to compute Greatest Lower Bounds (GLBs) and Least Upper Bounds (LUBs) of structural types, to enable polymorphic and compositional query creation. To enable GLB and LUB computation for nested structured types, we have patched the Scala compiler.&lt;/p&gt;</p>
-    <p>12:45 | Lunch Break |
-     14:15 | <span class="schedule-title">Healthy Minds in a Healthy Community</span> <span class="schedule-byline">Sasha Romijn</span> Open source communities attract and boast passionate, idealistic people, and many of us invest copious amounts of time and effort to contribute to our projects and support our communities. This underlying emotional attachment can make us more vulnerable to elevated stress, burnout and conflicts. And then there are those of us who also manage mental illness. More often than not, we suffer these struggles in silence, feeling (and fearing) that we&#39;re alone in our trouble. Here, our communities can make a huge difference, by building a positive and safe environment where we can blossom and support ourselves and our peers, and feel included. This talk will take a look at open-source communities through the eyes of various mental well-being issues and struggles, and show various things that some communities already do. With this, we hope to support and inspire more communities to help foster healthy minds in a healthy environment. |
-     14:50 | <span class="schedule-title">Typedapi: Define your API on the type level</span> <span class="schedule-byline">Paul Heymann</span> &lt;p&gt;Have you ever thought “I really like Haskell’s Servant. Why don’t we have something like that in Scala?” or “Why can&#39;t I just define my APIs as types and Scala does the heavy lifting?”? If so, this talk is made for you.&lt;/p&gt;</p>
-    <p>&lt;p&gt;I will tell you a short story about excitement, pain and hate peaking in a climax of type-driven enlightenment. I will tell you my journey of developing Typedapi, a library for building typesafe APIs which moves as many computations to the type level as possible.&lt;/p&gt;</p>
-    <p>&lt;p&gt;We will fight many a beast on our way from Scala’s desugaring to folds working just on types. But eventually, we will arrive at our destination, exhausted, with scars but also able to make our code a bit safer again.&lt;/p&gt;</p>
-    <p>15:10 | Break |
-     15:30 | <span class="schedule-title">An Intuitive Guide to Combining Free Monad and Free Applicative</span> <span class="schedule-byline">Cameron Joannidis</span> The usage of Free Monads is becoming more well understood, however the lesser known Free Applicative is still somewhat of a mystery to the average Scala developer. In this talk I will explain how you can combine the power of both these constructs in an intuitive and visual manner. You will learn the motivations for using Free Structures in the first place, how we can build up a complex domain, how we can introduce parallelism into our domain and a bunch of other practical tips for designing programs with these structures. This will also give you a deeper understanding of what libraries like Freestyle are doing under the hood and why it is so powerful. |
-     16:05 | <span class="schedule-title">Laws for Free</span> <span class="schedule-byline">Alistair Johnson</span> Everyone that uses a functional programming library like cats is aware of the methods that each type class adds and also the properties that the methods need to abide by. But in practice, the properties are not always proved, rather testing that the methods behave as expected. This is a problem waiting to happen, as the algebraic properties are not “optional extras” – if your semigroup&#39;s combine is not associative ... then it ain&#39;t a semigroup, sorry! So in this talk we will quickly review what we mean by a property and a law and show how to use the cats laws that are available. We&#39;ll see that they are simple to use and add literally hundreds of scalacheck tests for free. And impress your boss as well, the tests can be “seen” on the screen! |
-     16:25 | Break |
-     16:45 | <span class="schedule-title">Lifting Data Structures to the Type-level</span> <span class="schedule-byline">Jon Pretty</span> In this talk, I will give a fast-paced tour of how various features of the Scala type system, many of them under-explored, can be harnessed to construct type-level representations of a number of different datatypes in Scala. The type system offers a limited number of “tools”, such as subtyping, least-upper-bound inference, type unification, singleton types and dependent types and (of course) implicit search, which we can compose in interesting ways to implement type-level operations on these type-level data structures. Value-level operations follow naturally from the types, but this is much less interesting. |
-     17:20 | <span class="schedule-title">Non-academic functional Workflows</span> <span class="schedule-byline">Stefan Schneider</span> In this talk I want to report about how we used cats to build a domain specific language that enables us to compile workflows into later executable programs. We started with the idea of having a possibility to combine the multiple unconnected tools that are typically used to analyze an image acquired by our microscopes. The Free Monad in cats looked to us as the perfect fit to write a domain specific language that provides a lot of the advantages of an a modern functional compiler plus enforcing stack safety of the program, which would ultimately provided by third party users. We started developing with a team that had only very little experience in Scala and none with cats. Thanks to the good documentation, Scala Exercises and the straightforward mapping to functional principles, known to us from the university, we were able to get a prototype running for a trade show in 6 weeks. |
-     17:40 | Closing Remarks |</p>
     
     <h2 id="venue" class="section"><a class="anchor-link" href="#venue"><code class="fas fa-link fa-sm"></code></a>Venue</h2>
     <p>This event will take place at Zalando.</p>

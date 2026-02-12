@@ -84,9 +84,9 @@
 
   <main class="bulma-is-flex-grow-1">
     
-<section class="bulma-hero bulma-is-link bulma-is-bold">
+<section class="bulma-hero bulma-is-primary bulma-is-bold">
   <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
-    <p class="bulma-title">Typelevel Summit Lausanne</p>
+    <p class="bulma-title bulma-has-text-light">Typelevel Summit Lausanne</p>
     <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
       on June 14, 2019 at École Polytechnique Fédérale de Lausanne
     </p>
@@ -104,7 +104,7 @@
     
     <h2 id="about-the-summit" class="section"><a class="anchor-link" href="#about-the-summit"><code class="fas fa-link fa-sm"></code></a>About the Summit</h2>
     <p>The eight Typelevel Summit will once again be co-located with Scala Days.
-    Read more about all events in the &lt;a href=&quot;https://www.scala-lang.org/blog/2019/01/17/scala-days-2019-celebrating-collaborative-success.html&quot;&gt;blog post&lt;/a&gt; from the Scala Center.</p>
+    Read more about all events in the <a href="https://www.scala-lang.org/blog/2019/01/17/scala-days-2019-celebrating-collaborative-success.html">blog post</a> from the Scala Center.</p>
     <p>The Summits are open to all, not just current contributors to and users of the Typelevel projects, and we are especially keen to encourage participation from people who are new to them.
     Whilst many of the Typelevel projects use somewhat &quot;advanced&quot; Scala, they are a lot more approachable than many people think, and a major part of Typelevel&#39;s mission is to make the ideas they embody much more widely accessible.
     If you&#39;re interested in types and pure functional programming we&#39;d love to see you here!</p>
@@ -156,52 +156,7 @@
         </tr>
         <tr>
           <td>13:45</td>
-          <td><span class="schedule-title">Lord of the rings: the Spire numerical towers</span> <span class="schedule-byline">Denis Rosset</span> &lt;p&gt;Spire defines around 80 typeclasses, including 30 coming from algebra and cats-kernel. We’ll see how much of that structure is dictated by mathematical laws, and which parts are the result of design decisions that balance different tradeoffs. In particular, we’ll discuss the different roles played by typeclasses in the Scala ecosystem:</td>
-        </tr>
-        <tr>
-          <td>&lt;ul&gt;</td>
-          <td>
-          </td>
-        </tr>
-        <tr>
-          <td>&lt;li&gt;as encoding operations obeying well-defined laws,&lt;/li&gt;</td>
-          <td>
-          </td>
-        </tr>
-        <tr>
-          <td>&lt;li&gt;as enabling the use of a particular syntax for those operations, if possible close to the mathematical notation of a domain (and subfields often disagree on the notation!),&lt;/li&gt;</td>
-          <td>
-          </td>
-        </tr>
-        <tr>
-          <td>&lt;li&gt;defining a context in which a combination of typeclasses implicitly imposes additional laws (for example, the ordering of numbers and addition),&lt;/li&gt;</td>
-          <td>
-          </td>
-        </tr>
-        <tr>
-          <td>&lt;li&gt;enabling the user to change the variant of a relation being used (Order),&lt;/li&gt;</td>
-          <td>
-          </td>
-        </tr>
-        <tr>
-          <td>&lt;li&gt;singling out one variant of a structure as canonical (cats: the additive Group for integers),&lt;/li&gt;</td>
-          <td>
-          </td>
-        </tr>
-        <tr>
-          <td>&lt;li&gt;as selecting a particular algorithm for an operation (integer factorization: deterministic or Monte-Carlo).&lt;/li&gt;</td>
-          <td>
-          </td>
-        </tr>
-        <tr>
-          <td>&lt;/ul&gt;&lt;/p&gt;</td>
-          <td>
-          </td>
-        </tr>
-        <tr>
-          <td>&lt;p&gt;It quickly becomes apparent that these roles conflict. With this in mind, we’ll have a look at some design choices made in Spire. We’ll discuss success stories, such as the clarification of the laws of the % operator, the commutative ring tower that formalizes integer factorization and Euclidean division. We’ll also discuss parts where trade offs have been made, such as the triplication of group structures (Group, AdditiveGroup, MultiplicativeGroup), the problem of coherent instances, especially when various typeclasses are combined. Time permitting, we’ll also discuss issues with law-based property checks (precision, range, time and memory complexity).&lt;/p&gt;</td>
-          <td>
-          </td>
+          <td><span class="schedule-title">Lord of the rings: the Spire numerical towers</span> <span class="schedule-byline">Denis Rosset</span> Spire defines around 80 typeclasses, including 30 coming from algebra and cats-kernel. We’ll see how much of that structure is dictated by mathematical laws, and which parts are the result of design decisions that balance different tradeoffs. In particular, we’ll discuss the different roles played by typeclasses in the Scala ecosystem: as encoding operations obeying well-defined laws; as enabling the use of a particular syntax for those operations, if possible close to the mathematical notation of a domain (and subfields often disagree on the notation!); defining a context in which a combination of typeclasses implicitly imposes additional laws (for example, the ordering of numbers and addition); enabling the user to change the variant of a relation being used (Order); singling out one variant of a structure as canonical (cats: the additive Group for integers); as selecting a particular algorithm for an operation (integer factorization: deterministic or Monte-Carlo). It quickly becomes apparent that these roles conflict. With this in mind, we’ll have a look at some design choices made in Spire. We’ll discuss success stories, such as the clarification of the laws of the % operator, the commutative ring tower that formalizes integer factorization and Euclidean division. We’ll also discuss parts where trade offs have been made, such as the triplication of group structures (Group, AdditiveGroup, MultiplicativeGroup), the problem of coherent instances, especially when various typeclasses are combined. Time permitting, we’ll also discuss issues with law-based property checks (precision, range, time and memory complexity).</td>
         </tr>
       </tbody>
     </table>
