@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Typelevel Summit Lausanne</title>
+</head>
+
+<body class="bulma-is-flex bulma-is-flex-direction-column">
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div> -->
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div> -->
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../community/">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="index.html">Blog</a></div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-text" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium bulma-is-primary" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left bulma-has-text-primary">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main class="bulma-is-flex-grow-1">
+    
+<section class="bulma-hero bulma-is-link bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Typelevel Summit Lausanne</p>
+    <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
+      on June 14, 2019 at École Polytechnique Fédérale de Lausanne
+    </p>
+     
+      <span class="bulma-tag">summits</span>
+     
+      <span class="bulma-tag">events</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="typelevel-summit-lausanne" class="title">Typelevel Summit Lausanne</h1>
+    <p><img src="../img/media/lausanne.jpg" alt="Typelevel Summit Lausanne"></p>
+    
+    <h2 id="about-the-summit" class="section"><a class="anchor-link" href="#about-the-summit"><code class="fas fa-link fa-sm"></code></a>About the Summit</h2>
+    <p>The eight Typelevel Summit will once again be co-located with Scala Days.
+    Read more about all events in the &lt;a href=&quot;https://www.scala-lang.org/blog/2019/01/17/scala-days-2019-celebrating-collaborative-success.html&quot;&gt;blog post&lt;/a&gt; from the Scala Center.</p>
+    <p>The Summits are open to all, not just current contributors to and users of the Typelevel projects, and we are especially keen to encourage participation from people who are new to them.
+    Whilst many of the Typelevel projects use somewhat &quot;advanced&quot; Scala, they are a lot more approachable than many people think, and a major part of Typelevel&#39;s mission is to make the ideas they embody much more widely accessible.
+    If you&#39;re interested in types and pure functional programming we&#39;d love to see you here!</p>
+    
+    <h2 id="speakers-and-schedule" class="section"><a class="anchor-link" href="#speakers-and-schedule"><code class="fas fa-link fa-sm"></code></a>Speakers and Schedule</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Talk</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>8:15</td>
+          <td>Registration</td>
+        </tr>
+        <tr>
+          <td>9:00</td>
+          <td>Opening Remarks</td>
+        </tr>
+        <tr>
+          <td>9:05</td>
+          <td><span class="schedule-title">Keynote: Some Mistakes We Made When Designing Implicits (And Some Things We Got Right)</span> <span class="schedule-byline">Martin Odersky</span> We will talk about the history how Scala&#39;s implicits evolved, and about some of the mistakes we could have avoided in hindsight, but also about things that I believe we got right. I&#39;ll conclude with a presentation of revised implicits in Scala 3 which fixes most of the current problems and hopefully does not create too many new ones.</td>
+        </tr>
+        <tr>
+          <td>10:00</td>
+          <td>Break</td>
+        </tr>
+        <tr>
+          <td>10:20</td>
+          <td><span class="schedule-title">Brave New World - tales of PureScript and Haskell in production</span> <span class="schedule-byline">Felix Mulder</span> The rumours are true. Writing code in purely functional languages tends to produce code that is much easier to read, modify and reason about. This talk examines how an experienced Scala team transitioned into writing production code using PureScript in AWS lambda, and services using Haskell.</td>
+        </tr>
+        <tr>
+          <td>10:55</td>
+          <td><span class="schedule-title">Actors Design Patterns and Arrowised FRP</span> <span class="schedule-byline">Diego E. Alonso</span> Object-oriented design patterns combine basic language features to solve coding problems in an extensible way. In functional Scala, we solve those coding problems with functions, combinators, and type-classes, so design patterns are less relevant. Actor design patterns combine basic features of the actors to solve coding problems in an extensible way. Arrowised functional reactive programming (based on languages like Scala and Haskell also offers a way to solve those coding problem using functions, combinators, and type-classes. This talk describes a prototype implementation of AFRP and its primitive types and functions, discusses its similarities to actors, and then describes how some actor design patterns in the existing literature corresponds to constructions of AFRP.</td>
+        </tr>
+        <tr>
+          <td>11:30</td>
+          <td>Break</td>
+        </tr>
+        <tr>
+          <td>11:45</td>
+          <td><span class="schedule-title">Taking Resources to the Type Level</span> <span class="schedule-byline">Vilem-Benjamin Liepelt</span> With the Granule project, we are working towards making statically typed functional languages more resource-aware, hence providing a way to enforce stateful protocols regarding memory, file handles, network interaction, etc. Static enforcement of security policies and first-class support for multi-stage programming are further examples of what is possible in a type system based on Linear Logic and Graded Modalities. We present Granule, a functional programming language which combines parametric polymorphism and indexed types with such a type system. Granule programs will probably look very familiar to you, especially if you know some Haskell/ML, but in Granule’s type system we can reason about much more. Hillel Wayne’s Great Theorem Prover Showdown has made a point of the fact that there are many things we can’t easily reason about with functional (programming</td>
+        </tr>
+        <tr>
+          <td>12:20</td>
+          <td>Lunch Break at Le Parmentier</td>
+        </tr>
+        <tr>
+          <td>13:45</td>
+          <td><span class="schedule-title">Lord of the rings: the Spire numerical towers</span> <span class="schedule-byline">Denis Rosset</span> &lt;p&gt;Spire defines around 80 typeclasses, including 30 coming from algebra and cats-kernel. We’ll see how much of that structure is dictated by mathematical laws, and which parts are the result of design decisions that balance different tradeoffs. In particular, we’ll discuss the different roles played by typeclasses in the Scala ecosystem:</td>
+        </tr>
+        <tr>
+          <td>&lt;ul&gt;</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;li&gt;as encoding operations obeying well-defined laws,&lt;/li&gt;</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;li&gt;as enabling the use of a particular syntax for those operations, if possible close to the mathematical notation of a domain (and subfields often disagree on the notation!),&lt;/li&gt;</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;li&gt;defining a context in which a combination of typeclasses implicitly imposes additional laws (for example, the ordering of numbers and addition),&lt;/li&gt;</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;li&gt;enabling the user to change the variant of a relation being used (Order),&lt;/li&gt;</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;li&gt;singling out one variant of a structure as canonical (cats: the additive Group for integers),&lt;/li&gt;</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;li&gt;as selecting a particular algorithm for an operation (integer factorization: deterministic or Monte-Carlo).&lt;/li&gt;</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;/ul&gt;&lt;/p&gt;</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;p&gt;It quickly becomes apparent that these roles conflict. With this in mind, we’ll have a look at some design choices made in Spire. We’ll discuss success stories, such as the clarification of the laws of the % operator, the commutative ring tower that formalizes integer factorization and Euclidean division. We’ll also discuss parts where trade offs have been made, such as the triplication of group structures (Group, AdditiveGroup, MultiplicativeGroup), the problem of coherent instances, especially when various typeclasses are combined. Time permitting, we’ll also discuss issues with law-based property checks (precision, range, time and memory complexity).&lt;/p&gt;</td>
+          <td>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>14:20 | <span class="schedule-title">Formal verification of Scala programs with Stainless</span> <span class="schedule-byline">Romain Ruetschi</span> Everyone knows that writing bug-free code is fundamentally difficult, and that bugs will sometimes sneak in even in the presence of unit- or property-based tests. One solution to this problem is formal software verification. Formal verification allows users to statically verify that software systems will never crash nor diverge, and will in addition satisfy given functional correctness properties. In this talk, I will present Stainless, a verification system for an expressive subset of Scala. I will start by explaining what formal verification is, what are some of the challenges people encounter when putting it into practice, and how it can be made more practical. Then I will give a high-level overview of Stainless, and finally present a few verified programs, such as a small actor system, a parallel map-reduce implementation, as well as a little surprise! I’ll also demonstrate the tooling we have developed around Stainless which lets users easily integrate Stainless in their SBT-based Scala projects. |
+     14:55 | Break |
+     15:10 | <span class="schedule-title">Exploring Scala Tooling ecosystem</span> <span class="schedule-byline">Jeferson David Ossa</span> We are going to explore and compare some build tools with special focus on LSP/BSP implementations, IDEs and text editor support. To help the audience’s judgement about the tools that are suitable for their particular needs this talk aims to get attendees familiar with terms like SemanticDB, Metals, Bloop, SBT, Pants, Bazel, Ensime, IntelliJ IDE, Scala IDE, Dotty IDE and other honorific mentions. |
+     15:45 | <span class="schedule-title">TwoFace values: a bridge between terms and types</span> <span class="schedule-byline">Oron Port</span> Scala 2.13 introduces literal types, and with great types comes great thirst for power to control them. In this talk we get acquainted with the singleton-ops library, a typelevel programming library that enables constraining and performing operations on literal types. We learn about the library’s TwoFace value feature, and how it can be used to bridge the gap between types and terms by converting a type expression to term expression and vice-versa. |
+     16:20 | Break |
+     16:40 | <span class="schedule-title">GADTs in Dotty</span> <span class="schedule-byline">Aleksander Boruch-Gruszecki</span> GADTs (Generalized Algebraic Data Types) are a special case of ADTs (or Dotty enums) that, when we match on them, let us know more about type parameters to enclosing functions. In practice, they are mostly used to associate types with data constructors (case classes and objects in Scala’s case), and to ensure that incorrectly assembling data structures will not typecheck. Two good examples are a database query type that cannot be malformed (no integers as if conditions!) or a red-black tree data type that will only compile if it is balanced. So far Scala’s support for GADTs has been lacking and rife with runtime type errors compared to Haskell. Fortunately, I’ve been working on making it far better in Dotty! During the talk first we’ll walk through examples of GADTs, see what makes them useful and how they can be applied to solve real problems. Next, I’ll explain how GADTs in Scala naturally follow from subtyping and inheritance, completely unlike Haskell or any other language with GADTs. Finally, I’ll talk about how the support for GADTs in Dotty is tightly related to other features such as match types and (the possible) nullable types. |
+     17:15 | <span class="schedule-title">Want to Diversify the Scala Community? Here is How You Can Help!</span> <span class="schedule-byline">Yifan Xing</span> The Scala community has grown significantly over the past 15 years. As a community, we wrote millions of lines of code and developed hundreds of projects. While the language is thriving, there is still room to contribute to the community. Different from other tech talks, this talk focuses on contributing to the diversity aspect of the community. It explains the significance and benefits of diversity, and it proposes solutions to diversify and improve the community. One of the best ways to grow the community and to bring diversity into the community is to organize ScalaBridge workshops, which are intended to provide resources for people from underrepresented populations to learn Scala. (Diversity comes in many forms: race, gender, age, religion, culture, sexual orientation, socioeconomic background, etc.) While the workshops have positive and lasting impacts, it cannot be done by one individual or by a single organization. In order for the Scala community to become more diverse, we need your help to scale up! Attend this talk to learn about how to contribute to our community! |
+     17:50 | Closing Remarks |</p>
+    
+    <h2 id="venue" class="section"><a class="anchor-link" href="#venue"><code class="fas fa-link fa-sm"></code></a>Venue</h2>
+    <p>The Summit will take place at EPFL in Ecublens, building CO, lecture hall CO2.
+    You can find a detailed plan at <a href="https://plan.epfl.ch/">plan.epfl.ch</a>.
+    <em>Please note that this is a different venue than Scala Days!</em></p>
+    
+    <h2 id="sponsors" class="section"><a class="anchor-link" href="#sponsors"><code class="fas fa-link fa-sm"></code></a>Sponsors</h2>
+    
+    <h3 id="gold" class="section"><a class="anchor-link" href="#gold"><code class="fas fa-link fa-sm"></code></a>Gold</h3>
+    <p class="bulma-grid bulma-is-col-min-12"><a class="bulma-cell bulma-has-text-centered" href="https://www.triplequote.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/triplequote.png" alt="Triplequote" title="Triplequote"></a></p>
+  </div>
+</div>
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column bulma-is-half">
+      Copyright 2026 Typelevel Foundation and <a href="https://github.com/typelevel/typelevel.github.com/graphs/contributors">contributors</a>.
+      Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> unless <a href="../colophon.html#license">noted otherwise</a>.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="../community/meetups.html">Meetup Calendar</a></li>
+        <li><a href="../foundation/people.html">Leadership</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="../colophon.html">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/typelevel-632277896739946517">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

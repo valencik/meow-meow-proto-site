@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Typelevel Summit Philadelphia</title>
+</head>
+
+<body class="bulma-is-flex bulma-is-flex-direction-column">
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div> -->
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div> -->
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../community/">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="index.html">Blog</a></div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-text" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium bulma-is-primary" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left bulma-has-text-primary">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main class="bulma-is-flex-grow-1">
+    
+<section class="bulma-hero bulma-is-link bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Typelevel Summit Philadelphia</p>
+    <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
+      on April 1, 2019 at Science History Institute, Philadelphia
+    </p>
+     
+      <span class="bulma-tag">summits</span>
+     
+      <span class="bulma-tag">events</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="typelevel-summit-philadelphia" class="title">Typelevel Summit Philadelphia</h1>
+    <p><img src="../img/media/philly.jpg" alt="Typelevel Summit Philadelphia"></p>
+    
+    <h2 id="about-the-summit" class="section"><a class="anchor-link" href="#about-the-summit"><code class="fas fa-link fa-sm"></code></a>About the Summit</h2>
+    <p>The seventh Typelevel Summit will once again be co-located with the &lt;a href=&quot;https://nescala.io&quot;&gt;Northeast Scala Symposium&lt;/a&gt; in Philadelphia, with one day of recorded talks and one day of unconference.
+    The schedule for this year is as follows:</p>
+    <ul>
+      <li>April 1st: Typelevel Summit</li>
+      <li>April 2nd: Northeast Scala Symposium</li>
+      <li>April 3rd: Unconference</li>
+    </ul>
+    
+    <h2 id="speakers-and-schedule" class="section"><a class="anchor-link" href="#speakers-and-schedule"><code class="fas fa-link fa-sm"></code></a>Speakers and Schedule</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Talk</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>8:15</td>
+          <td>Registration &amp; Breakfast sponsored by Coatue</td>
+        </tr>
+        <tr>
+          <td>8:55</td>
+          <td>Opening Remarks</td>
+        </tr>
+        <tr>
+          <td>9:00</td>
+          <td><span class="schedule-title">Keynote: Shared Session Types for Safe, Practical Concurrency</span> <span class="schedule-byline">Stephanie Balzer</span> &lt;p&gt;Message-passing concurrency abstracts over the details of how programs are compiled to machine</td>
+        </tr>
+        <tr>
+          <td>instructions and has been adopted by various practical languages, such as Erlang, Go, and Rust.</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>For example, Mozilla&#39;s Servo, a next-generation browser engine being written in Rust, exploits</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>message-passing concurrency to parallelize loading and rendering of webpage elements, done</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>sequentially in existing web browsers.  Messages are exchanged along channels, which are typed</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>with enumeration types.  Whereas typing ensures in this setting that only messages of the</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>appropriate type are communicated along channels, it fails to guarantee adherence to the</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>intended protocol of message exchange.&lt;/p&gt;</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;p&gt;In this talk I show how session types can be used to type communication channels to check</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>protocol adherence at compile-time.  Session types were conceived in the context of process</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>calculi, but made their ways into various practical languages using libraries.  A key</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>restriction of prior session type work is linearity.  Whereas linear session types enjoy strong</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>properties such as race freedom, protocol adherence, and deadlock-freedom, their insistance on</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>a single client rules out common programing scenarios, such as multi-producer-consumer queues</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>or shared databases or output devices.  I report on my work on shared session types, which</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>accommodates those programing scenarios, while upholding the guarantees of linear session</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>types.  First, I introduce manifest sharing, a discipline in which linear and shared sessions</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>coexist, but the type system ensures that clients of shared sessions run in mutual exclusion</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>from each other.  Manifest sharing guarantees race freedom and protocol adherence, but permits</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>deadlocks.  Next, I introduce manifest deadlock freedom, which makes shared and linear sessions</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>deadlock-free by construction.  Finally, I give an overview of my current and future research</td>
+          <td>
+          </td>
+        </tr>
+        <tr>
+          <td>plans.&lt;/p&gt;</td>
+          <td>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>9:55 | Break |
+     10:10 | <span class="schedule-title">Systematic Software with Scala</span> <span class="schedule-byline">Adam Rosien</span> Scala is a very flexible language, and this flexibility can make it difficult to know how to effectively design Scala code. In the nearly ten years I&#39;ve been using Scala, my approach to using the language has coalesced around a ten or so strategies, which are similar to OO design patterns but broader in scope and borrow many ideas from functional programming. Using these strategies I can create code in a systematic and repeatable way. In this talk I will present the majority of my strategies, and illustrate their use by live coding a simple graphics system where the majority of the code is systematically derived by applying strategies. The strategies allow me to work at a higher-level of abstraction, and the coding itself becomes formulaic. This means I can get more work done and my code is simpler to read and use. I hope that my strategies will also enable you to design better code in Scala. |
+     10:45 | <span class="schedule-title">Journey to an FP Test Harness</span> <span class="schedule-byline">Justin du Coeur (Mark Waks)</span> &lt;p&gt;The hardest part of the pure-FP journey for many people is taking that first real step. Even after you’ve read all the books and done all the exercises, you need to start committing real code to truly grok the FP mindset.&lt;/p&gt;</p>
+    <p>&lt;p&gt;This little case study will trace my journey over that line, in building a new test harness to an existing Play application. In the course of it, we’ll explore how my assumptions evolved:
+    &lt;ul&gt;
+      &lt;li&gt;From stateful members to consistent use of StateT;&lt;/li&gt;
+      &lt;li&gt;From Play’s native Future-centricity to IO;&lt;/li&gt;
+      &lt;li&gt;Becoming a little more nuanced about test state using IndexedStateT;&lt;/li&gt;
+      &lt;li&gt;Moving away from an ever-growing cake to focus on imports instead;&lt;/li&gt;
+      &lt;li&gt;And the payoff, being able to refactor the test code to be modular, readable and robust.&lt;/li&gt;
+    &lt;/ul&gt;&lt;/p&gt;</p>
+    <p>&lt;p&gt;The goal here is to show that, while there are a bunch of parts, none of this is rocket science. In the end, the resulting code is delightfully elegant, and the general approach should work for many Play applications.&lt;/p&gt;</p>
+    <p>11:20 | Break |
+     11:35 | <span class="schedule-title">The Monoiad: an epic poem on monoids</span> <span class="schedule-byline">Greg Pfeil</span> Monoids provide a vast landscape of concepts that we rely on in FP. Applicatives, monads, categories – all of them are monoids, as is much else. The epic takes us on a journey with this fundamental structure. We’ll move between everyday Scala, some niche areas of the language, and category theory. |
+     12:10 | Lunch sponsored by Simple |
+     13:45 | <span class="schedule-title">Keynote: Higher Inductive Types in Homotopy Type Theory</span> <span class="schedule-byline">Kristina Sojakova</span> Homotopy type theory is a new field of mathematics based on the recently-discovered correspondence between constructive type theory and abstract homotopy theory. Higher inductive types, which form a crucial part of this new system, generalize ordinary inductive types such as the natural numbers to higher dimensions. We will look at a few different examples of higher inductive types such as the integers, circles, and the torus, and indicate how we can use their associated induction principles to reason about them, e.g., to prove that the torus is equivalent to the product of two circles. |
+     14:40 | Break |
+     14:55 | <span class="schedule-title">Telling the Truth with Types</span> <span class="schedule-byline">Christopher Davenport</span> &lt;p&gt;There are many problems one faces when building effective solutions.</p>
+    <p>&lt;ol&gt;
+      &lt;li&gt;Outlining proper behavior, such that desired outcomes are achieved.&lt;/li&gt;
+      &lt;li&gt;Simplifying the problem space, such that solutions are extensible and maintainable.&lt;/li&gt;
+      &lt;li&gt;Interfacing with existing code.&lt;/li&gt;
+    &lt;/ol&gt;&lt;/p&gt;</p>
+    <p>&lt;p&gt;Together we will walk through typical problems, and apply a set of processes to more effectively meet these criteria. We will identify what information we need to make available and how we can consume that information to build out systems which behave as we expect. We will use the type system as our guide, to lift our reasoning directly into our codebases.&lt;/p&gt;</p>
+    <p>&lt;p&gt;Whether you are just starting out, or an experienced functional programmer this talk will deliver a set of tools to approach the next set of challenges.&lt;/p&gt;</p>
+    <p>15:30 | <span class="schedule-title">Composable concurrency with Ref + Deferred</span> <span class="schedule-byline">Fabio Labella</span> &lt;p&gt;fs2 offers a very powerful and composable set of concurrent combinators and data structures, which are all built out of two deceptively simple primitives: Ref and Deferred.&lt;/p&gt;</p>
+    <p>&lt;p&gt;This talk will explain what they are, the design principles behind them, and how to use them to build your own business logic abstractions. In the process, we will discover a general pattern in the form of concurrent state machines, and see how it integrates with final tagless on one hand, and streaming control flow on the other.&lt;/p&gt;</p>
+    <p>&lt;p&gt;If you have ever wondered how to translate that complicated piece of actor logic in pure FP, or how fs2’s Queues, Topics and Signals work under the hood, this is the talk for you.&lt;/p&gt;</p>
+    <p>16:05 | Break |
+     16:20 | <span class="schedule-title">Extending your HTTP library with monad transformers</span> <span class="schedule-byline">Ross Baker</span> A tour of monad transformers and how stacking various effects onto IO can extend our HTTP library in new and interesting ways. We’ll review OptionT from last year’s talk, derive something akka-http like with EitherT, and demonstrating tracing with TraceT. |
+     16:55 | <span class="schedule-title">Portable, type-fancy multidimensional arrays</span> <span class="schedule-byline">Ryan Williams</span> Zarr is a multidimensional-array container format that&#39;s gaining momentum in several scientific domains. It hails from the Python world, and primarily caters to numpy- and xarray-wielding scientists. It shines as a more remote- and parallel-processing-friendly HDF5 replacement. I implemented the Zarr spec in portable Scala, leveraging dependent- and higher-kinded-types. The resulting arrays have a unique type-safety profile. In this talk I&#39;ll: contextualize Zarr&#39;s use in the single-cell-sequencing domain, examine the freewheeling DSLs that scientific-Python exposes for array processing (including remote and distributed), discuss possibilities for Scala (and types!) to make inroads in these ecosystems, and show what worked well and poorly about my attempt. |
+     17:30 | Closing |</p>
+    
+    <h2 id="venue" class="section"><a class="anchor-link" href="#venue"><code class="fas fa-link fa-sm"></code></a>Venue</h2>
+    <p>The Science History Institute collects and shares the stories of innovators and of discoveries that shape our lives, preserving and interpreting the history of chemistry, chemical engineering, and the life sciences.
+    Headquartered in Philadelphia, with offices in California and Europe, the Institute houses an archive and a library for historians and researchers, a fellowship program for visiting scholars from around the globe, a community of researchers who examine historical and contemporary issues, an acclaimed museum that is free and open to the public, and a state-of-the-art conference center.</p>
+    
+    <h2 id="code-of-conduct" class="section"><a class="anchor-link" href="#code-of-conduct"><code class="fas fa-link fa-sm"></code></a>Code of Conduct</h2>
+    <p>The Code of Conduct &amp; reporting of incidents are handled together with the team of the Northeast Scala Symposium.
+    You can find details on &lt;a href=&quot;https://nescala.io/#code&quot;&gt;their website&lt;/a&gt;.
+    In short: there is a Slack team where you can report incidents to the organizers, to which every ticket holder should have received an invitation.
+    It is possible to file anonymous reports.
+    The list of organizers can be found &lt;a href=&quot;https://nescala.io/organizers.html&quot;&gt;here&lt;/a&gt;.</p>
+    
+    <h2 id="sponsors" class="section"><a class="anchor-link" href="#sponsors"><code class="fas fa-link fa-sm"></code></a>Sponsors</h2>
+    <p>We&#39;d like to thank all our sponsors who help to make the Summit happen:</p>
+    
+    <h3 id="platinum" class="section"><a class="anchor-link" href="#platinum"><code class="fas fa-link fa-sm"></code></a>Platinum</h3>
+    <p class="bulma-grid bulma-is-col-min-12"><a class="bulma-cell bulma-has-text-centered" href="http://www.bridgewater.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/bridgewater.png" alt="Bridgewater" title="Bridgewater"></a></p>
+    
+    <h3 id="gold" class="section"><a class="anchor-link" href="#gold"><code class="fas fa-link fa-sm"></code></a>Gold</h3>
+    <p class="bulma-grid bulma-is-col-min-12"><a class="bulma-cell bulma-has-text-centered" href="http://www.comcast.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/comcast.png" alt="Comcast" title="Comcast"></a>
+    <a class="bulma-cell bulma-has-text-centered" href="http://www.azavea.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/azavea.png" alt="Azavea" title="Azavea"></a>
+    <a class="bulma-cell bulma-has-text-centered" href="http://www.chariotsolutions.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/chariot.png" alt="Chariot Solutions" title="Chariot Solutions"></a>
+    <a class="bulma-cell bulma-has-text-centered" href="http://www.simple.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/simple.png" alt="Simple" title="Simple"></a>
+    <a class="bulma-cell bulma-has-text-centered" href="http://www.coatue.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/coatue.png" alt="Coatue" title="Coatue"></a></p>
+  </div>
+</div>
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column bulma-is-half">
+      Copyright 2026 Typelevel Foundation and <a href="https://github.com/typelevel/typelevel.github.com/graphs/contributors">contributors</a>.
+      Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> unless <a href="../colophon.html#license">noted otherwise</a>.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="../community/meetups.html">Meetup Calendar</a></li>
+        <li><a href="../foundation/people.html">Leadership</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="../colophon.html">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/typelevel-632277896739946517">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

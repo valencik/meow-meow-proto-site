@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Hack the Tower – Typelevel &amp; Scala hack day</title>
+</head>
+
+<body class="bulma-is-flex bulma-is-flex-direction-column">
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div> -->
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div> -->
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../community/">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="index.html">Blog</a></div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-text" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium bulma-is-primary" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left bulma-has-text-primary">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main class="bulma-is-flex-grow-1">
+    
+<section class="bulma-hero bulma-is-link bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Hack the Tower – Typelevel &amp; Scala hack day</p>
+    <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
+      on October 15, 2016 at Salesforce Tower, Bishopsgate, London
+    </p>
+     
+      <span class="bulma-tag">events</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="hack-the-tower-typelevel-scala-hack-day" class="title">Hack the Tower – Typelevel &amp; Scala hack day</h1>
+    <p><img src="../img/media/hackday.jpg" alt="Hack the Tower – Typelevel & Scala hack day"></p>
+    
+    <h2 id="about-the-hackday" class="section"><a class="anchor-link" href="#about-the-hackday"><code class="fas fa-link fa-sm"></code></a>About the Hackday</h2>
+    <p>This is the sixth Typelevel hack day in conjunction with the <a href="http://www.meetup.com/london-scala/">London Scala User Group</a> and <a href="http://hackthetower.co.uk/">Hack The Tower</a>.</p>
+    <p>Join users of and contributors to <a href="../projects/">Typelevel projects</a> and <a href="https://github.com/typelevel/scala">Typelevel Scala</a> and learn how to put them to good use in your own projects and how to make them better for the whole Scala community!</p>
+    <p>At the <a href="http://www.meetup.com/london-scala/events/232890867/">August Typelevel hack day</a> we had people working on the Scala compiler, SBT and Ensime, and experimenting with using Scala.Meta to preprocess Scala source code!</p>
+    <p>Please come and join us, and if there&#39;s anything you&#39;d like to chat about beforehand head over to the <a href="https://gitter.im/typelevel/hack-the-tower">Gitter channel</a>.</p>
+    
+    <h2 id="schedule" class="section"><a class="anchor-link" href="#schedule"><code class="fas fa-link fa-sm"></code></a>Schedule</h2>
+    <p>More details, including the schedule, can be found on the <a href="https://www.meetup.com/london-scala/events/234417089/">Meetup page</a>.
+    It is important that you sign up there.</p>
+    <p>&lt;a class=&quot;btn large&quot; href=&quot;https://www.meetup.com/london-scala/events/234417089/&quot;&gt;Sign up&lt;/a&gt;</p>
+    
+    <h2 id="venue" class="section"><a class="anchor-link" href="#venue"><code class="fas fa-link fa-sm"></code></a>Venue</h2>
+    <p>This event will take place at the Salesforce Tower.</p>
+  </div>
+</div>
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column bulma-is-half">
+      Copyright 2026 Typelevel Foundation and <a href="https://github.com/typelevel/typelevel.github.com/graphs/contributors">contributors</a>.
+      Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> unless <a href="../colophon.html#license">noted otherwise</a>.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="../community/meetups.html">Meetup Calendar</a></li>
+        <li><a href="../foundation/people.html">Leadership</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="../colophon.html">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/typelevel-632277896739946517">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

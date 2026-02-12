@@ -175,6 +175,26 @@ growing community. Please stay tuned for upcoming announcements of new initiativ
 opportunities to become involved.</p>]]></description>
 </item>
 <item>
+  <title>Typelevel Meetup Lausanne</title>
+  <pubDate>Fri, 15 Aug 2025 00:00:00 GMT</pubDate>
+  
+  <link>https://typelevel.org/blog/2025-08-15-meetup-lausanne.html</link>
+  <guid isPermaLink="true">https://typelevel.org/blog/2025-08-15-meetup-lausanne.html</guid>
+  <description><![CDATA[
+<p><img src="https://typelevel.org/img/media/lausanne.html" alt="Typelevel Meetup Lausanne"></p>
+
+<h2 id="about-the-meetup" class="section">About the Meetup</h2>
+<p>Join the Typelevel community at an <a href="https://lu.ma/g7qow6h3">in-person meetup</a> on EPFL campus in Lausanne, organized by <a href="https://github.com/armanbilge">Arman Bilge</a> and <a href="https://github.com/antoniojimeneznieto">Antonio Jimenez</a>. This meetup is open to (aspiring) Typelevel users and contributors and anyone curious to learn more about functional programming in Scala, no matter their prior experience.</p>
+<p>During this meetup you can expect:</p>
+<ul>
+  <li>chat/q&amp;a about functional programming and Typelevel libraries</li>
+  <li>a small tutorial on <a href="https://typelevel.org/cats-effect">Cats Effect</a>, <a href="https://fs2.io/">FS2</a>, and <a href="https://armanbilge.github.io/calico">Calico</a></li>
+  <li>a group activity building widgets with Calico</li>
+  <li>lunch</li>
+</ul>
+<p>More details and registration are available on the <a href="https://lu.ma/g7qow6h3">event page</a>. All participants and organizers must abide by the <a href="https://typelevel.org/code-of-conduct/README.html">Typelevel Code of Conduct</a>.</p>]]></description>
+</item>
+<item>
   <title>Typelevel Weaver released</title>
   <pubDate>Tue, 10 Jun 2025 00:00:00 GMT</pubDate>
   

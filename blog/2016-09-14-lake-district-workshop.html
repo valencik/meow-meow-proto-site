@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Typelevel Workshop in the Lake District</title>
+</head>
+
+<body class="bulma-is-flex bulma-is-flex-direction-column">
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div> -->
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div> -->
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../community/">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="index.html">Blog</a></div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-text" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium bulma-is-primary" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left bulma-has-text-primary">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main class="bulma-is-flex-grow-1">
+    
+<section class="bulma-hero bulma-is-link bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Typelevel Workshop in the Lake District</p>
+    <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
+      on September 14, 2016 at Rheged Centre, Penrith
+    </p>
+     
+      <span class="bulma-tag">events</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="typelevel-workshop-in-the-lake-district" class="title">Typelevel Workshop in the Lake District</h1>
+    <p><img src="../img/media/lakedistrict.jpg" alt="Typelevel Workshop in the Lake District"></p>
+    
+    <h2 id="about-the-workshop" class="section"><a class="anchor-link" href="#about-the-workshop"><code class="fas fa-link fa-sm"></code></a>About the Workshop</h2>
+    <p>A day of talks &amp; unconference, co-located with <a href="https://scala.world">Scala World</a>.</p>
+    <p>The full set of sessions and topics will be decided by the participants on the day of the workshop. To give
+    us some context, and provide introductions for possible sessions on the day the following attendees have
+    kindly offered to do short informal presentations at the beginning of the day,</p>
+    
+    <h4 id="dave-gurnell-mdash-state-of-the-mewnion" class="section"><a class="anchor-link" href="#dave-gurnell-mdash-state-of-the-mewnion"><code class="fas fa-link fa-sm"></code></a>Dave Gurnell &amp;mdash; State of the Mewnion</h4>
+    <p>In this talk Dave will introduce the wonderful State monad: what it is, how it works, and how to use it to publish
+    books and compose songs using cat noises.</p>
+    
+    <h4 id="rüdiger-klaehn-mdash-abc" class="section"><a class="anchor-link" href="#rüdiger-klaehn-mdash-abc"><code class="fas fa-link fa-sm"></code></a>Rüdiger Klaehn &amp;mdash; abc</h4>
+    <p>Rüdiger will introduce <a href="https://github.com/rklaehn/abc">abc</a>, an experiment in writing a tiny collections library that
+    is more friendly to type classes. He will talk about the library itself and also about the projects structure and pain
+    points when using type classes in scala. We can dig deeper during the unconference.</p>
+    
+    <h4 id="eda-meadows-mdash-monadic-wack-a-mole" class="section"><a class="anchor-link" href="#eda-meadows-mdash-monadic-wack-a-mole"><code class="fas fa-link fa-sm"></code></a>Eda Meadows &amp;mdash; Monadic Wack-A-Mole</h4>
+    <p>Working with code structured as monads can start out looking beautifully straightforward but as things develop you
+    find yourself with for/yields that don&#39;t compile as you have a random type that doesn&#39;t match up. Eda will sketch out
+    some ideas on how to deal with this which we can explore during the unconference.</p>
+    
+    <h4 id="miles-sabin-mdash-typelevel-scala-rebooted" class="section"><a class="anchor-link" href="#miles-sabin-mdash-typelevel-scala-rebooted"><code class="fas fa-link fa-sm"></code></a>Miles Sabin &amp;mdash; Typelevel Scala rebooted</h4>
+    <p>Following on from the fix for SI-2712 the Typelevel Scala project has been reinvigorated. Miles is going to give a
+    quick overview of what Typelevel Scala adds to Lightbend Scala and set the scene for unconference sessions on using it
+    in your projects today and contributing to Typelevel and Lightbend Scala development.</p>
+    
+    <h4 id="paweł-szulc-mdash-the-cats-toolbox-a-quick-tour-of-some-basic-typeclasses" class="section"><a class="anchor-link" href="#paweł-szulc-mdash-the-cats-toolbox-a-quick-tour-of-some-basic-typeclasses"><code class="fas fa-link fa-sm"></code></a>Paweł Szulc &amp;mdash; The Cats toolbox: a quick tour of some basic typeclasses</h4>
+    <p>It&#39;s happened to all of us: we ran away from some conversation or library because it kept on using those &quot;weird&quot;
+    phrases.  You know, like &quot;type classes&quot;, &quot;semigroups&quot;, &quot;monoids&quot;, &quot;applicatives&quot;.  Yikes! They all seem so academic,
+    so pointlessly detached from real-world problems.  But then again, given how frequently we run into them in functional
+    programming, are they REALLY irrelevant, or do they have real-world applications? Paweł will start helping us make
+    sense of the gobbledygook and we can continue in a later session.</p>
+    
+    <h4 id="pere-villega-mdash-what-happens-when-you-use-free-monads" class="section"><a class="anchor-link" href="#pere-villega-mdash-what-happens-when-you-use-free-monads"><code class="fas fa-link fa-sm"></code></a>Pere Villega &amp;mdash; What happens when you use Free Monads</h4>
+    <p>There&#39;s a lot of talk about Free Monads and how awesome they are. But, what happens when we try to implement a real
+    application using Free? Pere will show ane example using <a href="https://github.com/ProjectSeptemberInc/freek/">Freek</a> and
+    the <a href="https://starfighter.readme.io/docs/">StockFighter API</a> and highlight some of the choices and limitations
+    involved. Later, during the unconference, we can experiment with Free Monads to see their impact in everyday concerns
+    like testing, program design, etc.</p>
+    
+    <h4 id="dick-wall-mdash-ensime-sublime" class="section"><a class="anchor-link" href="#dick-wall-mdash-ensime-sublime"><code class="fas fa-link fa-sm"></code></a>Dick Wall &amp;mdash; Ensime Sublime</h4>
+    <p>Ensime isn&#39;t just for Emacs! Dick Wall will give us a taste of what&#39;s been happening in the Ensime project to support
+    users of the Sublime Text editor and encourage you all to hack on Ensime later.</p>
+    
+    <h2 id="venue" class="section"><a class="anchor-link" href="#venue"><code class="fas fa-link fa-sm"></code></a>Venue</h2>
+    <p>This event took place at the Rheged Centre, situated near Penrith in the Lake District National Park, UK.</p>
+  </div>
+</div>
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column bulma-is-half">
+      Copyright 2026 Typelevel Foundation and <a href="https://github.com/typelevel/typelevel.github.com/graphs/contributors">contributors</a>.
+      Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> unless <a href="../colophon.html#license">noted otherwise</a>.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="../community/meetups.html">Meetup Calendar</a></li>
+        <li><a href="../foundation/people.html">Leadership</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="../colophon.html">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/typelevel-632277896739946517">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

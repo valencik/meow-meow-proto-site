@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Typelevel Summit Berlin</title>
+</head>
+
+<body class="bulma-is-flex bulma-is-flex-direction-column">
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div> -->
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div> -->
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../community/">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="index.html">Blog</a></div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-text" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium bulma-is-primary" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left bulma-has-text-primary">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main class="bulma-is-flex-grow-1">
+    
+<section class="bulma-hero bulma-is-link bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Typelevel Summit Berlin</p>
+    <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
+      on May 18, 2018 at Zalando, Zeughofstraße 1, Berlin
+    </p>
+     
+      <span class="bulma-tag">summits</span>
+     
+      <span class="bulma-tag">events</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="typelevel-summit-berlin" class="title">Typelevel Summit Berlin</h1>
+    <p><img src="../img/media/berlin.jpg" alt="Typelevel Summit Berlin"></p>
+    
+    <h2 id="about-the-summit" class="section"><a class="anchor-link" href="#about-the-summit"><code class="fas fa-link fa-sm"></code></a>About the Summit</h2>
+    <p>The sixth Typelevel Summit will once again happen after <strong>the</strong> Scala conference: &lt;a href=&quot;https://eu.scaladays.org/&quot;&gt;Scala Days&lt;/a&gt;, in the same city!</p>
+    <p>The Summits are open to all, not just current contributors to and users of the Typelevel projects, and we are especially keen to encourage participation from people who are new to them.
+    Whilst many of the Typelevel projects use somewhat &quot;advanced&quot; Scala, they are a lot more approachable than many people think, and a major part of Typelevel&#39;s mission is to make the ideas they embody much more widely accessible.
+    If you&#39;re interested in types and pure functional programming we&#39;d love to see you here!</p>
+    <p>This is a community conference and we strive to make it an inclusive and fulfilling event for all participants. All attendees, speakers, and organizers must abide by the <a href="../code-of-conduct/">Typelevel Code of Conduct</a>.</p>
+    <p>Special thanks go to <a href="https://jobs.zalando.com/tech/?utm_source=typelevel&utm_medium=event-page-organic-b&utm_campaign=2018-css&utm_content=01-typelevel-summit">Zalando</a> who kindly provide the venue.</p>
+    
+    <h2 id="speakers-and-schedule" class="section"><a class="anchor-link" href="#speakers-and-schedule"><code class="fas fa-link fa-sm"></code></a>Speakers and Schedule</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Talk</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>8:15</td>
+          <td>Registration</td>
+        </tr>
+        <tr>
+          <td>9:00</td>
+          <td>Opening Remarks</td>
+        </tr>
+        <tr>
+          <td>9:05</td>
+          <td><span class="schedule-title">Keynote: Just the right kind of Consistency!</span> <span class="schedule-byline">Annette Bieniusa</span> You need a data store that allows for high throughput and availability, while supporting consistency patterns referential integrity, numerical invariants, or atomic updates? Current designs for data storage forces application developers to decide early in the design cycle, and once and for all, what type of consistency the database should provide. At one extreme, strong consistency requires frequent global coordination; restricting concurrency in this way greatly simplifies application development, but it reduces availability and increases latency. At the opposite extreme, there are systems that provide eventual consistency only: they never sacrifice availability, but application developers must write code to deal with all sorts of concurrency anomalies in order to prevent violation of application invariants. But your system just needs to be consistent enough for the application to be correct! In the talk, I will discuss insights and techniques for analysing the consistency requirements of an application, and show techniques how you can establish them in your system.</td>
+        </tr>
+        <tr>
+          <td>10:00</td>
+          <td>Break</td>
+        </tr>
+        <tr>
+          <td>10:20</td>
+          <td><span class="schedule-title">A Fistful of Functors</span> <span class="schedule-byline">Itamar Ravid</span> Functors show up everywhere in our day-to-day programming. They&#39;re so common, we take them for granted - especially in typed functional programming. Beside being common, they&#39;re incredibly useful for code reuse. However, functors have several relatively unknown variants: profunctors, bifunctors, contravariant functors, and so on. And guess what - they&#39;re amazingly useful, especially combined with other abstractions in the functional programming toolkit! In this talk, we&#39;ll cover the many species of functors and see how they can help us with tasks such as serialization, stream processing, and more.</td>
+        </tr>
+        <tr>
+          <td>10:55</td>
+          <td><span class="schedule-title">Cancelable IO</span> <span class="schedule-byline">Alexandru Nedelcu</span> Task / IO data types have been ported in Scala, inspired by Haskell&#39;s monadic IO and are surging in popularity due to the need in functional programming for referential transparency, but also because controlling side effects by means of lawful, FP abstractions makes reasoning about asynchrony and concurrency so much easier. But concurrency brings with it race conditions, i.e. the ability to execute multiple tasks at the same time, possibly interrupting the losers and cleaning up resources afterwards and thus we end up reasoning about preemption. This talk describes the design of Monix&#39;s Task for cancelability and preemption, a design that has slowly transpired in cats-effect, first bringing serious performance benefits and now a sane design for cancelation. Topics include how cancelable tasks can be described, along with examples of race conditions that people can relate to, highlighting the challenges faced when people use an IO/Task data type that cannot be interrupted.</td>
+        </tr>
+        <tr>
+          <td>11:30</td>
+          <td>Break</td>
+        </tr>
+        <tr>
+          <td>11:50</td>
+          <td><span class="schedule-title">Legacy Engineering: Making Criteo Functional</span> <span class="schedule-byline">Guillaume Bort</span> Criteo uses a lot of Scala in its code-base. Historically for big data stuff using the usual suspects Spark &amp; Scalding, but more and more for application development. A few Typelevel projects started to appear in our code base as developers started to embrase more sophisticated FP practices in their Scala code. Today most of our Scala projects are built around cats, fs2, doobie, algebra, shapeless, etc. In this presentation we will discuss the challenges of introducing more functional code in a large software company as Criteo and how typelevel projects have helped. We&#39;ll talk about what&#39;s worked well as well as where the dragons lie.</td>
+        </tr>
+        <tr>
+          <td>12:10</td>
+          <td><span class="schedule-title">Introducing namespaces into SQL result sets using nested structural types</span> <span class="schedule-byline">Keiko Nakata</span> &lt;p&gt;Many modern programming languages support decent namespaces. Namespaces are commonly structured hierarchies.  We bring this power to a database query language, using nested structural types.&lt;/p&gt;</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>&lt;p&gt;For this purpose, we hijack table aliases: given a table T containing two columns C of type String and D of type Int, a table &amp;quot;T as S&amp;quot; is a new table containing two columns S.C of type String and S.D of type Int. In Scala, this is neatly expressed as
+    &lt;pre&gt;
+      T : AnyRef { def C : String, def D: Int }</p>
+    <p>T as S : AnyRef { def S: { def C: String, def D: Int } }
+    &lt;/pre&gt;&lt;/p&gt;</p>
+    <p>&lt;p&gt;We implement the above as operation using the whitebox macro. We rely on Scala&#39;s type system&#39;s ability to compute Greatest Lower Bounds (GLBs) and Least Upper Bounds (LUBs) of structural types, to enable polymorphic and compositional query creation. To enable GLB and LUB computation for nested structured types, we have patched the Scala compiler.&lt;/p&gt;</p>
+    <p>12:45 | Lunch Break |
+     14:15 | <span class="schedule-title">Healthy Minds in a Healthy Community</span> <span class="schedule-byline">Sasha Romijn</span> Open source communities attract and boast passionate, idealistic people, and many of us invest copious amounts of time and effort to contribute to our projects and support our communities. This underlying emotional attachment can make us more vulnerable to elevated stress, burnout and conflicts. And then there are those of us who also manage mental illness. More often than not, we suffer these struggles in silence, feeling (and fearing) that we&#39;re alone in our trouble. Here, our communities can make a huge difference, by building a positive and safe environment where we can blossom and support ourselves and our peers, and feel included. This talk will take a look at open-source communities through the eyes of various mental well-being issues and struggles, and show various things that some communities already do. With this, we hope to support and inspire more communities to help foster healthy minds in a healthy environment. |
+     14:50 | <span class="schedule-title">Typedapi: Define your API on the type level</span> <span class="schedule-byline">Paul Heymann</span> &lt;p&gt;Have you ever thought “I really like Haskell’s Servant. Why don’t we have something like that in Scala?” or “Why can&#39;t I just define my APIs as types and Scala does the heavy lifting?”? If so, this talk is made for you.&lt;/p&gt;</p>
+    <p>&lt;p&gt;I will tell you a short story about excitement, pain and hate peaking in a climax of type-driven enlightenment. I will tell you my journey of developing Typedapi, a library for building typesafe APIs which moves as many computations to the type level as possible.&lt;/p&gt;</p>
+    <p>&lt;p&gt;We will fight many a beast on our way from Scala’s desugaring to folds working just on types. But eventually, we will arrive at our destination, exhausted, with scars but also able to make our code a bit safer again.&lt;/p&gt;</p>
+    <p>15:10 | Break |
+     15:30 | <span class="schedule-title">An Intuitive Guide to Combining Free Monad and Free Applicative</span> <span class="schedule-byline">Cameron Joannidis</span> The usage of Free Monads is becoming more well understood, however the lesser known Free Applicative is still somewhat of a mystery to the average Scala developer. In this talk I will explain how you can combine the power of both these constructs in an intuitive and visual manner. You will learn the motivations for using Free Structures in the first place, how we can build up a complex domain, how we can introduce parallelism into our domain and a bunch of other practical tips for designing programs with these structures. This will also give you a deeper understanding of what libraries like Freestyle are doing under the hood and why it is so powerful. |
+     16:05 | <span class="schedule-title">Laws for Free</span> <span class="schedule-byline">Alistair Johnson</span> Everyone that uses a functional programming library like cats is aware of the methods that each type class adds and also the properties that the methods need to abide by. But in practice, the properties are not always proved, rather testing that the methods behave as expected. This is a problem waiting to happen, as the algebraic properties are not “optional extras” – if your semigroup&#39;s combine is not associative ... then it ain&#39;t a semigroup, sorry! So in this talk we will quickly review what we mean by a property and a law and show how to use the cats laws that are available. We&#39;ll see that they are simple to use and add literally hundreds of scalacheck tests for free. And impress your boss as well, the tests can be “seen” on the screen! |
+     16:25 | Break |
+     16:45 | <span class="schedule-title">Lifting Data Structures to the Type-level</span> <span class="schedule-byline">Jon Pretty</span> In this talk, I will give a fast-paced tour of how various features of the Scala type system, many of them under-explored, can be harnessed to construct type-level representations of a number of different datatypes in Scala. The type system offers a limited number of “tools”, such as subtyping, least-upper-bound inference, type unification, singleton types and dependent types and (of course) implicit search, which we can compose in interesting ways to implement type-level operations on these type-level data structures. Value-level operations follow naturally from the types, but this is much less interesting. |
+     17:20 | <span class="schedule-title">Non-academic functional Workflows</span> <span class="schedule-byline">Stefan Schneider</span> In this talk I want to report about how we used cats to build a domain specific language that enables us to compile workflows into later executable programs. We started with the idea of having a possibility to combine the multiple unconnected tools that are typically used to analyze an image acquired by our microscopes. The Free Monad in cats looked to us as the perfect fit to write a domain specific language that provides a lot of the advantages of an a modern functional compiler plus enforcing stack safety of the program, which would ultimately provided by third party users. We started developing with a team that had only very little experience in Scala and none with cats. Thanks to the good documentation, Scala Exercises and the straightforward mapping to functional principles, known to us from the university, we were able to get a prototype running for a trade show in 6 weeks. |
+     17:40 | Closing Remarks |</p>
+    
+    <h2 id="venue" class="section"><a class="anchor-link" href="#venue"><code class="fas fa-link fa-sm"></code></a>Venue</h2>
+    <p>This event will take place at Zalando.</p>
+    
+    <h2 id="co-located-event" class="section"><a class="anchor-link" href="#co-located-event"><code class="fas fa-link fa-sm"></code></a>Co-located Event</h2>
+    <p>The <a href="https://scala.epfl.ch/">Scala Center</a> will organize a co-located event with roundtables of project maintainers.
+    Note that because the space is limited, tickets are not on sale for this event.
+    To register interest, please get in touch <a href="mailto:info@typelevel.org">via email</a>.</p>
+    
+    <h2 id="sponsors" class="section"><a class="anchor-link" href="#sponsors"><code class="fas fa-link fa-sm"></code></a>Sponsors</h2>
+    <p>We&#39;d like to thank all our sponsors who help to make the Summit happen:</p>
+    
+    <h3 id="platinum" class="section"><a class="anchor-link" href="#platinum"><code class="fas fa-link fa-sm"></code></a>Platinum</h3>
+    <p class="bulma-grid bulma-is-col-min-12"><a class="bulma-cell bulma-has-text-centered" href="https://jobs.zalando.com/tech/?utm_source=typelevel&utm_medium=event-page-organic-b&utm_campaign=2018-css&utm_content=01-typelevel-summit"><img class="legacy-event-sponsor" src="../img/media/sponsors/zalando.png" alt="Zalando" title="Zalando"></a></p>
+    
+    <h3 id="gold" class="section"><a class="anchor-link" href="#gold"><code class="fas fa-link fa-sm"></code></a>Gold</h3>
+    <p class="bulma-grid bulma-is-col-min-12"><a class="bulma-cell bulma-has-text-centered" href="https://www.criteo.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/crite_o_labs.png" alt="Criteo" title="Criteo"></a></p>
+    
+    <h3 id="silver" class="section"><a class="anchor-link" href="#silver"><code class="fas fa-link fa-sm"></code></a>Silver</h3>
+    <p class="bulma-grid bulma-is-col-min-12"><a class="bulma-cell bulma-has-text-centered" href="https://www.commercetools.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/commercetools.png" alt="Commercetools" title="Commercetools"></a>
+    <a class="bulma-cell bulma-has-text-centered" href="https://www.lightbend.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/lightbend.png" alt="Lightbend" title="Lightbend"></a>
+    <a class="bulma-cell bulma-has-text-centered" href="https://www.signifytechnology.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/signify.png" alt="Signify" title="Signify"></a></p>
+  </div>
+</div>
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column bulma-is-half">
+      Copyright 2026 Typelevel Foundation and <a href="https://github.com/typelevel/typelevel.github.com/graphs/contributors">contributors</a>.
+      Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> unless <a href="../colophon.html#license">noted otherwise</a>.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="../community/meetups.html">Meetup Calendar</a></li>
+        <li><a href="../foundation/people.html">Leadership</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="../colophon.html">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/typelevel-632277896739946517">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+

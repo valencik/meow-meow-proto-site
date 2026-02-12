@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" data-bulma-theme="light">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="../img/favicon.ico" sizes="32x32">
+  <link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../img/apple-touch-icon.png">
+
+  <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/js/all.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/fontawesome.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="../main.css">
+  <link rel="stylesheet" href="../css/code.css">
+  <link rel="stylesheet" href="../search/docs.css">
+  <script src="../main.js"></script>
+
+  <title>Typelevel Summit Oslo</title>
+</head>
+
+<body class="bulma-is-flex bulma-is-flex-direction-column">
+  <nav class="bulma-navbar" role="navigation" aria-label="main navigation">
+  <div class="bulma-navbar-brand">
+    <a class="bulma-navbar-item" href="../">
+      <img src="../img/logo.svg" />
+    </a>
+
+    <a role="button" class="bulma-navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu"
+      onClick="handleBurgerClick(this)">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="bulma-navbar-menu" id="navMenu">
+    <div class="bulma-navbar-start">
+
+    </div>
+    <div class="bulma-navbar-end">
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-rounded bulma-is-primary bulma-has-text-light">Get Started</a></div> -->
+      <!-- <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text">Learn</a></div> -->
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../community/">Community</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="../foundation/">Foundation</a></div>
+      <div class="bulma-navbar-item"><a class="bulma-button bulma-is-text" href="index.html">Blog</a></div>
+      <div class="bulma-navbar-item">
+        <a id="search-top-bar" class="bulma-button bulma-is-text" aria-label="Search" onclick="showSearchModal()">
+          <span class="bulma-icon bulma-is-small">
+            <i class="fas fa-magnifying-glass"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Search Modal -->
+<div id="search-modal" class="bulma-modal bulma-is-justify-content-flex-start bulma-pt-6 bulma-pb-6">
+  <div class="bulma-modal-background bulma-is-align-items-flex-start" onclick="hideSearchModal()"></div>
+  <div class="bulma-modal-card">
+    <header class="bulma-modal-card-head">
+      <p class="bulma-control bulma-has-icons-left bulma-is-flex-grow-1">
+        <input id="search-input" class="bulma-input bulma-is-medium bulma-is-primary" type="search" autocomplete="off" oninput="onSearchInput(event)">
+        <span class="bulma-icon bulma-is-left bulma-has-text-primary">
+          <i class="fas fa-magnifying-glass"></i>
+        </span>
+      </p>
+    </header>
+    <section id="search-results" class="bulma-modal-card-body">
+    </section>
+    <footer class="bulma-modal-card-foot bulma-is-justify-content-space-between">
+      <span class="bulma-has-text-grey bulma-is-size-7">
+        <kbd class="bulma-tag">/</kbd> to open search &nbsp;
+        <kbd class="bulma-tag">Esc</kbd> to close
+      </span>
+    </footer>
+  </div>
+</div>
+
+  <main class="bulma-is-flex-grow-1">
+    
+<section class="bulma-hero bulma-is-link bulma-is-bold">
+  <div class="bulma-hero-body bulma-container bulma-is-max-desktop">
+    <p class="bulma-title">Typelevel Summit Oslo</p>
+    <p class="blog-post-byline bulma-has-text-light bulma-subtitle">
+      on May 4, 2016 at Teknologihuset
+    </p>
+     
+      <span class="bulma-tag">summits</span>
+     
+      <span class="bulma-tag">events</span>
+     
+  </div>
+</section>
+<div class="bulma-section bulma-container bulma-is-max-desktop">
+  <div class="blog-post bulma-content">
+    <h1 id="typelevel-summit-oslo" class="title">Typelevel Summit Oslo</h1>
+    <p><img src="../img/media/oslo.jpg" alt="Typelevel Summit Oslo"></p>
+    
+    <h2 id="about-the-summit" class="section"><a class="anchor-link" href="#about-the-summit"><code class="fas fa-link fa-sm"></code></a>About the Summit</h2>
+    <p>The second Typelevel Summit was co-located with &lt;a href=&quot;http://2016.flatmap.no/&quot;&gt;flatMap(Oslo)&lt;/a&gt;.</p>
+    <p>The Summits are open to all, not just current contributors to and users of the Typelevel projects, and we are especially keen to encourage participation from people who are new to them.
+    Whilst many of the Typelevel projects use somewhat &quot;advanced&quot; Scala, they are a lot more approachable than many people think, and a major part of Typelevel&#39;s mission is to make the ideas they embody much more widely accessible.
+    If you&#39;re interested in types and pure functional programming we&#39;d love to see you here!</p>
+    
+    <h2 id="speakers-and-schedule" class="section"><a class="anchor-link" href="#speakers-and-schedule"><code class="fas fa-link fa-sm"></code></a>Speakers and Schedule</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Talk</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>8:30</td>
+          <td>Registration</td>
+        </tr>
+        <tr>
+          <td>9:00</td>
+          <td>Opening Remarks</td>
+        </tr>
+        <tr>
+          <td>9:15</td>
+          <td><span class="schedule-title">Keynote: How to bake &quot;How to Bake Pi&quot;</span> <span class="schedule-byline">Dr Eugenia Cheng</span> Mathematics is a very misunderstood subject.  Many people associate it only with painful experiences with childhood, or think it&#39;s all about numbers and calculations, or that it&#39;s a cold subject with clear rights and wrongs. My mission is to bring my love of mathematics to more people, and as part of this journey I need to show the beauty and the power of abstract thinking. In this talk I will present my experiences of this, starting with the book I wrote for a very general audience, and the Category Theory course I teach to art students at the School of the Art Institute of Chicago. Using a variety of surprising examples, I will show that it is possible to convince maths phobics and maths sceptics that abstract mathematics can be relevant and useful for everyone.</td>
+        </tr>
+        <tr>
+          <td>10:15</td>
+          <td>Break</td>
+        </tr>
+        <tr>
+          <td>10:30</td>
+          <td><span class="schedule-title">A Year living Freely</span> <span class="schedule-byline">Chris Myers</span> The Free monad and the Interpreter Pattern has gained significant interest in the Scala community of late.  It is a pattern that has helped unlock the problems of separating pure functions from effects.  At REA Group we have had an explosion of interest in FP and Scala in the last two years.  Beginning with just a couple of experienced functional programmers to now multiple teams and dozens of developers, we have experienced the growing pains of introducing FP and Scala to a large organisation.  The Free monad has been a key element  in our journey.  As we grew, we were particularly conscious of what patterns we could lay down, especially for beginners, that promoted the integral values of FP such as referential transparency and to allow obvious ways that software should grow.  After many experiments and much research, we discovered that the Free monad and interpreter pattern has been something that tangibly isolates effects, maintains referential transparency, subsumes dependency injection, is modular and is surprisingly accessible to FP/Scala new comers.  This talk briefly covers the mechanics of the Free monad and the interpreter pattern but largely looks at how a year with the Free monad has allowed us to make novice teams productive while they learn and embrace FP and Scala.</td>
+        </tr>
+        <tr>
+          <td>11:10</td>
+          <td><span class="schedule-title">What is macro-compat and why you might be interested in using it</span> <span class="schedule-byline">Dale Wijnand</span> Despite macros being an experimental feature of Scala, a number of libraries find them to provide great value and choose to make use of them. However in different Scala versions the macro support and API is different. That means that libraries that cross-build for multiple Scala versions have then had to deal with these differences. Macro-compat is a solution to this problem. In this talk I will introduce macro-compat, starting with an overview of the problems it&#39;s trying to solve, the prior art of how these problems are dealt with, how to use it and how it works.</td>
+        </tr>
+        <tr>
+          <td>11:25</td>
+          <td>Break</td>
+        </tr>
+        <tr>
+          <td>11:45</td>
+          <td><span class="schedule-title">Monitoring and controlling power plants with Monix</span> <span class="schedule-byline">Alexandru Nedelcu</span> This talk is about my experience in dealing with modeling behavior by processing asynchronous soft-real time signals from different source using Monix, the library for building asynchronous and event-based logic.  It&#39;s an experience report from my work at E.On, in monitoring and controlling power plants. We do this by gathering signals in real time and modeling state machines that give us the state in which an asset is in. The component, for lack of inspiration named Asset-Engine, is the one component in the project that definitely adheres to FP principles, the business logic being described with pure functions and data-structures and the communication being handled by actors and by Observable streams.  I want to show how I pushed side effects at the edges, in a very pragmatic setup.</td>
+        </tr>
+        <tr>
+          <td>12:25</td>
+          <td><span class="schedule-title">Fetch: Simple &amp; Efficient data access</span> <span class="schedule-byline">Alejandro Gómez</span> Fetch is a Scala library for simplifying and optimizing access to data such as files systems, databases, or web services. These data sources usually have a latency cost, and we often have to trade code clarity for performance when querying them. We can easily end up with code that complects the business logic performed on the data we&#39;re fetching with explicit synchronization or optimizations such as caching and batching. Fetch can automatically request data from multiple sources concurrently, batch multiple requests to the same data source, and cache previous requests&#39; results without having to use any explicit concurrency construct. It does so by separating data fetch declaration from interpretation, building a tree with the data dependencies where you can express concurrency with the applicative bind, and sequential dependency with monadic bind. It borrows heavily from the Haxl (Haskell, open sourced) and Stitch (Scala, not open sourced) projects. This talk will cover the problem Fetch solves, an example of how you can benefit from using it, and a high-level look at its implementation.</td>
+        </tr>
+        <tr>
+          <td>12:45</td>
+          <td>Lunch Break</td>
+        </tr>
+        <tr>
+          <td>14:00</td>
+          <td><span class="schedule-title">Decorate your types with refined</span> <span class="schedule-byline">Frank Thomas</span> Scala has a powerful type system that allows to create very expressive types. But sometimes we need guarantees about our values beyond what the type system can usually check, for example integers in the range from zero to fifty-nine, or chars that are either a letter or a digit. One way to realize these constraints is known as smart constructors, where the construction mechanism validates at runtime that our values satisfy the constraint. Unfortunately this technique requires some boilerplate and always incur runtime checks even if the values are kown at compile-time. This talk will introduce a library for refining types with type-level predicates, which abstracts over smart constructors. We&#39;ll go from the idea of refinement types to examples of the library using the rich set of predicates it provides, and show how it can be used at compile- and runtime alike. On that way we&#39;ll see how we can make good use of literal-based singleton types that are proposed in SIP-23. I&#39;ll also demonstrate how refined integrates with other libraries like circe, Monocle, or scodec.</td>
+        </tr>
+        <tr>
+          <td>14:40</td>
+          <td><span class="schedule-title">Discovering Types (from Strings) with Cats and Shapeless</span> <span class="schedule-byline">Jonathan Merritt</span> This talk is about a simple problem which can be solved using parts of Cats and Shapeless. While helping data scientists to use the nice, well-typed Scala tools that we build for them, we are often presented with tabular data in raw text files (CSV, PSV, etc.). These files usually have some consistent, but unknown, internal schema. Data scientists are often familiar with dynamic languages like R and Python, in which fields can be parsed speculatively, or on-demand by particular operations at runtime. They usually expect Scala tools to do the same, and they particularly dislike having to specify schemas manually up-front. This mis-match can be addressed by a spectrum of different approaches, which range from handling types outside the language proper (boo! - but it works quite well in practice), to discovering and pre-generating a schema that can be used for compile-time checking. The problem of discovering the schemas of these files in a composable way makes for an interesting tour of some features of Shapeless and Cats. It&#39;s useful for beginners because the problem is quite easy to understand. I&#39;ll discuss some approaches to this, some of the remaining challenges, and provide attendees with enough background to implement the basics of a working system. I&#39;ll focus specifically on a solution that involves Cats and Shapeless for schema pre-generation, rather than macro-based approaches of manifesting schemas.</td>
+        </tr>
+        <tr>
+          <td>14:55</td>
+          <td>Break</td>
+        </tr>
+        <tr>
+          <td>15:15</td>
+          <td><span class="schedule-title">Building functional programs with bananas, catalysts, shacl&#39;s and shapes</span> <span class="schedule-byline">Alistair Johnson</span> This is a talk that combines both the practical, but often overlooked, topic of SBT with cutting edge distributed data technologies. The practical aspect is presented by giving an overview of catalysts, where it came from (Scalaz and banana-rdf, actually), how it evolved and how it came to be what and where it is today; and why it should be used. The evolution of catalysts then leads naturally to why current build systems play such an import role in language ecosystems and why these ecosystems can&#39;t work as they are today. This is where RDF naturally has a place, along with Shapes and Shapes Constraint Language (SHACL).</td>
+        </tr>
+        <tr>
+          <td>15:55</td>
+          <td><span class="schedule-title">Growing a DSL for financial calculations</span> <span class="schedule-byline">Jan Ouwens</span> Rabobank is a Dutch multinational banking and financial services company headquartered in Utrecht, the Netherlands. One of their services is providing mortgage loans. Determining the height of the loans involves some rather complex calculations. They were struggling to represent these calculations in an understandable and reliably testable way for both domain experts and developers. We helped them develop an internal DSL in Scala that allows them to express these complex calculations in an idiomatic way that is not just easy to read for both developers and business analysts, but more testable as well. Harnessing functional programming principles and the strong Scala compiler, it also provides full typesafety with a syntax that lies very close to human language, allowing fully typesafe constructs such as &#39;amount per month&#39; and &#39;amount per year&#39;. In this talk, I will explain the concepts behind the DSL, how we implemented them without adding any dependencies to the project (except ScalaTest, of course), and the design decisions we had to make along the way.</td>
+        </tr>
+        <tr>
+          <td>16:25</td>
+          <td>Break</td>
+        </tr>
+        <tr>
+          <td>16:45</td>
+          <td><span class="schedule-title">Dotty and types: the story so far</span> <span class="schedule-byline">Guillaume Martres</span> Dotty is a new, experimental compiler for Scala. One of the main goal of Dotty is to provide a better type system for Scala that is both theoretically sound and better in practice. In this talk I&#39;ll focus on some of the practical improvements to the type system we&#39;ve made in Dotty, like the new type parameter inference algorithm that, while not formally specified, should be easier to reason about and work in more cases. I will also try to shed some light on the challenges we face, like getting a set of features (like union types, singleton types and type inference) to interact well with each other, or properly implementing higher-kinded types.</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h2 id="sponsors" class="section"><a class="anchor-link" href="#sponsors"><code class="fas fa-link fa-sm"></code></a>Sponsors</h2>
+    <p>We&#39;d like to thank all our sponsors who help to make the Summit happen:</p>
+    
+    <h3 id="platinum" class="section"><a class="anchor-link" href="#platinum"><code class="fas fa-link fa-sm"></code></a>Platinum</h3>
+    <p class="bulma-grid bulma-is-col-min-12"><a class="bulma-cell bulma-has-text-centered" href="https://www.commbank.com.au/"><img class="legacy-event-sponsor" src="../img/media/sponsors/commbank.png" alt="Commonwealth Bank of Australia" title="Commonwealth Bank of Australia"></a>
+    <a class="bulma-cell bulma-has-text-centered" href="http://www.47deg.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/47_degrees.png" alt="47 Degrees" title="47 Degrees"></a></p>
+    
+    <h3 id="gold" class="section"><a class="anchor-link" href="#gold"><code class="fas fa-link fa-sm"></code></a>Gold</h3>
+    <p class="bulma-grid bulma-is-col-min-12"><a class="bulma-cell bulma-has-text-centered" href="http://underscore.io/"><img class="legacy-event-sponsor" src="../img/media/sponsors/underscore.png" alt="Underscore" title="Underscore"></a>
+    <a class="bulma-cell bulma-has-text-centered" href="http://www.arktekk.no/"><img class="legacy-event-sponsor" src="../img/media/sponsors/arktekk.png" alt="Arktekk" title="Arktekk"></a></p>
+    
+    <h3 id="silver" class="section"><a class="anchor-link" href="#silver"><code class="fas fa-link fa-sm"></code></a>Silver</h3>
+    <p class="bulma-grid bulma-is-col-min-12"><a class="bulma-cell bulma-has-text-centered" href="https://www.lightbend.com/"><img class="legacy-event-sponsor" src="../img/media/sponsors/lightbend.png" alt="Lightbend" title="Lightbend"></a></p>
+    <p>Thanks to the generous private supporters (in alphabetic order): Frank S. Thomas, Eric Torreborre, and the anonymous patrons.</p>
+  </div>
+</div>
+
+  </main>
+  <footer class="bulma-footer">
+  <div class="bulma-columns">
+    <div class="bulma-column bulma-is-half">
+      Copyright 2026 Typelevel Foundation and <a href="https://github.com/typelevel/typelevel.github.com/graphs/contributors">contributors</a>.
+      Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> unless <a href="../colophon.html#license">noted otherwise</a>.
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../projects/">Project Index</a></li>
+        <li><a href="../community/meetups.html">Meetup Calendar</a></li>
+        <li><a href="../foundation/people.html">Leadership</a></li>
+      </ul>
+    </div>
+    <div class="bulma-column">
+      <ul>
+        <li><a href="../code-of-conduct/">Code of Conduct</a></li>
+        <li><a href="../security.html">Security Policy</a></li>
+        <li><a href="../colophon.html">Colophon</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="bulma-has-text-centered">
+    <div>Find us on ...</div>
+    <div>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://github.com/typelevel">
+        <i class="fab fa-github fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://discord.gg/typelevel-632277896739946517">
+        <i class="fab fa-discord fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://bsky.app/profile/typelevel.org">
+        <i class="fab fa-bluesky fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://fosstodon.org/@typelevel">
+        <i class="fab fa-mastodon fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current" href="https://www.youtube.com/@typelevel">
+        <i class="fab fa-youtube fa-2x"></i>
+      </a>
+      <a class="bulma-icon bulma-is-large bulma-has-text-current"
+        href="https://linkedin.com/company/typelevel-foundation">
+        <i class="fab fa-linkedin fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
+
