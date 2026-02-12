@@ -291,7 +291,7 @@ def nestedSearch[F[_]: Monad: Logger, Move, Position, Score](
         }
   } yield result
 }
-// nestedSearch: [F[_], Move, Position, Score](numLevels: Int, level: Int, gameState: GameState[Move,Position,Score])(implicit evidence@:math 1: cats.Monad[F], implicit evidence @:@2: Logger[F], implicit g: Game[F,Move,Position,Score], implicit ord: Ordering[Score], implicit show: cats.Show[GameState[Move,Position,Score]])F[GameState[Move,Position,Score]]
+// nestedSearch: [F[_], Move, Position, Score](numLevels: Int, level: Int, gameState: GameState[Move,Position,Score])(implicit evidence$1: cats.Monad[F], implicit evidence$2: Logger[F], implicit g: Game[F,Move,Position,Score], implicit ord: Ordering[Score], implicit show: cats.Show[GameState[Move,Position,Score]])F[GameState[Move,Position,Score]]
 ```
 
 This program describes the nested Monte Carlo tree search algorithm from above. The biggest difference is that this description is statically type checked by the Scala compiler. The effect of mutating the game state is modelled in a purely functional way with recursion. In fact, the state modifications could be modelled with the State Monad as well, but this makes things a bit more complicated especially when we try to parallelize the search.
@@ -339,7 +339,7 @@ implicit val game: Game[IO, Position, SameGameState, Int] =
           .flatMap(simulation)
     }
   }
-// game: Game[cats.effect.IO,SameGame.Position,SameGame.SameGameState,Int] = @:math anon @:@1@2fd961b3
+// game: Game[cats.effect.IO,SameGame.Position,SameGame.SameGameState,Int] = $anon$1@2fd961b3
 ```
 
 We must not forget to also implement an interpreter for `Logger`:
@@ -348,7 +348,7 @@ We must not forget to also implement an interpreter for `Logger`:
 implicit val logger: Logger[IO] = new Logger[IO] {
   def log[T: Show](t: T): IO[Unit] = IO(println(t.show))
 }
-// logger: Logger[cats.effect.IO] = @:math anon @:@1@32e5f76d
+// logger: Logger[cats.effect.IO] = $anon$1@32e5f76d
 ```
 
 And some `Show` instances to create nicely formatted outputs in a type-safe way:
@@ -364,7 +364,7 @@ implicit val showCell: Show[CellState] = Show.show {
 }
 
 implicit val showMove: Show[Position] =
-  Show.show(p => show"(@:math {p.col},  @:@{p.row})")
+  Show.show(p => show"(${p.col},  ${p.row})")
 
 implicit val showList: Show[List[Position]] =
   Show.show(_.map(_.show).mkString("[", ", ", "]"))
@@ -378,8 +378,8 @@ implicit val showBoard: Show[Board] =
       .mkString("\n"))
 
 implicit val showGame: Show[SameGameState] = Show.show {
-  case InProgress(board, score) => show"@:math board\n\nScore:  @:@score (game in progress)"
-  case Finished(board, score)   => show"@:math board\n\nScore:  @:@score (game finished)"
+  case InProgress(board, score) => show"$board\n\nScore:  $score (game in progress)"
+  case Finished(board, score)   => show"$board\n\nScore:  $score (game finished)"
 }
 
 implicit val showGameState: Show[GameState[Position, SameGameState, Int]] =
