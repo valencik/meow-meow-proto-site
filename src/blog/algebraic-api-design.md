@@ -34,7 +34,7 @@ A group can be defined in an abstract way like this:
 - *Axioms*:
     - Closure: @:math \forall a, b \in G:a \circ b \in G @:@
     - Associativity: @:math \forall a, b, c \in G: a \circ (b \circ c) = (a \circ b) \circ c @:@
-    - Identity: @:math: \exists e \in G: \forall a \in G:e \circ a = a = a \circ e @:@
+    - Identity: @:math \exists e \in G: \forall a \in G:e \circ a = a = a \circ e @:@
     - Inverse: @:math \forall a \in G: \exists b \in G:a \circ b = e = b \circ a @:@
 
 ## Programming
