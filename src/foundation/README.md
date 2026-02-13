@@ -24,7 +24,7 @@ If your organization relies on Typelevel projects, please consider financially s
 @:fragment(platforms)
 We also accept donations on [GitHub Sponsors](https://github.com/sponsors/typelevel) and [Open Collective](https://opencollective.com/typelevel-foundation).
 
-We have partnered with the [Swiss Philanthropy Foundation](https://www.swissphilanthropy.ch/) to accept tax-deductible donations from Switzerland. Please contact them directly at international@swissphilanthropy.ch to start the process.
+We have partnered with the [Swiss Philanthropy Foundation](https://www.swissphilanthropy.ch/) to accept tax-deductible donations from Switzerland. Please contact them at international@swissphilanthropy.ch to facilitate a donation to us.
 
 Have questions or specific needs? Please email us at donate@typelevel.org.
 @:@
