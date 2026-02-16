@@ -167,7 +167,7 @@ condition satisfied by either `PList[PList[_]]` or its equivalent
   reasoning; we have written the definition of `PList` in a
   way that scalac assumes that such a method may exist.  You can
   determine the consequences yourself by adding the
-  `lookAt</code> method to <code>PList`, repeating the
+  `lookAt` method to `PList`, repeating the
   above substitution for `PList`, and thinking about the
   meaning of the resulting `def lookAt(x:
   PList[E] forSome {type E}): Unit`.
