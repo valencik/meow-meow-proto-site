@@ -117,9 +117,10 @@ object LaikaBuild {
       LaikaCustomizations.Directives,
       LaikaCustomizations.RssExtensions
     )
-    .withConfigValue(LinkValidation.Global(excluded = Seq(Path.Root / "blog" / "feed.rss")))
+    .withConfigValue(
+      LinkValidation.Global(excluded = Seq(Path.Root / "blog" / "feed.rss"))
+    )
     .withConfigValue(LaikaKeys.siteBaseURL, "https://typelevel.org/")
-    .withConfigValue(LaikaCustomizations.Icons)
     .parallel[IO]
     .withTheme(theme)
     .build
@@ -182,7 +183,7 @@ object LaikaCustomizations {
     val link = h.options.id.map { id =>
       SpanLink
         .internal(RelativePath.CurrentDocument(id))(
-          Literal("", Styles("fas", "fa-link", "fa-sm"))
+          RawContent(NonEmptySet.of("html"), Icons("fa-link"))
         )
         .withOptions(
           Styles("anchor-link")
@@ -249,6 +250,14 @@ object LaikaCustomizations {
             }
             .leftMap(_.message)
             .map(TemplateSpanSequence(_))
+        }
+      },
+      TemplateDirectives.create("svg") {
+        import TemplateDirectives.dsl.*
+        attribute(0).as[String].map { icon =>
+          TemplateElement(
+            RawContent(NonEmptySet.of("html", "rss"), Icons(icon))
+          )
         }
       }
     )
@@ -333,20 +342,32 @@ object LaikaCustomizations {
   }
 
   val Icons = {
-    def loadFaIcon(prefix: String, name: String): Icon = {
-      val resourcePath = "/META-INF/resources/webjars/fortawesome__fontawesome-free/7.1.0"
-      val inputStream = getClass.getResourceAsStream(s"$resourcePath/svgs-full/$prefix/$name.svg")
-      InlineSVGIcon(String(inputStream.readAllBytes()), Some(name), Styles("bulma-icon"))
+    def loadFaIcon(prefix: String, name: String) = {
+      val resourcePath =
+        "/META-INF/resources/webjars/fortawesome__fontawesome-free/7.1.0"
+      val inputStream =
+        getClass.getResourceAsStream(s"$resourcePath/svgs/$prefix/$name.svg")
+      String(inputStream.readAllBytes())
     }
 
-    IconRegistry(
-      "fa-github" -> loadFaIcon("brands", "github"),
-      "fa-discord" -> loadFaIcon("brands", "discord"),
+    Map(
+      // brands
       "fa-bluesky" -> loadFaIcon("brands", "bluesky"),
+      "fa-discord" -> loadFaIcon("brands", "discord"),
+      "fa-github" -> loadFaIcon("brands", "github"),
+      "fa-linkedin" -> loadFaIcon("brands", "linkedin"),
       "fa-mastodon" -> loadFaIcon("brands", "mastodon"),
       "fa-youtube" -> loadFaIcon("brands", "youtube"),
-      "fa-linkedin" -> loadFaIcon("brands", "linkedin"),
-      "fa-magnifying-glass" -> loadFaIcon("solid", "magnifying-glass")
+      // solids
+      "fa-book" -> loadFaIcon("solid", "book"),
+      "fa-envelope" -> loadFaIcon("solid", "envelope"),
+      "fa-globe" -> loadFaIcon("solid", "globe"),
+      "fa-hand-holding-heart" -> loadFaIcon("solid", "hand-holding-heart"),
+      "fa-link" -> loadFaIcon("solid", "link"),
+      "fa-magnifying-glass" -> loadFaIcon("solid", "magnifying-glass"),
+      "fa-person-chalkboard" -> loadFaIcon("solid", "person-chalkboard"),
+      "fa-puzzle-piece" -> loadFaIcon("solid", "puzzle-piece"),
+      "fa-square-rss" -> loadFaIcon("solid", "square-rss")
     )
   }
 }
@@ -372,7 +393,11 @@ object KaTeX {
 
   def apply(latex: String, displayMode: Boolean = false): String =
     synchronized {
-      val options = Map("throwOnError" -> true, "strict" -> true, "displayMode" -> displayMode)
+      val options = Map(
+        "throwOnError" -> true,
+        "strict" -> true,
+        "displayMode" -> displayMode
+      )
       katex.invokeMember("renderToString", latex, options.asJava).asString
     }
 
