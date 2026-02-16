@@ -2,6 +2,7 @@
   author: ${S11001001}
   date: "2016-01-28"
   tags: [technical]
+  katex: true
 %}
 
 # It’s existential on the inside

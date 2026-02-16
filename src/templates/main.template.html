@@ -10,9 +10,10 @@
   <link rel="apple-touch-icon" href="@:target(/img/apple-touch-icon.png)">
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
 
-  <script async defer src="https://embeds.every.org/0.4/button.js?explicit=1" id="every-donate-btn-js"></script>
+  @:if(katex)
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css" integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
+  @:@
 
   <link rel="stylesheet" href="@:target(/main.css)">
   <link rel="stylesheet" href="@:target(/css/code.css)">

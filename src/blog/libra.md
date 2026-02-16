@@ -2,6 +2,7 @@
   author: ${zainabali}
   date: "2017-06-13"
   tags: [technical]
+  katex: true
 %}
 
 # Compile time dimensional analysis with Libra

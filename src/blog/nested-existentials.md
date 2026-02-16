@@ -2,6 +2,7 @@
   author: ${S11001001}
   date: "2015-07-27"
   tags: [technical]
+  katex: true
 %}
 
 # Nested existentials
