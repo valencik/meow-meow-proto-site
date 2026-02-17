@@ -104,7 +104,7 @@
     <a href="variance-and-functors.html">variance</a> that makes
     sense, if you choose to incorporate subtyping into your designs at
     all. This is
-    <a href="liskov_lifting.html#parametrically-sound-covariance">the natural, “parametrically sound” variance</a>.</p>
+    <a href="liskov-lifting.html#parametrically-sound-covariance">the natural, “parametrically sound” variance</a>.</p>
     <pre><code class="nohighlight"><span class="keyword">sealed</span><span> </span><span class="keyword">abstract</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyModel</span><span>[</span><span class="type-name">P</span><span>, </span><span class="type-name">I</span><span>, -</span><span class="type-name">T</span><span>, +</span><span class="type-name">V</span><span>]
 
 </span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Running</span><span>[</span><span class="type-name">I</span><span>, </span><span class="type-name">T</span><span>, </span><span class="type-name">V</span><span>](
